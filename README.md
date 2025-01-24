@@ -82,8 +82,8 @@
         
         <body>
         ```
-    - <commit prefix>: [FD-1]
-    - <type>
+    - \<commit prefix\>: [FD-1]
+    - \<type\>
         - feat : 새로운 기능 추가
         - fix : 버그 수정
         - docs : 문서 관련
@@ -94,9 +94,9 @@
         - ci : CI 설정 파일 수정
         - perf : 성능 개선
         - chore : 그 외 자잘한 수정
-    - <summary>
+    - \<summary\>
         - 변경내용 간결하게 한글로 작성
-    - <body>
+    - \<body\>
         - 변경내용 자세하게 작성
 
 
