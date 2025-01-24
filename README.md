@@ -75,13 +75,13 @@
             - 본인 제외 아무나 1명이 merge 하기
         
     - 커밋 메세지 구조
-        
+        ```
         <type>: <commit prefix> <summary>
         
         <BLANK LINE>
         
         <body>
-        
+        ```
     - <commit prefix>: [FD-1]
     - <type>
         - feat : 새로운 기능 추가
@@ -99,13 +99,6 @@
     - <body>
         - 변경내용 자세하게 작성
 
-## 프론트엔드
-
-- 머지 방식
-
-## 백엔드
-
-- 머지 방식
 
 
 ## 기획 디자인 링크
