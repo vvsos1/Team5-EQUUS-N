@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+.header-1 {
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 140%;
+}
+
+.header-2 {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 140%;
+}
+
+.header-3 {
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 140%;
+}
+
+.header-4 {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 140%;
+}
+
+.subtitle-1 {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 140%;
+}
+
+.subtitle-2 {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 140%;
+}
+
+.subtitle-3 {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 140%;
+}
+
+.body-1 {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 140%;
+}
+
+.body-2 {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 140%;
+}
+
+.body-3 {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 140%;
+}
+
+.body-4 {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 140%;
+}
+
+.caption-1 {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 140%;
+}
+
+.caption-2 {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 140%;
+}
+
+.button-1 {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 140%;
+}
+
+.button-2 {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 140%;
+}
