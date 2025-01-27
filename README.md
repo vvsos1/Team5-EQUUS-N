@@ -1,3 +1,12 @@
+# 프로젝트 소개
+![image](https://github.com/user-attachments/assets/cca47e96-12f7-4c30-88ec-a1a07b2eea21)
+피드백 주고 받기를 어려워하는 대학생들이 팀 프로젝트에서 건설적인 피드백을 작성하고 공유하는 과정을 도와주는 서비스
+
+
+
+
+
+
 # 팀원 소개
 
 <table>
@@ -104,3 +113,6 @@
 ## 기획 디자인 링크
 
 https://www.figma.com/design/16a1adYjBfzzvMkRe3yJc1/Handoff_EQUUS-N?node-id=1-6&t=5jO9HHm3exQykJKP-1
+
+## 도메인 모델
+![도메인 모델](./docs/domain_model.jpg)
