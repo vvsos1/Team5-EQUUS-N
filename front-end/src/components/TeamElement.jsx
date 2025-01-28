@@ -1,17 +1,23 @@
 import ProfileImage from './ProfileImage';
 
-export default function TeamElement({ teamName, startDate, endDate, teamMembers, isDeleted }) {
+export default function TeamElement({
+  teamName,
+  startDate,
+  endDate,
+  teamMembers,
+  isDeleted,
+}) {
   const imageGap = 20;
   const zIndexGap = 10;
   const maxShow = 6;
   return (
     <li
-      className={`flex flex-col w-full h-fit justify-between items-center bg-gray-800 p-5 rounded-400 gap-4 ${
+      className={`rounded-400 flex h-fit w-full flex-col items-center justify-between gap-4 bg-gray-800 p-5 ${
         isDeleted ? 'opacity-60' : ''
       }`}
       // style={{ width: '353px' }}
     >
-      <div className='flex relative w-full justify-between'>
+      <div className='relative flex w-full justify-between'>
         <p className='subtitle-1 relative flex-1 text-gray-100'>{teamName}</p>
         {teamMembers.map((member, index) => {
           if (index <= maxShow) {
@@ -21,18 +27,26 @@ export default function TeamElement({ teamName, startDate, endDate, teamMembers,
                 className='absolute top-0'
                 style={{
                   right: index === maxShow ? `0px` : `${index * imageGap}px`,
-                  zIndex: index === maxShow ? Math.floor(zIndexGap / 2) : index * zIndexGap,
+                  zIndex:
+                    index === maxShow ?
+                      Math.floor(zIndexGap / 2)
+                    : index * zIndexGap,
                 }}
               >
-                {index === maxShow ? (
-                  <div className='w-8 h-8'>
-                    <ProfileImage iconName={'dots'} color={'var(--color-gray-200)'} />
+                {index === maxShow ?
+                  <div className='h-8 w-8'>
+                    <ProfileImage
+                      iconName={'dots'}
+                      color={'var(--color-gray-200)'}
+                    />
                   </div>
-                ) : (
-                  <div className='w-8 h-8'>
-                    <ProfileImage iconName={`@animals/${member.iconName}`} color={member.color} />
+                : <div className='h-8 w-8'>
+                    <ProfileImage
+                      iconName={`@animals/${member.iconName}`}
+                      color={member.color}
+                    />
                   </div>
-                )}
+                }
               </div>
             );
           } else {
@@ -40,7 +54,7 @@ export default function TeamElement({ teamName, startDate, endDate, teamMembers,
           }
         })}
       </div>
-      <div className='flex w-full justify-between caption-1 text-gray-300'>
+      <div className='caption-1 flex w-full justify-between text-gray-300'>
         <p>
           {startDate} ~ {endDate}
         </p>
@@ -58,37 +72,37 @@ export default function TeamElement({ teamName, startDate, endDate, teamMembers,
           teamMembers={[
             {
               name: '한준호',
-              iconName: 'Panda',
+              iconName: 'panda',
               color: '#90C18A',
             },
             {
               name: '박명규',
-              iconName: 'Penguin',
+              iconName: 'penguin',
               color: '#AFD1DC',
             },
             // {
             //   name: '임세준',
-            //   iconName: 'Rooster',
+            //   iconName: 'rooster',
             //   color: '#62BFCA',
             // },
             // {
             //   name: '한준호',
-            //   iconName: 'Panda',
+            //   iconName: 'panda',
             //   color: '#90C18A',
             // },
             // {
             //   name: '박명규',
-            //   iconName: 'Penguin',
+            //   iconName: 'penguin',
             //   color: '#AFD1DC',
             // },
             // {
             //   name: '임세준',
-            //   iconName: 'Rooster',
+            //   iconName: 'rooster',
             //   color: '#62BFCA',
             // },
             // {
             //   name: '한준호',
-            //   iconName: 'Panda',
+            //   iconName: 'panda',
             //   color: '#90C18A',
             // },
           ]}
