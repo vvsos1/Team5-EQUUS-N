@@ -24,8 +24,37 @@ import { ReactComponent as People } from '../assets/Icons/people.svg';
 import { ReactComponent as PlusM } from '../assets/Icons/plus_m.svg';
 import { ReactComponent as PlusS } from '../assets/Icons/plus_s.svg';
 import { ReactComponent as Remove } from '../assets/Icons/remove.svg';
+import { ReactComponent as Send } from '../assets/Icons/send.svg';
 import { ReactComponent as SwapVert } from '../assets/Icons/swap_vert.svg';
 import { ReactComponent as UnfoldMore } from '../assets/Icons/unfold_more.svg';
+
+import { ReactComponent as Bear } from '../assets/Icons/animals/Bear.svg';
+import { ReactComponent as DogFace } from '../assets/Icons/animals/Dog Face.svg';
+import { ReactComponent as Fish } from '../assets/Icons/animals/Fish.svg';
+import { ReactComponent as Fox } from '../assets/Icons/animals/Fox.svg';
+import { ReactComponent as Frog } from '../assets/Icons/animals/Frog.svg';
+import { ReactComponent as Hamster } from '../assets/Icons/animals/Hamster.svg';
+import { ReactComponent as Koala } from '../assets/Icons/animals/Koala.svg';
+import { ReactComponent as LadyBeetle } from '../assets/Icons/animals/Lady Beetle.svg';
+import { ReactComponent as Lion } from '../assets/Icons/animals/Lion.svg';
+import { ReactComponent as MonkeyFace } from '../assets/Icons/animals/Monkey Face.svg';
+import { ReactComponent as MouseFace } from '../assets/Icons/animals/Mouse Face.svg';
+import { ReactComponent as Octopus } from '../assets/Icons/animals/Octopus.svg';
+import { ReactComponent as Orangutan } from '../assets/Icons/animals/Orangutan.svg';
+import { ReactComponent as Panda } from '../assets/Icons/animals/Panda.svg';
+import { ReactComponent as Parrot } from '../assets/Icons/animals/Parrot.svg';
+import { ReactComponent as Penguin } from '../assets/Icons/animals/Penguin.svg';
+import { ReactComponent as PigFace } from '../assets/Icons/animals/Pig Face.svg';
+import { ReactComponent as PolarBear } from '../assets/Icons/animals/Polar Bear.svg';
+import { ReactComponent as RabbitFace } from '../assets/Icons/animals/Rabbit Face.svg';
+import { ReactComponent as Rooster } from '../assets/Icons/animals/Rooster.svg';
+import { ReactComponent as Shark } from '../assets/Icons/animals/Shark.svg';
+import { ReactComponent as Skunk } from '../assets/Icons/animals/Skunk.svg';
+import { ReactComponent as SpoutingWhale } from '../assets/Icons/animals/Spouting Whale.svg';
+import { ReactComponent as Swan } from '../assets/Icons/animals/Swan.svg';
+import { ReactComponent as Turtle } from '../assets/Icons/animals/Turtle.svg';
+import { ReactComponent as Whale } from '../assets/Icons/animals/Whale.svg';
+import { ReactComponent as Wolf } from '../assets/Icons/animals/Wolf.svg';
 
 const icons = {
   heartFill: HeartActivate,
@@ -53,17 +82,54 @@ const icons = {
   plusM: PlusM,
   plusS: PlusS,
   remove: Remove,
+  send: Send,
   swapVert: SwapVert,
   unfoldMore: UnfoldMore,
+
+  '@animals/bear': Bear,
+  '@animals/dog_face': DogFace,
+  '@animals/fish': Fish,
+  '@animals/fox': Fox,
+  '@animals/frog': Frog,
+  '@animals/hamster': Hamster,
+  '@animals/koala': Koala,
+  '@animals/lady_beetle': LadyBeetle,
+  '@animals/lion': Lion,
+  '@animals/monkey_face': MonkeyFace,
+  '@animals/mouse_face': MouseFace,
+  '@animals/octopus': Octopus,
+  '@animals/orangutan': Orangutan,
+  '@animals/panda': Panda,
+  '@animals/parrot': Parrot,
+  '@animals/penguin': Penguin,
+  '@animals/pig_face': PigFace,
+  '@animals/polar_bear': PolarBear,
+  '@animals/rabbit_face': RabbitFace,
+  '@animals/rooster': Rooster,
+  '@animals/shark': Shark,
+  '@animals/skunk': Skunk,
+  '@animals/spouting_whale': SpoutingWhale,
+  '@animals/swan': Swan,
+  '@animals/turtle': Turtle,
+  '@animals/whale': Whale,
+  '@animals/wolf': Wolf,
 };
 
-const Icon = ({ name, className }) => {
+const Icon = ({ name, className, color }) => {
   const IconComponent = icons[name];
   if (!IconComponent) {
     console.error(`Icon "${name}" does not exist.`);
     return null;
   }
-  return <IconComponent className={className} />;
+
+  const style =
+    name === 'dots' ? { fill: color }
+    : name === 'chevronLeft' ? { stroke: color }
+    : { stroke: color, fill: color };
+
+  return (
+    <IconComponent className={className + ' h-full w-full'} style={style} />
+  );
 };
 
 export default Icon;
