@@ -6,7 +6,6 @@ export default function MemberElement({ member, isLeader }) {
   return (
     <li
       className={`rounded-400 flex h-fit w-full items-center bg-gray-800 px-5 py-4`}
-      style={{ width: '353px' }}
     >
       <div className='h-11 w-11'>
         <ProfileImage

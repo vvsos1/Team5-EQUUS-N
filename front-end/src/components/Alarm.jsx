@@ -1,6 +1,6 @@
 import { calTimePassed } from '../utility/time';
 
-export const alarmType = {
+export const alarmType = Object.freeze({
   FEEDBACK_RECEIVED: 'FEEDBACK_RECEIVED', // 피드백 받음
   HEART_RECEIVED: 'HEART_RECEIVED', // 보낸 피드백 하트 받음
   FEEDBACK_REQUESTED: 'FEEDBACK_REQUESTED', // 피드백 작성 요청
@@ -8,7 +8,7 @@ export const alarmType = {
   NEED_CHECK_FEEDBACK: 'NEED_CHECK_FEEDBACK', // 확인하지 않은 피드백 있음
   CHANGE_TEAM_LEADER: 'CHANGE_TEAM_LEADER', // 팀장 권한 받음
   SCHEDULE_ADDED: 'SCHEDULE_ADDED', // 일정 추가됨
-};
+});
 
 export default function Alarm({ type, data }) {
   let title = '';

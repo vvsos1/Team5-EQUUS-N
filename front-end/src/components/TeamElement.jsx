@@ -15,7 +15,6 @@ export default function TeamElement({
       className={`rounded-400 flex h-fit w-full flex-col items-center justify-between gap-4 bg-gray-800 p-5 ${
         isDeleted ? 'opacity-60' : ''
       }`}
-      // style={{ width: '353px' }}
     >
       <div className='relative flex w-full justify-between'>
         <p className='subtitle-1 relative flex-1 text-gray-100'>{teamName}</p>
