@@ -24,11 +24,14 @@ export default function TextButton({ type, onClick, children }) {
       onClick={onClick}
     >
       {children}
-      <Icon
-        name={'plusM'}
-        color={'lime-700'}
-        className={'h-6 w-6 fill-current stroke-current'}
-      />
+      {type === TextButtonType.DEFAULT ?
+        <div />
+      : <Icon
+          name={type === TextButtonType.PLUS ? 'plusM' : 'check'}
+          color={'lime-700'}
+          className={'h-6 w-6'}
+        />
+      }
     </button>
   );
 }

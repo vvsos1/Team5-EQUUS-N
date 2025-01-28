@@ -26,10 +26,13 @@ function App2() {
       </AiButton>
 
       <article className='flex w-60 flex-col bg-gray-800'>
-        <TextButton type={TextButtonType.CHECK} onClick={() => {}}>
+        <TextButton type={TextButtonType.DEFAULT} onClick={() => {}}>
           소프티어 5조
         </TextButton>
         <TextButton type={TextButtonType.PLUS} onClick={() => {}}>
+          소프티어 5조
+        </TextButton>
+        <TextButton type={TextButtonType.CHECK} onClick={() => {}}>
           소프티어 5조
         </TextButton>
       </article>
