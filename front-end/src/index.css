@@ -1,0 +1,135 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+@import "tailwindcss";
+
+@theme {
+  /* Font Family */
+  --font-pretendard: 'Pretendard Variable', 'sans-serif';
+
+  /* Grayscale */
+  --color-gray-0: #FCFCFC;
+  --color-gray-100: #F2F2F2;
+  --color-gray-200: #E1E1E1;
+  --color-gray-300: #C6C6C6;
+  --color-gray-400: #707070;
+  --color-gray-500: #565656;
+  --color-gray-600: #404040;
+  --color-gray-700: #313131;
+  --color-gray-800: #262626;
+  --color-gray-900: #191919;
+
+  /* Primary Color */
+  --color-lime-0: #CBEF85;
+  --color-lime-100: #CBEF85;
+  --color-lime-200: #CBEF85;
+  --color-lime-300: #CBEF85;
+  --color-lime-400: #CBEF85;
+  --color-lime-500: #C2EC6F;
+  --color-lime-600: #BAEA5D;
+  --color-lime-700: #A4E327;
+  --color-lime-800: #9BD91D;
+  --color-lime-900: #8CC617;
+
+  /* Spacing */
+  --spacing-statusBar: 50px;
+  --spacing-navBar: 66px;
+
+  /* Border Radius */ 
+  --radius-100: 4px;
+  --radius-200: 6px;
+  --radius-300: 8px;
+  --radius-400: 22px;
+}
+
+body {
+  font-family: var(--font-pretendard);
+}
+
+.header-1 {
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 140%;
+}
+
+.header-2 {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 140%;
+}
+
+.header-3 {
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 140%;
+}
+
+.header-4 {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 140%;
+}
+
+.subtitle-1 {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 140%;
+}
+
+.subtitle-2 {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 140%;
+}
+
+.subtitle-3 {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 140%;
+}
+
+.body-1 {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 140%;
+}
+
+.body-2 {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 140%;
+}
+
+.body-3 {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 140%;
+}
+
+.body-4 {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 140%;
+}
+
+.caption-1 {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 140%;
+}
+
+.caption-2 {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 140%;
+}
+
+.button-1 {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 140%;
+}
+
+.button-2 {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 140%;
+}
