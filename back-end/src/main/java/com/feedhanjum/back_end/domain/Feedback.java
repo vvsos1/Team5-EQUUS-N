@@ -39,7 +39,6 @@ public class Feedback {
     public Feedback(FeedbackType feedbackType, String subjectiveFeedback, Member sender, Member receiver, Team team) {
         this.feedbackType = feedbackType;
         this.subjectiveFeedback = subjectiveFeedback;
-        this.liked = liked;
         this.sender = sender;
         this.team = team;
         setReceiver(receiver);
