@@ -14,6 +14,8 @@ export const TagType = Object.freeze({
  * @param {keyof typeof TagType} props.type 태그 타입
  * @param {React.ReactNode} props.children 태그 내용
  * @returns {React.ReactElement}
+ * @example <Tag type={TagType.MY_ROLE} />
+ * @example <Tag type={TagType.MEMBER_ROLE}>백현식</Tag>
  */
 export default function Tag({ type, children }) {
   switch (type) {
