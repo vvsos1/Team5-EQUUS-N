@@ -23,14 +23,14 @@ function App2() {
         재생성하기
       </AiButton>
 
-      <template className='flex w-60 flex-col'>
+      <article className='flex w-60 flex-col bg-gray-800'>
         <TextButton type={TextButtonType.CHECK} onClick={() => {}}>
           소프티어 5조
         </TextButton>
         <TextButton type={TextButtonType.PLUS} onClick={() => {}}>
           소프티어 5조
         </TextButton>
-      </template>
+      </article>
     </div>
   );
 }
