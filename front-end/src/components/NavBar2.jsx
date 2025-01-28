@@ -9,25 +9,31 @@ export default function NavBar2({
   onClickClose,
 }) {
   return (
-    <div className='flex justify-center items-center w-full h-navBar'>
-      {canPop && !isCloseLeft ? (
-        <div className='w-6 h-6 m-4 cursor-pointer' onClick={onClickPop}>
+    <div className='h-navBar flex w-full items-center justify-center'>
+      <div
+        className='m-4 h-6 w-6 cursor-pointer'
+        onClick={
+          canPop ? onClickPop
+          : canClose ?
+            onClickClose
+          : null
+        }
+      >
+        {canPop && !isCloseLeft ?
           <Icon name={'chevronLeft'} color={'var(--color-gray-100)'} />
-        </div>
-      ) : null}
-      {canClose && isCloseLeft ? (
-        <div className='w-6 h-6 m-4 cursor-pointer' onClick={onClickClose}>
+        : null}
+        {canClose && isCloseLeft ?
           <Icon name={'delete'} color={'var(--color-gray-100)'} />
-        </div>
-      ) : null}
-      <div className='flex flex-1 justify-center items-center'>
+        : null}
+      </div>
+      <div className='flex flex-1 items-center justify-center'>
         <p className='subtitle-2 text-gray-100'>{title}</p>
       </div>
-      {canClose && !isCloseLeft ? (
-        <div className='w-6 h-6 m-4 cursor-pointer' onClick={onClickClose}>
+      <div className='m-4 h-6 w-6 cursor-pointer' onClick={onClickClose}>
+        {canClose && !isCloseLeft ?
           <Icon name={'delete'} color={'var(--color-gray-100)'} />
-        </div>
-      ) : null}
+        : null}
+      </div>
     </div>
   );
 }
