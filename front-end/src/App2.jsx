@@ -1,5 +1,7 @@
 import AiButton from './components/buttons/AiButton';
+import KeywordButton from './components/buttons/KeywordButton';
 import TextButton, { TextButtonType } from './components/buttons/TextButton';
+import Icon from './components/Icon';
 import Tag, { TagType } from './components/Tag';
 
 function App2() {
@@ -31,6 +33,13 @@ function App2() {
           소프티어 5조
         </TextButton>
       </article>
+
+      <KeywordButton isActive={true} onClick={() => {}}>
+        완곡하게
+      </KeywordButton>
+      <KeywordButton isActive={false} onClick={() => {}}>
+        대안을 제시하는
+      </KeywordButton>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 /**
  * AiButton 컴포넌트
  * @param {object} props
- * @param {boolean} props.isActive 버튼 타입
+ * @param {boolean} props.isActive 액티브 여부
  * @param {function} props.onClick 클릭 이벤트
  * @param {string} props.children 버튼 내용
  * @returns {React.ReactElement}

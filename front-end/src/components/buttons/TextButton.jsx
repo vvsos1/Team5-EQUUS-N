@@ -9,9 +9,9 @@ export const TextButtonType = Object.freeze({
 /**
  * 텍스트 버튼 컴포넌트
  * @param {object} props
- * @param {keyof typeof TextButtonType} props.type 버튼 타입
- * @param {() => void} props.onClick 클릭 이벤트
- * @param {React.ReactNode} props.children 버튼 내용
+ * @param {keyof typeof TextButtonType} props.type - 버튼 타입
+ * @param {() => void} props.onClick - 클릭 이벤트
+ * @param {React.ReactNode} props.children - 버튼 내용
  * @returns {React.ReactElement}
  * @example <TextButton type={TextButtonType.PLUS} onClick={() => console.log('click')}>
  */

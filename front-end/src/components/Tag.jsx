@@ -11,8 +11,8 @@ export const TagType = Object.freeze({
 /**
  * 태그 컴포넌트
  * @param {object} props
- * @param {keyof typeof TagType} props.type 태그 타입
- * @param {React.ReactNode} props.children 태그 내용
+ * @param {keyof typeof TagType} props.type - 태그 타입
+ * @param {React.ReactNode} props.children - 태그 내용
  * @returns {React.ReactElement}
  * @example <Tag type={TagType.MY_ROLE} />
  * @example <Tag type={TagType.MEMBER_ROLE}>백현식</Tag>
