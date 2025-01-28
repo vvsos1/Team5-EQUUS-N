@@ -3,6 +3,10 @@ import { getRecentSunday } from '../utility/time';
 import { CalendarWeek, SelectedDateInfo } from './CalendarParts';
 import classNames from 'classnames';
 
+/**
+ * 캘린더 컴포넌트
+ * @returns {JSX.Element} - 캘린더 컴포넌트
+ */
 export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [curSunday, setCurSunday] = useState(getRecentSunday(new Date()));
@@ -11,6 +15,7 @@ export default function Calendar() {
   const scrollLeft = useRef(0);
   const containerRef = useRef(null);
 
+  // 현재 주를 가운데에 배치
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -18,6 +23,7 @@ export default function Calendar() {
     container.scrollLeft = container.clientWidth;
   }, []);
 
+  // 주가 저번주나 다음주로 넘어가면 캘린더 플립
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -35,12 +41,14 @@ export default function Calendar() {
     return () => container.removeEventListener('scroll', handleScroll);
   }, [curSunday]);
 
+  // 드래그 시작 - 시작 위치 저장
   const handleDragStart = (e) => {
     setIsDragging(true);
     startX.current = e.clientX - containerRef.current.offsetLeft;
     scrollLeft.current = containerRef.current.scrollLeft;
   };
 
+  // 드래그 중 - 드래그 거리에 따라 스크롤 이동
   const handleDrag = (e) => {
     // e.preventDefault(); // 이벤트 기본 동작 방지
     if (!isDragging) return;
@@ -49,9 +57,9 @@ export default function Calendar() {
     containerRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
+  // 드래그 끝 - 스크롤 위치에 따라 가장 가까운 주로 스냅
   const handleDragEnd = () => {
     setIsDragging(false);
-    // 스크롤 위치에 따라 가장 가까운 주로 스냅
     const container = containerRef.current;
     const weekWidth = container.clientWidth;
     const targetScroll =
@@ -63,20 +71,22 @@ export default function Calendar() {
     });
   };
 
+  // 캘린더 넘기기
   const flipCalender = (container, isNext) => {
-    // 즉시 투명하게 만들기
+    // 캘린더가 변하는 동안 투명하게 만듦
     requestAnimationFrame(() => {
       container.style.opacity = '0';
 
       // 모든 상태 업데이트를 다음 프레임으로 지연
       setTimeout(() => {
         handleDragEnd();
+        // 새로운 주 계산
         const newSunday = new Date(curSunday);
         newSunday.setDate(newSunday.getDate() + (isNext ? 7 : -7));
         const newDate = new Date(selectedDate);
         newDate.setDate(newDate.getDate() + (isNext ? 7 : -7));
 
-        // 상태 업데이트와 스크롤 위치 변경을 동시에
+        // 변경된 주를 현재 주로 설정, 선택된 날짜도 변경
         Promise.all([setCurSunday(newSunday), setSelectedDate(newDate)]).then(
           () => {
             container.scrollLeft = container.clientWidth;
@@ -92,6 +102,7 @@ export default function Calendar() {
 
   return (
     <div>
+      {/* 선택된 날짜 정보 */}
       <SelectedDateInfo date={selectedDate} />
       <div
         ref={containerRef}
@@ -109,6 +120,7 @@ export default function Calendar() {
         onTouchMove={handleDrag}
         onTouchCancel={handleDragEnd}
       >
+        {/* 저번주 */}
         <div className='min-w-full px-5 py-4'>
           <CalendarWeek
             curSunday={new Date(curSunday).setDate(curSunday.getDate() - 7)}
@@ -116,6 +128,7 @@ export default function Calendar() {
             setSelectedDate={setSelectedDate}
           />
         </div>
+        {/* 이번주 */}
         <div className='min-w-full px-5 py-4'>
           <CalendarWeek
             curSunday={new Date(curSunday)}
@@ -123,6 +136,7 @@ export default function Calendar() {
             setSelectedDate={setSelectedDate}
           />
         </div>
+        {/* 다음주 */}
         <div className='min-w-full px-5 py-4'>
           <CalendarWeek
             curSunday={new Date(curSunday).setDate(curSunday.getDate() + 7)}

@@ -1,6 +1,11 @@
 import { getDateInfo } from '../utility/time';
 import classNames from 'classnames';
 
+/**
+ * 요일 컴포넌트
+ * @param {number} dayIndex - 요일 인덱스 (0: 일요일, 1: 월요일, ...)
+ * @returns {JSX.Element} - 요일 컴포넌트
+ */
 function CalenderDay({ dayIndex }) {
   let dayString = '월';
   switch (dayIndex) {
@@ -33,6 +38,13 @@ function CalenderDay({ dayIndex }) {
   );
 }
 
+/**
+ * 날짜 컴포넌트
+ * @param {Date} date - 날짜
+ * @param {boolean} isSelected - 선택된 날짜인지 여부
+ * @param {boolean} haveSchedule - 스케줄이 있는지 여부
+ * @returns {JSX.Element} - 날짜 컴포넌트
+ */
 function CalendarDate({ date, isSelected, haveSchedule }) {
   const today = new Date();
   const isToday =
@@ -56,6 +68,13 @@ function CalendarDate({ date, isSelected, haveSchedule }) {
   );
 }
 
+/**
+ * 주 컴포넌트
+ * @param {Date} curSunday - 현재 주의 일요일
+ * @param {Date} selectedDate - 선택된 날짜
+ * @param {function} setSelectedDate - 선택된 날짜 설정 함수
+ * @returns {JSX.Element} - 주 컴포넌트
+ */
 export function CalendarWeek({ curSunday, selectedDate, setSelectedDate }) {
   const dateList = getDateList(curSunday);
   return (
@@ -85,6 +104,11 @@ export function CalendarWeek({ curSunday, selectedDate, setSelectedDate }) {
   );
 }
 
+/**
+ * 선택된 날짜 정보 컴포넌트 (요일, 월, 몇주차, 년도)
+ * @param {Date} date - 날짜
+ * @returns {JSX.Element} - 선택된 날짜 정보 컴포넌트
+ */
 export function SelectedDateInfo({ date }) {
   const { weekDay, monthWeek, year } = getDateInfo(date);
   return (
@@ -98,12 +122,17 @@ export function SelectedDateInfo({ date }) {
   );
 }
 
+/**
+ * 날짜 리스트 생성 함수
+ * @param {Date} curSunday - 현재 주의 일요일
+ * @returns {Array} - 날짜 리스트
+ */
 function getDateList(curSunday) {
   const dateList = [];
   for (let i = 0; i < 7; i++) {
     dateList.push({
       date: new Date(curSunday).setDate(new Date(curSunday).getDate() + i),
-      haveSchedule: false,
+      haveSchedule: Math.random() < 0.1,
     });
   }
   return dateList;
