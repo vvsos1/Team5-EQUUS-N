@@ -1,15 +1,15 @@
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
-@import "tailwindcss";
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+@import 'tailwindcss';
 
 @theme {
   /* Font Family */
   --font-pretendard: 'Pretendard Variable', 'sans-serif';
 
   /* Grayscale */
-  --color-gray-0: #FCFCFC;
-  --color-gray-100: #F2F2F2;
-  --color-gray-200: #E1E1E1;
-  --color-gray-300: #C6C6C6;
+  --color-gray-0: #fcfcfc;
+  --color-gray-100: #f2f2f2;
+  --color-gray-200: #e1e1e1;
+  --color-gray-300: #c6c6c6;
   --color-gray-400: #707070;
   --color-gray-500: #565656;
   --color-gray-600: #404040;
@@ -18,22 +18,22 @@
   --color-gray-900: #191919;
 
   /* Primary Color */
-  --color-lime-0: #CBEF85;
-  --color-lime-100: #CBEF85;
-  --color-lime-200: #CBEF85;
-  --color-lime-300: #CBEF85;
-  --color-lime-400: #CBEF85;
-  --color-lime-500: #C2EC6F;
-  --color-lime-600: #BAEA5D;
-  --color-lime-700: #A4E327;
-  --color-lime-800: #9BD91D;
-  --color-lime-900: #8CC617;
+  --color-lime-0: #cbef85;
+  --color-lime-100: #cbef85;
+  --color-lime-200: #cbef85;
+  --color-lime-300: #cbef85;
+  --color-lime-400: #cbef85;
+  --color-lime-500: #c2ec6f;
+  --color-lime-600: #baea5d;
+  --color-lime-700: #a4e327;
+  --color-lime-800: #9bd91d;
+  --color-lime-900: #8cc617;
 
   /* Spacing */
   --spacing-statusBar: 50px;
   --spacing-navBar: 66px;
 
-  /* Border Radius */ 
+  /* Border Radius */
   --radius-100: 4px;
   --radius-200: 6px;
   --radius-300: 8px;
@@ -42,6 +42,14 @@
 
 body {
   font-family: var(--font-pretendard);
+}
+
+button {
+  cursor: pointer;
+}
+
+button:active {
+  scale: 0.97;
 }
 
 .header-1 {
