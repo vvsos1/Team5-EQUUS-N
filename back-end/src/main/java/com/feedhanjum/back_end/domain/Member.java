@@ -29,8 +29,18 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private final List<ScheduleMember> scheduleMembers = new ArrayList<>();
 
+    @OneToMany(mappedBy = "receiver")
+    private final List<Feedback> feedbacks = new ArrayList<>();
+
     public Member(String name, String email) {
         this.name = name;
         this.email = email;
+    }
+
+    public void addLikedCount(){
+        othersLikedCount += 1;
+    }
+    public void removeLikedCount(){
+        othersLikedCount -= 1;
     }
 }
