@@ -1,10 +1,10 @@
-package com.feedhanjum.feed_hanjum_backend;
+package com.feedhanjum.back_end;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FeedHanjumBackendApplicationTests {
+class BackEndApplicationTests {
 
 	@Test
 	void contextLoads() {

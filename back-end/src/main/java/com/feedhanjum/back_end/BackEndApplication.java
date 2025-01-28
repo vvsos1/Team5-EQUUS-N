@@ -1,13 +1,13 @@
-package com.feedhanjum.feed_hanjum_backend;
+package com.feedhanjum.back_end;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FeedHanjumBackendApplication {
+public class BackEndApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FeedHanjumBackendApplication.class, args);
+		SpringApplication.run(BackEndApplication.class, args);
 	}
 
 }
