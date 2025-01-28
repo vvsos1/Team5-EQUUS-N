@@ -32,6 +32,9 @@ public class Member {
     @OneToMany(mappedBy = "receiver")
     private final List<Feedback> feedbacks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "writer")
+    private final List<Retrospect> retrospects = new ArrayList<>();
+
     public Member(String name, String email) {
         this.name = name;
         this.email = email;
