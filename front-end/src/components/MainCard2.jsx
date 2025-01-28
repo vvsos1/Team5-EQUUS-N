@@ -4,20 +4,22 @@ import { ProfileImageWithText } from './ProfileImage';
 // teamMates: [{name: string, iconName: string, color: string}]
 export default function MainCard2({ teamMates }) {
   return (
-    <div className='w-fit h-fit bg-gray-800 rounded-400 p-4'>
+    <div className='rounded-400 h-fit w-fit bg-gray-800 p-4'>
       <p className='pl-1 text-gray-100'>피드백 주고받기</p>
-      <div className='grid grid-cols-4 my-5 gap-y-4 gap-x-4 mx-2'>
+      <div className='mx-2 my-5 grid grid-cols-4 gap-x-4 gap-y-4'>
         {teamMates.map((mate, index) => {
           return (
             <ProfileImageWithText
               key={index}
               text={mate.name}
-              iconName={mate.iconName}
+              iconName={`@animals/${mate.iconName}`}
               color={mate.color}
             />
           );
         })}
-        {teamMates.length < 4 && <ProfileImageWithText text='팀원초대' onClick={() => {}} />}
+        {teamMates.length < 4 && (
+          <ProfileImageWithText text='팀원초대' onClick={() => {}} />
+        )}
       </div>
       <MediumButton text='피드백 보관함' onClick={() => {}} />
     </div>
