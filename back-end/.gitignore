@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### 운영 환경 설정 파일 ###
+application-prod.properties
+application-prod.yml

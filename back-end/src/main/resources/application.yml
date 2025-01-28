@@ -1,0 +1,6 @@
+# 공통 설정 파일
+# 개발환경 설정 파일은 application-dev.yml
+# 운영환경 설정 파일은 application-prod.yml
+
+spring.application.name: back-end
+
