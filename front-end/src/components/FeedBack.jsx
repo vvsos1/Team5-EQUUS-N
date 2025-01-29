@@ -3,7 +3,7 @@ import Icon from './Icon';
 import ProfileImage from './ProfileImage';
 import Tag from './Tag';
 
-export const FEEDBACK_TYPE = Object.freeze({
+export const FeedBackType = Object.freeze({
   SELF: 'SELF',
   RECEIVE: 'FROM. ',
   SEND: 'TO. ',
@@ -21,7 +21,7 @@ export default function FeedBack({ feedbackType, data }) {
     <div className='flex flex-col gap-5 border-b-8 border-gray-800 bg-gray-900 p-5'>
       <div className='flex items-end gap-3'>
         {/* 회고 아닌 경우에만 프로필 이미지 표시 */}
-        {FEEDBACK_TYPE[feedbackType] !== FEEDBACK_TYPE.SELF && (
+        {FeedBackType[feedbackType] !== FeedBackType.SELF && (
           <div className='aspect-square h-11'>
             <ProfileImage
               iconName={'@animals/' + data.profileImage.iconName}
@@ -32,25 +32,25 @@ export default function FeedBack({ feedbackType, data }) {
         <div className='flex flex-1 flex-col gap-0.5'>
           {/* 회고 아닌 경우 To. 또는 From. + 이름 표시 || 회고인 경우 팀 이름 표시 */}
           <p className='body-3 text-gray-0'>
-            {FEEDBACK_TYPE[feedbackType] !== FEEDBACK_TYPE.SELF ?
-              FEEDBACK_TYPE[feedbackType] + data.teamMate
+            {FeedBackType[feedbackType] !== FeedBackType.SELF ?
+              FeedBackType[feedbackType] + data.teamMate
             : data.teamName}
           </p>
           {/* 회고 아닌 경우 팀 이름 표시 || 회고인 경우 일정 표시 */}
           <p className='caption-1 text-gray-300'>
-            {FEEDBACK_TYPE[feedbackType] !== FEEDBACK_TYPE.SELF ?
+            {FeedBackType[feedbackType] !== FeedBackType.SELF ?
               data.teamName
             : data.scheduleName}
           </p>
         </div>
         {/* 회고인 경우 날짜 상단에 표시 */}
-        {FEEDBACK_TYPE[feedbackType] === FEEDBACK_TYPE.SELF && (
+        {FeedBackType[feedbackType] === FeedBackType.SELF && (
           <p className='caption-1 text-gray-300'>{data.recordDate}</p>
         )}
       </div>
       <p className='body-1 text-gray-0'>{data.content}</p>
       {/* 회고 아닌 경우 키워드, 날짜, 하트 표시 */}
-      {FEEDBACK_TYPE[feedbackType] !== FEEDBACK_TYPE.SELF && (
+      {FeedBackType[feedbackType] !== FeedBackType.SELF && (
         <>
           <div className='flex flex-wrap gap-2'>
             {data.keywords.map((keyword, i) => {
@@ -63,7 +63,7 @@ export default function FeedBack({ feedbackType, data }) {
           </div>
           <div className='flex items-center justify-between'>
             <p className='caption-1 text-gray-300'>{data.recordDate}</p>
-            {FEEDBACK_TYPE[feedbackType] === FEEDBACK_TYPE.RECEIVE &&
+            {FeedBackType[feedbackType] === FeedBackType.RECEIVE &&
               // 받은 피드백의 경우 하트 토글 가능
               (isHeart ?
                 <button onClick={() => setIsHeart(false)}>
@@ -72,7 +72,7 @@ export default function FeedBack({ feedbackType, data }) {
               : <button onClick={() => setIsHeart(true)}>
                   <Icon name='heartDefault' />
                 </button>)}
-            {FEEDBACK_TYPE[feedbackType] === FEEDBACK_TYPE.SEND && isHeart && (
+            {FeedBackType[feedbackType] === FeedBackType.SEND && isHeart && (
               //보낸 피드백의 경우 하트 받았는지 여부만 표시
               <div className='caption-1 flex items-center gap-1 text-gray-300'>
                 {data.teamMate}에게 도움이 됐어요!
