@@ -5,23 +5,35 @@ import MediumButton from './buttons/MediumButton';
 import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 
+/**
+ *
+ * @param {string} teamName - 팀 이름
+ * @param {object} schedule - 스케줄 정보
+ * @param {array} roles - 팀원 역할 정보 배열
+ * @param {function} onClickEdit - 수정 클릭 시 호출되는 함수
+ * @returns
+ */
 export default function ScheduleCard({
   teamName,
   schedule,
   roles,
   onClickEdit,
+  isFinished = false,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const contentRef = useRef(null);
   const [height, setHeight] = useState(0);
 
+  // 스케줄 컨텐츠 높이 계산
   useEffect(() => {
     if (contentRef.current) {
       setHeight(isOpen ? contentRef.current.scrollHeight : 0);
     }
   }, [isOpen]);
 
+  // 나의 역할 찾기
   const myRole = roles.find((role) => role.memberId === 1)?.task;
+
   return (
     <div
       className={classNames(
@@ -38,16 +50,20 @@ export default function ScheduleCard({
             <p className='subtitle-2 text-gray-100'>{schedule.content}</p>
           </div>
         </div>
-        <Icon
-          name='edit'
-          className={classNames(
-            'h-max w-max cursor-pointer',
-            teamName && 'pt-1',
-          )}
-          onClick={onClickEdit}
-        />
+        {/* 일정 종료 전에만 수정 버튼 표시 */}
+        {!isFinished && (
+          <Icon
+            name='edit'
+            className={classNames(
+              'h-max w-max cursor-pointer',
+              teamName && 'pt-1',
+            )}
+            onClick={onClickEdit}
+          />
+        )}
       </div>
       <hr className='w-full border-gray-500' />
+      {/* 나의 역할 */}
       {myRole ?
         <div className='flex flex-col gap-3'>
           <Tag type={TagType.MY_ROLE}></Tag>
@@ -61,12 +77,16 @@ export default function ScheduleCard({
           <p className='body-1 text-center text-gray-400'>
             나의 역할이 비어있어요
           </p>
-          <MediumButton
-            text={'나의 역할 추가하기'}
-            isOutlined={false}
-          ></MediumButton>
+          {/* 일정 종료 전에만 나의 역할 추가 버튼 표시 */}
+          {!isFinished && (
+            <MediumButton
+              text={'나의 역할 추가하기'}
+              isOutlined={false}
+            ></MediumButton>
+          )}
         </div>
       }
+      {/* 팀원 역할 */}
       <div
         ref={contentRef}
         className={`flex flex-col gap-6 overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'mb-0' : 'mb-[-24px]'}`}
@@ -91,6 +111,7 @@ export default function ScheduleCard({
           );
         })}
       </div>
+      {/* 팀원 역할 보기 토글 버튼 */}
       <MediumButton
         text={
           <div className='flex items-center gap-2'>
@@ -140,5 +161,6 @@ function Role({ children }) {
             task: ['프레젠테이션 연습하기', '설문지 작성하기'],
           },
         ]}
+        isFinished={false}
       /> */
 }
