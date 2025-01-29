@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.domain;
+package com.feedhanjum.back_end.schedule.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

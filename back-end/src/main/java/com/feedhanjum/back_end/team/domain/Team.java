@@ -1,5 +1,7 @@
-package com.feedhanjum.back_end.domain;
+package com.feedhanjum.back_end.team.domain;
 
+import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.schedule.domain.Schedule;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
