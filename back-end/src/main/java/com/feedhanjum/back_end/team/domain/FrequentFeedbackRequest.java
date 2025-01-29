@@ -1,5 +1,6 @@
-package com.feedhanjum.back_end.domain;
+package com.feedhanjum.back_end.team.domain;
 
+import com.feedhanjum.back_end.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,7 +36,7 @@ public class FrequentFeedbackRequest {
         setTeamMember(teamMember);
     }
 
-    public void setTeamMember(TeamMember teamMember) {
+    private void setTeamMember(TeamMember teamMember) {
         if (this.teamMember != null) {
             this.teamMember.getFrequentFeedbackRequests().remove(this);
         }

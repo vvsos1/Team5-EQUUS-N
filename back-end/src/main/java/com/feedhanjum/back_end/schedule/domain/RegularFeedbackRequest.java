@@ -1,5 +1,6 @@
-package com.feedhanjum.back_end.domain;
+package com.feedhanjum.back_end.schedule.domain;
 
+import com.feedhanjum.back_end.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,7 +33,7 @@ public class RegularFeedbackRequest {
         setScheduleMember(scheduleMember);
     }
 
-    public void setScheduleMember(ScheduleMember scheduleMember) {
+    private void setScheduleMember(ScheduleMember scheduleMember) {
         if (this.scheduleMember != null) {
             this.scheduleMember.getRegularFeedbackRequests().remove(this);
         }

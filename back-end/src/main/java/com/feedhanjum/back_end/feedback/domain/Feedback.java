@@ -1,5 +1,7 @@
-package com.feedhanjum.back_end.domain;
+package com.feedhanjum.back_end.feedback.domain;
 
+import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.team.domain.Team;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -44,7 +46,7 @@ public class Feedback {
         setReceiver(receiver);
     }
 
-    public void setReceiver(Member receiver) {
+    private void setReceiver(Member receiver) {
         if(this.receiver != null) {
             this.receiver.getFeedbacks().remove(this);
         }
@@ -57,13 +59,11 @@ public class Feedback {
     public void like(){
         if(!liked) {
             this.liked = true;
-            this.sender.addLikedCount();
         }
     }
 
     public void unlike(){
         if(liked) {
-            this.sender.removeLikedCount();
             this.liked = false;
         }
     }

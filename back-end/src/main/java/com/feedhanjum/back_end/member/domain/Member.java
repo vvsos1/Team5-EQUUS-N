@@ -1,5 +1,9 @@
-package com.feedhanjum.back_end.domain;
+package com.feedhanjum.back_end.member.domain;
 
+import com.feedhanjum.back_end.feedback.domain.Feedback;
+import com.feedhanjum.back_end.feedback.domain.Retrospect;
+import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
+import com.feedhanjum.back_end.team.domain.TeamMember;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,7 +22,6 @@ public class Member {
     private Long id;
     private String name;
     private String email;
-    private Long othersLikedCount;
 
     // 프로필 사진 정보 - 타입 미지정
     // private String profile;
@@ -38,12 +41,5 @@ public class Member {
     public Member(String name, String email) {
         this.name = name;
         this.email = email;
-    }
-
-    public void addLikedCount(){
-        othersLikedCount += 1;
-    }
-    public void removeLikedCount(){
-        othersLikedCount -= 1;
     }
 }
