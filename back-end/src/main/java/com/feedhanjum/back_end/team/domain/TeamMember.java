@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,7 +28,7 @@ public class TeamMember {
     private Member member;
 
     @OneToMany(mappedBy = "teamMember")
-    private List<FrequentFeedbackRequest> frequentFeedbackRequests;
+    private final List<FrequentFeedbackRequest> frequentFeedbackRequests = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private TeamRole role;
@@ -39,7 +40,7 @@ public class TeamMember {
         setMember(member);
     }
 
-    public void setTeam(Team team) {
+    private void setTeam(Team team) {
         if (this.team != null) {
             this.team.getTeamMembers().remove(this);
         }
@@ -49,7 +50,7 @@ public class TeamMember {
         }
     }
 
-    public void setMember(Member member) {
+    private void setMember(Member member) {
         if (this.member != null) {
             this.member.getTeamMembers().remove(this);
         }

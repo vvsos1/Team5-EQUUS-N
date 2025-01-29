@@ -46,7 +46,7 @@ public class Feedback {
         setReceiver(receiver);
     }
 
-    public void setReceiver(Member receiver) {
+    private void setReceiver(Member receiver) {
         if(this.receiver != null) {
             this.receiver.getFeedbacks().remove(this);
         }
@@ -59,13 +59,11 @@ public class Feedback {
     public void like(){
         if(!liked) {
             this.liked = true;
-            this.sender.addLikedCount();
         }
     }
 
     public void unlike(){
         if(liked) {
-            this.sender.removeLikedCount();
             this.liked = false;
         }
     }
