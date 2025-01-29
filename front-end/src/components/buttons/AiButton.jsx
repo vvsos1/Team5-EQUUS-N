@@ -10,7 +10,7 @@
 export default function AiButton({ isActive, onClick, children }) {
   return (
     <button
-      className={`rounded-300 size-fit px-2 py-1.5 ${
+      className={`rounded-300 button-2 size-fit px-2 py-1.5 ${
         isActive ?
           'border border-lime-500 text-lime-400'
         : 'bg-gray-800 text-gray-300'
