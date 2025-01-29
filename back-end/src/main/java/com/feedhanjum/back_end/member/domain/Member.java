@@ -22,7 +22,6 @@ public class Member {
     private Long id;
     private String name;
     private String email;
-    private Long othersLikedCount;
 
     // 프로필 사진 정보 - 타입 미지정
     // private String profile;
@@ -42,12 +41,5 @@ public class Member {
     public Member(String name, String email) {
         this.name = name;
         this.email = email;
-    }
-
-    public void addLikedCount(){
-        othersLikedCount += 1;
-    }
-    public void removeLikedCount(){
-        othersLikedCount -= 1;
     }
 }

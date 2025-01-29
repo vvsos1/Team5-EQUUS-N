@@ -37,7 +37,7 @@ public class FrequentFeedbackRequest {
         setTeamMember(teamMember);
     }
 
-    public void setTeamMember(TeamMember teamMember) {
+    private void setTeamMember(TeamMember teamMember) {
         if (this.teamMember != null) {
             this.teamMember.getFrequentFeedbackRequests().remove(this);
         }

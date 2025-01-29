@@ -34,7 +34,7 @@ public class RegularFeedbackRequest {
         setScheduleMember(scheduleMember);
     }
 
-    public void setScheduleMember(ScheduleMember scheduleMember) {
+    private void setScheduleMember(ScheduleMember scheduleMember) {
         if (this.scheduleMember != null) {
             this.scheduleMember.getRegularFeedbackRequests().remove(this);
         }

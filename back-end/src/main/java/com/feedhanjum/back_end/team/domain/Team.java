@@ -22,8 +22,6 @@ public class Team {
 
     private String name;
 
-    private String projectIntroduction;
-
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;
@@ -37,9 +35,10 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private final List<Schedule> schedules = new ArrayList<>();
 
-    public Team(FeedbackType feedbackType, String name, String projectIntroduce) {
+    public Team(FeedbackType feedbackType, String name, LocalDateTime startTime, LocalDateTime endTime) {
         this.feedbackType = feedbackType;
         this.name = name;
-        this.projectIntroduction = projectIntroduce;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }
