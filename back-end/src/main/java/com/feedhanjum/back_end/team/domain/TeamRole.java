@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.domain;
+package com.feedhanjum.back_end.team.domain;
 
 public enum TeamRole {
     LEADER, MEMBER
