@@ -1,6 +1,5 @@
-package com.feedhanjum.back_end.feedback.domain;
+package com.feedhanjum.back_end.team.domain;
 
-import com.feedhanjum.back_end.team.domain.TeamMember;
 import com.feedhanjum.back_end.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
