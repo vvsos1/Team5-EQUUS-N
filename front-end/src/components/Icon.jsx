@@ -128,7 +128,7 @@ const Icon = ({ name, className, color }) => {
     : { stroke: color, fill: color };
 
   return (
-    <IconComponent className={'h-full w-full' + className} style={style} />
+    <IconComponent className={'h-full w-full ' + className} style={style} />
   );
 };
 
