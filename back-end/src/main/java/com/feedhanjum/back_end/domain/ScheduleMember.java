@@ -39,7 +39,7 @@ public class ScheduleMember {
         setMember(member);
     }
 
-    public void setSchedule(Schedule schedule) {
+    private void setSchedule(Schedule schedule) {
         if (this.schedule != null) {
             this.schedule.getScheduleMembers().remove(this);
         }
@@ -49,7 +49,7 @@ public class ScheduleMember {
         }
     }
 
-    public void setMember(Member member) {
+    private void setMember(Member member) {
         if (this.member != null) {
             this.member.getScheduleMembers().remove(this);
         }

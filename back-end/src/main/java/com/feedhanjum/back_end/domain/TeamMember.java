@@ -38,7 +38,7 @@ public class TeamMember {
         setMember(member);
     }
 
-    public void setTeam(Team team) {
+    private void setTeam(Team team) {
         if (this.team != null) {
             this.team.getTeamMembers().remove(this);
         }
@@ -48,7 +48,7 @@ public class TeamMember {
         }
     }
 
-    public void setMember(Member member) {
+    private void setMember(Member member) {
         if (this.member != null) {
             this.member.getTeamMembers().remove(this);
         }
