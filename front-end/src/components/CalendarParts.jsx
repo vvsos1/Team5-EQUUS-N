@@ -109,11 +109,11 @@ export function CalendarWeek({ curSunday, selectedDate, setSelectedDate }) {
  * @param {Date} date - 날짜
  * @returns {JSX.Element} - 선택된 날짜 정보 컴포넌트
  */
-export function SelectedDateInfo({ date }) {
+export function SelectedDateInfo({ date, isScrolling }) {
   const { weekDay, monthWeek, year } = getDateInfo(date);
   return (
     <div className='flex h-[80px] items-center justify-between px-5'>
-      <h1 className='text-[40px] font-semibold text-gray-100'>{weekDay}</h1>
+      <h1 className='text-[40px] font-semibold text-gray-100'>{`${weekDay}${isScrolling ? `, ${date.getDate().toString().padStart(2, '0')}` : ''}`}</h1>
       <div className='subtitle-2 flex flex-col text-end text-gray-200'>
         <p>{monthWeek}</p>
         <p>{year}</p>
@@ -132,7 +132,7 @@ function getDateList(curSunday) {
   for (let i = 0; i < 7; i++) {
     dateList.push({
       date: new Date(curSunday).setDate(new Date(curSunday).getDate() + i),
-      haveSchedule: Math.random() < 0.1,
+      haveSchedule: false,
     });
   }
   return dateList;
