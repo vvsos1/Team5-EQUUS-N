@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.domain;
+package com.feedhanjum.back_end.schedule.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -26,7 +26,7 @@ public class Todo {
         setScheduleMember(scheduleMember);
     }
 
-    public void setScheduleMember(ScheduleMember scheduleMember) {
+    private void setScheduleMember(ScheduleMember scheduleMember) {
         if (this.scheduleMember != null) {
             this.scheduleMember.getTodos().remove(this);
         }
