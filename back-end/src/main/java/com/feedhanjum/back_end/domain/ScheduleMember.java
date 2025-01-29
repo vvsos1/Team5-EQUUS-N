@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,7 +29,7 @@ public class ScheduleMember {
     private Member member;
 
     @OneToMany(mappedBy = "scheduleMember")
-    private List<RegularFeedbackRequest> regularFeedbackRequests;
+    private final List<RegularFeedbackRequest> regularFeedbackRequests = new ArrayList<>();
 
     @OneToMany(mappedBy = "scheduleMember")
     private List<Todo> todos;

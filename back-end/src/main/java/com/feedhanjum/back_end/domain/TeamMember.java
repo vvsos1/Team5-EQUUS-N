@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,7 +27,7 @@ public class TeamMember {
     private Member member;
 
     @OneToMany(mappedBy = "teamMember")
-    private List<FrequentFeedbackRequest> frequentFeedbackRequests;
+    private final List<FrequentFeedbackRequest> frequentFeedbackRequests = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private TeamRole role;
