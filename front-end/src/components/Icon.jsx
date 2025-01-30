@@ -123,7 +123,7 @@ const Icon = ({ name, className, color }) => {
   }
 
   const style =
-    name === 'dots' ? { fill: color }
+    name === 'dots' || name === 'eye' ? { fill: color }
     : name === 'chevronLeft' ? { stroke: color }
     : { stroke: color, fill: color };
 
