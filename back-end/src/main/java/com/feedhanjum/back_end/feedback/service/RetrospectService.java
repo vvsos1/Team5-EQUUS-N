@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -32,6 +33,7 @@ public class RetrospectService {
     /**
      * @throws EntityNotFoundException writerId에 해당하는 Member가 없거나 teamId에 해당하는 Team이 없을 때
      */
+    @Transactional
     public Retrospect writeRetrospect(String content, Long writerId, Long teamId) {
         Optional<Member> writer = memberRepository.findById(writerId);
         Optional<Team> team = teamRepository.findById(teamId);
@@ -48,6 +50,7 @@ public class RetrospectService {
      * @throws EntityNotFoundException  writerId에 해당하는 Member가 없거나 teamName에 해당하는 Team이 없을 때
      * @throws IllegalArgumentException page가 0 미만일 때
      */
+    @Transactional(readOnly = true)
     public Page<Retrospect> getRetrospects(Long writerId, @Nullable String teamName, int page, Sort.Direction sortOrder) {
         if (page < 0) {
             throw new IllegalArgumentException("page는 0 이상의 값을 가져야 합니다.");
