@@ -82,7 +82,7 @@ export default function ProfileImage({ iconName, color, isButton }) {
   if (!iconName) {
     return (
       <div className='flex aspect-square items-center justify-center rounded-full bg-gray-700 p-4.5'>
-        <Icon name='plusM' />
+        <Icon name='plusM' color={'var(--color-gray-100)'} />
       </div>
     );
   }
