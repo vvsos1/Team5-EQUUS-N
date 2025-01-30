@@ -1,6 +1,15 @@
 import classNames from 'classnames';
 import Icon from '../Icon';
 
+/**
+ * 큰 버튼 컴포넌트
+ * @param {object} props
+ * @param {string} props.text - 버튼 텍스트
+ * @param {boolean} props.disabled - 버튼 비활성화 여부
+ * @param {function} props.onClick - 버튼 클릭 함수
+ * @param {boolean} props.isOutlined - 테두리/배경 여부
+ * @returns {JSX.Element} - 버튼 컴포넌트
+ */
 export default function LargeButton({
   text,
   disabled,
