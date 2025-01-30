@@ -7,6 +7,7 @@ import { useState } from 'react';
  * @param {string} label - 제목
  * @param {string} hint - 플레이스홀더
  * @param {string} content - 초기값
+ * @param {function} setContent - 값 변경 함수
  * @param {ReactNode} addOn - 오른쪽 아이콘
  * @param {string} condition - 하단 조건
  * @param {boolean} isPassword - 비밀번호 여부
@@ -27,13 +28,18 @@ export default function CustomInput({
 }) {
   return (
     <div className='flex flex-col gap-2'>
+      {/* 제목 */}
       {label && <p className='subtitle-2 text-gray-0'>{label}</p>}
+      {/* 인풋 */}
       <div className='group relative flex flex-col gap-2'>
         <input
           className={classNames(
             'rounded-300 text-gray-0 flex w-full items-center justify-between border py-4 caret-gray-300',
+            // 오른쪽 아이콘 있으면 입력 길이를 줄임
             addOn ? 'pr-14 pl-5' : 'px-5',
+            // 테두리 여부
             isOutlined ? 'border-gray-600' : 'border-none bg-gray-800',
+            // 포커스 시 스타일
             'placeholder:text-gray-500 focus:border-gray-300 focus:outline-none focus:placeholder:text-gray-400',
           )}
           placeholder={hint}
@@ -42,7 +48,9 @@ export default function CustomInput({
           onChange={(e) => setContent(e.target.value)}
           disabled={disabled}
         ></input>
+        {/* 오른쪽 아이콘 */}
         {addOn && <div className='absolute top-4 right-5'>{addOn}</div>}
+        {/* 하단 조건 */}
         {condition && (
           <p className='caption-1 text-right text-gray-500 group-focus-within:text-lime-300'>
             {condition}
