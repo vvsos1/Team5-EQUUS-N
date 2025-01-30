@@ -28,7 +28,7 @@ export default function TextButton({ type, onClick, children }) {
       {type === TextButtonType.PLUS && (
         <Icon name={'plusM'} color={'lime-700'} />
       )}
-      {type === TextButtonType.DEFAULT && (
+      {type === TextButtonType.CHECK && (
         <Icon name={'check'} color={'gray-200'} />
       )}
     </button>
