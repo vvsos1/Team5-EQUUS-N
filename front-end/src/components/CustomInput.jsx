@@ -1,31 +1,37 @@
 import Icon from './Icon';
 import classNames from 'classnames';
-import { useState } from 'react';
+import { forwardRef } from 'react';
 
 /**
- *
- * @param {string} label - 제목
- * @param {string} hint - 플레이스홀더
- * @param {string} content - 초기값
- * @param {function} setContent - 값 변경 함수
- * @param {ReactNode} addOn - 오른쪽 아이콘
- * @param {string} condition - 하단 조건
- * @param {boolean} isPassword - 비밀번호 여부
- * @param {boolean} disabled - 비활성화 여부
- * @param {boolean} isOutlined - 테두리/배경 여부
+ * @param {object} props
+ * @param {string} props.label - 제목
+ * @param {string} props.hint - 플레이스홀더
+ * @param {string} props.content - 초기값
+ * @param {function} props.setContent - 값 변경 함수
+ * @param {string} props.keyboardType - 키보드 타입
+ * @param {ReactNode} props.addOn - 오른쪽 아이콘
+ * @param {string} props.condition - 하단 조건
+ * @param {boolean} props.isPassword - 비밀번호 여부
+ * @param {boolean} props.disabled - 비활성화 여부
+ * @param {boolean} props.isOutlined - 테두리/배경 여부
+ * @param {React.Ref} ref - ref 매개변수
  * @returns
  */
-export default function CustomInput({
-  label,
-  hint,
-  content = '',
-  setContent,
-  addOn,
-  condition,
-  isPassword,
-  disabled = setContent ? false : true, // setContent가 없으면 비활성화
-  isOutlined = true,
-}) {
+const CustomInput = forwardRef(function CustomInput(
+  {
+    label,
+    hint,
+    content = '',
+    setContent,
+    keyboardType = 'text',
+    addOn,
+    condition,
+    isPassword,
+    disabled = setContent ? false : true, // setContent가 없으면 비활성화
+    isOutlined = true,
+  },
+  ref,
+) {
   return (
     <div className='flex flex-col gap-2'>
       {/* 제목 */}
@@ -33,8 +39,9 @@ export default function CustomInput({
       {/* 인풋 */}
       <div className='group relative flex flex-col gap-2'>
         <input
+          ref={ref}
           className={classNames(
-            'rounded-300 text-gray-0 flex w-full items-center justify-between border py-4 caret-gray-300',
+            'rounded-300 text-gray-0 flex h-[52px] w-full items-center border caret-gray-300',
             // 오른쪽 아이콘 있으면 입력 길이를 줄임
             addOn ? 'pr-14 pl-5' : 'px-5',
             // 테두리 여부
@@ -45,11 +52,12 @@ export default function CustomInput({
           placeholder={hint}
           value={content}
           type={isPassword ? 'password' : 'text'}
+          inputMode={keyboardType}
           onChange={(e) => setContent(e.target.value)}
           disabled={disabled}
         ></input>
         {/* 오른쪽 아이콘 */}
-        {addOn && <div className='absolute top-4 right-5'>{addOn}</div>}
+        {addOn && <div className='absolute top-[14px] right-5'>{addOn}</div>}
         {/* 하단 조건 */}
         {condition && (
           <p className='caption-1 text-right text-gray-500 group-focus-within:text-lime-300'>
@@ -59,7 +67,12 @@ export default function CustomInput({
       </div>
     </div>
   );
-}
+});
+
+// 컴포넌트 이름 설정 (개발 도구에서 확인용)
+CustomInput.displayName = 'CustomInput';
+
+export default CustomInput;
 
 // const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 // const [isAnonymous, setIsAnonymous] = useState(false);
