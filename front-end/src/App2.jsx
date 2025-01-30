@@ -1,6 +1,7 @@
 import Accordion from './components/Accordion';
 import AiButton from './components/buttons/AiButton';
 import KeywordButton from './components/buttons/KeywordButton';
+import ProgressBar from './components/progressBar';
 import Tag, { TagType } from './components/Tag';
 
 function App2() {
@@ -31,7 +32,7 @@ function App2() {
         대안을 제시하는
       </KeywordButton>
 
-      <div className='flex h-[852px] w-[393px] flex-col divide-y-4 divide-amber-200 bg-gray-900'>
+      <div className='flex h-[852px] w-[393px] flex-col bg-gray-900 px-5'>
         <Accordion
           selectedTeamId={1}
           teamList={[
@@ -43,10 +44,11 @@ function App2() {
           isMainPage={true}
         />
       </div>
-      <div className='flex h-[852px] w-[393px] flex-col divide-y-4 divide-amber-200 bg-gray-900'>
+      <div className='flex h-[852px] w-[393px] flex-col bg-gray-900 px-5'>
         <Accordion teamList={[]} isMainPage={true} />
       </div>
-      <div className='flex h-[852px] w-[393px] flex-col divide-y-4 divide-amber-200 bg-gray-900'>
+      <div className='flex h-[852px] w-[393px] flex-col bg-gray-900 px-5'>
+        <ProgressBar currentStep={2} totalStep={3} />
         <Accordion
           selectedTeamId={2}
           teamList={[

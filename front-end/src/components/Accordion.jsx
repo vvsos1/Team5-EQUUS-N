@@ -27,7 +27,7 @@ export default function Accordion({
   }, [isMainPage]);
 
   return (
-    <header className='relative flex h-[60px] w-full items-center justify-between px-5'>
+    <header className='relative flex h-[60px] w-full items-center justify-between'>
       {teamList.length === 0 ?
         <Icon name='logo' />
       : <details ref={detailsRef} className='group z-0'>
