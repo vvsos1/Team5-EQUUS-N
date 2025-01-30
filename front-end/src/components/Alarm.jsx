@@ -10,6 +10,13 @@ export const alarmType = Object.freeze({
   SCHEDULE_ADDED: 'SCHEDULE_ADDED', // 일정 추가됨
 });
 
+/**
+ * 알림 컴포넌트
+ * @param {object} props
+ * @param {string} props.type - 알림 타입
+ * @param {object} props.data - 알림 데이터
+ * @returns {JSX.Element} - 알림 컴포넌트
+ */
 export default function Alarm({ type, data }) {
   let title = '';
   let content = '';
