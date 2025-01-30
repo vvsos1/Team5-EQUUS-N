@@ -24,4 +24,17 @@ public class AuthExceptionHandler {
         errorResponse.put("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
+
+    /**
+     * 아이디 혹은 비밀번호가 일치하지 않아, 자격 증명에 실패했을 경우
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Map<String, String>> invalidCredentials(InvalidCredentialsException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "INVALID_CREDENTIALS");
+        errorResponse.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
 }
