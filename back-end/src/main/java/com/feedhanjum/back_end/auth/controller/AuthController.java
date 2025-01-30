@@ -8,6 +8,8 @@ import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.auth.service.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,5 +53,18 @@ public class AuthController {
         LoginResponse response = new LoginResponse("로그인에 성공했습니다.", member.getId(), member.getEmail());
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response, HttpSession session) {
+        session.invalidate();
+
+        Cookie sessionCookie = new Cookie("JSESSIONID", null);
+        sessionCookie.setPath("/");
+        sessionCookie.setMaxAge(0);
+        sessionCookie.setHttpOnly(true);
+        response.addCookie(sessionCookie);
+
+        return ResponseEntity.noContent().build();
     }
 }

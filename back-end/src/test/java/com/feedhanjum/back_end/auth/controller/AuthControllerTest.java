@@ -169,4 +169,17 @@ class AuthControllerTest {
                     .andExpect(status().isBadRequest());
         }
     }
+
+    @Nested
+    @DisplayName("POST /api/auth/logout 테스트")
+    class LogoutTests {
+
+        @Test
+        @DisplayName("로그아웃 성공 시 204(NO_CONTENT) 상태코드 반환 및 세션 무효화")
+        void logout_success() throws Exception {
+            mockMvc.perform(post("/api/auth/logout")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNoContent());
+        }
+    }
 }
