@@ -1,7 +1,15 @@
 import MediumButton from './buttons/MediumButton';
 import { ProfileImageWithText } from './ProfileImage';
 
-// teamMates: [{name: string, iconName: string, color: string}]
+/**
+ * 메인 카드 2 컴포넌트
+ * @param {object} props
+ * @param {object[]} props.teamMates - 팀원 목록
+ * @param {string} props.teamMates[].name - 팀원 이름
+ * @param {string} props.teamMates[].iconName - 팀원 아이콘 이름
+ * @param {string} props.teamMates[].color - 팀원 아이콘 색상
+ * @returns {JSX.Element} - 메인 카드 2 컴포넌트
+ */
 export default function MainCard2({ teamMates }) {
   return (
     <div className='rounded-400 h-fit w-fit bg-gray-800 p-4'>
