@@ -2,6 +2,8 @@ package com.feedhanjum.back_end.auth.service;
 
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
+import com.feedhanjum.back_end.auth.exception.InvalidCredentialsException;
+import com.feedhanjum.back_end.auth.passwordencoder.PasswordEncoder;
 import com.feedhanjum.back_end.auth.repository.MemberDetailsRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -26,6 +28,9 @@ class AuthServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private AuthService authService;
@@ -85,6 +90,67 @@ class AuthServiceTest {
 
             verify(memberRepository, never()).save(any());
             verify(memberDetailsRepository, never()).save(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("authenticate 테스트")
+    class AuthenticateTests {
+
+        @Test
+        @DisplayName("인증 성공 시 MemberDetails 반환")
+        void authenticate_success() {
+            String email = "test@example.com";
+            String password = "password";
+            String hashedPassword = "password";
+
+            MemberDetails member = new MemberDetails(1L, email, password);
+            when(memberDetailsRepository.findByEmail(email)).thenReturn(Optional.of(member));
+
+            when(passwordEncoder.matches(password, hashedPassword)).thenReturn(true);
+
+            MemberDetails result = authService.authenticate(email, password);
+
+            assertThat(result).isNotNull();
+            assertThat(result.getId()).isEqualTo(1L);
+            assertThat(result.getEmail()).isEqualTo(email);
+            assertThat(result.getPassword()).isEqualTo(hashedPassword);
+
+            verify(passwordEncoder).matches(password, hashedPassword);
+        }
+
+        @Test
+        @DisplayName("이메일이 존재하지 않으면 InvalidCredentialsException 발생")
+        void authenticate_fail_emailNotFound() {
+            String email = "nonexistent@example.com";
+            String password = "pass1234";
+
+            when(memberDetailsRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> authService.authenticate(email, password))
+                    .isInstanceOf(InvalidCredentialsException.class)
+                    .hasMessage("이메일 또는 비밀번호가 올바르지 않습니다.");
+
+            verify(passwordEncoder, never()).matches(any(), any());
+        }
+
+        @Test
+        @DisplayName("비밀번호가 일치하지 않으면 InvalidCredentialsException 발생")
+        void authenticate_fail_wrongPassword() {
+            String email = "test@example.com";
+            String password = "wrongpassword";
+            String hashedPassword = "password"; // 예시 해시
+
+            MemberDetails member = new MemberDetails(1L, email, hashedPassword);
+            when(memberDetailsRepository.findByEmail(email)).thenReturn(Optional.of(member));
+
+            when(passwordEncoder.matches(password, hashedPassword)).thenReturn(false);
+
+            assertThatThrownBy(() -> authService.authenticate(email, password))
+                    .isInstanceOf(InvalidCredentialsException.class)
+                    .hasMessage("이메일 또는 비밀번호가 올바르지 않습니다.");
+
+            verify(passwordEncoder).matches(password, hashedPassword);
         }
     }
 }

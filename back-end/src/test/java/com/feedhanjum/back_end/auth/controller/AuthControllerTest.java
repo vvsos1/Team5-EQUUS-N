@@ -1,5 +1,7 @@
 package com.feedhanjum.back_end.auth.controller;
 
+import com.feedhanjum.back_end.auth.controller.dto.LoginRequest;
+import com.feedhanjum.back_end.auth.controller.dto.LoginResponse;
 import com.feedhanjum.back_end.auth.controller.dto.MemberSignupRequest;
 import com.feedhanjum.back_end.auth.controller.dto.MemberSignupResponse;
 import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
@@ -111,6 +113,57 @@ class AuthControllerTest {
                     .build();
 
             mockMvc.perform(post("/api/auth/signup")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Nested
+    @DisplayName("POST /api/auth/login 테스트")
+    class LoginTests {
+
+        @Test
+        @DisplayName("로그인 성공 시 200(OK) 상태코드와 응답 반환 및 세션에 사용자 정보 저장")
+        void login_success() throws Exception {
+            LoginRequest request = new LoginRequest("test@example.com", "abcd1234");
+
+            MemberDetails member = new MemberDetails(1L, "test@example.com", "hashedpassword");
+            when(authService.authenticate(request.getEmail(), request.getPassword())).thenReturn(member);
+
+            // LoginResponse response = new LoginResponse("로그인에 성공했습니다.", 1L, "test@example.com");
+
+            mockMvc.perform(post("/api/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value("로그인에 성공했습니다."))
+                    .andExpect(jsonPath("$.userId").value(1L))
+                    .andExpect(jsonPath("$.email").value("test@example.com"));
+        }
+
+        @Test
+        @DisplayName("로그인 실패 시 401(UNAUTHORIZED) 상태코드와 에러 메시지 반환")
+        void login_invalidCredentials() throws Exception {
+            LoginRequest request = new LoginRequest("test@example.com", "wrongpassword");
+
+            when(authService.authenticate(request.getEmail(), request.getPassword()))
+                    .thenThrow(new com.feedhanjum.back_end.auth.exception.InvalidCredentialsException("이메일 또는 비밀번호가 올바르지 않습니다."));
+
+            mockMvc.perform(post("/api/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.error").value("INVALID_CREDENTIALS"))
+                    .andExpect(jsonPath("$.message").value("이메일 또는 비밀번호가 올바르지 않습니다."));
+        }
+
+        @Test
+        @DisplayName("유효하지 않은 입력값일 경우 400(BAD_REQUEST) 상태코드 반환")
+        void login_invalidInput() throws Exception {
+            LoginRequest request = new LoginRequest("", "");
+
+            mockMvc.perform(post("/api/auth/login")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
