@@ -8,9 +8,6 @@ import Tag, { TagType } from './Tag';
  * @property {boolean} isPositive - 긍정적 or 부정적
  */
 
-/**
- * @param {Report} report
- */
 function Keyword({ report }) {
   return (
     <div className='flex w-full items-center justify-between'>
@@ -18,7 +15,7 @@ function Keyword({ report }) {
       <p
         className={`subtitle-2 ml-4 ${report.isPositive ? 'text-blue-300' : 'text-red-300'}`}
       >
-        {`+${report.count}`}
+        +{report.count}
       </p>
     </div>
   );
@@ -26,7 +23,8 @@ function Keyword({ report }) {
 
 /**
  * 리포트 키워드 컴포넌트
- * @param {Report[]} reports - 리포트 키워드
+ * @param {object} props
+ * @param {Report[]} props.reports - 리포트 키워드 리스트
  * @returns {ReactElement} 리포트 키워드 컴포넌트
  */
 export default function ReportKeywords({ reports }) {
