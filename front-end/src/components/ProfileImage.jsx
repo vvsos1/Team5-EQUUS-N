@@ -103,7 +103,7 @@ export default function ProfileImage({ iconName, color, isButton }) {
   // 동물 아이콘 처리
   if (iconName.includes('@animals')) {
     return (
-      <div className='relative h-fit w-fit overflow-hidden rounded-full'>
+      <div className='relative h-full w-full overflow-hidden rounded-full'>
         <div
           className={`h-full ${isButton ? 'p-2.5' : 'p-1.5'}`}
           style={{ backgroundColor: color }}
