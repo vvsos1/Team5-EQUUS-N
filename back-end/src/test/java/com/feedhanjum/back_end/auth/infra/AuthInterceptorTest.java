@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.PrintWriter;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -28,8 +30,8 @@ class AuthInterceptorTest {
         Object handler = new Object();
 
         when(request.getRequestURI()).thenReturn("/api/protected/resource");
-
         when(request.getSession(false)).thenReturn(null);
+        when(response.getWriter()).thenReturn(mock(PrintWriter.class));
 
         // when
         boolean result = authInterceptor.preHandle(request, response, handler);
@@ -50,10 +52,11 @@ class AuthInterceptorTest {
         Object handler = new Object();
 
         when(request.getRequestURI()).thenReturn("/api/protected/resource");
+        when(response.getWriter()).thenReturn(mock(PrintWriter.class));
 
         HttpSession session = mock(HttpSession.class);
         when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute("user")).thenReturn(new MemberDetails(1L, "test@example.com", "pass1234"));
+        when(session.getAttribute(SessionConst.MEMBER_ID)).thenReturn(new MemberDetails(1L, "test@example.com", "pass1234"));
 
         // when
         boolean result = authInterceptor.preHandle(request, response, handler);
