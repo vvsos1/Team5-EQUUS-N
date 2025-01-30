@@ -10,3 +10,6 @@ spring:
 springdoc:
   swagger-ui:
     path: /swagger # swagger-ui 접근 경로. 해당 경로로 접근 시 /swagger/index.html로 리다이렉션 됨
+
+cors:
+  allowed-origins: "http://localhost:3000"
