@@ -1,8 +1,10 @@
 import Accordion from './components/Accordion';
 import AiButton from './components/buttons/AiButton';
+import FeedBackButton from './components/buttons/FeedBackButton';
 import KeywordButton from './components/buttons/KeywordButton';
 import ProgressBar from './components/progressBar';
 import ReportKeywords from './components/ReportKeywords';
+import ReportResults from './components/ReportResults';
 import Tag, { TagType } from './components/Tag';
 
 function App2() {
@@ -54,6 +56,25 @@ function App2() {
             },
             { keyword: '대안을 제시하는', count: 12, isPositive: true },
             { keyword: '비판적인', count: 1, isPositive: false },
+          ]}
+        />
+        <ReportResults
+          results={[
+            {
+              title: '커뮤니케이션',
+              goodCount: 23,
+              badCount: 65,
+            },
+            {
+              title: '협업 태도',
+              goodCount: 35,
+              badCount: 5,
+            },
+            {
+              title: '결과물과 업무',
+              goodCount: 34,
+              badCount: 53,
+            },
           ]}
         />
       </div>
