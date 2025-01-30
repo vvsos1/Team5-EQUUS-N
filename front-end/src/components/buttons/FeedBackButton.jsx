@@ -1,3 +1,10 @@
+/**
+ * 피드백 버튼 컴포넌트
+ * @param {object} props
+ * @param {string} props.currentFeedback - 현재 선택된 피드백
+ * @param {function} props.onClick - 피드백 선택 함수
+ * @returns {JSX.Element} - 피드백 버튼 컴포넌트
+ */
 export default function FeedBackButton({ currentFeedback, onClick }) {
   return (
     <div className='flex gap-3'>
