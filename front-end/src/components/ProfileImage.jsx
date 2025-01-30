@@ -63,6 +63,15 @@ const bgColors = [
   '#FC5B31',
 ];
 
+/**
+ * 프로필 이미지 컴포넌트
+ * @param {object} props
+ * @param {string} props.text - 프로필 이미지 텍스트
+ * @param {string} props.iconName - 프로필 이미지 아이콘 이름
+ * @param {string} props.color - 프로필 이미지 색상
+ * @param {function} props.onClick - 프로필 이미지 클릭 함수
+ * @returns {JSX.Element} - 프로필 이미지 컴포넌트
+ */
 export function ProfileImageWithText({ text, iconName, color, onClick }) {
   return (
     <div
@@ -77,6 +86,14 @@ export function ProfileImageWithText({ text, iconName, color, onClick }) {
   );
 }
 
+/**
+ * 프로필 이미지 컴포넌트
+ * @param {object} props
+ * @param {string} props.iconName - 프로필 이미지 아이콘 이름
+ * @param {string} props.color - 프로필 이미지 색상
+ * @param {boolean} props.isButton - 버튼 여부
+ * @returns {JSX.Element} - 프로필 이미지 컴포넌트
+ */
 export default function ProfileImage({ iconName, color, isButton }) {
   // iconName이 없을 때 기본 아이콘 표시
   if (!iconName) {
@@ -103,7 +120,7 @@ export default function ProfileImage({ iconName, color, isButton }) {
   // 동물 아이콘 처리
   if (iconName.includes('@animals')) {
     return (
-      <div className='relative h-fit w-fit overflow-hidden rounded-full'>
+      <div className='relative h-full w-full overflow-hidden rounded-full'>
         <div
           className={`h-full ${isButton ? 'p-2.5' : 'p-1.5'}`}
           style={{ backgroundColor: color }}
@@ -129,6 +146,10 @@ export default function ProfileImage({ iconName, color, isButton }) {
   );
 }
 
+/**
+ * 랜덤 프로필 이미지 생성 함수
+ * @returns {object} - 랜덤 프로필 이미지 객체
+ */
 export function getRandomProfile() {
   const randomIconName =
     iconNames[Math.floor(Math.random() * iconNames.length)];

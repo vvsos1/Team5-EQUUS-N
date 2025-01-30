@@ -1,0 +1,185 @@
+package com.feedhanjum.back_end.auth.controller;
+
+import com.feedhanjum.back_end.auth.controller.dto.LoginRequest;
+import com.feedhanjum.back_end.auth.controller.dto.LoginResponse;
+import com.feedhanjum.back_end.auth.controller.dto.MemberSignupRequest;
+import com.feedhanjum.back_end.auth.controller.dto.MemberSignupResponse;
+import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
+import com.feedhanjum.back_end.auth.domain.MemberDetails;
+import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
+import com.feedhanjum.back_end.auth.service.AuthService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+class AuthControllerTest {
+
+    private MockMvc mockMvc;
+
+    @Mock
+    private AuthService authService;
+
+    @Mock
+    private MemberMapper memberMapper;
+
+    @InjectMocks
+    private AuthController authController;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(authController)
+                .setControllerAdvice(new com.feedhanjum.back_end.auth.exception.AuthExceptionHandler())
+                .build();
+    }
+
+    @Nested
+    @DisplayName("POST /api/auth/signup 테스트")
+    class SignupTests {
+
+        @Test
+        @DisplayName("회원가입 성공 시 201(CREATED) 상태코드와 응답 반환")
+        void signup_success() throws Exception {
+            MemberSignupRequest request = MemberSignupRequest.builder()
+                    .email("test@example.com")
+                    .password("abcd1234")
+                    .name("홍길동")
+                    .build();
+
+            MemberDetails entity = new MemberDetails(null, request.getEmail(), request.getPassword());
+            when(memberMapper.toEntity(any(MemberSignupRequest.class))).thenReturn(entity);
+
+            MemberDetails savedMember = new MemberDetails(1L, "test@example.com", "abcd1234");
+            when(authService.registerMember(entity, request.getName())).thenReturn(savedMember);
+
+            MemberSignupResponse response = new MemberSignupResponse(1L, "test@example.com", "회원가입이 완료되었습니다.");
+            when(memberMapper.toResponse(savedMember)).thenReturn(response);
+
+            mockMvc.perform(post("/api/auth/signup")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.id").value(1L))
+                    .andExpect(jsonPath("$.email").value("test@example.com"))
+                    .andExpect(jsonPath("$.message").value("회원가입이 완료되었습니다."));
+        }
+
+        @Test
+        @DisplayName("이메일 중복 시 409(CONFLICT) 상태코드와 에러 메시지 반환")
+        void signup_emailAlreadyExists() throws Exception {
+            MemberSignupRequest request = MemberSignupRequest.builder()
+                    .email("duplicate@example.com")
+                    .password("abcd1234")
+                    .name("홍길동")
+                    .build();
+
+            MemberDetails entity = new MemberDetails(null, request.getEmail(), request.getPassword());
+            when(memberMapper.toEntity(any(MemberSignupRequest.class))).thenReturn(entity);
+
+            doThrow(new EmailAlreadyExistsException("이미 사용 중인 이메일입니다."))
+                    .when(authService).registerMember(entity, request.getName());
+
+            mockMvc.perform(post("/api/auth/signup")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isConflict())
+                    .andExpect(jsonPath("$.error").value("EMAIL_ALREADY_EXISTS"))
+                    .andExpect(jsonPath("$.message").value("이미 사용 중인 이메일입니다."));
+        }
+
+        @Test
+        @DisplayName("유효하지 않은 입력값일 경우 400(BAD_REQUEST) 상태코드 반환")
+        void signup_invalidInput() throws Exception {
+            MemberSignupRequest request = MemberSignupRequest.builder()
+                    .email("")
+                    .password("12")
+                    .name("")
+                    .build();
+
+            mockMvc.perform(post("/api/auth/signup")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Nested
+    @DisplayName("POST /api/auth/login 테스트")
+    class LoginTests {
+
+        @Test
+        @DisplayName("로그인 성공 시 200(OK) 상태코드와 응답 반환 및 세션에 사용자 정보 저장")
+        void login_success() throws Exception {
+            LoginRequest request = new LoginRequest("test@example.com", "abcd1234");
+
+            MemberDetails member = new MemberDetails(1L, "test@example.com", "hashedpassword");
+            when(authService.authenticate(request.getEmail(), request.getPassword())).thenReturn(member);
+
+            // LoginResponse response = new LoginResponse("로그인에 성공했습니다.", 1L, "test@example.com");
+
+            mockMvc.perform(post("/api/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value("로그인에 성공했습니다."))
+                    .andExpect(jsonPath("$.userId").value(1L))
+                    .andExpect(jsonPath("$.email").value("test@example.com"));
+        }
+
+        @Test
+        @DisplayName("로그인 실패 시 401(UNAUTHORIZED) 상태코드와 에러 메시지 반환")
+        void login_invalidCredentials() throws Exception {
+            LoginRequest request = new LoginRequest("test@example.com", "wrongpassword");
+
+            when(authService.authenticate(request.getEmail(), request.getPassword()))
+                    .thenThrow(new com.feedhanjum.back_end.auth.exception.InvalidCredentialsException("이메일 또는 비밀번호가 올바르지 않습니다."));
+
+            mockMvc.perform(post("/api/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.error").value("INVALID_CREDENTIALS"))
+                    .andExpect(jsonPath("$.message").value("이메일 또는 비밀번호가 올바르지 않습니다."));
+        }
+
+        @Test
+        @DisplayName("유효하지 않은 입력값일 경우 400(BAD_REQUEST) 상태코드 반환")
+        void login_invalidInput() throws Exception {
+            LoginRequest request = new LoginRequest("", "");
+
+            mockMvc.perform(post("/api/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Nested
+    @DisplayName("POST /api/auth/logout 테스트")
+    class LogoutTests {
+
+        @Test
+        @DisplayName("로그아웃 성공 시 204(NO_CONTENT) 상태코드 반환 및 세션 무효화")
+        void logout_success() throws Exception {
+            mockMvc.perform(post("/api/auth/logout")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNoContent());
+        }
+    }
+}

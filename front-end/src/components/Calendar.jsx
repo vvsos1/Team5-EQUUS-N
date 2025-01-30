@@ -5,6 +5,8 @@ import classNames from 'classnames';
 
 /**
  * 캘린더 컴포넌트
+ * @param {object} props
+ * @param {boolean} props.isScrolling - 스크롤 여부
  * @returns {JSX.Element} - 캘린더 컴포넌트
  */
 export default function Calendar({ isScrolling = false }) {

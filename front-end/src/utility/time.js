@@ -1,3 +1,8 @@
+/**
+ * 시간 경과 계산 함수
+ * @param {Date} date - 기준 날짜
+ * @returns {string} - 시간 경과 문자열
+ */
 export function calTimePassed(date) {
   const now = new Date();
   const diffMs = Math.abs(now - date);
@@ -16,6 +21,11 @@ export function calTimePassed(date) {
   }
 }
 
+/**
+ * 날짜 정보 계산 함수
+ * @param {Date} date - 기준 날짜
+ * @returns {object} - 날짜 정보 객체
+ */
 export function getDateInfo(date) {
   // 요일 배열 (일요일부터 시작)
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -42,6 +52,11 @@ export function getDateInfo(date) {
   };
 }
 
+/**
+ * 최근 일요일 계산 함수
+ * @param {Date} date - 기준 날짜
+ * @returns {Date} - 최근 일요일 날짜
+ */
 export function getRecentSunday(date) {
   const sunday = new Date(date);
   sunday.setDate(sunday.getDate() - sunday.getDay());
