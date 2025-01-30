@@ -19,12 +19,14 @@ function Result({ result }) {
       <div className='flex w-full justify-between gap-1'>
         <div className='rounded-l-100 h-4 flex-1 bg-gray-600' dir='rtl'>
           <div
-            className={`rounded-l-100 h-full w-[${result.badPercent}] bg-lime-600/50`}
+            className={`rounded-l-100 h-full bg-lime-600/50`}
+            style={{ width: `${result.badPercent}%` }}
           />
         </div>
         <div className='rounded-r-100 h-4 flex-1 bg-gray-600'>
           <div
-            className={`rounded-r-100 h-fullw-[${result.goodPercent}] bg-lime-600`}
+            className={`rounded-r-100 h-full bg-lime-600`}
+            style={{ width: `${result.goodPercent}%` }}
           />
         </div>
       </div>
@@ -42,10 +44,14 @@ function Result({ result }) {
  * @param {ReportResult[]} props.results - 리포트 결과 리스트
  */
 export default function ReportResults({ results }) {
+  const totalCount = results.reduce(
+    (acc, result) => acc + result.goodCount + result.badCount,
+    0,
+  );
+
   const resultsWithPercentage = results.map((result) => {
-    const totalCount = result.goodCount + result.badCount;
-    const goodPercent = (result.goodCount / totalCount) * 100;
-    const badPercent = (result.badCount / totalCount) * 100;
+    const goodPercent = Math.round((result.goodCount / totalCount) * 100);
+    const badPercent = Math.round((result.badCount / totalCount) * 100);
     return { ...result, goodPercent, badPercent };
   });
 
