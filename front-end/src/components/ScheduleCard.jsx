@@ -131,6 +131,12 @@ export default function ScheduleCard({
   );
 }
 
+/**
+ * 역할 컴포넌트
+ * @param {object} props
+ * @param {string} props.children - 역할 텍스트
+ * @returns {JSX.Element} - 역할 컴포넌트
+ */
 function Role({ children }) {
   return <p className='body-1 pl-1 text-gray-100'>{`• ${children}`}</p>;
 }

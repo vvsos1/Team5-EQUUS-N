@@ -10,10 +10,11 @@ export const FeedBackType = Object.freeze({
 });
 
 /**
- *
- * @param {*} feedbackType
- * @param {*} data
- * @returns
+ * 피드백 컴포넌트
+ * @param {object} props
+ * @param {string} props.feedbackType - 피드백 타입
+ * @param {object} props.data - 피드백 데이터
+ * @returns {JSX.Element} - 피드백 컴포넌트
  */
 export default function FeedBack({ feedbackType, data }) {
   const [isHeart, setIsHeart] = useState(data.heart);

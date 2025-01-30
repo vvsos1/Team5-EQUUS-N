@@ -2,6 +2,16 @@ import Icon from './Icon';
 import ProfileImage from './ProfileImage';
 import Tag, { TagType } from './Tag';
 
+/**
+ * 팀원 요소 컴포넌트
+ * @param {object} props
+ * @param {object} props.member - 팀원 정보
+ * @param {string} props.member.name - 팀원 이름
+ * @param {string} props.member.iconName - 팀원 아이콘 이름
+ * @param {string} props.member.color - 팀원 아이콘 색상
+ * @param {boolean} props.isLeader - 팀장 여부
+ * @returns {JSX.Element} - 팀원 요소 컴포넌트
+ */
 export default function MemberElement({ member, isLeader }) {
   return (
     <li
