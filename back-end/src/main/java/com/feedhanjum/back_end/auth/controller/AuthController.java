@@ -1,10 +1,13 @@
 package com.feedhanjum.back_end.auth.controller;
 
+import com.feedhanjum.back_end.auth.controller.dto.LoginRequest;
+import com.feedhanjum.back_end.auth.controller.dto.LoginResponse;
 import com.feedhanjum.back_end.auth.controller.dto.MemberSignupRequest;
 import com.feedhanjum.back_end.auth.controller.dto.MemberSignupResponse;
 import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.service.AuthService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,5 +39,16 @@ public class AuthController {
 
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
+        MemberDetails member = authService.authenticate(request.getEmail(), request.getPassword());
+
+        session.setAttribute("member", member.getId());
+
+        LoginResponse response = new LoginResponse("로그인에 성공했습니다.", member.getId(), member.getEmail());
+
+        return ResponseEntity.ok(response);
     }
 }
