@@ -2,6 +2,7 @@ import Accordion from './components/Accordion';
 import AiButton from './components/buttons/AiButton';
 import KeywordButton from './components/buttons/KeywordButton';
 import ProgressBar from './components/progressBar';
+import ReportKeywords from './components/ReportKeywords';
 import Tag, { TagType } from './components/Tag';
 
 function App2() {
@@ -42,6 +43,18 @@ function App2() {
           ]}
           onTeamClick={() => {}}
           isMainPage={true}
+        />
+        <ReportKeywords
+          reports={[
+            { keyword: '직설적인 말투', count: 1123, isPositive: true },
+            {
+              keyword: '완곡하게 완곡하게 완곡하게 완곡하게 완곡하게',
+              count: 123,
+              isPositive: false,
+            },
+            { keyword: '대안을 제시하는', count: 12, isPositive: true },
+            { keyword: '비판적인', count: 1, isPositive: false },
+          ]}
         />
       </div>
       <div className='flex h-[852px] w-[393px] flex-col bg-gray-900 px-5'>
