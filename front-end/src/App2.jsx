@@ -1,3 +1,4 @@
+import Accordion from './components/Accordion';
 import AiButton from './components/buttons/AiButton';
 import KeywordButton from './components/buttons/KeywordButton';
 import TextButton, { TextButtonType } from './components/buttons/TextButton';
@@ -43,6 +44,35 @@ function App2() {
       <KeywordButton isActive={false} onClick={() => {}}>
         대안을 제시하는
       </KeywordButton>
+
+      <div className='flex w-[393px] flex-col divide-y-1 bg-gray-900'>
+        <Accordion
+          selectedTeamId={1}
+          teamList={[
+            { id: 1, name: '프론트엔드팀' },
+            { id: 2, name: '백엔드팀' },
+            { id: 3, name: 'QA팀' },
+          ]}
+          onTeamClick={() => {}}
+          isAlarmRead={true}
+        />
+        <Accordion
+          selectedTeamId={1}
+          teamList={[
+            { id: 1, name: '프론트엔드팀' },
+            { id: 2, name: '백엔드팀' },
+            { id: 3, name: 'QA팀' },
+          ]}
+          onTeamClick={() => {}}
+          isAlarmRead={false}
+        />
+        <Accordion
+          selectedTeamId={1}
+          teamList={[]}
+          onTeamClick={() => {}}
+          isAlarmRead={true}
+        />
+      </div>
     </div>
   );
 }

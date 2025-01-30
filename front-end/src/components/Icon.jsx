@@ -27,6 +27,7 @@ import { ReactComponent as Remove } from '../assets/Icons/remove.svg';
 import { ReactComponent as Send } from '../assets/Icons/send.svg';
 import { ReactComponent as SwapVert } from '../assets/Icons/swap_vert.svg';
 import { ReactComponent as UnfoldMore } from '../assets/Icons/unfold_more.svg';
+import { ReactComponent as Logo } from '../assets/Icons/logo.svg';
 
 import { ReactComponent as Bear } from '../assets/Icons/animals/Bear.svg';
 import { ReactComponent as DogFace } from '../assets/Icons/animals/Dog Face.svg';
@@ -85,6 +86,7 @@ const icons = {
   send: Send,
   swapVert: SwapVert,
   unfoldMore: UnfoldMore,
+  logo: Logo,
 
   '@animals/bear': Bear,
   '@animals/dog_face': DogFace,
