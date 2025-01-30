@@ -84,13 +84,13 @@ public class FeedbackService {
     }
 
     /**
-     * @throws EntityNotFoundException receiver id, team name에 해당하는 엔티티가 없을 경우, receiver가 team에 속해있지 않을 경우
+     * @throws EntityNotFoundException receiver id, team id에 해당하는 엔티티가 없을 경우, receiver가 team에 속해있지 않을 경우
      */
     @Transactional(readOnly = true)
-    public List<FrequentFeedbackRequest> getFrequentFeedbackRequests(Long receiverId, String teamName) {
+    public List<FrequentFeedbackRequest> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
         memberRepository.findById(receiverId).orElseThrow(() -> new EntityNotFoundException("receiver id에 해당하는 member가 없습니다."));
-        Team team = teamRepository.findByName(teamName).orElseThrow(() -> new EntityNotFoundException("team name에 해당하는 team이 없습니다."));
-        TeamMember teamMember = teamMemberRepository.findByMemberIdAndTeamId(receiverId, team.getId()).orElseThrow(() -> new EntityNotFoundException("receiver 가 team 에 속해있지 않습니다"));
+        teamRepository.findById(teamId).orElseThrow(() -> new EntityNotFoundException("team id에 해당하는 team이 없습니다."));
+        TeamMember teamMember = teamMemberRepository.findByMemberIdAndTeamId(receiverId, teamId).orElseThrow(() -> new EntityNotFoundException("receiver 가 team 에 속해있지 않습니다"));
 
         return frequentFeedbackRequestRepository.findByTeamMember(teamMember);
     }
