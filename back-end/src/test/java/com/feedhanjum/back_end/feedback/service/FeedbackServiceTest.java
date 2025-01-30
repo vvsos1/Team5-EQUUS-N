@@ -295,7 +295,8 @@ class FeedbackServiceTest {
             when(memberRepository.findById(senderId)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> feedbackService.requestFrequentFeedback(senderId, teamName, receiverId, requestedContent));
+            assertThatThrownBy(() -> feedbackService.requestFrequentFeedback(senderId, teamName, receiverId, requestedContent))
+                    .isInstanceOf(EntityNotFoundException.class);
 
             verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackRequestCreatedEvent.class));
 
@@ -315,7 +316,8 @@ class FeedbackServiceTest {
             when(memberRepository.findById(receiverId)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> feedbackService.requestFrequentFeedback(senderId, teamName, receiverId, requestedContent));
+            assertThatThrownBy(() -> feedbackService.requestFrequentFeedback(senderId, teamName, receiverId, requestedContent))
+                    .isInstanceOf(EntityNotFoundException.class);
 
             verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackRequestCreatedEvent.class));
 
@@ -337,7 +339,8 @@ class FeedbackServiceTest {
             when(teamRepository.findByName(teamName)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> feedbackService.requestFrequentFeedback(senderId, teamName, receiverId, requestedContent));
+            assertThatThrownBy(() -> feedbackService.requestFrequentFeedback(senderId, teamName, receiverId, requestedContent))
+                    .isInstanceOf(EntityNotFoundException.class);
 
             verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackRequestCreatedEvent.class));
 
@@ -356,13 +359,16 @@ class FeedbackServiceTest {
             Member receiver = mock();
             Team team = mock();
 
+            when(team.getId()).thenReturn(teamId);
             when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
             when(memberRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
             when(teamRepository.findByName(teamName)).thenReturn(Optional.of(team));
             when(teamMemberRepository.findByMemberIdAndTeamId(senderId, teamId)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> feedbackService.requestFrequentFeedback(senderId, teamName, receiverId, requestedContent));
+            assertThatThrownBy(() -> feedbackService.requestFrequentFeedback(senderId, teamName, receiverId, requestedContent))
+                    .isInstanceOf(EntityNotFoundException.class);
+
 
             verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackRequestCreatedEvent.class));
         }
@@ -381,6 +387,7 @@ class FeedbackServiceTest {
             Team team = mock();
             TeamMember senderTeamMember = mock();
 
+            when(team.getId()).thenReturn(teamId);
             when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
             when(memberRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
             when(teamRepository.findByName(teamName)).thenReturn(Optional.of(team));
@@ -388,7 +395,9 @@ class FeedbackServiceTest {
             when(teamMemberRepository.findByMemberIdAndTeamId(receiverId, teamId)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> feedbackService.requestFrequentFeedback(senderId, teamName, receiverId, requestedContent));
+            assertThatThrownBy(() -> feedbackService.requestFrequentFeedback(senderId, teamName, receiverId, requestedContent))
+                    .isInstanceOf(EntityNotFoundException.class);
+
 
             verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackRequestCreatedEvent.class));
 
