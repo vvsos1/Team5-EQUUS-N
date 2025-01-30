@@ -65,11 +65,14 @@ const bgColors = [
 
 export function ProfileImageWithText({ text, iconName, color, onClick }) {
   return (
-    <div className='flex flex-col items-center gap-2 cursor-pointer' onClick={onClick}>
-      <div className='w-14 h-14'>
+    <div
+      className='flex cursor-pointer flex-col items-center gap-2'
+      onClick={onClick}
+    >
+      <div className='h-14 w-14'>
         <ProfileImage iconName={iconName} color={color} isButton={true} />
       </div>
-      <p className=' caption-1 text-white'>{text}</p>
+      <p className='caption-1 text-white'>{text}</p>
     </div>
   );
 }
@@ -78,8 +81,8 @@ export default function ProfileImage({ iconName, color, isButton }) {
   // iconName이 없을 때 기본 아이콘 표시
   if (!iconName) {
     return (
-      <div className='flex aspect-square items-center justify-center bg-gray-700 rounded-full p-4.5'>
-        <Icon name='plusM' />
+      <div className='flex aspect-square items-center justify-center rounded-full bg-gray-700 p-4.5'>
+        <Icon name='plusM' color={'var(--color-gray-100)'} />
       </div>
     );
   }
@@ -87,7 +90,7 @@ export default function ProfileImage({ iconName, color, isButton }) {
   // dots 아이콘 처리
   if (iconName === 'dots') {
     return (
-      <div className='flex w-8 h-8 aspect-square items-center justify-center bg-gray-200 rounded-full p-1'>
+      <div className='flex aspect-square h-8 w-8 items-center justify-center rounded-full bg-gray-200 p-1'>
         <Icon
           name='dots'
           className={'flex items-center justify-center'}
@@ -100,7 +103,7 @@ export default function ProfileImage({ iconName, color, isButton }) {
   // 동물 아이콘 처리
   if (iconName.includes('@animals')) {
     return (
-      <div className='relative w-fit h-fit overflow-hidden rounded-full '>
+      <div className='relative h-fit w-fit overflow-hidden rounded-full'>
         <div
           className={`h-full ${isButton ? 'p-2.5' : 'p-1.5'}`}
           style={{ backgroundColor: color }}
@@ -108,11 +111,8 @@ export default function ProfileImage({ iconName, color, isButton }) {
           <Icon name={iconName} />
         </div>
         {isButton && (
-          <div
-            className='absolute inset-0 flex items-center justify-center bg-gray-700/80 
-            opacity-0 transition-opacity hover:opacity-100 backdrop-blur-xs'
-          >
-            <div className='w-6 h-6'>
+          <div className='absolute inset-0 flex items-center justify-center bg-gray-700/80 opacity-0 backdrop-blur-xs transition-opacity hover:opacity-100'>
+            <div className='h-6 w-6'>
               <Icon name='send' />
             </div>
           </div>
@@ -123,14 +123,15 @@ export default function ProfileImage({ iconName, color, isButton }) {
 
   // 기타 아이콘 처리
   return (
-    <div className='flex aspect-square items-center justify-center bg-gray-700 rounded-full p-2.5'>
+    <div className='flex aspect-square items-center justify-center rounded-full bg-gray-700 p-2.5'>
       <Icon name={iconName} />
     </div>
   );
 }
 
 export function getRandomProfile() {
-  const randomIconName = iconNames[Math.floor(Math.random() * iconNames.length)];
+  const randomIconName =
+    iconNames[Math.floor(Math.random() * iconNames.length)];
   const randomColor = bgColors[Math.floor(Math.random() * bgColors.length)];
   return { randomIconName, randomColor };
 }

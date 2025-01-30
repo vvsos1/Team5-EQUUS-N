@@ -18,20 +18,19 @@ export const TextButtonType = Object.freeze({
 export default function TextButton({ type, onClick, children }) {
   return (
     <button
-      className={`flex w-full justify-between px-5 py-3 ${
+      className={`subtitle-2 flex w-full justify-between px-5 py-3 ${
         type === TextButtonType.PLUS ? 'text-lime-500' : 'text-gray-300'
       }`}
       onClick={onClick}
     >
       {children}
-      {type === TextButtonType.DEFAULT ?
-        <div />
-      : <Icon
-          name={type === TextButtonType.PLUS ? 'plusM' : 'check'}
-          color={'lime-700'}
-          className={'h-6 w-6'}
-        />
-      }
+      {type === TextButtonType.DEFAULT && <div />}
+      {type === TextButtonType.PLUS && (
+        <Icon name={'plusM'} color={'lime-700'} />
+      )}
+      {type === TextButtonType.DEFAULT && (
+        <Icon name={'check'} color={'gray-200'} />
+      )}
     </button>
   );
 }
