@@ -117,6 +117,14 @@ const icons = {
   '@animals/wolf': Wolf,
 };
 
+/**
+ * 아이콘 컴포넌트
+ * @param {object} props
+ * @param {keyof icons} prop.name
+ * @param {string} props.className
+ * @param {string} props.color
+ * @returns {ReactElement}
+ */
 const Icon = ({ name, className, color }) => {
   const IconComponent = icons[name];
   if (!IconComponent) {

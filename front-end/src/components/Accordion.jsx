@@ -22,7 +22,7 @@ export default function Accordion({
 
   useEffect(() => {
     if (isMainPage) {
-      // 만약 메인페이지면 알람 api get 요청 후 set
+      // 만약 메인페이지면 알람 api get 요청 후 setIsAlarmRead() 호출
     }
   }, [isMainPage]);
 
@@ -31,18 +31,14 @@ export default function Accordion({
       {teamList.length === 0 ?
         <Icon name='logo' />
       : <details ref={detailsRef} className='group z-0'>
-          <summary className='header-3 flex list-none items-center gap-0.5 text-white'>
+          <summary className='header-3 flex cursor-pointer list-none items-center gap-0.5 text-white'>
             {teamList.find((team) => team.id === selectedTeamId).name}
             <Icon
               name='unfoldMore'
               className='transition group-open:rotate-180'
             />
           </summary>
-          <div className='rounded-400 absolute top-full flex w-[353px] flex-col divide-y-1 divide-gray-600 bg-gray-800 px-5 transition-all duration-300'>
-            <div
-              className='fixed inset-0 -z-10 bg-black/60'
-              onClick={() => (detailsRef.current.open = false)}
-            />
+          <div className='rounded-400 absolute top-full flex w-[353px] flex-col divide-y-1 divide-gray-600 bg-gray-800 px-5'>
             {teamList.map((team) => (
               <TextButton
                 key={team.id}
@@ -63,22 +59,32 @@ export default function Accordion({
               {isMainPage ? '팀 추가하기' : '전체 일정 보기'}
             </TextButton>
           </div>
+          {/* 빽드롭필터 */}
+          <div
+            className='fixed inset-0 -z-10 bg-black/60'
+            onClick={() => (detailsRef.current.open = false)}
+          />
         </details>
       }
-      <div className='flex gap-4 divide-gray-600'>
-        {teamList.length > 0 && (
-          <button
-            onClick={() => {
-              console.log('알람 페이지로 이동');
-            }}
-          >
-            <Icon name={isAlarmRead ? 'bellOn' : 'bellOff'} />
+      {isMainPage ?
+        <div className='flex gap-4 divide-gray-600'>
+          {teamList.length > 0 && (
+            <button
+              onClick={() => {
+                console.log('알람 페이지로 이동');
+              }}
+            >
+              <Icon name={isAlarmRead ? 'bellOn' : 'bellOff'} />
+            </button>
+          )}
+          <button onClick={() => console.log('마이페이지로 이동')}>
+            <Icon name='hamburger' />
           </button>
-        )}
-        <button onClick={() => console.log('마이페이지로 이동')}>
-          <Icon name='hamburger' />
+        </div>
+      : <button onClick={() => console.log('뒤로가기')}>
+          <Icon name='delete' color='var(--color-gray-100)' />
         </button>
-      </div>
+      }
     </header>
   );
 }
