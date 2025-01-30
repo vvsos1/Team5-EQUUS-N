@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService memberDetailsService;
+    private final AuthService authService;
     private final MemberMapper memberMapper;
 
     /**
@@ -32,7 +32,7 @@ public class AuthController {
         MemberDetails member = memberMapper.toEntity(request);
         String name = request.getName();
 
-        MemberDetails savedMember = memberDetailsService.registerMember(member, name);
+        MemberDetails savedMember = authService.registerMember(member, name);
 
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
