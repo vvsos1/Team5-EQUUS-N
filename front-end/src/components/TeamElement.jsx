@@ -1,5 +1,17 @@
 import ProfileImage from './ProfileImage';
 
+/**
+ * 팀 요소 컴포넌트
+ * @param {object} props
+ * @param {string} props.teamName - 팀 이름
+ * @param {string} props.startDate - 팀 시작 날짜
+ * @param {string} props.endDate - 팀 종료 날짜
+ * @param {object[]} props.teamMembers - 팀원 목록
+ * @param {string} props.teamMembers[].iconName - 팀원 아이콘 이름
+ * @param {string} props.teamMembers[].color - 팀원 아이콘 색상
+ * @param {boolean} props.isDeleted - 팀 삭제 여부
+ * @returns {JSX.Element} - 팀 요소 컴포넌트
+ */
 export default function TeamElement({
   teamName,
   startDate,
