@@ -17,6 +17,10 @@ public class MemberSignupRequest {
     private String email;
 
     @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
-    @Size(min = 4, message = "비밀번호는 최소 4자 이상이어야 합니다.")
+    @Size(min = 4, max = 20, message = "비밀번호는 최소 4자 이상, 20자 이하여야 합니다.")
     private String password;
+
+    @NotBlank(message = "활동명을 입력해주세요.")
+    @Size(min = 1, max = 20, message = "활동명은 1자 이상, 20자 이하여야 합니다.")
+    private String name;
 }

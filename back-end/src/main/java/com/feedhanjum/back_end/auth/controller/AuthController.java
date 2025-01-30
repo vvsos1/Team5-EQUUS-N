@@ -22,11 +22,17 @@ public class AuthController {
     private final AuthService memberDetailsService;
     private final MemberMapper memberMapper;
 
+    /**
+     * 회원가입을 처리하는 핸들러
+     * @param request 
+     * @return 회원 가입 성공 여부
+     */
     @PostMapping("/signup")
     public ResponseEntity<MemberSignupResponse> signup(@Valid @RequestBody MemberSignupRequest request) {
         MemberDetails member = memberMapper.toEntity(request);
+        String name = request.getName();
 
-        MemberDetails savedMember = memberDetailsService.registerMember(member);
+        MemberDetails savedMember = memberDetailsService.registerMember(member, name);
 
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
