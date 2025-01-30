@@ -35,7 +35,7 @@ function App2() {
         대안을 제시하는
       </KeywordButton>
 
-      <div className='flex h-[852px] w-[393px] flex-col bg-gray-900 px-5'>
+      <div className='flex h-[852px] w-[393px] flex-col gap-10 bg-gray-900 px-5'>
         <Accordion
           selectedTeamId={1}
           teamList={[
