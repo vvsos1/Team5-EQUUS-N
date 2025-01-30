@@ -2,6 +2,7 @@ package com.feedhanjum.back_end.auth.service;
 
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
+import com.feedhanjum.back_end.auth.exception.InvalidCredentialsException;
 import com.feedhanjum.back_end.auth.passwordencoder.PasswordEncoder;
 import com.feedhanjum.back_end.auth.repository.MemberDetailsRepository;
 import com.feedhanjum.back_end.member.domain.Member;
@@ -34,6 +35,24 @@ public class AuthService {
         MemberDetails savedMemberDetails = getSavedMemberDetails(memberDetails, name);
 
         return memberDetailsRepository.save(savedMemberDetails);
+    }
+
+    /**
+     * 로그인을 처리하기 위해, 인증 로직을 담당하는 서비스
+     * @param email
+     * @param password
+     * @throws InvalidCredentialsException 이메일 혹은 비밀번호가 올바르지 않은 경우
+     * @return
+     */
+    public MemberDetails authenticate(String email, String password) {
+        MemberDetails member = memberDetailsRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException("이메일 또는 비밀번호가 올바르지 않습니다."));
+
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new InvalidCredentialsException("이메일 또는 비밀번호가 올바르지 않습니다.");
+        }
+
+        return member;
     }
 
     private MemberDetails getSavedMemberDetails(MemberDetails memberDetails, String name) {
