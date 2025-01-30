@@ -1,34 +1,48 @@
+import { useEffect, useRef, useState } from 'react';
 import TextButton, { TextButtonType } from './buttons/TextButton';
 import Icon from './Icon';
 
 /**
  * 아코디언 컴포넌트... 그냥 네비바 같은디..?
  * @param {object} props
+ * @param {boolean} props.isMainPage - 메인 페이지 여부
  * @param {number} props.selectedTeamId - 선택된 팀 ID
  * @param {array} props.teamList - 팀 목록
  * @param {function} props.onTeamClick - 팀 클릭 시 호출되는 함수
- * @param {boolean} props.isAlarmRead - 알람 읽음 여부
  * @returns
  */
 export default function Accordion({
+  isMainPage,
   selectedTeamId,
   teamList,
   onTeamClick,
-  isAlarmRead,
 }) {
-  // TODO: 알람 읽음 여부 API 연동.. (여기서 상태 관리할지, 부모가 넘겨줄지... 일단 부모가 넘겨주는 걸로)
+  const [isAlarmRead, setIsAlarmRead] = useState(true);
+  const detailsRef = useRef(null);
+
+  useEffect(() => {
+    if (isMainPage) {
+      // 만약 메인페이지면 알람 api get 요청 후 set
+    }
+  }, [isMainPage]);
 
   return (
     <header className='relative flex h-[60px] w-full items-center justify-between px-5'>
       {teamList.length === 0 ?
         <Icon name='logo' />
-      : <details className='z-0' onClick={() => onTeamClick(selectedTeamId)}>
+      : <details ref={detailsRef} className='group z-0'>
           <summary className='header-3 flex list-none items-center gap-0.5 text-white'>
             {teamList.find((team) => team.id === selectedTeamId).name}
-            <Icon name='unfoldMore' />
+            <Icon
+              name='unfoldMore'
+              className='transition group-open:rotate-180'
+            />
           </summary>
-          <div className='rounded-400 absolute top-full flex w-[353px] flex-col divide-y-1 divide-gray-600 bg-gray-800 transition-all duration-300'>
-            <div className='fixed inset-0 -z-10 bg-black/60'></div>
+          <div className='rounded-400 absolute top-full flex w-[353px] flex-col divide-y-1 divide-gray-600 bg-gray-800 px-5 transition-all duration-300'>
+            <div
+              className='fixed inset-0 -z-10 bg-black/60'
+              onClick={() => (detailsRef.current.open = false)}
+            />
             {teamList.map((team) => (
               <TextButton
                 key={team.id}
@@ -37,20 +51,25 @@ export default function Accordion({
                     TextButtonType.CHECK
                   : TextButtonType.DEFAULT
                 }
-                onClick={() => onTeamClick(team.id)}
+                onClick={() => {
+                  onTeamClick(team.id);
+                  detailsRef.current.open = false;
+                }}
               >
                 {team.name}
               </TextButton>
             ))}
+            <TextButton type={TextButtonType.PLUS} onClick={() => {}}>
+              {isMainPage ? '팀 추가하기' : '전체 일정 보기'}
+            </TextButton>
           </div>
         </details>
       }
-      <div className='flex gap-4'>
+      <div className='flex gap-4 divide-gray-600'>
         {teamList.length > 0 && (
           <button
             onClick={() => {
               console.log('알람 페이지로 이동');
-              r.current.showModal();
             }}
           >
             <Icon name={isAlarmRead ? 'bellOn' : 'bellOff'} />
