@@ -1,4 +1,4 @@
-import ProfileImage from './ProfileImage';
+import ProfileImage from '../../../components/ProfileImage';
 
 /**
  * 팀 요소 컴포넌트

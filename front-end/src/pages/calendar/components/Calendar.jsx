@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { getRecentSunday } from '../utility/time';
+import { getRecentSunday } from '../../../utility/time';
 import { CalendarWeek, SelectedDateInfo } from './CalendarParts';
 import classNames from 'classnames';
 

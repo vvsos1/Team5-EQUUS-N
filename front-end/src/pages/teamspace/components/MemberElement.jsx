@@ -1,6 +1,6 @@
-import Icon from './Icon';
-import ProfileImage from './ProfileImage';
-import Tag, { TagType } from './Tag';
+import Icon from '../../../components/Icon';
+import ProfileImage from '../../../components/ProfileImage';
+import Tag, { TagType } from '../../../components/Tag';
 
 /**
  * 팀원 요소 컴포넌트
