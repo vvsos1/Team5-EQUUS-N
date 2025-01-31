@@ -1,4 +1,4 @@
-import { getDateInfo } from '../utility/time';
+import { getDateInfo } from '../../../utility/time';
 import classNames from 'classnames';
 
 /**

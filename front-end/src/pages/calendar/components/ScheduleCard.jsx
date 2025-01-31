@@ -1,7 +1,7 @@
-import Tag from './Tag';
-import { TagType } from './Tag';
-import Icon from './Icon';
-import MediumButton from './buttons/MediumButton';
+import Tag from '../../../components/Tag';
+import { TagType } from '../../../components/Tag';
+import Icon from '../../../components/Icon';
+import MediumButton from '../../../components/buttons/MediumButton';
 import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 
