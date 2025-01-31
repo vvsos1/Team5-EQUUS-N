@@ -1,11 +1,11 @@
 import Accordion from './components/Accordion';
 import AiButton from './components/buttons/AiButton';
-import FeedBackButton from './components/buttons/FeedBackButton';
 import KeywordButton from './components/buttons/KeywordButton';
-import ProgressBar from './components/progressBar';
-import ReportKeywords from './components/ReportKeywords';
-import ReportResults from './components/ReportResults';
+import Modal from './components/Modal';
 import Tag, { TagType } from './components/Tag';
+import ProgressBar from './pages/feedback/components/ProgressBar';
+import ReportKeywords from './pages/mypage/components/ReportKeywords';
+import ReportResults from './pages/mypage/components/ReportResults';
 
 function App2() {
   return (
@@ -93,6 +93,7 @@ function App2() {
           isMainPage={false}
         />
       </div>
+      <Modal />
     </div>
   );
 }

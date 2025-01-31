@@ -1,9 +1,9 @@
+import { use, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
 let modalRoot = null;
 
 export function showModal(reactElement) {
-  console.log(reactElement);
   const modal = document.querySelector('dialog');
   if (modal) {
     if (!modalRoot) {
@@ -20,7 +20,14 @@ export function hideModal() {
 }
 
 export default function Modal() {
+  const dialogRef = useRef(null);
   return (
-    <dialog className='m-auto transition-all duration-300 backdrop:bg-black/60 backdrop:backdrop-blur-xs open:opacity-100 starting:open:opacity-0' />
+    <dialog
+      ref={dialogRef}
+      onClick={(event) =>
+        dialogRef.current && dialogRef.current === event.target && hideModal()
+      }
+      className='m-auto bg-transparent transition-all duration-300 backdrop:bg-black/60 backdrop:backdrop-blur-xs open:opacity-100 starting:open:opacity-0'
+    />
   );
 }
