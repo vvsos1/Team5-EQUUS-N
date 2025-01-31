@@ -2,9 +2,7 @@ import Accordion from './components/Accordion';
 import AiButton from './components/buttons/AiButton';
 import KeywordButton from './components/buttons/KeywordButton';
 import MediumButton from './components/buttons/MediumButton';
-import ColoredModal, {
-  coloredModalType,
-} from './components/modals/ColoredModal';
+import Modal, { ModalType } from './components/modals/Modal';
 import ProfileImage from './components/ProfileImage';
 import Tag, { TagType } from './components/Tag';
 import ProgressBar from './pages/feedback/components/ProgressBar';
@@ -45,8 +43,8 @@ function App2() {
         isActive={true}
         onClick={() => {
           showModal(
-            <ColoredModal
-              type={coloredModalType.DOUBLE}
+            <Modal
+              type={ModalType.DOUBLE}
               content='정말 로그아웃 하시겠어요?'
               mainButton={
                 <MediumButton
@@ -74,8 +72,8 @@ function App2() {
         isActive={true}
         onClick={() => {
           showModal(
-            <ColoredModal
-              type={coloredModalType.SINGLE}
+            <Modal
+              type={ModalType.SINGLE}
               content='초대링크 복사 완료!'
               mainButton={
                 <MediumButton
@@ -97,8 +95,8 @@ function App2() {
         isActive={true}
         onClick={() => {
           showModal(
-            <ColoredModal
-              type={coloredModalType.SINGLE_DELETE}
+            <Modal
+              type={ModalType.SINGLE_DELETE}
               content='팀장을 카리나님으로 변경할까요?'
               mainButton={
                 <MediumButton
@@ -120,8 +118,8 @@ function App2() {
         isActive={true}
         onClick={() =>
           showModal(
-            <ColoredModal
-              type={coloredModalType.PROFILE}
+            <Modal
+              type={ModalType.PROFILE}
               profileImage={
                 <div className='size-[62px]'>
                   <ProfileImage iconName='@animals/frog' color='#AFD1DC' />
@@ -149,6 +147,35 @@ function App2() {
         }
       >
         프로필 모달 예시
+      </KeywordButton>
+      <KeywordButton
+        isActive={true}
+        onClick={() => {
+          showModal(
+            <Modal
+              type={ModalType.EXIT}
+              content='탈퇴를 진행하기 전에 꼭 확인해주세요'
+              mainButton={
+                <MediumButton
+                  text='탈퇴하기'
+                  onClick={() => {}}
+                  isOutlined={true}
+                  disabled={true}
+                />
+              }
+              // subButton={
+              //   <MediumButton
+              //     text='아니요'
+              //     onClick={() => {}}
+              //     isOutlined={true}
+              //     disabled={true}
+              //   />
+              // }
+            />,
+          );
+        }}
+      >
+        탈퇴 모달 예시
       </KeywordButton>
 
       <div className='flex h-[852px] w-[393px] flex-col gap-10 bg-gray-900 px-5'>
