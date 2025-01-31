@@ -1,4 +1,4 @@
-import { calTimePassed } from '../utility/time';
+import { calTimePassed } from '../../../utility/time';
 
 export const alarmType = Object.freeze({
   FEEDBACK_RECEIVED: 'FEEDBACK_RECEIVED', // 피드백 받음

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Icon from './Icon';
-import ProfileImage from './ProfileImage';
-import Tag from './Tag';
+import Icon from '../../../components/Icon';
+import ProfileImage from '../../../components/ProfileImage';
+import Tag from '../../../components/Tag';
 
 export const FeedBackType = Object.freeze({
   SELF: 'SELF',

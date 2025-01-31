@@ -1,4 +1,4 @@
-import Tag, { TagType } from './Tag';
+import Tag, { TagType } from '../../../components/Tag';
 
 /**
  * reports 타입
