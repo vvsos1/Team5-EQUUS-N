@@ -1,11 +1,16 @@
 import Accordion from './components/Accordion';
 import AiButton from './components/buttons/AiButton';
 import KeywordButton from './components/buttons/KeywordButton';
+import MediumButton from './components/buttons/MediumButton';
+import ColoredModal, {
+  coloredModalType,
+} from './components/modals/ColoredModal';
+import ProfileImage from './components/ProfileImage';
 import Tag, { TagType } from './components/Tag';
 import ProgressBar from './pages/feedback/components/ProgressBar';
 import ReportKeywords from './pages/mypage/components/ReportKeywords';
 import ReportResults from './pages/mypage/components/ReportResults';
-import { showModal } from './utility/handleModal';
+import { hideModal, showModal } from './utility/handleModal';
 
 function App2() {
   return (
@@ -31,11 +36,119 @@ function App2() {
       <KeywordButton isActive={true} onClick={() => {}}>
         완곡하게
       </KeywordButton>
-      <KeywordButton
-        isActive={false}
-        onClick={() => showModal(<div className='size-20 bg-white'>모달</div>)}
-      >
+      <KeywordButton isActive={false} onClick={() => {}}>
         대안을 제시하는
+      </KeywordButton>
+
+      <hr className='h-20' />
+      <KeywordButton
+        isActive={true}
+        onClick={() => {
+          showModal(
+            <ColoredModal
+              type={coloredModalType.DOUBLE}
+              content='정말 로그아웃 하시겠어요?'
+              mainButton={
+                <MediumButton
+                  text='로그아웃'
+                  onClick={() => {}}
+                  isOutlined={false}
+                  disabled={false}
+                />
+              }
+              subButton={
+                <MediumButton
+                  text='아니요'
+                  isOutlined={true}
+                  disabled={true}
+                  onClick={() => {}}
+                />
+              }
+            />,
+          );
+        }}
+      >
+        로그아웃 모달 예시
+      </KeywordButton>
+      <KeywordButton
+        isActive={true}
+        onClick={() => {
+          showModal(
+            <ColoredModal
+              type={coloredModalType.SINGLE}
+              content='초대링크 복사 완료!'
+              mainButton={
+                <MediumButton
+                  text='닫기'
+                  onClick={() => {
+                    hideModal();
+                  }}
+                  isOutlined={false}
+                  disabled={false}
+                />
+              }
+            />,
+          );
+        }}
+      >
+        초대링크 모달 예시
+      </KeywordButton>
+      <KeywordButton
+        isActive={true}
+        onClick={() => {
+          showModal(
+            <ColoredModal
+              type={coloredModalType.SINGLE_DELETE}
+              content='팀장을 카리나님으로 변경할까요?'
+              mainButton={
+                <MediumButton
+                  text='확인'
+                  onClick={() => {
+                    hideModal();
+                  }}
+                  isOutlined={false}
+                  disabled={false}
+                />
+              }
+            />,
+          );
+        }}
+      >
+        초대링크 모달 예시
+      </KeywordButton>
+      <KeywordButton
+        isActive={true}
+        onClick={() =>
+          showModal(
+            <ColoredModal
+              type={coloredModalType.PROFILE}
+              profileImage={
+                <div className='size-[62px]'>
+                  <ProfileImage iconName='@animals/frog' color='#AFD1DC' />
+                </div>
+              }
+              content='양준호님에게'
+              mainButton={
+                <MediumButton
+                  text='피드백 보내기'
+                  onClick={() => {}}
+                  isOutlined={false}
+                  disabled={false}
+                />
+              }
+              subButton={
+                <MediumButton
+                  text='피드백 요청하기'
+                  onClick={() => {}}
+                  isOutlined={true}
+                  disabled={false}
+                />
+              }
+            />,
+          )
+        }
+      >
+        프로필 모달 예시
       </KeywordButton>
 
       <div className='flex h-[852px] w-[393px] flex-col gap-10 bg-gray-900 px-5'>

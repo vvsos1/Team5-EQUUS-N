@@ -120,7 +120,7 @@ const icons = {
 /**
  * 아이콘 컴포넌트
  * @param {object} props
- * @param {keyof icons} prop.name
+ * @param {keyof icons} props.name
  * @param {string} props.className
  * @param {string} props.color
  * @returns {ReactElement}
