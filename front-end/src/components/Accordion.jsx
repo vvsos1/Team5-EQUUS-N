@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import TextButton, { TextButtonType } from './buttons/TextButton';
 import Icon from './Icon';
-import { showModal } from './Modal';
 
 /**
  * 아코디언 컴포넌트... 그냥 네비바 같은디..?

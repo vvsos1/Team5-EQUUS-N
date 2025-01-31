@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
 let modalRoot = null;
@@ -20,20 +19,9 @@ export function showModal(reactElement) {
   }
 }
 
+/**
+ * 모달을 숨기는 함수
+ */
 export function hideModal() {
   document.querySelector('dialog').close();
-}
-
-export default function Modal() {
-  const dialogRef = useRef(null);
-
-  return (
-    <dialog
-      ref={dialogRef}
-      onClick={(event) =>
-        dialogRef.current && dialogRef.current === event.target && hideModal()
-      }
-      className='m-auto bg-transparent transition-all duration-300 backdrop:bg-black/60 backdrop:backdrop-blur-xs open:opacity-100 starting:open:opacity-0'
-    />
-  );
 }

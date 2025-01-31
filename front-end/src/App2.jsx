@@ -1,11 +1,11 @@
 import Accordion from './components/Accordion';
 import AiButton from './components/buttons/AiButton';
 import KeywordButton from './components/buttons/KeywordButton';
-import Modal from './components/Modal';
 import Tag, { TagType } from './components/Tag';
 import ProgressBar from './pages/feedback/components/ProgressBar';
 import ReportKeywords from './pages/mypage/components/ReportKeywords';
 import ReportResults from './pages/mypage/components/ReportResults';
+import { showModal } from './utility/handleModal';
 
 function App2() {
   return (
@@ -31,7 +31,10 @@ function App2() {
       <KeywordButton isActive={true} onClick={() => {}}>
         완곡하게
       </KeywordButton>
-      <KeywordButton isActive={false} onClick={() => {}}>
+      <KeywordButton
+        isActive={false}
+        onClick={() => showModal(<div className='size-20 bg-white'>모달</div>)}
+      >
         대안을 제시하는
       </KeywordButton>
 
