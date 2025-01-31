@@ -93,7 +93,6 @@ function App2() {
           isMainPage={false}
         />
       </div>
-      <Modal />
     </div>
   );
 }

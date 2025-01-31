@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import TextButton, { TextButtonType } from './buttons/TextButton';
 import Icon from './Icon';
 import { showModal } from './Modal';
-import LargeButton from './buttons/LargeButton';
-import ReportResults from '../pages/mypage/components/ReportResults';
 
 /**
  * 아코디언 컴포넌트... 그냥 네비바 같은디..?
@@ -84,31 +82,7 @@ export default function Accordion({
             <Icon name='hamburger' />
           </button>
         </div>
-      : <button
-          onClick={() =>
-            showModal(
-              <ReportResults
-                results={[
-                  {
-                    title: '커뮤니케이션',
-                    goodCount: 23,
-                    badCount: 65,
-                  },
-                  {
-                    title: '협업 태도',
-                    goodCount: 35,
-                    badCount: 5,
-                  },
-                  {
-                    title: '결과물과 업무',
-                    goodCount: 34,
-                    badCount: 53,
-                  },
-                ]}
-              />,
-            )
-          }
-        >
+      : <button onClick={() => console.log('뒤로가기')}>
           <Icon name='delete' color='var(--color-gray-100)' />
         </button>
       }
