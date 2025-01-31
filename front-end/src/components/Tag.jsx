@@ -6,6 +6,7 @@ export const TagType = Object.freeze({
   KEYWORD: 'KEYWORD',
   NUMBER: 'NUMBER',
   TEAM_SCHEDULE: 'TEAM_SCHEDULE',
+  REPORT: 'REPORT',
 });
 
 /**
@@ -61,6 +62,12 @@ export default function Tag({ type, children }) {
           <p>{children.date}</p>
           <hr className='h-2.5 w-px bg-gray-800' />
           <p>{children.time}</p>
+        </div>
+      );
+    case TagType.REPORT:
+      return (
+        <div className='rounded-200 body-1 size-fit bg-gray-700 px-2.5 py-2 text-gray-200'>
+          {children}
         </div>
       );
     default:
