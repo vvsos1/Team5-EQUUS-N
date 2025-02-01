@@ -1,6 +1,5 @@
 package com.feedhanjum.back_end.auth.exception;
 
-import com.feedhanjum.back_end.auth.controller.dto.MemberSignupResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,6 +33,20 @@ public class AuthExceptionHandler {
     public ResponseEntity<Map<String, String>> invalidCredentials(InvalidCredentialsException e) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "INVALID_CREDENTIALS");
+        errorResponse.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    /**
+     * 사용자가 로그인 상태가 아닐 경우
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(LoginStateRequiredException.class)
+    public ResponseEntity<Map<String, String>> loginStateRequired(LoginStateRequiredException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "LOGIN_STATE_REQUIRED");
         errorResponse.put("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
