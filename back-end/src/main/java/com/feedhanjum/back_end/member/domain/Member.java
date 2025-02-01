@@ -47,4 +47,8 @@ public class Member {
     public void changeProfile(ProfileImage profileImage) {
         this.profileImage = profileImage;
     }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
 }
