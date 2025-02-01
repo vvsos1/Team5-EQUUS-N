@@ -927,4 +927,41 @@ class FeedbackServiceTest {
             verify(regularFeedbackRequestRepository, never()).deleteAllByScheduleMember(any());
         }
     }
+
+    @Nested
+    @DisplayName("getRegularFeedbackRequests 메서드 테스트")
+    class GetRegularFeedbackRequestsTest {
+        @Test
+        @DisplayName("정기 피드백 요청 조회 성공")
+        void test1() {
+            // given
+            Long memberId = 1L;
+            Long scheduleId = 2L;
+            ScheduleMember scheduleMember = mock();
+            List<RegularFeedbackRequest> requests = List.of(mock(), mock());
+
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, scheduleId)).thenReturn(Optional.of(scheduleMember));
+            when(scheduleMember.getRegularFeedbackRequests()).thenReturn(requests);
+
+            // when
+            List<RegularFeedbackRequest> result = feedbackService.getRegularFeedbackRequests(memberId, scheduleId);
+
+            // then
+            assertThat(result).isEqualTo(requests);
+        }
+
+        @Test
+        @DisplayName("정기 피드백 요청 조회 실패 - member가 일정에 속하지 않았을 경우")
+        void test2() {
+            // given
+            Long memberId = 1L;
+            Long scheduleId = 2L;
+
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, scheduleId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.getRegularFeedbackRequests(memberId, scheduleId))
+                    .isInstanceOf(EntityNotFoundException.class);
+        }
+    }
 }
