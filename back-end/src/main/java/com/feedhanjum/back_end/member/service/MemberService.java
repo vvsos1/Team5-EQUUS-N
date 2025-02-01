@@ -1,6 +1,5 @@
 package com.feedhanjum.back_end.member.service;
 
-import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -33,7 +32,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Member changeProfileImage(@Login Long memberId, ProfileImage profileImage) {
+    public Member changeProfileImage(Long memberId, ProfileImage profileImage) {
         Member loginMember = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("DB 오류"));
         loginMember.changeProfile(profileImage);
         return loginMember;
