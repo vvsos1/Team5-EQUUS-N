@@ -5,6 +5,7 @@ import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
+import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.member.domain.Member;
@@ -94,5 +95,35 @@ public class FeedbackService {
         TeamMember teamMember = teamMemberRepository.findByMemberIdAndTeamId(receiverId, teamId).orElseThrow(() -> new EntityNotFoundException("receiver 가 team 에 속해있지 않습니다"));
 
         return frequentFeedbackRequestRepository.findByTeamMember(teamMember);
+    }
+
+    /**
+     * @throws EntityNotFoundException feedback id에 해당하는 엔티티가 없을 경우
+     * @throws SecurityException       해당 피드백의 receiver가 아닌 경우
+     */
+    @Transactional
+    public void likeFeedback(Long feedbackId, Long memberId) {
+        Feedback feedback = feedbackRepository.findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("member id에 해당하는 member가 없습니다."));
+        if (!feedback.isReceiver(member)) {
+            throw new SecurityException("해당 피드백을 좋아요 할 권한이 없습니다.");
+        }
+
+        feedback.like();
+        eventPublisher.publishEvent(new FeedbackLikedEvent(feedbackId));
+    }
+
+    /**
+     * @throws EntityNotFoundException feedback id에 해당하는 엔티티가 없을 경우
+     * @throws SecurityException       해당 피드백의 receiver가 아닌 경우
+     */
+    @Transactional
+    public void unlikeFeedback(Long feedbackId, Long memberId) {
+        Feedback feedback = feedbackRepository.findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("member id에 해당하는 member가 없습니다."));
+        if (!feedback.isReceiver(member)) {
+            throw new SecurityException("해당 피드백을 좋아요 취소 할 권한이 없습니다.");
+        }
+        feedback.unlike();
     }
 }

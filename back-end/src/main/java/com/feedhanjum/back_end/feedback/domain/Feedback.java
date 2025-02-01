@@ -73,6 +73,10 @@ public class Feedback {
         }
     }
 
+    public boolean isReceiver(Member member) {
+        return receiver.equals(member);
+    }
+
     private void validateObjectiveFeedbacks() {
         if (!(MIN_OBJECTIVE_FEEDBACK_SIZE <= objectiveFeedbacks.size()
               && objectiveFeedbacks.size() <= MAX_OBJECTIVE_FEEDBACK_SIZE)) {
