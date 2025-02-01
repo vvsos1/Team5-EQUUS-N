@@ -63,4 +63,22 @@ class MemberControllerTest {
         assertThat(memberDto).isNotNull();
         assertThat(memberDto.name()).isEqualTo(newName);
     }
+
+    @Test
+    @DisplayName("회원 프로필 이미지 변경 컨트롤러 동작 확인")
+    void changeProfileImage_프로필이미지_변경() {
+        // given
+        Long memberId = 1L;
+        ProfileImage newProfileImage = new ProfileImage("green", "img2.png");
+        Member newMember = new Member("haha", "hoho", newProfileImage);
+        when(memberService.changeProfileImage(memberId, newProfileImage)).thenReturn(newMember);
+        // when
+        ResponseEntity<MemberDto> response = memberController.changeProfileImage(memberId, newProfileImage);
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        MemberDto memberDto = response.getBody();
+        assertThat(memberDto).isNotNull();
+        assertThat(memberDto.profileImage().getBackgroundColor()).isEqualTo("green");
+        assertThat(memberDto.profileImage().getImage()).isEqualTo("img2.png");
+    }
 }
