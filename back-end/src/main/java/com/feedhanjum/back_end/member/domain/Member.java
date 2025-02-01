@@ -24,8 +24,8 @@ public class Member {
     private String name;
     private String email;
 
-    // 프로필 사진 정보 - 타입 미지정
-    // private String profile;
+    @Embedded
+    private ProfileImage profileImage;
 
     @OneToMany(mappedBy = "member")
     private final List<TeamMember> teamMembers = new ArrayList<>();
@@ -39,9 +39,14 @@ public class Member {
     @OneToMany(mappedBy = "writer")
     private final List<Retrospect> retrospects = new ArrayList<>();
 
-    public Member(String name, String email) {
+    public Member(String name, String email, ProfileImage profileImage) {
         this.name = name;
         this.email = email;
+        this.profileImage = profileImage;
+    }
+
+    public void changeProfile(ProfileImage profileImage) {
+        this.profileImage = profileImage;
     }
 
     @Override
