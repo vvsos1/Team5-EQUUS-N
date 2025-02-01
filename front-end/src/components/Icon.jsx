@@ -27,6 +27,7 @@ import { ReactComponent as Remove } from '../assets/Icons/remove.svg';
 import { ReactComponent as Send } from '../assets/Icons/send.svg';
 import { ReactComponent as SwapVert } from '../assets/Icons/swap_vert.svg';
 import { ReactComponent as UnfoldMore } from '../assets/Icons/unfold_more.svg';
+import { ReactComponent as Logo } from '../assets/Icons/logo.svg';
 
 import { ReactComponent as Bear } from '../assets/Icons/animals/Bear.svg';
 import { ReactComponent as DogFace } from '../assets/Icons/animals/Dog Face.svg';
@@ -85,6 +86,7 @@ const icons = {
   send: Send,
   swapVert: SwapVert,
   unfoldMore: UnfoldMore,
+  logo: Logo,
 
   '@animals/bear': Bear,
   '@animals/dog_face': DogFace,
@@ -115,6 +117,14 @@ const icons = {
   '@animals/wolf': Wolf,
 };
 
+/**
+ * 아이콘 컴포넌트
+ * @param {object} props
+ * @param {keyof icons} prop.name
+ * @param {string} props.className
+ * @param {string} props.color
+ * @returns {ReactElement}
+ */
 const Icon = ({ name, className, color }) => {
   const IconComponent = icons[name];
   if (!IconComponent) {
@@ -123,7 +133,7 @@ const Icon = ({ name, className, color }) => {
   }
 
   const style =
-    name === 'dots' ? { fill: color }
+    name === 'dots' || name === 'eye' ? { fill: color }
     : name === 'chevronLeft' ? { stroke: color }
     : { stroke: color, fill: color };
 
