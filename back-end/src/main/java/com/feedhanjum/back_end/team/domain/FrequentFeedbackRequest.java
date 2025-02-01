@@ -17,7 +17,7 @@ public class FrequentFeedbackRequest {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    private LocalDateTime requestTime;
+    private LocalDateTime createdAt;
 
     private String requestedContent;
 
@@ -29,10 +29,10 @@ public class FrequentFeedbackRequest {
     @JoinColumn(name = "team_member_id")
     private TeamMember teamMember;
 
-    public FrequentFeedbackRequest(LocalDateTime requestTime, String requestedContent, TeamMember teamMember, Member requester) {
-        this.requestTime = requestTime;
+    public FrequentFeedbackRequest(String requestedContent, TeamMember teamMember, Member requester) {
         this.requestedContent = requestedContent;
         this.requester = requester;
+        this.createdAt = LocalDateTime.now();
         setTeamMember(teamMember);
     }
 

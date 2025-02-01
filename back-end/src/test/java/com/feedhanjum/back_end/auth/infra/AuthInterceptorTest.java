@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.auth.infra;
 
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
+import com.feedhanjum.back_end.auth.exception.LoginStateRequiredException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -8,10 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.PrintWriter;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AuthInterceptorTest {
     private AuthInterceptor authInterceptor;
@@ -29,18 +30,12 @@ class AuthInterceptorTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
         Object handler = new Object();
 
-        when(request.getRequestURI()).thenReturn("/api/protected/resource");
         when(request.getSession(false)).thenReturn(null);
-        when(response.getWriter()).thenReturn(mock(PrintWriter.class));
 
-        // when
-        boolean result = authInterceptor.preHandle(request, response, handler);
-
-        // then
-        assertFalse(result);
-        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        verify(response).setContentType("application/json");
-        verify(response).getWriter();
+        // when, then
+        assertThatThrownBy(() -> authInterceptor.preHandle(request, response, handler))
+                .isInstanceOf(LoginStateRequiredException.class)
+                .hasMessage("로그인이 필요합니다.");
     }
 
     @Test
@@ -51,9 +46,6 @@ class AuthInterceptorTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
         Object handler = new Object();
 
-        when(request.getRequestURI()).thenReturn("/api/protected/resource");
-        when(response.getWriter()).thenReturn(mock(PrintWriter.class));
-
         HttpSession session = mock(HttpSession.class);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(SessionConst.MEMBER_ID)).thenReturn(new MemberDetails(1L, "test@example.com", "pass1234"));
@@ -63,8 +55,5 @@ class AuthInterceptorTest {
 
         // then
         assertTrue(result);
-        verify(response, never()).setStatus(anyInt());
-        verify(response, never()).setContentType(anyString());
-        verify(response, never()).getWriter();
     }
 }

@@ -30,12 +30,7 @@ public class TeamMember {
     @OneToMany(mappedBy = "teamMember")
     private final List<FrequentFeedbackRequest> frequentFeedbackRequests = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
-    private TeamRole role;
-
-
-    public TeamMember(Team team, Member member, TeamRole role) {
-        this.role = role;
+    public TeamMember(Team team, Member member) {
         setTeam(team);
         setMember(member);
     }

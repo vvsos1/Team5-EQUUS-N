@@ -47,11 +47,11 @@ public class RetrospectService {
     }
 
     /**
-     * @throws EntityNotFoundException  writerId에 해당하는 Member가 없거나 teamName에 해당하는 Team이 없을 때
+     * @throws EntityNotFoundException  writerId에 해당하는 Member가 없거나 teamId에 해당하는 Team이 없을 때
      * @throws IllegalArgumentException page가 0 미만일 때
      */
     @Transactional(readOnly = true)
-    public Page<Retrospect> getRetrospects(Long writerId, @Nullable String teamName, int page, Sort.Direction sortOrder) {
+    public Page<Retrospect> getRetrospects(Long writerId, @Nullable Long teamId, int page, Sort.Direction sortOrder) {
         if (page < 0) {
             throw new IllegalArgumentException("page는 0 이상의 값을 가져야 합니다.");
         }
@@ -60,11 +60,11 @@ public class RetrospectService {
                 .orElseThrow(() -> new EntityNotFoundException("writerId에 해당하는 Member가 없습니다."));
 
         PageRequest pageRequest = PageRequest.of(page, PAGE_SIZE, Sort.by(sortOrder, SORT_PROPERTY));
-        if (teamName == null) {
+        if (teamId == null) {
             return retrospectRepository.findByWriter(writer, pageRequest);
         }
-        Team team = teamRepository.findByName(teamName)
-                .orElseThrow(() -> new EntityNotFoundException("teamName에 해당하는 Team이 없습니다."));
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("teamId에 해당하는 Team이 없습니다."));
         return retrospectRepository.findByWriterAndTeam(writer, team, pageRequest);
     }
 }

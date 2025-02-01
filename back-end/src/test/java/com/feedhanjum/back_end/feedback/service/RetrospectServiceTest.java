@@ -106,18 +106,18 @@ class RetrospectServiceTest {
         // given
         int page = 1;
         Long writerId = 1L;
-        String teamName = "teamName";
+        Long teamId = 2L;
         Member writer = mock();
         Team team = mock();
         ArgumentCaptor<PageRequest> pageCaptor = ArgumentCaptor.captor();
         Page<Retrospect> result = mock();
 
         when(memberRepository.findById(writerId)).thenReturn(Optional.of(writer));
-        when(teamRepository.findByName(teamName)).thenReturn(Optional.of(team));
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
         when(retrospectRepository.findByWriterAndTeam(eq(writer), eq(team), pageCaptor.capture())).thenReturn(result);
 
         // when
-        Page<Retrospect> retrospects = retrospectService.getRetrospects(writerId, teamName, page, Sort.Direction.DESC);
+        Page<Retrospect> retrospects = retrospectService.getRetrospects(writerId, teamId, page, Sort.Direction.DESC);
 
         // then
         assertThat(retrospects).isEqualTo(result);
@@ -175,14 +175,14 @@ class RetrospectServiceTest {
         // given
         int page = 1;
         Long writerId = 1L;
-        String teamName = "teamName";
+        Long teamId = 2L;
         Member writer = mock();
 
         when(memberRepository.findById(writerId)).thenReturn(Optional.of(writer));
-        when(teamRepository.findByName(teamName)).thenReturn(Optional.empty());
+        when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> retrospectService.getRetrospects(writerId, teamName, page, Sort.Direction.ASC))
+        assertThatThrownBy(() -> retrospectService.getRetrospects(writerId, teamId, page, Sort.Direction.ASC))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -192,10 +192,10 @@ class RetrospectServiceTest {
         // given
         int page = -1;
         Long writerId = 1L;
-        String teamName = "teamName";
+        Long teamId = 2L;
 
         // when & then
-        assertThatThrownBy(() -> retrospectService.getRetrospects(writerId, teamName, page, Sort.Direction.ASC))
+        assertThatThrownBy(() -> retrospectService.getRetrospects(writerId, teamId, page, Sort.Direction.ASC))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
