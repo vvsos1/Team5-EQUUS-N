@@ -6,9 +6,16 @@ import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
+import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
+import com.feedhanjum.back_end.schedule.domain.RegularFeedbackRequest;
+import com.feedhanjum.back_end.schedule.domain.Schedule;
+import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
+import com.feedhanjum.back_end.schedule.exception.NoRegularFeedbackRequestException;
+import com.feedhanjum.back_end.schedule.repository.RegularFeedbackRequestRepository;
+import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.team.domain.FrequentFeedbackRequest;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
@@ -44,7 +51,11 @@ class FeedbackServiceTest {
     @Mock
     private TeamMemberRepository teamMemberRepository;
     @Mock
+    private ScheduleMemberRepository scheduleMemberRepository;
+    @Mock
     private FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
+    @Mock
+    private RegularFeedbackRequestRepository regularFeedbackRequestRepository;
     @Mock
     private EventPublisher eventPublisher;
     @InjectMocks
@@ -54,7 +65,7 @@ class FeedbackServiceTest {
     @DisplayName("sendFrequentFeedback 메서드 테스트")
     class SendFrequentFeedbackTest {
         @Test
-        @DisplayName("피드백 전송 성공")
+        @DisplayName("수시 피드백 전송 성공")
         void test1() {
             // given
             Long senderId = 1L;
@@ -90,7 +101,7 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("피드백 전송 실패 - sender가 없을 경우")
+        @DisplayName("수시 피드백 전송 실패 - sender가 없을 경우")
         void test2() {
             // given
             Long senderId = 1L;
@@ -111,7 +122,7 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("피드백 전송 실패 - receiver가 없을 경우")
+        @DisplayName("수시 피드백 전송 실패 - receiver가 없을 경우")
         void test3() {
             // given
             Long senderId = 1L;
@@ -134,7 +145,7 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("피드백 전송 실패 - team이 없을 경우")
+        @DisplayName("수시 피드백 전송 실패 - team이 없을 경우")
         void test4() {
             // given
             Long senderId = 1L;
@@ -159,7 +170,7 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("피드백 전송 실패 - 기분에 맞지 않는 객관식 피드백이 있을 경우")
+        @DisplayName("수시 피드백 전송 실패 - 기분에 맞지 않는 객관식 피드백이 있을 경우")
         void test6() {
             // given
             Long senderId = 1L;
@@ -185,7 +196,7 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("피드백 전송 실패 - 객관식 피드백 개수가 1~5개가 아닌 경우")
+        @DisplayName("수시 피드백 전송 실패 - 객관식 피드백 개수가 1~5개가 아닌 경우")
         void test7() {
             // given
             Long senderId = 1L;
@@ -216,7 +227,7 @@ class FeedbackServiceTest {
     @DisplayName("requestFrequentFeedback 메서드 테스트")
     class RequestFrequentFeedbackTest {
         @Test
-        @DisplayName("피드백 요청 성공")
+        @DisplayName("수시 피드백 요청 성공")
         void test1() {
             // given
             Long senderId = 1L;
@@ -250,7 +261,7 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("피드백 요청 실패 - sender가 없을 경우")
+        @DisplayName("수시 피드백 요청 실패 - sender가 없을 경우")
         void test2() {
             // given
             Long senderId = 1L;
@@ -269,7 +280,7 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("피드백 요청 실패 - receiver가 없을 경우")
+        @DisplayName("수시 피드백 요청 실패 - receiver가 없을 경우")
         void test3() {
             // given
             Long senderId = 1L;
@@ -290,7 +301,7 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("피드백 요청 실패 - team이 없을 경우")
+        @DisplayName("수시 피드백 요청 실패 - team이 없을 경우")
         void test4() {
             // given
             Long senderId = 1L;
@@ -313,7 +324,7 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("피드백 요청 실패 - sender가 team에 속하지 않았을 경우")
+        @DisplayName("수시 피드백 요청 실패 - sender가 team에 속하지 않았을 경우")
         void test5() {
             // given
             Long senderId = 1L;
@@ -338,7 +349,7 @@ class FeedbackServiceTest {
         }
 
         @Test
-        @DisplayName("피드백 요청 실패 - receiver가 team에 속하지 않았을 경우")
+        @DisplayName("수시 피드백 요청 실패 - receiver가 team에 속하지 않았을 경우")
         void test6() {
             // given
             Long senderId = 1L;
@@ -446,6 +457,220 @@ class FeedbackServiceTest {
             assertThatThrownBy(() -> feedbackService.getFrequentFeedbackRequests(receiverId, teamId))
                     .isInstanceOf(EntityNotFoundException.class);
 
+        }
+    }
+
+    @Nested
+    @DisplayName("sendRegularFeedback 메서드 테스트")
+    class SendRegularFeedbackTest {
+        @Test
+        @DisplayName("정기 피드백 전송 성공")
+        void test1() {
+            // given
+            Long senderId = 1L;
+            Long receiverId = 2L;
+            Long scheduleId = 3L;
+            Member sender = mock();
+            Member receiver = mock();
+            Team team = mock();
+            Schedule schedule = mock();
+            ScheduleMember senderMember = mock();
+            ScheduleMember receiverMember = mock();
+            RegularFeedbackRequest request = mock();
+
+
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(senderId, scheduleId)).thenReturn(Optional.of(senderMember));
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(receiverId, scheduleId)).thenReturn(Optional.of(receiverMember));
+
+            when(senderMember.getMember()).thenReturn(sender);
+            when(receiverMember.getMember()).thenReturn(receiver);
+            when(senderMember.getSchedule()).thenReturn(schedule);
+
+            when(regularFeedbackRequestRepository.findByRequesterAndScheduleMember(receiver, senderMember)).thenReturn(Optional.of(request));
+            when(schedule.getTeam()).thenReturn(team);
+
+            when(feedbackRepository.save(any(Feedback.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            FeedbackType feedbackType = FeedbackType.IDENTIFIED;
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
+            String subjectiveFeedback = "좋아요";
+
+
+            // when
+            Feedback feedback = feedbackService.sendRegularFeedback(senderId, receiverId, scheduleId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback);
+            // then
+            assertThat(feedback.getSender()).isEqualTo(sender);
+            assertThat(feedback.getReceiver()).isEqualTo(receiver);
+            assertThat(feedback.getTeam()).isEqualTo(team);
+            assertThat(feedback.getFeedbackType()).isEqualTo(feedbackType);
+            assertThat(feedback.getFeedbackFeeling()).isEqualTo(feedbackFeeling);
+            assertThat(feedback.getObjectiveFeedbacks())
+                    .containsExactlyInAnyOrderElementsOf(objectiveFeedbacks);
+            assertThat(feedback.getSubjectiveFeedback()).isEqualTo(subjectiveFeedback);
+            assertThat(feedback.isLiked()).isFalse();
+
+            verify(regularFeedbackRequestRepository).delete(request);
+            verify(eventPublisher).publishEvent(any(RegularFeedbackCreatedEvent.class));
+        }
+
+        @Test
+        @DisplayName("정기 피드백 전송 실패 - sender가 일정에 속해있지 않을 경우")
+        void test2() {
+            // given
+            Long senderId = 1L;
+            Long receiverId = 2L;
+            Long scheduleId = 3L;
+
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(senderId, scheduleId)).thenReturn(Optional.empty());
+
+            FeedbackType feedbackType = FeedbackType.IDENTIFIED;
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
+            String subjectiveFeedback = "좋아요";
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService
+                    .sendRegularFeedback(senderId, receiverId, scheduleId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(RegularFeedbackCreatedEvent.class));
+
+        }
+
+        @Test
+        @DisplayName("정기 피드백 전송 실패 - receiver가 없을 경우")
+        void test3() {
+            // given
+            Long senderId = 1L;
+            Long receiverId = 2L;
+            Long scheduleId = 3L;
+
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(senderId, scheduleId)).thenReturn(Optional.empty());
+
+            FeedbackType feedbackType = FeedbackType.IDENTIFIED;
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
+            String subjectiveFeedback = "좋아요";
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService
+                    .sendRegularFeedback(senderId, receiverId, scheduleId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(RegularFeedbackCreatedEvent.class));
+        }
+
+        @Test
+        @DisplayName("정기 피드백 전송 실패 - 정기 피드백 요청이 없을 경우")
+        void test4() {
+            // given
+            Long senderId = 1L;
+            Long receiverId = 2L;
+            Long scheduleId = 3L;
+            Member sender = mock();
+            Member receiver = mock();
+            Schedule schedule = mock();
+            ScheduleMember senderMember = mock();
+            ScheduleMember receiverMember = mock();
+
+
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(senderId, scheduleId)).thenReturn(Optional.of(senderMember));
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(receiverId, scheduleId)).thenReturn(Optional.of(receiverMember));
+
+            when(senderMember.getMember()).thenReturn(sender);
+            when(receiverMember.getMember()).thenReturn(receiver);
+            when(senderMember.getSchedule()).thenReturn(schedule);
+
+            when(regularFeedbackRequestRepository.findByRequesterAndScheduleMember(receiver, senderMember)).thenReturn(Optional.empty());
+
+            FeedbackType feedbackType = FeedbackType.IDENTIFIED;
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
+            String subjectiveFeedback = "좋아요";
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.sendRegularFeedback(senderId, receiverId, scheduleId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
+                    .isInstanceOf(NoRegularFeedbackRequestException.class);
+
+            verify(regularFeedbackRequestRepository, never()).delete(any());
+            verify(eventPublisher, never()).publishEvent(any(RegularFeedbackCreatedEvent.class));
+        }
+
+        @Test
+        @DisplayName("정기 피드백 전송 실패 - 기분에 맞지 않는 객관식 피드백이 있을 경우")
+        void test6() {
+            // given
+            Long senderId = 1L;
+            Long receiverId = 2L;
+            Long scheduleId = 3L;
+            Member sender = mock();
+            Member receiver = mock();
+            Team team = mock();
+            Schedule schedule = mock();
+            ScheduleMember senderMember = mock();
+            ScheduleMember receiverMember = mock();
+            RegularFeedbackRequest request = mock();
+
+
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(senderId, scheduleId)).thenReturn(Optional.of(senderMember));
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(receiverId, scheduleId)).thenReturn(Optional.of(receiverMember));
+
+            when(senderMember.getMember()).thenReturn(sender);
+            when(receiverMember.getMember()).thenReturn(receiver);
+            when(senderMember.getSchedule()).thenReturn(schedule);
+
+            when(regularFeedbackRequestRepository.findByRequesterAndScheduleMember(receiver, senderMember)).thenReturn(Optional.of(request));
+            when(schedule.getTeam()).thenReturn(team);
+
+            FeedbackType feedbackType = FeedbackType.ANONYMOUS;
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.CONSTRUCTIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 2);
+            String subjectiveFeedback = "좋아요";
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.sendRegularFeedback(senderId, receiverId, scheduleId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
+                    .isInstanceOf(IllegalArgumentException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(RegularFeedbackCreatedEvent.class));
+        }
+
+        @Test
+        @DisplayName("정기 피드백 전송 실패 - 객관식 피드백 개수가 1~5개가 아닌 경우")
+        void test7() {
+            // given
+            Long senderId = 1L;
+            Long receiverId = 2L;
+            Long scheduleId = 3L;
+            Member sender = mock();
+            Member receiver = mock();
+            Team team = mock();
+            Schedule schedule = mock();
+            ScheduleMember senderMember = mock();
+            ScheduleMember receiverMember = mock();
+            RegularFeedbackRequest request = mock();
+
+
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(senderId, scheduleId)).thenReturn(Optional.of(senderMember));
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(receiverId, scheduleId)).thenReturn(Optional.of(receiverMember));
+
+            when(senderMember.getMember()).thenReturn(sender);
+            when(receiverMember.getMember()).thenReturn(receiver);
+            when(senderMember.getSchedule()).thenReturn(schedule);
+
+            when(regularFeedbackRequestRepository.findByRequesterAndScheduleMember(receiver, senderMember)).thenReturn(Optional.of(request));
+            when(schedule.getTeam()).thenReturn(team);
+
+            FeedbackType feedbackType = FeedbackType.ANONYMOUS;
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.CONSTRUCTIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 6);
+            String subjectiveFeedback = "좋아요";
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.sendRegularFeedback(senderId, receiverId, scheduleId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
+                    .isInstanceOf(IllegalArgumentException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(RegularFeedbackCreatedEvent.class));
         }
     }
 }

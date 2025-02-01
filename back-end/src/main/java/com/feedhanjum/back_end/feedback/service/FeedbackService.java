@@ -109,7 +109,7 @@ public class FeedbackService {
 
 
     /**
-     * @throws EntityNotFoundException           sender id, receiver id, schedule id에 해당하는 엔티티가 없을 경우
+     * @throws EntityNotFoundException           일정에 속한 sender, receiver가 없을 경우
      * @throws IllegalArgumentException          피드백 기분에 맞지 않는 객관식 피드백이 있을 경우, 또는 객관식 피드백이 1개 이상 5개 이하가 아닐 경우
      * @throws NoRegularFeedbackRequestException 정기 피드백 요청이 없을 경우
      */
