@@ -6,6 +6,7 @@ import Modal, { ModalType } from './components/modals/Modal';
 import ProfileImage from './components/ProfileImage';
 import Tag, { TagType } from './components/Tag';
 import ProgressBar from './pages/feedback/components/ProgressBar';
+import Notification, { notiType } from './pages/main/components/notification';
 import ReportKeywords from './pages/mypage/components/ReportKeywords';
 import ReportResults from './pages/mypage/components/ReportResults';
 import { hideModal, showModal } from './utility/handleModal';
@@ -236,6 +237,10 @@ function App2() {
           isMainPage={false}
         />
       </div>
+      <Notification type={notiType.UNCONFIRM} />
+      <Notification type={notiType.NEW} />
+      <Notification type={notiType.REPORT} name={'백현식'} />
+      <Notification type={notiType.REQUEST} name={'백현식'} count={3} />
     </div>
   );
 }
