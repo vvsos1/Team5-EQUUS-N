@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface RegularFeedbackRequestRepository extends JpaRepository<RegularFeedbackRequest, Long> {
 
     Optional<RegularFeedbackRequest> findByRequesterAndScheduleMember(Member requester, ScheduleMember scheduleMember);
+
+    void deleteAllByScheduleMember(ScheduleMember scheduleMember);
 }
