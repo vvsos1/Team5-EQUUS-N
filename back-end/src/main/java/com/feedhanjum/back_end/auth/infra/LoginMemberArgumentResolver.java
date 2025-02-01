@@ -17,8 +17,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         return hasLoginAnnotation && hasLongType;
     }
 
+    /**
+     * @throws LoginStateRequiredException 사용자가 로그인하지 않은 상태인 경우
+     */
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         HttpSession session = request.getSession(false);
 
