@@ -934,4 +934,41 @@ class FeedbackServiceTest {
             verify(eventPublisher, never()).publishEvent(any(RegularFeedbackRequestCreatedEvent.class));
         }
     }
+
+    @Nested
+    @DisplayName("skipRegularFeedback 메서드 테스트")
+    class SkipRegularFeedbackTest {
+        @Test
+        @DisplayName("정기 피드백 건너뛰기 성공")
+        void test1() {
+            // given
+            Long scheduleId = 1L;
+            Long memberId = 2L;
+            ScheduleMember scheduleMember = mock();
+
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, scheduleId)).thenReturn(Optional.of(scheduleMember));
+
+            // when
+            feedbackService.skipRegularFeedback(scheduleId, memberId);
+
+            // then
+            verify(regularFeedbackRequestRepository).deleteAllByScheduleMember(scheduleMember);
+        }
+
+        @Test
+        @DisplayName("정기 피드백 건너뛰기 실패 - 일정에 속한 member가 없을 경우")
+        void test2() {
+            // given
+            Long scheduleId = 1L;
+            Long memberId = 2L;
+
+            when(scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, scheduleId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.skipRegularFeedback(scheduleId, memberId))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+            verify(regularFeedbackRequestRepository, never()).deleteAllByScheduleMember(any());
+        }
+    }
 }
