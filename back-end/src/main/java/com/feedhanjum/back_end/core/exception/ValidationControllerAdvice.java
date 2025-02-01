@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.core.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+@Order(2)
 @RestControllerAdvice
 public class ValidationControllerAdvice {
     /**
@@ -39,4 +41,5 @@ public class ValidationControllerAdvice {
                 errors.put(violation.getPropertyPath().toString(), violation.getMessage()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
+
 }
