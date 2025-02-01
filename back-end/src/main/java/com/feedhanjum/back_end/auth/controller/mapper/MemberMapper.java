@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class MemberMapper {
 
     public MemberDetails toEntity(MemberSignupRequest request) {
-        return new MemberDetails(null, request.getEmail(), request.getPassword());
+        return new MemberDetails(null, request.email(), request.password());
     }
 
     public MemberSignupResponse toResponse(MemberDetails member) {

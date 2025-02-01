@@ -16,10 +16,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 class AuthServiceTest {
 
@@ -53,13 +54,13 @@ class AuthServiceTest {
             when(memberDetailsRepository.findByEmail("test@example.com"))
                     .thenReturn(Optional.empty());
 
-            Member savedMember = new Member(name, "test@example.com");
+            Member savedMember = new Member(name, "test@example.com", null, null);
             when(memberRepository.save(any(Member.class))).thenReturn(savedMember);
 
             MemberDetails resultMemberDetails = new MemberDetails(1L, "test@example.com", "pass1234");
             when(memberDetailsRepository.save(any(MemberDetails.class))).thenReturn(resultMemberDetails);
 
-            MemberDetails saved = authService.registerMember(inputMember, name);
+            MemberDetails saved = authService.registerMember(inputMember, name, null, null);
 
             assertThat(saved).isNotNull();
             assertThat(saved.getId()).isEqualTo(1L);
@@ -84,7 +85,7 @@ class AuthServiceTest {
             when(memberDetailsRepository.findByEmail("test@example.com"))
                     .thenReturn(Optional.of(new MemberDetails(999L, "test@example.com", "any")));
 
-            assertThatThrownBy(() -> authService.registerMember(inputMember, name))
+            assertThatThrownBy(() -> authService.registerMember(inputMember, name, null, null))
                     .isInstanceOf(EmailAlreadyExistsException.class)
                     .hasMessage("이미 사용 중인 이메일입니다.");
 

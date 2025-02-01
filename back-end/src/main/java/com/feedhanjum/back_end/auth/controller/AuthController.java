@@ -36,9 +36,11 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<MemberSignupResponse> signup(@Valid @RequestBody MemberSignupRequest request) {
         MemberDetails member = memberMapper.toEntity(request);
-        String name = request.getName();
+        String name = request.name();
+        String backgroundColor = request.backgroundColor();
+        String image = request.image();
 
-        MemberDetails savedMember = authService.registerMember(member, name);
+        MemberDetails savedMember = authService.registerMember(member, name, backgroundColor, image);
 
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
