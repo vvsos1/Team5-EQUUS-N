@@ -2,6 +2,7 @@ package com.feedhanjum.back_end.member.controller;
 
 import com.feedhanjum.back_end.member.controller.dto.MemberDto;
 import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ class MemberControllerTest {
     void getMemberById_정상조회() {
         //given
         Long memberId = 1L;
-        Member member = new Member("홍길동", "hong@example.com", "blue", "img.png");
+        Member member = new Member("홍길동", "hong@example.com", new ProfileImage("blue", "img.png"));
         ReflectionTestUtils.setField(member, "id", memberId);
         when(memberService.getMemberById(memberId)).thenReturn(member);
 
@@ -40,7 +41,7 @@ class MemberControllerTest {
         assertThat(result.id()).isEqualTo(memberId);
         assertThat(result.name()).isEqualTo("홍길동");
         assertThat(result.email()).isEqualTo("hong@example.com");
-        assertThat(result.backgroundColor()).isEqualTo("blue");
-        assertThat(result.backgroundImage()).isEqualTo("img.png");
+        assertThat(result.profileImage().getBackgroundColor()).isEqualTo("blue");
+        assertThat(result.profileImage().getImage()).isEqualTo("img.png");
     }
 }

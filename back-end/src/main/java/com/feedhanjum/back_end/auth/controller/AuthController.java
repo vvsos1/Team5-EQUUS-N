@@ -8,6 +8,7 @@ import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.auth.service.AuthService;
+import com.feedhanjum.back_end.member.domain.ProfileImage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -37,10 +38,9 @@ public class AuthController {
     public ResponseEntity<MemberSignupResponse> signup(@Valid @RequestBody MemberSignupRequest request) {
         MemberDetails member = memberMapper.toEntity(request);
         String name = request.name();
-        String backgroundColor = request.backgroundColor();
-        String image = request.image();
+        ProfileImage profileImage = request.profileImage();
 
-        MemberDetails savedMember = authService.registerMember(member, name, backgroundColor, image);
+        MemberDetails savedMember = authService.registerMember(member, name, profileImage);
 
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

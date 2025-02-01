@@ -6,6 +6,7 @@ import com.feedhanjum.back_end.auth.exception.InvalidCredentialsException;
 import com.feedhanjum.back_end.auth.passwordencoder.PasswordEncoder;
 import com.feedhanjum.back_end.auth.repository.MemberDetailsRepository;
 import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,13 +27,13 @@ public class AuthService {
      * @return id값이 할당된 인증 정보 반환
      */
     @Transactional
-    public MemberDetails registerMember(MemberDetails memberDetails, String name, String backgroundColor, String image) {
+    public MemberDetails registerMember(MemberDetails memberDetails, String name, ProfileImage profileImage) {
         memberDetailsRepository.findByEmail(memberDetails.getEmail())
                 .ifPresent(existingMember -> {
                     throw new EmailAlreadyExistsException("이미 사용 중인 이메일입니다.");
                 });
 
-        Member member = new Member(name, memberDetails.getEmail(), backgroundColor, image);
+        Member member = new Member(name, memberDetails.getEmail(), profileImage);
         Member savedMember = memberRepository.save(member);
         String hashedPassword = passwordEncoder.encode(memberDetails.getPassword());
         MemberDetails savedMemberDetails = new MemberDetails(savedMember.getId(), memberDetails.getEmail(), hashedPassword);

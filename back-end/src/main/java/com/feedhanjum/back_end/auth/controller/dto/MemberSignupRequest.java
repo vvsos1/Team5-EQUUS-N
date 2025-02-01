@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.auth.controller.dto;
 
+import com.feedhanjum.back_end.member.domain.ProfileImage;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -17,7 +18,6 @@ public record MemberSignupRequest(
         @Size(min = 1, max = 20, message = "활동명은 1자 이상, 20자 이하여야 합니다.")
         String name,
 
-        String backgroundColor,
-        String image
+        ProfileImage profileImage
 ) {
 }

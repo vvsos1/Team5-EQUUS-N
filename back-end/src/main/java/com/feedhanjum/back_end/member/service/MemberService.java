@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberRepository memberRepository;
 
+    /**
+     * @throws EntityNotFoundException 찾으려는 해당 사용자가 없는 경우
+     */
     @Transactional(readOnly = true)
     public Member getMemberById(Long findMemberId) {
         Member findMember = memberRepository.findById(findMemberId).orElseThrow(() -> new EntityNotFoundException("찾으려는 해당 사용자가 없습니다."));

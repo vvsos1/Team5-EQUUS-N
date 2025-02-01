@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.member.service;
 
 import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +32,7 @@ class MemberServiceTest {
     void getMemberById_정상조회() {
         //given
         Long memberId = 1L;
-        Member member = new Member("홍길동", "hong@example.com", "blue", "img.png");
+        Member member = new Member("홍길동", "hong@example.com", new ProfileImage("blue", "img.png"));
         ReflectionTestUtils.setField(member, "id", memberId);
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
 
@@ -43,8 +44,8 @@ class MemberServiceTest {
         assertThat(result.getId()).isEqualTo(memberId);
         assertThat(result.getName()).isEqualTo("홍길동");
         assertThat(result.getEmail()).isEqualTo("hong@example.com");
-        assertThat(result.getProfileBackgroundColor()).isEqualTo("blue");
-        assertThat(result.getProfileImage()).isEqualTo("img.png");
+        assertThat(result.getProfileImage().getBackgroundColor()).isEqualTo("blue");
+        assertThat(result.getProfileImage().getImage()).isEqualTo("img.png");
     }
 
     @Test

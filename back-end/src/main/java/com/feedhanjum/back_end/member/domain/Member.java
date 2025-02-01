@@ -23,9 +23,8 @@ public class Member {
     private String name;
     private String email;
 
-    private String profileBackgroundColor;
-
-    private String profileImage;
+    @Embedded
+    private ProfileImage profileImage;
 
     @OneToMany(mappedBy = "member")
     private final List<TeamMember> teamMembers = new ArrayList<>();
@@ -39,15 +38,13 @@ public class Member {
     @OneToMany(mappedBy = "writer")
     private final List<Retrospect> retrospects = new ArrayList<>();
 
-    public Member(String name, String email, String profileBackgroundColor, String profileImage) {
+    public Member(String name, String email, ProfileImage profileImage) {
         this.name = name;
         this.email = email;
-        this.profileBackgroundColor = profileBackgroundColor;
         this.profileImage = profileImage;
     }
 
-    public void changeProfile(String profileBackgroundColor, String image) {
-        this.profileBackgroundColor = profileBackgroundColor;
-        this.profileImage = image;
+    public void changeProfile(ProfileImage profileImage) {
+        this.profileImage = profileImage;
     }
 }
