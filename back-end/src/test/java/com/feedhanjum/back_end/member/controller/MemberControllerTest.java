@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,14 +36,31 @@ class MemberControllerTest {
         when(memberService.getMemberById(memberId)).thenReturn(member);
 
         //when
-        MemberDto result = memberController.getMemberById(memberId);
+        ResponseEntity<MemberDto> result = memberController.getMemberById(memberId);
 
         //then
-        assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(memberId);
-        assertThat(result.name()).isEqualTo("홍길동");
-        assertThat(result.email()).isEqualTo("hong@example.com");
-        assertThat(result.profileImage().getBackgroundColor()).isEqualTo("blue");
-        assertThat(result.profileImage().getImage()).isEqualTo("img.png");
+        assertThat(result.getBody()).isNotNull();
+        assertThat(result.getBody().id()).isEqualTo(memberId);
+        assertThat(result.getBody().name()).isEqualTo("홍길동");
+        assertThat(result.getBody().email()).isEqualTo("hong@example.com");
+        assertThat(result.getBody().profileImage().getBackgroundColor()).isEqualTo("blue");
+        assertThat(result.getBody().profileImage().getImage()).isEqualTo("img.png");
+    }
+
+    @Test
+    @DisplayName("회원 이름 변경 컨트롤러 동작 확인")
+    void changeName_이름변경() {
+        // given
+        Long memberId = 1L;
+        String newName = "hoho";
+        Member member = new Member(newName, "hoho", new ProfileImage("huhu", "hehe"));
+        when(memberService.changeName(memberId, newName)).thenReturn(member);
+        // when
+        ResponseEntity<MemberDto> response = memberController.changeName(memberId, newName);
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        MemberDto memberDto = response.getBody();
+        assertThat(memberDto).isNotNull();
+        assertThat(memberDto.name()).isEqualTo(newName);
     }
 }

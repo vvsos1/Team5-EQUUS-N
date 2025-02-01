@@ -60,4 +60,18 @@ class MemberServiceTest {
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("찾으려는 해당 사용자가 없습니다.");
     }
+
+    @Test
+    @DisplayName("회원 이름 변경에 성공한다")
+    void changeName_이름변경() {
+        // given
+        Long memberId = 1L;
+        Member member = new Member("haha", "hoho", new ProfileImage("huhu", "hehe"));
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        String newName = "hoho";
+        // when
+        Member result = memberService.changeName(memberId, newName);
+        // then
+        assertThat(result.getName()).isEqualTo(newName);
+    }
 }
