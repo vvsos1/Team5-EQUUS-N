@@ -21,11 +21,11 @@ public class ScheduleMember {
     @Enumerated(EnumType.STRING)
     private ScheduleRole role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
     private Member member;
 
