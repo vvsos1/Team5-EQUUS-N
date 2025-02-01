@@ -66,15 +66,19 @@ export default function Notification({ type, onClick, onClose, name, count }) {
         : 'bg-lime-500',
       )}
     >
+      <Lottie animationData={animationData} />
+
       <p className='header-4 absolute top-5 left-6 whitespace-pre-line'>
         {message}
       </p>
-      <button className='absolute bottom-4 left-6 flex items-center gap-0.5'>
+
+      <button
+        className='absolute bottom-4 left-6 flex items-center gap-0.5'
+        onClick={onClick}
+      >
         <p className='caption-2 text-gray-600'>{buttonText}</p>
         <Icon name='chevronDown' className='-rotate-90' />
       </button>
-
-      <Lottie animationData={animationData} />
 
       <button className='absolute top-4 right-4' onClick={onClose}>
         <Icon name='delete' color='var(--color-gray-500)' />
