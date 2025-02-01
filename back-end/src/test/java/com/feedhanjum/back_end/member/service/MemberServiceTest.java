@@ -74,4 +74,19 @@ class MemberServiceTest {
         // then
         assertThat(result.getName()).isEqualTo(newName);
     }
+
+    @Test
+    @DisplayName("회원 프로필 이미지 변경에 성공한다")
+    void changeProfileImage_프로필변경() {
+        // given
+        Long memberId = 1L;
+        Member member = new Member("haha", "hoho", new ProfileImage("huhu", "hehe"));
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        ProfileImage newProfileImage = new ProfileImage("hehe", "haha");
+        // when
+        Member result = memberService.changeProfileImage(memberId, newProfileImage);
+        // then
+        assertThat(result.getProfileImage().getBackgroundColor()).isEqualTo("hehe");
+        assertThat(result.getProfileImage().getImage()).isEqualTo("haha");
+    }
 }
