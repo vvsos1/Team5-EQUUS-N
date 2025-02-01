@@ -23,8 +23,9 @@ public class Member {
     private String name;
     private String email;
 
-    // 프로필 사진 정보 - 타입 미지정
-    // private String profile;
+    private String profileBackgroundColor;
+
+    private String profileImage;
 
     @OneToMany(mappedBy = "member")
     private final List<TeamMember> teamMembers = new ArrayList<>();
@@ -38,8 +39,15 @@ public class Member {
     @OneToMany(mappedBy = "writer")
     private final List<Retrospect> retrospects = new ArrayList<>();
 
-    public Member(String name, String email) {
+    public Member(String name, String email, String profileBackgroundColor, String profileImage) {
         this.name = name;
         this.email = email;
+        this.profileBackgroundColor = profileBackgroundColor;
+        this.profileImage = profileImage;
+    }
+
+    public void changeProfile(String profileBackgroundColor, String image) {
+        this.profileBackgroundColor = profileBackgroundColor;
+        this.profileImage = image;
     }
 }
