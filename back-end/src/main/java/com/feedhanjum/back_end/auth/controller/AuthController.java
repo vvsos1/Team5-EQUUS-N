@@ -48,7 +48,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
-        MemberDetails member = authService.authenticate(request.getEmail(), request.getPassword());
+        MemberDetails member = authService.authenticate(request.email(), request.password());
 
         session.setAttribute(SessionConst.MEMBER_ID, member.getId());
 

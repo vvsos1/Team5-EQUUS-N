@@ -117,7 +117,7 @@ class AuthControllerTest {
             LoginRequest request = new LoginRequest("test@example.com", "abcd1234");
 
             MemberDetails member = new MemberDetails(1L, "test@example.com", "hashedpassword");
-            when(authService.authenticate(request.getEmail(), request.getPassword())).thenReturn(member);
+            when(authService.authenticate(request.email(), request.password())).thenReturn(member);
 
             // LoginResponse response = new LoginResponse("로그인에 성공했습니다.", 1L, "test@example.com");
 
@@ -135,7 +135,7 @@ class AuthControllerTest {
         void login_invalidCredentials() throws Exception {
             LoginRequest request = new LoginRequest("test@example.com", "wrongpassword");
 
-            when(authService.authenticate(request.getEmail(), request.getPassword()))
+            when(authService.authenticate(request.email(), request.password()))
                     .thenThrow(new com.feedhanjum.back_end.auth.exception.InvalidCredentialsException("이메일 또는 비밀번호가 올바르지 않습니다."));
 
             mockMvc.perform(post("/api/auth/login")
