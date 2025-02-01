@@ -183,17 +183,20 @@ public class FeedbackService {
     }
 
     /**
+     * @throws IllegalStateException   schedule이 아직 끝나지 않았을 경우
      * @throws EntityNotFoundException schedule id에 해당하는 엔티티가 없을 경우
      */
     @Transactional
     public void createRegularFeedbackRequests(Long scheduleId) {
         Schedule schedule = scheduleRepository.findByIdWithMembers(scheduleId).orElseThrow(() -> new EntityNotFoundException("schedule id에 해당하는 schedule이 없습니다."));
+        if (!schedule.isEnd())
+            throw new IllegalStateException("schedule이 아직 끝나지 않았습니다.");
 
         List<RegularFeedbackRequest> requests = new ArrayList<>();
         LocalDateTime requestTime = schedule.getEndTime();
         for (ScheduleMember receiverMember : schedule.getScheduleMembers()) {
             for (ScheduleMember senderMember : schedule.getScheduleMembers()) {
-                if (senderMember.equals(receiverMember)) {
+                if (senderMember == receiverMember) {
                     continue;
                 }
                 requests.add(new RegularFeedbackRequest(requestTime, senderMember.getMember(), receiverMember));
