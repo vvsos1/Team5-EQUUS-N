@@ -226,4 +226,18 @@ public class FeedbackService {
 
         return scheduleMember.getRegularFeedbackRequests();
     }
+
+    /**
+     * 해당 팀에서 receiver에게 온 모든 수시 피드백 요청을 거절한다.
+     * 수시 피드백 요청 배너닫기 클릭 시 사용
+     *
+     * @throws EntityNotFoundException 팀에 속한 receiver가 없을 경우
+     */
+    @Transactional
+    public void rejectAllFrequentFeedbackRequests(Long receiverId, Long teamId) {
+        TeamMember teamMember = teamMemberRepository.findByMemberIdAndTeamId(receiverId, teamId)
+                .orElseThrow(() -> new EntityNotFoundException("receiver 가 team 에 속해있지 않습니다"));
+
+        frequentFeedbackRequestRepository.deleteAllByTeamMember(teamMember);
+    }
 }
