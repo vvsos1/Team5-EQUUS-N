@@ -215,4 +215,15 @@ public class FeedbackService {
 
         regularFeedbackRequestRepository.deleteAllByScheduleMember(scheduleMember);
     }
+
+    /**
+     * @throws EntityNotFoundException receiver가 team에 속해있지 않을 경우
+     */
+    @Transactional(readOnly = true)
+    public List<RegularFeedbackRequest> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
+        ScheduleMember scheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(receiverId, scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("receiver 가 schedule 에 속해있지 않습니다"));
+
+        return scheduleMember.getRegularFeedbackRequests();
+    }
 }
