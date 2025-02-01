@@ -2,9 +2,10 @@ package com.feedhanjum.back_end.feedback.service;
 
 import com.feedhanjum.back_end.event.EventPublisher;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
-import com.feedhanjum.back_end.feedback.domain.FeedbackCategory;
+import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
+import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.member.domain.Member;
@@ -65,9 +66,8 @@ class FeedbackServiceTest {
             Team team = mock();
 
             FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackCategory feedbackCategory = FeedbackCategory.POSITIVE;
-            List<String> objectiveFeedbacks = feedbackCategory.getObjectiveFeedbacks().subList(0, 2)
-                    .stream().map(ObjectiveFeedback::getContent).toList();
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
             String subjectiveFeedback = "좋아요";
             when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
             when(memberRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
@@ -75,14 +75,14 @@ class FeedbackServiceTest {
             when(feedbackRepository.save(any(Feedback.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             // when
-            Feedback feedback = feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackCategory, objectiveFeedbacks, subjectiveFeedback);
+            Feedback feedback = feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback);
             // then
             assertThat(feedback.getSender()).isEqualTo(sender);
             assertThat(feedback.getReceiver()).isEqualTo(receiver);
             assertThat(feedback.getTeam()).isEqualTo(team);
             assertThat(feedback.getFeedbackType()).isEqualTo(feedbackType);
-            assertThat(feedback.getFeedbackCategory()).isEqualTo(feedbackCategory);
-            assertThat(feedback.getObjectiveFeedbacks()).extracting(ObjectiveFeedback::getContent)
+            assertThat(feedback.getFeedbackFeeling()).isEqualTo(feedbackFeeling);
+            assertThat(feedback.getObjectiveFeedbacks())
                     .containsExactlyInAnyOrderElementsOf(objectiveFeedbacks);
             assertThat(feedback.getSubjectiveFeedback()).isEqualTo(subjectiveFeedback);
             assertThat(feedback.isLiked()).isFalse();
@@ -99,14 +99,13 @@ class FeedbackServiceTest {
             Long teamId = 3L;
 
             FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackCategory feedbackCategory = FeedbackCategory.POSITIVE;
-            List<String> objectiveFeedbacks = feedbackCategory.getObjectiveFeedbacks().subList(0, 2)
-                    .stream().map(ObjectiveFeedback::getContent).toList();
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
             String subjectiveFeedback = "좋아요";
             when(memberRepository.findById(senderId)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackCategory, objectiveFeedbacks, subjectiveFeedback))
+            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
                     .isInstanceOf(EntityNotFoundException.class);
 
             verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackCreatedEvent.class));
@@ -122,15 +121,14 @@ class FeedbackServiceTest {
             Member sender = mock();
 
             FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackCategory feedbackCategory = FeedbackCategory.POSITIVE;
-            List<String> objectiveFeedbacks = feedbackCategory.getObjectiveFeedbacks().subList(0, 2)
-                    .stream().map(ObjectiveFeedback::getContent).toList();
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
             String subjectiveFeedback = "좋아요";
             when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
             when(memberRepository.findById(receiverId)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackCategory, objectiveFeedbacks, subjectiveFeedback))
+            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
                     .isInstanceOf(EntityNotFoundException.class);
 
             verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackCreatedEvent.class));
@@ -147,49 +145,22 @@ class FeedbackServiceTest {
             Member receiver = mock();
 
             FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackCategory feedbackCategory = FeedbackCategory.POSITIVE;
-            List<String> objectiveFeedbacks = feedbackCategory.getObjectiveFeedbacks().subList(0, 2)
-                    .stream().map(ObjectiveFeedback::getContent).toList();
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
             String subjectiveFeedback = "좋아요";
             when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
             when(memberRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
             when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackCategory, objectiveFeedbacks, subjectiveFeedback))
+            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
                     .isInstanceOf(EntityNotFoundException.class);
 
             verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackCreatedEvent.class));
         }
 
         @Test
-        @DisplayName("피드백 전송 실패 - 보기에 없는 객관식 피드백이 있을 경우")
-        void test5() {
-            // given
-            Long senderId = 1L;
-            Long receiverId = 2L;
-            Long teamId = 3L;
-            Member sender = mock();
-            Member receiver = mock();
-            Team team = mock();
-
-            FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackCategory feedbackCategory = FeedbackCategory.POSITIVE;
-            List<String> objectiveFeedbacks = List.of("존재하지 않는 객관식 피드백 값");
-            String subjectiveFeedback = "좋아요";
-            when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
-            when(memberRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-
-            // when & then
-            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackCategory, objectiveFeedbacks, subjectiveFeedback))
-                    .isInstanceOf(IllegalArgumentException.class);
-
-            verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackCreatedEvent.class));
-        }
-
-        @Test
-        @DisplayName("피드백 전송 실패 - 카테고리에 맞지 않는 객관식 피드백이 있을 경우")
+        @DisplayName("피드백 전송 실패 - 기분에 맞지 않는 객관식 피드백이 있을 경우")
         void test6() {
             // given
             Long senderId = 1L;
@@ -200,16 +171,15 @@ class FeedbackServiceTest {
             Team team = mock();
 
             FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackCategory feedbackCategory = FeedbackCategory.POSITIVE;
-            List<String> objectiveFeedbacks = FeedbackCategory.CONSTRUCTIVE.getObjectiveFeedbacks().subList(0, 1)
-                    .stream().map(ObjectiveFeedback::getContent).toList();
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(0, 1);
             String subjectiveFeedback = "좋아요";
             when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
             when(memberRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
 
             // when & then
-            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackCategory, objectiveFeedbacks, subjectiveFeedback))
+            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
                     .isInstanceOf(IllegalArgumentException.class);
 
             verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackCreatedEvent.class));
@@ -227,16 +197,15 @@ class FeedbackServiceTest {
             Team team = mock();
 
             FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackCategory feedbackCategory = FeedbackCategory.POSITIVE;
-            List<String> objectiveFeedbacks = FeedbackCategory.CONSTRUCTIVE.getObjectiveFeedbacks().subList(0, 6)
-                    .stream().map(ObjectiveFeedback::getContent).toList();
+            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
+            List<ObjectiveFeedback> objectiveFeedbacks = FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(0, 6);
             String subjectiveFeedback = "좋아요";
             when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
             when(memberRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
 
             // when & then
-            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackCategory, objectiveFeedbacks, subjectiveFeedback))
+            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
                     .isInstanceOf(IllegalArgumentException.class);
 
             verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackCreatedEvent.class));
@@ -477,6 +446,161 @@ class FeedbackServiceTest {
             // when & then
             assertThatThrownBy(() -> feedbackService.getFrequentFeedbackRequests(receiverId, teamId))
                     .isInstanceOf(EntityNotFoundException.class);
+
+        }
+    }
+
+    @Nested
+    @DisplayName("likeFeedback 메서드 테스트")
+    class LikeFeedbackTest {
+        @Test
+        @DisplayName("피드백 좋아요 성공")
+        void test1() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+            Member member = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+            when(feedback.isReceiver(member)).thenReturn(true);
+
+            // when
+            feedbackService.likeFeedback(feedbackId, memberId);
+
+            // then
+            verify(feedback).like();
+            verify(eventPublisher).publishEvent(any(FeedbackLikedEvent.class));
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 실패 - feedback이 없을 경우")
+        void test2() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.likeFeedback(feedbackId, memberId))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(FeedbackLikedEvent.class));
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 실패 - receiver가 없을 경우")
+        void test3() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.likeFeedback(feedbackId, memberId))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(FeedbackLikedEvent.class));
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 실패 - receiver가 아닐 경우")
+        void test4() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+            Member member = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+            when(feedback.isReceiver(member)).thenReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.likeFeedback(feedbackId, memberId))
+                    .isInstanceOf(SecurityException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(FeedbackLikedEvent.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("unlikeFeedback 메서드 테스트")
+    class UnlikeFeedbackTest {
+        @Test
+        @DisplayName("피드백 좋아요 취소 성공")
+        void test1() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+            Member member = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+            when(feedback.isReceiver(member)).thenReturn(true);
+
+            // when
+            feedbackService.unlikeFeedback(feedbackId, memberId);
+
+            // then
+            verify(feedback).unlike();
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 실패 - feedback이 없을 경우")
+        void test2() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.unlikeFeedback(feedbackId, memberId))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(FeedbackLikedEvent.class));
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 취소 실패 - receiver가 없을 경우")
+        void test3() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.unlikeFeedback(feedbackId, memberId))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 취소 실패 - receiver가 아닐 경우")
+        void test4() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+            Member member = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+            when(feedback.isReceiver(member)).thenReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.unlikeFeedback(feedbackId, memberId))
+                    .isInstanceOf(SecurityException.class);
 
         }
     }

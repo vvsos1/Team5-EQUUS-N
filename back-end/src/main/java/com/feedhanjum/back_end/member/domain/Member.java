@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -51,4 +52,12 @@ public class Member {
     public void changeName(String name) {
         this.name = name;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (o instanceof Member m)
+            return getId() != null && Objects.equals(getId(), m.getId());
+        return false;
+    }
+
 }
