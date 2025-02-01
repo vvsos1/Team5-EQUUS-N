@@ -5,6 +5,7 @@ import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
+import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.member.domain.Member;
@@ -445,6 +446,161 @@ class FeedbackServiceTest {
             // when & then
             assertThatThrownBy(() -> feedbackService.getFrequentFeedbackRequests(receiverId, teamId))
                     .isInstanceOf(EntityNotFoundException.class);
+
+        }
+    }
+
+    @Nested
+    @DisplayName("likeFeedback 메서드 테스트")
+    class LikeFeedbackTest {
+        @Test
+        @DisplayName("피드백 좋아요 성공")
+        void test1() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+            Member member = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+            when(feedback.isReceiver(member)).thenReturn(true);
+
+            // when
+            feedbackService.likeFeedback(feedbackId, memberId);
+
+            // then
+            verify(feedback).like();
+            verify(eventPublisher).publishEvent(any(FeedbackLikedEvent.class));
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 실패 - feedback이 없을 경우")
+        void test2() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.likeFeedback(feedbackId, memberId))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(FeedbackLikedEvent.class));
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 실패 - receiver가 없을 경우")
+        void test3() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.likeFeedback(feedbackId, memberId))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(FeedbackLikedEvent.class));
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 실패 - receiver가 아닐 경우")
+        void test4() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+            Member member = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+            when(feedback.isReceiver(member)).thenReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.likeFeedback(feedbackId, memberId))
+                    .isInstanceOf(SecurityException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(FeedbackLikedEvent.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("unlikeFeedback 메서드 테스트")
+    class UnlikeFeedbackTest {
+        @Test
+        @DisplayName("피드백 좋아요 취소 성공")
+        void test1() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+            Member member = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+            when(feedback.isReceiver(member)).thenReturn(true);
+
+            // when
+            feedbackService.unlikeFeedback(feedbackId, memberId);
+
+            // then
+            verify(feedback).unlike();
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 실패 - feedback이 없을 경우")
+        void test2() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.unlikeFeedback(feedbackId, memberId))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+            verify(eventPublisher, never()).publishEvent(any(FeedbackLikedEvent.class));
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 취소 실패 - receiver가 없을 경우")
+        void test3() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.unlikeFeedback(feedbackId, memberId))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+        }
+
+        @Test
+        @DisplayName("피드백 좋아요 취소 실패 - receiver가 아닐 경우")
+        void test4() {
+            // given
+            Long feedbackId = 1L;
+            Long memberId = 2L;
+            Feedback feedback = mock();
+            Member member = mock();
+
+            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
+            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+            when(feedback.isReceiver(member)).thenReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.unlikeFeedback(feedbackId, memberId))
+                    .isInstanceOf(SecurityException.class);
 
         }
     }
