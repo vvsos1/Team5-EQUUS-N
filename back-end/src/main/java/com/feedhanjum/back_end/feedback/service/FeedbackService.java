@@ -103,7 +103,7 @@ public class FeedbackService {
     }
 
     /**
-     * @throws EntityNotFoundException receiver가 팀에 속해있지 않을 경우
+     * @throws EntityNotFoundException 팀에 속한 receiver가 없을 경우
      */
     @Transactional(readOnly = true)
     public List<FrequentFeedbackRequest> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
@@ -217,7 +217,7 @@ public class FeedbackService {
     }
 
     /**
-     * @throws EntityNotFoundException receiver가 team에 속해있지 않을 경우
+     * @throws EntityNotFoundException 일정에 속한 receiver가 없을 경우
      */
     @Transactional(readOnly = true)
     public List<RegularFeedbackRequest> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
