@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.member.controller;
 
-import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.member.controller.dto.MemberDto;
 import com.feedhanjum.back_end.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +13,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/member/{id}")
-    public Member getMemberById(@PathVariable Long id) {
-        return memberService.getMemberById(id);
+    public MemberDto getMemberById(@PathVariable Long id) {
+        return new MemberDto(memberService.getMemberById(id));
     }
 }
