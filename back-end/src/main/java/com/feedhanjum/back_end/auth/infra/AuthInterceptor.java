@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.auth.infra;
 
+import com.feedhanjum.back_end.auth.exception.LoginStateRequiredException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -13,9 +14,6 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json");
-        response.getWriter().write("{\"error\":\"UNAUTHORIZED\",\"message\":\"로그인이 필요합니다.\"}");
-        return false;
+        throw new LoginStateRequiredException("로그인이 필요합니다.");
     }
 }
