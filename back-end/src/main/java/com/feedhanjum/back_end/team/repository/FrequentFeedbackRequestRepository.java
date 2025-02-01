@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface FrequentFeedbackRequestRepository extends JpaRepository<FrequentFeedbackRequest, Long> {
     List<FrequentFeedbackRequest> findByTeamMember(TeamMember teamMember);
+
+    void deleteAllByTeamMember(TeamMember teamMember);
 }
