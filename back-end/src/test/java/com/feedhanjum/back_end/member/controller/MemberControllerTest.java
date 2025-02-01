@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,14 +35,14 @@ class MemberControllerTest {
         when(memberService.getMemberById(memberId)).thenReturn(member);
 
         //when
-        MemberDto result = memberController.getMemberById(memberId);
+        ResponseEntity<MemberDto> result = memberController.getMemberById(memberId);
 
         //then
-        assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(memberId);
-        assertThat(result.name()).isEqualTo("홍길동");
-        assertThat(result.email()).isEqualTo("hong@example.com");
-        assertThat(result.profileImage().getBackgroundColor()).isEqualTo("blue");
-        assertThat(result.profileImage().getImage()).isEqualTo("img.png");
+        assertThat(result.getBody()).isNotNull();
+        assertThat(result.getBody().id()).isEqualTo(memberId);
+        assertThat(result.getBody().name()).isEqualTo("홍길동");
+        assertThat(result.getBody().email()).isEqualTo("hong@example.com");
+        assertThat(result.getBody().profileImage().getBackgroundColor()).isEqualTo("blue");
+        assertThat(result.getBody().profileImage().getImage()).isEqualTo("img.png");
     }
 }
