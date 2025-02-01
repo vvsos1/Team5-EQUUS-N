@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -44,5 +45,22 @@ class MemberControllerTest {
         assertThat(result.getBody().email()).isEqualTo("hong@example.com");
         assertThat(result.getBody().profileImage().getBackgroundColor()).isEqualTo("blue");
         assertThat(result.getBody().profileImage().getImage()).isEqualTo("img.png");
+    }
+
+    @Test
+    @DisplayName("회원 이름 변경 컨트롤러 동작 확인")
+    void changeName_이름변경() {
+        // given
+        Long memberId = 1L;
+        String newName = "hoho";
+        Member member = new Member(newName, "hoho", new ProfileImage("huhu", "hehe"));
+        when(memberService.changeName(memberId, newName)).thenReturn(member);
+        // when
+        ResponseEntity<MemberDto> response = memberController.changeName(memberId, newName);
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        MemberDto memberDto = response.getBody();
+        assertThat(memberDto).isNotNull();
+        assertThat(memberDto.name()).isEqualTo(newName);
     }
 }
