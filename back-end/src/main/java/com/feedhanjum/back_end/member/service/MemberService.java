@@ -1,6 +1,8 @@
 package com.feedhanjum.back_end.member.service;
 
+import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,13 @@ public class MemberService {
         // 이거 이럴 일이 없겠지만, 동시성 문제 발생할지 모르니 혹시 몰라서 남겨둡니다.
         Member loginMember = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("DB 오류"));
         loginMember.changeName(name);
+        return loginMember;
+    }
+
+    @Transactional
+    public Member changeProfileImage(@Login Long memberId, ProfileImage profileImage) {
+        Member loginMember = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("DB 오류"));
+        loginMember.changeProfile(profileImage);
         return loginMember;
     }
 }
