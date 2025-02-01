@@ -1,14 +1,13 @@
 package com.feedhanjum.back_end.auth.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.controller.dto.LoginRequest;
-import com.feedhanjum.back_end.auth.controller.dto.LoginResponse;
 import com.feedhanjum.back_end.auth.controller.dto.MemberSignupRequest;
 import com.feedhanjum.back_end.auth.controller.dto.MemberSignupResponse;
 import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
 import com.feedhanjum.back_end.auth.service.AuthService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,7 +23,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class AuthControllerTest {
 
@@ -45,7 +45,7 @@ class AuthControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(authController)
-                .setControllerAdvice(new com.feedhanjum.back_end.auth.exception.AuthExceptionHandler())
+                .setControllerAdvice(new com.feedhanjum.back_end.auth.exception.AuthControllerAdvice())
                 .build();
     }
 
