@@ -14,9 +14,11 @@ import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
+import com.feedhanjum.back_end.schedule.event.RegularFeedbackRequestCreatedEvent;
 import com.feedhanjum.back_end.schedule.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.schedule.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
+import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.team.domain.FrequentFeedbackRequest;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
@@ -29,12 +31,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +55,8 @@ class FeedbackServiceTest {
     private FeedbackRepository feedbackRepository;
     @Mock
     private TeamMemberRepository teamMemberRepository;
+    @Mock
+    private ScheduleRepository scheduleRepository;
     @Mock
     private ScheduleMemberRepository scheduleMemberRepository;
     @Mock
@@ -674,6 +680,7 @@ class FeedbackServiceTest {
             verify(eventPublisher, never()).publishEvent(any(RegularFeedbackCreatedEvent.class));
         }
     }
+
     @Nested
     @DisplayName("likeFeedback 메서드 테스트")
     class LikeFeedbackTest {
@@ -825,6 +832,106 @@ class FeedbackServiceTest {
             // when & then
             assertThatThrownBy(() -> feedbackService.unlikeFeedback(feedbackId, memberId))
                     .isInstanceOf(SecurityException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("createRegularFeedbackRequests 메서드 테스트")
+    class CreateRegularFeedbackRequestsTest {
+        @Test
+        @DisplayName("정기 피드백 요청 생성 성공")
+        void test1() {
+            // given
+            Long scheduleId = 1L;
+            Long memberId1 = 2L;
+            Long memberId2 = 3L;
+            Long memberId3 = 4L;
+            Schedule schedule = mock();
+            LocalDateTime endTime = LocalDateTime.now().minusMinutes(1);
+            ScheduleMember scheduleMember1 = mock();
+            ScheduleMember scheduleMember2 = mock();
+            ScheduleMember scheduleMember3 = mock();
+            Member member1 = mock();
+            Member member2 = mock();
+            Member member3 = mock();
+
+            when(scheduleRepository.findByIdWithMembers(scheduleId)).thenReturn(Optional.of(schedule));
+            when(schedule.isEnd()).thenReturn(true);
+            when(schedule.getEndTime()).thenReturn(endTime);
+            when(schedule.getScheduleMembers()).thenReturn(List.of(scheduleMember1, scheduleMember2, scheduleMember3));
+            when(scheduleMember1.getMember()).thenReturn(member1);
+            when(scheduleMember2.getMember()).thenReturn(member2);
+            when(scheduleMember3.getMember()).thenReturn(member3);
+            when(scheduleMember1.getRegularFeedbackRequests()).thenReturn(new ArrayList<>());
+            when(scheduleMember2.getRegularFeedbackRequests()).thenReturn(new ArrayList<>());
+            when(scheduleMember3.getRegularFeedbackRequests()).thenReturn(new ArrayList<>());
+            when(member1.getId()).thenReturn(memberId1);
+            when(member2.getId()).thenReturn(memberId2);
+            when(member3.getId()).thenReturn(memberId3);
+
+            // when
+            feedbackService.createRegularFeedbackRequests(scheduleId);
+
+            // then
+            ArgumentCaptor<List<RegularFeedbackRequest>> requestsCaptor = ArgumentCaptor.captor();
+            verify(regularFeedbackRequestRepository).saveAll(requestsCaptor.capture());
+            List<RegularFeedbackRequest> requests = requestsCaptor.getValue();
+            assertThat(requests).hasSize(6);
+            assertThat(requests)
+                    .filteredOn(r -> r.getScheduleMember() == scheduleMember1)
+                    .extracting(RegularFeedbackRequest::getRequester)
+                    .containsExactlyInAnyOrder(member2, member3);
+            assertThat(requests)
+                    .filteredOn(r -> r.getScheduleMember() == scheduleMember2)
+                    .extracting(RegularFeedbackRequest::getRequester)
+                    .containsExactlyInAnyOrder(member1, member3);
+
+            assertThat(requests)
+                    .filteredOn(r -> r.getScheduleMember() == scheduleMember3)
+                    .extracting(RegularFeedbackRequest::getRequester)
+                    .containsExactlyInAnyOrder(member1, member2);
+
+            ArgumentCaptor<RegularFeedbackRequestCreatedEvent> eventCaptor = ArgumentCaptor.captor();
+            verify(eventPublisher, times(3)).publishEvent(eventCaptor.capture());
+            List<RegularFeedbackRequestCreatedEvent> events = eventCaptor.getAllValues();
+            assertThat(events).extracting(RegularFeedbackRequestCreatedEvent::getReceiverId)
+                    .containsExactlyInAnyOrder(memberId1, memberId2, memberId3);
+            assertThat(events).extracting(RegularFeedbackRequestCreatedEvent::getScheduleId)
+                    .containsOnly(scheduleId);
+        }
+
+        @Test
+        @DisplayName("정기 피드백 요청 생성 실패 - schedule이 없을 경우")
+        void test2() {
+            // given
+            Long scheduleId = 1L;
+
+            when(scheduleRepository.findByIdWithMembers(scheduleId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.createRegularFeedbackRequests(scheduleId))
+                    .isInstanceOf(EntityNotFoundException.class);
+
+            verify(regularFeedbackRequestRepository, never()).saveAll(any());
+            verify(eventPublisher, never()).publishEvent(any(RegularFeedbackRequestCreatedEvent.class));
+        }
+
+        @Test
+        @DisplayName("정기 피드백 요청 생성 실패 - schedule이 종료되지 않았을 경우")
+        void test3() {
+            // given
+            Long scheduleId = 1L;
+            Schedule schedule = mock();
+
+            when(scheduleRepository.findByIdWithMembers(scheduleId)).thenReturn(Optional.of(schedule));
+            when(schedule.isEnd()).thenReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.createRegularFeedbackRequests(scheduleId))
+                    .isInstanceOf(IllegalStateException.class);
+
+            verify(regularFeedbackRequestRepository, never()).saveAll(any());
+            verify(eventPublisher, never()).publishEvent(any(RegularFeedbackRequestCreatedEvent.class));
         }
     }
 }
