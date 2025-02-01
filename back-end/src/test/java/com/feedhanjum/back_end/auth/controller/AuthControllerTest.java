@@ -1,14 +1,13 @@
 package com.feedhanjum.back_end.auth.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.controller.dto.LoginRequest;
-import com.feedhanjum.back_end.auth.controller.dto.LoginResponse;
 import com.feedhanjum.back_end.auth.controller.dto.MemberSignupRequest;
 import com.feedhanjum.back_end.auth.controller.dto.MemberSignupResponse;
 import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
 import com.feedhanjum.back_end.auth.service.AuthService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,7 +23,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class AuthControllerTest {
 
@@ -45,7 +45,7 @@ class AuthControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(authController)
-                .setControllerAdvice(new com.feedhanjum.back_end.auth.exception.AuthExceptionHandler())
+                .setControllerAdvice(new com.feedhanjum.back_end.auth.exception.AuthControllerAdvice())
                 .build();
     }
 
@@ -56,17 +56,13 @@ class AuthControllerTest {
         @Test
         @DisplayName("회원가입 성공 시 201(CREATED) 상태코드와 응답 반환")
         void signup_success() throws Exception {
-            MemberSignupRequest request = MemberSignupRequest.builder()
-                    .email("test@example.com")
-                    .password("abcd1234")
-                    .name("홍길동")
-                    .build();
+            MemberSignupRequest request = new MemberSignupRequest("test@example.com", "abcd1234", "홍길동", null);
 
-            MemberDetails entity = new MemberDetails(null, request.getEmail(), request.getPassword());
+            MemberDetails entity = new MemberDetails(null, request.email(), request.password());
             when(memberMapper.toEntity(any(MemberSignupRequest.class))).thenReturn(entity);
 
             MemberDetails savedMember = new MemberDetails(1L, "test@example.com", "abcd1234");
-            when(authService.registerMember(entity, request.getName())).thenReturn(savedMember);
+            when(authService.registerMember(entity, request.name(), null)).thenReturn(savedMember);
 
             MemberSignupResponse response = new MemberSignupResponse(1L, "test@example.com", "회원가입이 완료되었습니다.");
             when(memberMapper.toResponse(savedMember)).thenReturn(response);
@@ -83,17 +79,13 @@ class AuthControllerTest {
         @Test
         @DisplayName("이메일 중복 시 409(CONFLICT) 상태코드와 에러 메시지 반환")
         void signup_emailAlreadyExists() throws Exception {
-            MemberSignupRequest request = MemberSignupRequest.builder()
-                    .email("duplicate@example.com")
-                    .password("abcd1234")
-                    .name("홍길동")
-                    .build();
+            MemberSignupRequest request = new MemberSignupRequest("duplicate@example.com", "abcd1234", "홍길동", null);
 
-            MemberDetails entity = new MemberDetails(null, request.getEmail(), request.getPassword());
+            MemberDetails entity = new MemberDetails(null, request.email(), request.password());
             when(memberMapper.toEntity(any(MemberSignupRequest.class))).thenReturn(entity);
 
             doThrow(new EmailAlreadyExistsException("이미 사용 중인 이메일입니다."))
-                    .when(authService).registerMember(entity, request.getName());
+                    .when(authService).registerMember(entity, request.name(), null);
 
             mockMvc.perform(post("/api/auth/signup")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -106,11 +98,7 @@ class AuthControllerTest {
         @Test
         @DisplayName("유효하지 않은 입력값일 경우 400(BAD_REQUEST) 상태코드 반환")
         void signup_invalidInput() throws Exception {
-            MemberSignupRequest request = MemberSignupRequest.builder()
-                    .email("")
-                    .password("12")
-                    .name("")
-                    .build();
+            MemberSignupRequest request = new MemberSignupRequest("", "12", "", null);
 
             mockMvc.perform(post("/api/auth/signup")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -129,7 +117,7 @@ class AuthControllerTest {
             LoginRequest request = new LoginRequest("test@example.com", "abcd1234");
 
             MemberDetails member = new MemberDetails(1L, "test@example.com", "hashedpassword");
-            when(authService.authenticate(request.getEmail(), request.getPassword())).thenReturn(member);
+            when(authService.authenticate(request.email(), request.password())).thenReturn(member);
 
             // LoginResponse response = new LoginResponse("로그인에 성공했습니다.", 1L, "test@example.com");
 
@@ -147,7 +135,7 @@ class AuthControllerTest {
         void login_invalidCredentials() throws Exception {
             LoginRequest request = new LoginRequest("test@example.com", "wrongpassword");
 
-            when(authService.authenticate(request.getEmail(), request.getPassword()))
+            when(authService.authenticate(request.email(), request.password()))
                     .thenThrow(new com.feedhanjum.back_end.auth.exception.InvalidCredentialsException("이메일 또는 비밀번호가 올바르지 않습니다."));
 
             mockMvc.perform(post("/api/auth/login")

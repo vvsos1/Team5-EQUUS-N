@@ -29,7 +29,7 @@ public class Feedback {
     @Enumerated(EnumType.STRING)
     private FeedbackType feedbackType;
     @Enumerated(EnumType.STRING)
-    private FeedbackCategory feedbackCategory;
+    private FeedbackFeeling feedbackFeeling;
     private String subjectiveFeedback;
 
     private boolean liked = false;
@@ -47,20 +47,17 @@ public class Feedback {
     private Team team;
 
     /**
-     * @throws IllegalArgumentException 객관식 피드백이 보기에 없거나, 피드백 카테고리에 맞지 않는 값이 있을 경우, 또는 객관식 피드백이 1개 이상 5개 이하가 아닐 경우
+     * @throws IllegalArgumentException 피드백 기분에 맞지 객관식 피드백이 있을 경우, 또는 객관식 피드백이 1개 이상 5개 이하가 아닐 경우
      */
     @Builder
-    public Feedback(FeedbackType feedbackType, FeedbackCategory feedbackCategory, List<String> objectiveFeedbacks, String subjectiveFeedback, Member sender, Member receiver, Team team) {
+    public Feedback(FeedbackType feedbackType, FeedbackFeeling feedbackFeeling, List<ObjectiveFeedback> objectiveFeedbacks, String subjectiveFeedback, Member sender, Member receiver, Team team) {
         this.feedbackType = feedbackType;
         this.subjectiveFeedback = subjectiveFeedback;
-        this.feedbackCategory = feedbackCategory;
-        for (String objectiveFeedback : objectiveFeedbacks) {
-            this.objectiveFeedbacks.add(ObjectiveFeedback.from(objectiveFeedback)
-                    .orElseThrow(() -> new IllegalArgumentException("허용되지 않는 객관식 피드백 값입니다:" + objectiveFeedback)));
-        }
+        this.feedbackFeeling = feedbackFeeling;
+        this.objectiveFeedbacks.addAll(objectiveFeedbacks);
         this.sender = sender;
         this.team = team;
-        validateObjectiveFeedbacksCategory();
+        validateObjectiveFeedbacks();
         setReceiver(receiver);
     }
 
@@ -76,13 +73,17 @@ public class Feedback {
         }
     }
 
-    private void validateObjectiveFeedbacksCategory() {
+    public boolean isReceiver(Member member) {
+        return receiver.equals(member);
+    }
+
+    private void validateObjectiveFeedbacks() {
         if (!(MIN_OBJECTIVE_FEEDBACK_SIZE <= objectiveFeedbacks.size()
               && objectiveFeedbacks.size() <= MAX_OBJECTIVE_FEEDBACK_SIZE)) {
             throw new IllegalArgumentException("객관식 피드백은 " + MIN_OBJECTIVE_FEEDBACK_SIZE + "개 이상 " + MAX_OBJECTIVE_FEEDBACK_SIZE + "개 이하만 가능합니다.");
         }
         for (ObjectiveFeedback objectiveFeedback : objectiveFeedbacks) {
-            if (!feedbackCategory.isValidObjectiveFeedback(objectiveFeedback)) {
+            if (!feedbackFeeling.isValidObjectiveFeedback(objectiveFeedback)) {
                 throw new IllegalArgumentException("피드백 카테고리와 일치하지 않는 객관식 피드백입니다: " + objectiveFeedback);
             }
         }
