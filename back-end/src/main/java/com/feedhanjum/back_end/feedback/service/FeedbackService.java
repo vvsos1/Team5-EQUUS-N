@@ -103,15 +103,13 @@ public class FeedbackService {
     }
 
     /**
-     * @throws EntityNotFoundException receiver id, team id에 해당하는 엔티티가 없을 경우, receiver가 team에 속해있지 않을 경우
+     * @throws EntityNotFoundException receiver가 팀에 속해있지 않을 경우
      */
     @Transactional(readOnly = true)
     public List<FrequentFeedbackRequest> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
-        memberRepository.findById(receiverId).orElseThrow(() -> new EntityNotFoundException("receiver id에 해당하는 member가 없습니다."));
-        teamRepository.findById(teamId).orElseThrow(() -> new EntityNotFoundException("team id에 해당하는 team이 없습니다."));
         TeamMember teamMember = teamMemberRepository.findByMemberIdAndTeamId(receiverId, teamId).orElseThrow(() -> new EntityNotFoundException("receiver 가 team 에 속해있지 않습니다"));
 
-        return frequentFeedbackRequestRepository.findByTeamMember(teamMember);
+        return teamMember.getFrequentFeedbackRequests();
     }
 
     /**
@@ -216,5 +214,16 @@ public class FeedbackService {
                 .orElseThrow(() -> new EntityNotFoundException("member가 schedule에 속해있지 않습니다."));
 
         regularFeedbackRequestRepository.deleteAllByScheduleMember(scheduleMember);
+    }
+
+    /**
+     * @throws EntityNotFoundException receiver가 team에 속해있지 않을 경우
+     */
+    @Transactional(readOnly = true)
+    public List<RegularFeedbackRequest> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
+        ScheduleMember scheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(receiverId, scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("receiver 가 schedule 에 속해있지 않습니다"));
+
+        return scheduleMember.getRegularFeedbackRequests();
     }
 }
