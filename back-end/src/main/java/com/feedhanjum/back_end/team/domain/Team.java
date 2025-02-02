@@ -46,4 +46,11 @@ public class Team {
         }
         this.leader = newLeader;
     }
+
+    public void updateInfo(String name, LocalDateTime startTime, LocalDateTime endTime, FeedbackType feedbackType) {
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.feedbackType = feedbackType;
+    }
 }
