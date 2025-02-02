@@ -14,9 +14,11 @@ import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
+import com.feedhanjum.back_end.schedule.event.RegularFeedbackRequestCreatedEvent;
 import com.feedhanjum.back_end.schedule.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.schedule.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
+import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.team.domain.FrequentFeedbackRequest;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
@@ -28,22 +30,26 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class FeedbackService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
-    private final FeedbackRepository feedbackRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final ScheduleRepository scheduleRepository;
     private final ScheduleMemberRepository scheduleMemberRepository;
+    private final FeedbackRepository feedbackRepository;
     private final FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
     private final RegularFeedbackRequestRepository regularFeedbackRequestRepository;
     private final EventPublisher eventPublisher;
 
-    public FeedbackService(MemberRepository memberRepository, TeamRepository teamRepository, FeedbackRepository feedbackRepository, TeamMemberRepository teamMemberRepository, ScheduleMemberRepository scheduleMemberRepository, FrequentFeedbackRequestRepository frequentFeedbackRequestRepository, RegularFeedbackRequestRepository regularFeedbackRequestRepository, EventPublisher eventPublisher) {
+    public FeedbackService(MemberRepository memberRepository, TeamRepository teamRepository, ScheduleRepository scheduleRepository, FeedbackRepository feedbackRepository, TeamMemberRepository teamMemberRepository, ScheduleMemberRepository scheduleMemberRepository, FrequentFeedbackRequestRepository frequentFeedbackRequestRepository, RegularFeedbackRequestRepository regularFeedbackRequestRepository, EventPublisher eventPublisher) {
         this.memberRepository = memberRepository;
         this.teamRepository = teamRepository;
+        this.scheduleRepository = scheduleRepository;
         this.feedbackRepository = feedbackRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.scheduleMemberRepository = scheduleMemberRepository;
@@ -145,7 +151,7 @@ public class FeedbackService {
         eventPublisher.publishEvent(new RegularFeedbackCreatedEvent(feedback.getId()));
         return feedback;
     }
-  
+
     /**
      * @throws EntityNotFoundException feedback id에 해당하는 엔티티가 없을 경우
      * @throws SecurityException       해당 피드백의 receiver가 아닌 경우
@@ -175,4 +181,30 @@ public class FeedbackService {
         }
         feedback.unlike();
     }
+
+    /**
+     * @throws IllegalStateException   schedule이 아직 끝나지 않았을 경우
+     * @throws EntityNotFoundException schedule id에 해당하는 엔티티가 없을 경우
+     */
+    @Transactional
+    public void createRegularFeedbackRequests(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findByIdWithMembers(scheduleId).orElseThrow(() -> new EntityNotFoundException("schedule id에 해당하는 schedule이 없습니다."));
+        if (!schedule.isEnd())
+            throw new IllegalStateException("schedule이 아직 끝나지 않았습니다.");
+
+        List<RegularFeedbackRequest> requests = new ArrayList<>();
+        LocalDateTime requestTime = schedule.getEndTime();
+        for (ScheduleMember receiverMember : schedule.getScheduleMembers()) {
+            for (ScheduleMember senderMember : schedule.getScheduleMembers()) {
+                if (senderMember == receiverMember) {
+                    continue;
+                }
+                requests.add(new RegularFeedbackRequest(requestTime, senderMember.getMember(), receiverMember));
+            }
+            // batch insert를 사용하도록 설정 필요
+            eventPublisher.publishEvent(new RegularFeedbackRequestCreatedEvent(receiverMember.getMember().getId(), scheduleId));
+        }
+        regularFeedbackRequestRepository.saveAll(requests);
+    }
+
 }

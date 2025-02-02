@@ -22,7 +22,7 @@ public class Schedule {
     private String name;
 
     private LocalDateTime startTime;
-    
+
     private LocalDateTime endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,7 +30,7 @@ public class Schedule {
     private Team team;
 
     @OneToMany(mappedBy = "schedule")
-    private List<ScheduleMember> scheduleMembers = new ArrayList<>();
+    private final List<ScheduleMember> scheduleMembers = new ArrayList<>();
 
     public Schedule(String name, LocalDateTime startTime, LocalDateTime endTime, Team team) {
         this.name = name;
@@ -39,12 +39,16 @@ public class Schedule {
         setTeam(team);
     }
 
+    public boolean isEnd() {
+        return LocalDateTime.now().isAfter(endTime);
+    }
+
     public void setTeam(Team team) {
         if (this.team != null) {
             this.team.getSchedules().remove(this);
         }
         this.team = team;
-        if(team != null && !team.getSchedules().contains(this)) {
+        if (team != null && !team.getSchedules().contains(this)) {
             team.getSchedules().add(this);
         }
     }
