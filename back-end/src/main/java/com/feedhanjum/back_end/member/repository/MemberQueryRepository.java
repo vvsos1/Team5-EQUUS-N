@@ -23,4 +23,11 @@ public class MemberQueryRepository {
                 .where(teamMember.team.id.eq(teamId))
                 .fetch();
     }
+
+    public Long countMembersByTeamId(Long teamId) {
+        return jpaQueryFactory.select(teamMember.count())
+                .from(teamMember)
+                .where(teamMember.team.id.eq(teamId))
+                .fetchOne();
+    }
 }

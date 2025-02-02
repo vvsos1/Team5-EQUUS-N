@@ -3,9 +3,11 @@ package com.feedhanjum.back_end.team.service;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
+import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
+import com.feedhanjum.back_end.team.exception.TeamLeaderMustExistException;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamQueryRepository;
@@ -43,6 +45,9 @@ class TeamServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private MemberQueryRepository memberQueryRepository;
 
     @InjectMocks
     private TeamService teamService;
@@ -281,5 +286,96 @@ class TeamServiceTest {
         assertThatThrownBy(() -> teamService.delegateTeamLeader(currentLeaderId, teamId, newLeaderId))
                 .isInstanceOf(TeamMembershipNotFoundException.class)
                 .hasMessage("새 팀장이 팀의 구성원이 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("일반 회원 탈퇴 - 정상 처리")
+    void leaveTeam_일반회원탈퇴() {
+        // given
+        Long userId = 1L;
+        Long teamId = 1L;
+        Member leader = mock(Member.class);
+        when(leader.getId()).thenReturn(2L);
+        Team team = mock(Team.class);
+        when(team.getLeader()).thenReturn(leader);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        when(memberQueryRepository.countMembersByTeamId(teamId)).thenReturn(2L);
+        TeamMember membership = mock(TeamMember.class);
+        when(teamMemberRepository.findByMemberIdAndTeamId(userId, teamId)).thenReturn(Optional.of(membership));
+        // when
+        teamService.leaveTeam(userId, teamId);
+        // then
+        verify(teamMemberRepository).delete(membership);
+    }
+
+    @Test
+    @DisplayName("나가려는 팀이 없을 시 예외 발생")
+    void leaveTeam_팀정보없음() {
+        // given
+        Long userId = 1L;
+        Long teamId = 1L;
+        when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
+        // when, then
+        assertThatThrownBy(() -> teamService.leaveTeam(userId, teamId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("팀을 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("나가려는 팀과의 관계가 없을 시 예외 발생")
+    void leaveTeam_멤버십정보없음() {
+        // given
+        Long userId = 1L;
+        Long teamId = 1L;
+        Member leader = mock(Member.class);
+        when(leader.getId()).thenReturn(2L);
+        Team team = mock(Team.class);
+        when(team.getLeader()).thenReturn(leader);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        when(memberQueryRepository.countMembersByTeamId(teamId)).thenReturn(2L);
+        when(teamMemberRepository.findByMemberIdAndTeamId(userId, teamId)).thenReturn(Optional.empty());
+        // when, then
+        assertThatThrownBy(() -> teamService.leaveTeam(userId, teamId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("팀을 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("팀장 탈퇴 불가 예외 발생")
+    void leaveTeam_팀장탈퇴불가() {
+        // given
+        Long userId = 1L;
+        Long teamId = 1L;
+        Member leader = mock(Member.class);
+        when(leader.getId()).thenReturn(userId);
+        Team team = mock(Team.class);
+        when(team.getLeader()).thenReturn(leader);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        when(memberQueryRepository.countMembersByTeamId(teamId)).thenReturn(2L);
+
+        // when, then
+        assertThatThrownBy(() -> teamService.leaveTeam(userId, teamId))
+                .isInstanceOf(TeamLeaderMustExistException.class)
+                .hasMessage("팀장은 반드시 팀에 존재해야 합니다. 팀장직을 다른사람에게 위임해 주세요.");
+    }
+
+    @Test
+    @DisplayName("마지막 회원 탈퇴 - 성공")
+    void leaveTeam_마지막멤버탈퇴() {
+        // given
+        Long userId = 1L;
+        Long teamId = 1L;
+        Member leader = mock(Member.class);
+        when(leader.getId()).thenReturn(userId);
+        Team team = mock(Team.class);
+        when(team.getLeader()).thenReturn(leader);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        when(memberQueryRepository.countMembersByTeamId(teamId)).thenReturn(1L);
+        TeamMember membership = mock(TeamMember.class);
+        when(teamMemberRepository.findByMemberIdAndTeamId(userId, teamId)).thenReturn(Optional.of(membership));
+        // when
+        teamService.leaveTeam(userId, teamId);
+        // then
+        verify(teamMemberRepository).delete(membership);
     }
 }

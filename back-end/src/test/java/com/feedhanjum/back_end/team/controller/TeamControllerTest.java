@@ -179,4 +179,18 @@ class TeamControllerTest {
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
+    @Test
+    @DisplayName("팀 탈퇴 API 호출")
+    void leaveTeam_Success() throws Exception {
+        // given
+        Long teamId = 1L;
+        Long memberId = 100L;
+
+        // when
+        teamController.leaveTeam(memberId, teamId);
+
+        // then
+        verify(teamService).leaveTeam(memberId, teamId);
+    }
 }
