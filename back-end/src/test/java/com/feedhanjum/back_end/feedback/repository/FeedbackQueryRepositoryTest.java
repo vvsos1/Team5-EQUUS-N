@@ -63,6 +63,22 @@ class FeedbackQueryRepositoryTest {
     private TeamRepository teamRepository;
 
 
+    Feedback createFeedback(Member sender, Member receiver, Team team, boolean like) {
+        Feedback feedback = Feedback.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .team(team)
+                .feedbackType(FeedbackType.ANONYMOUS)
+                .feedbackFeeling(FeedbackFeeling.POSITIVE)
+                .objectiveFeedbacks(FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 2))
+                .subjectiveFeedback(team.toString() + ", " + sender.toString() + "->" + receiver.toString())
+                .build();
+        if (like) {
+            feedback.like();
+        }
+        return feedback;
+    }
+
     @Nested
     @DisplayName("findReceivedFeedbacks 메소드 테스트")
     class FindReceivedFeedbacks {
@@ -82,23 +98,6 @@ class FeedbackQueryRepositoryTest {
             team2 = new Team("team2", member2, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
             teamRepository.saveAll(List.of(team1, team2));
         }
-
-        Feedback createFeedback(Member sender, Member receiver, Team team, boolean like) {
-            Feedback feedback = Feedback.builder()
-                    .sender(sender)
-                    .receiver(receiver)
-                    .team(team)
-                    .feedbackType(FeedbackType.ANONYMOUS)
-                    .feedbackFeeling(FeedbackFeeling.POSITIVE)
-                    .objectiveFeedbacks(FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 2))
-                    .subjectiveFeedback(team.toString() + ", " + sender.toString() + "->" + receiver.toString())
-                    .build();
-            if (like) {
-                feedback.like();
-            }
-            return feedback;
-        }
-
 
         @Test
         @DisplayName("모든 피드백 최신순 조회 성공")
@@ -274,4 +273,201 @@ class FeedbackQueryRepositoryTest {
         }
 
     }
+
+    @Nested
+    @DisplayName("findSentFeedbacks 메소드 테스트")
+    class FindSentFeedbacks {
+
+        private Member member1;
+        private Member member2;
+        private Team team1;
+        private Team team2;
+
+        @BeforeEach
+        void setUp() {
+            member1 = new Member("member1", "email1@email.com", new ProfileImage("bg1", "profile1"));
+            member2 = new Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"));
+            memberRepository.saveAll(List.of(member1, member2));
+
+            team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
+            team2 = new Team("team2", member2, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
+            teamRepository.saveAll(List.of(team1, team2));
+        }
+
+        @Test
+        @DisplayName("모든 피드백 최신순 조회 성공")
+        void test1() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            for (int i = 0; i < 5; i++) {
+                Feedback feedback;
+                boolean liked = i % 2 == 0;
+                feedback = createFeedback(sender, receiver, team1, liked);
+                feedbackRepository.save(feedback);
+                feedback = createFeedback(sender, receiver, team2, liked);
+                feedbackRepository.save(feedback);
+            }
+
+            for (int i = 0; i < 5; i++) {
+                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+            }
+
+            int page = 0;
+            int pageSize = 4;
+            Sort.Direction order = Sort.Direction.DESC;
+            Pageable pageable = PageRequest.of(page, pageSize);
+
+            // when
+            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(sender.getId(), null, false, pageable, order);
+
+            // then
+            assertThat(result.getContent()).hasSize(pageSize);
+            assertThat(result.hasNext()).isTrue();
+            assertThat(result.getNumber()).isEqualTo(page);
+            assertThat(result.getTotalElements()).isEqualTo(10);
+            List<Feedback> feedbacks = result.getContent();
+            assertThat(feedbacks).hasSize(pageSize);
+            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
+                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
+                                                        .isLoaded(f.getReceiver()));
+            assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.reverseOrder());
+            assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
+            assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team2", "team1", "team2", "team1");
+            assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, true, false, false);
+        }
+
+        @Test
+        @DisplayName("팀 id로 필터링 조회 성공")
+        void test2() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            for (int i = 0; i < 5; i++) {
+                Feedback feedback;
+                boolean liked = i % 2 == 0;
+                feedback = createFeedback(sender, receiver, team1, liked);
+                feedbackRepository.save(feedback);
+                feedback = createFeedback(sender, receiver, team2, liked);
+                feedbackRepository.save(feedback);
+            }
+
+            for (int i = 0; i < 5; i++) {
+                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+            }
+
+            int page = 0;
+            int pageSize = 4;
+            Sort.Direction order = Sort.Direction.DESC;
+            Pageable pageable = PageRequest.of(page, pageSize);
+
+            // when
+            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(sender.getId(), team1.getId(), false, pageable, order);
+
+            // then
+            assertThat(result.getContent()).hasSize(pageSize);
+
+            assertThat(result.hasNext()).isTrue();
+            assertThat(result.getNumber()).isEqualTo(page);
+            assertThat(result.getTotalElements()).isEqualTo(5);
+            List<Feedback> feedbacks = result.getContent();
+            assertThat(feedbacks).hasSize(pageSize);
+            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
+                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
+                                                        .isLoaded(f.getReceiver()));
+            assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.reverseOrder());
+            assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
+            assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsOnly("team1");
+            assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, false, true, false);
+        }
+
+        @Test
+        @DisplayName("좋아요 여부로 필터링 조회 성공")
+        void test3() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+
+            feedbackRepository.save(createFeedback(sender, receiver, team1, true));
+            feedbackRepository.save(createFeedback(sender, receiver, team2, true));
+            feedbackRepository.save(createFeedback(sender, receiver, team1, false));
+            feedbackRepository.save(createFeedback(sender, receiver, team1, false));
+            feedbackRepository.save(createFeedback(sender, receiver, team2, true));
+            feedbackRepository.save(createFeedback(sender, receiver, team2, true));
+
+
+            for (int i = 0; i < 5; i++) {
+                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+            }
+
+            int page = 0;
+            int pageSize = 3;
+            Sort.Direction order = Sort.Direction.ASC;
+            Pageable pageable = PageRequest.of(page, pageSize);
+
+            // when
+            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(sender.getId(), null, true, pageable, order);
+
+            // then
+            assertThat(result.getContent()).hasSize(pageSize);
+            assertThat(result.hasNext()).isTrue();
+            assertThat(result.getNumber()).isEqualTo(page);
+            assertThat(result.getTotalElements()).isEqualTo(4);
+            List<Feedback> feedbacks = result.getContent();
+            assertThat(feedbacks).hasSize(pageSize);
+            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
+                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
+                                                        .isLoaded(f.getReceiver()));
+            assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.naturalOrder());
+            assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
+            assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team2");
+            assertThat(feedbacks).extracting(Feedback::isLiked).containsOnly(true);
+        }
+
+        @Test
+        @DisplayName("과거순 정렬 조회 성공")
+        void test4() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            for (int i = 0; i < 5; i++) {
+                Feedback feedback;
+                boolean liked = i % 2 == 0;
+                feedback = createFeedback(sender, receiver, team1, liked);
+                feedbackRepository.save(feedback);
+                feedback = createFeedback(sender, receiver, team2, liked);
+                feedbackRepository.save(feedback);
+            }
+
+            for (int i = 0; i < 5; i++) {
+                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+            }
+
+            int page = 0;
+            int pageSize = 4;
+            Sort.Direction order = Sort.Direction.ASC;
+            Pageable pageable = PageRequest.of(page, pageSize);
+
+            // when
+            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(sender.getId(), null, false, pageable, order);
+
+            // then
+            assertThat(result.getContent()).hasSize(pageSize);
+            assertThat(result.hasNext()).isTrue();
+            assertThat(result.getNumber()).isEqualTo(page);
+            assertThat(result.getTotalElements()).isEqualTo(10);
+            List<Feedback> feedbacks = result.getContent();
+            assertThat(feedbacks).hasSize(pageSize);
+            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
+                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
+                                                        .isLoaded(f.getReceiver()));
+            assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.naturalOrder());
+            assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
+            assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team1", "team2");
+            assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, true, false, false);
+        }
+
+    }
+
+
 }

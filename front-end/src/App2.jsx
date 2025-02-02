@@ -1,11 +1,15 @@
 import Accordion from './components/Accordion';
 import AiButton from './components/buttons/AiButton';
-import FeedBackButton from './components/buttons/FeedBackButton';
 import KeywordButton from './components/buttons/KeywordButton';
-import ProgressBar from './components/progressBar';
-import ReportKeywords from './components/ReportKeywords';
-import ReportResults from './components/ReportResults';
+import MediumButton from './components/buttons/MediumButton';
+import Modal, { ModalType } from './components/modals/Modal';
+import ProfileImage from './components/ProfileImage';
 import Tag, { TagType } from './components/Tag';
+import ProgressBar from './pages/feedback/components/ProgressBar';
+import Notification, { notiType } from './pages/main/components/notification';
+import ReportKeywords from './pages/mypage/components/ReportKeywords';
+import ReportResults from './pages/mypage/components/ReportResults';
+import { hideModal, showModal } from './utility/handleModal';
 
 function App2() {
   return (
@@ -33,6 +37,146 @@ function App2() {
       </KeywordButton>
       <KeywordButton isActive={false} onClick={() => {}}>
         대안을 제시하는
+      </KeywordButton>
+
+      <hr className='h-20' />
+      <KeywordButton
+        isActive={true}
+        onClick={() => {
+          showModal(
+            <Modal
+              type={ModalType.DOUBLE}
+              content='정말 로그아웃 하시겠어요?'
+              mainButton={
+                <MediumButton
+                  text='로그아웃'
+                  onClick={() => {}}
+                  isOutlined={false}
+                  disabled={false}
+                />
+              }
+              subButton={
+                <MediumButton
+                  text='아니요'
+                  isOutlined={true}
+                  disabled={true}
+                  onClick={() => {}}
+                />
+              }
+            />,
+          );
+        }}
+      >
+        로그아웃 모달 예시
+      </KeywordButton>
+      <KeywordButton
+        isActive={true}
+        onClick={() => {
+          showModal(
+            <Modal
+              type={ModalType.SINGLE}
+              content='초대링크 복사 완료!'
+              mainButton={
+                <MediumButton
+                  text='닫기'
+                  onClick={() => {
+                    hideModal();
+                  }}
+                  isOutlined={false}
+                  disabled={false}
+                />
+              }
+            />,
+          );
+        }}
+      >
+        초대링크 모달 예시
+      </KeywordButton>
+      <KeywordButton
+        isActive={true}
+        onClick={() => {
+          showModal(
+            <Modal
+              type={ModalType.SINGLE_DELETE}
+              content='팀장을 카리나님으로 변경할까요?'
+              mainButton={
+                <MediumButton
+                  text='확인'
+                  onClick={() => {
+                    hideModal();
+                  }}
+                  isOutlined={false}
+                  disabled={false}
+                />
+              }
+            />,
+          );
+        }}
+      >
+        초대링크 모달 예시
+      </KeywordButton>
+      <KeywordButton
+        isActive={true}
+        onClick={() =>
+          showModal(
+            <Modal
+              type={ModalType.PROFILE}
+              profileImage={
+                <div className='size-[62px]'>
+                  <ProfileImage iconName='@animals/frog' color='#AFD1DC' />
+                </div>
+              }
+              content='양준호님에게'
+              mainButton={
+                <MediumButton
+                  text='피드백 보내기'
+                  onClick={() => {}}
+                  isOutlined={false}
+                  disabled={false}
+                />
+              }
+              subButton={
+                <MediumButton
+                  text='피드백 요청하기'
+                  onClick={() => {}}
+                  isOutlined={true}
+                  disabled={false}
+                />
+              }
+            />,
+          )
+        }
+      >
+        프로필 모달 예시
+      </KeywordButton>
+      <KeywordButton
+        isActive={true}
+        onClick={() => {
+          showModal(
+            <Modal
+              type={ModalType.EXIT}
+              content='탈퇴를 진행하기 전에 꼭 확인해주세요'
+              mainButton={
+                <MediumButton
+                  text='탈퇴하기'
+                  onClick={() => {}}
+                  isOutlined={true}
+                  disabled={true}
+                />
+              }
+              // subButton={
+              //   <MediumButton
+              //     text='아니요'
+              //     onClick={() => {}}
+              //     isOutlined={true}
+              //     disabled={true}
+              //   />
+              // }
+            />,
+          );
+        }}
+      >
+        탈퇴 모달 예시
       </KeywordButton>
 
       <div className='flex h-[852px] w-[393px] flex-col gap-10 bg-gray-900 px-5'>
@@ -93,6 +237,10 @@ function App2() {
           isMainPage={false}
         />
       </div>
+      <Notification type={notiType.UNCONFIRM} />
+      <Notification type={notiType.NEW} />
+      <Notification type={notiType.REPORT} name={'백현식'} />
+      <Notification type={notiType.REQUEST} name={'백현식'} count={3} />
     </div>
   );
 }

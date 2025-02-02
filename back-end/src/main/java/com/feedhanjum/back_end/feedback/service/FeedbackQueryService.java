@@ -4,6 +4,7 @@ package com.feedhanjum.back_end.feedback.service;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
+import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.annotation.Nullable;
@@ -35,7 +36,7 @@ public class FeedbackQueryService {
 
         PageRequest pageRequest = PageRequest.of(page, PAGE_SIZE);
         memberRepository.findById(receiverId)
-                .orElseThrow(() -> new EntityNotFoundException("writerId에 해당하는 Member가 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("receiverId에 해당하는 Member가 없습니다."));
         if (teamId != null)
             teamRepository.findById(teamId)
                     .orElseThrow(() -> new EntityNotFoundException("teamId에 해당하는 Team이 없습니다."));
@@ -43,5 +44,27 @@ public class FeedbackQueryService {
 
         Page<Feedback> receivedFeedbacks = feedbackQueryRepository.findReceivedFeedbacks(receiverId, teamId, filterHelpful, pageRequest, sortOrder);
         return receivedFeedbacks.map(ReceivedFeedbackDto::from);
+    }
+
+    /**
+     * @throws EntityNotFoundException  sender나 team이 없을 때
+     * @throws IllegalArgumentException page가 0 미만일 때
+     */
+    @Transactional(readOnly = true)
+    public Page<SentFeedbackDto> getSentFeedbacks(Long senderId, @Nullable Long teamId, boolean filterHelpful, int page, Sort.Direction sortOrder) {
+        if (page < 0) {
+            throw new IllegalArgumentException("page는 0 이상의 값을 가져야 합니다.");
+        }
+
+        PageRequest pageRequest = PageRequest.of(page, PAGE_SIZE);
+        memberRepository.findById(senderId)
+                .orElseThrow(() -> new EntityNotFoundException("senderId에 해당하는 Member가 없습니다."));
+        if (teamId != null)
+            teamRepository.findById(teamId)
+                    .orElseThrow(() -> new EntityNotFoundException("teamId에 해당하는 Team이 없습니다."));
+
+
+        Page<Feedback> receivedFeedbacks = feedbackQueryRepository.findSentFeedbacks(senderId, teamId, filterHelpful, pageRequest, sortOrder);
+        return receivedFeedbacks.map(SentFeedbackDto::from);
     }
 }
