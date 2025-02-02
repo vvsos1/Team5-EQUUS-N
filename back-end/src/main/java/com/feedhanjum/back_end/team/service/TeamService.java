@@ -33,7 +33,7 @@ public class TeamService {
      */
     @Transactional
     public Team createTeam(Long leaderId, TeamCreateDto teamCreateDto) {
-        if (!teamCreateDto.startTime().isBefore(teamCreateDto.endTime())) {
+        if (teamCreateDto.endTime() != null && !teamCreateDto.startTime().isBefore(teamCreateDto.endTime())) {
             throw new IllegalArgumentException("프로젝트 시작 시간이 종료 시간보다 앞서야 합니다.");
         }
         Member leader = memberRepository.findById(leaderId)
