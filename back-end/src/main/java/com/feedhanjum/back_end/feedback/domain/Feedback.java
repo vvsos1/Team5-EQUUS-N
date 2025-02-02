@@ -56,9 +56,9 @@ public class Feedback {
         this.feedbackFeeling = feedbackFeeling;
         this.objectiveFeedbacks.addAll(objectiveFeedbacks);
         this.sender = sender;
+        this.receiver = receiver;
         this.team = team;
         validateObjectiveFeedbacks();
-        setReceiver(receiver);
     }
 
     public void like() {
@@ -89,13 +89,4 @@ public class Feedback {
         }
     }
 
-    private void setReceiver(Member receiver) {
-        if (this.receiver != null) {
-            this.receiver.getFeedbacks().remove(this);
-        }
-        this.receiver = receiver;
-        if (receiver != null && !receiver.getFeedbacks().contains(this)) {
-            receiver.getFeedbacks().add(this);
-        }
-    }
 }

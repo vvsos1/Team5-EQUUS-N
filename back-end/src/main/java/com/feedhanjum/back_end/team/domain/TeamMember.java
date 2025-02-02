@@ -31,27 +31,8 @@ public class TeamMember {
     private final List<FrequentFeedbackRequest> frequentFeedbackRequests = new ArrayList<>();
 
     public TeamMember(Team team, Member member) {
-        setTeam(team);
-        setMember(member);
-    }
-
-    private void setTeam(Team team) {
-        if (this.team != null) {
-            this.team.getTeamMembers().remove(this);
-        }
         this.team = team;
-        if (team != null && !team.getTeamMembers().contains(this)) {
-            team.getTeamMembers().add(this);
-        }
-    }
-
-    private void setMember(Member member) {
-        if (this.member != null) {
-            this.member.getTeamMembers().remove(this);
-        }
         this.member = member;
-        if (member != null && !member.getTeamMembers().contains(this)) {
-            member.getTeamMembers().add(this);
-        }
     }
+    
 }
