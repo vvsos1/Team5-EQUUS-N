@@ -65,4 +65,10 @@ public class TeamController {
                 .stream().map(MemberDto::new).toList();
         return ResponseEntity.ok(membersByTeam);
     }
+
+    @DeleteMapping("/{teamId}/member/{removeMemberId}")
+    public ResponseEntity<Void> deleteMemberFromTeam(@Login Long memberId, @PathVariable Long teamId, @PathVariable Long removeMemberId) {
+        teamService.removeTeamMember(memberId, teamId, removeMemberId);
+        return ResponseEntity.noContent().build();
+    }
 }

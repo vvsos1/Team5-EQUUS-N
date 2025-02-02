@@ -4,6 +4,7 @@ import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
+import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamQueryRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
@@ -50,5 +51,28 @@ public class TeamService {
     @Transactional(readOnly = true)
     public List<Team> getMyTeams(Long userId) {
         return teamQueryRepository.findTeamByMemberId(userId);
+    }
+
+    /**
+     * 팀장이 팀원을 제거한다.
+     *
+     * @throws EntityNotFoundException 해당 팀 또는 팀원 정보가 없을 경우
+     * @throws SecurityException 요청자가 팀장이 아닐 경우
+     * @throws IllegalArgumentException 팀장(자기 자신)을 제거하려 할 경우
+     * @throws TeamMembershipNotFoundException 해당 팀원이 팀에 가입된 사용자가 아닌 경우
+     */
+    @Transactional
+    public void removeTeamMember(Long leaderId, Long teamId, Long memberIdToRemove) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
+        if (!team.getLeader().getId().equals(leaderId)) {
+            throw new SecurityException("현재 사용자는 팀장이 아닙니다.");
+        }
+        if (team.getLeader().getId().equals(memberIdToRemove)) {
+            throw new IllegalArgumentException("팀장은 제거할 수 없습니다.");
+        }
+        TeamMember membership = teamMemberRepository.findByMemberIdAndTeamId(memberIdToRemove, teamId)
+                .orElseThrow(() -> new TeamMembershipNotFoundException("해당 팀원 정보를 찾을 수 없습니다."));
+        teamMemberRepository.delete(membership);
     }
 }
