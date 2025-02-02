@@ -10,10 +10,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/team")
@@ -28,5 +28,14 @@ public class TeamController {
                 new TeamCreateDto(request.name(), request.startTime(), request.endTime(), request.feedbackType()));
 
         return new ResponseEntity<>(new TeamResponse(team), HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TeamResponse>> getMyTeams(@Login Long memberId) {
+        List<TeamResponse> teams = teamService.getMyTeams(memberId)
+                .stream()
+                .map(TeamResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(teams);
     }
 }
