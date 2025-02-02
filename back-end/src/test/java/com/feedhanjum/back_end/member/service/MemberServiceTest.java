@@ -2,7 +2,11 @@ package com.feedhanjum.back_end.member.service;
 
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
+import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
+import com.feedhanjum.back_end.team.domain.TeamMember;
+import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
+import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,10 +16,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,6 +29,12 @@ class MemberServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private TeamMemberRepository teamMemberRepository;
+
+    @Mock
+    private MemberQueryRepository memberQueryRepository;
 
     @InjectMocks
     private MemberService memberService;
@@ -88,5 +100,41 @@ class MemberServiceTest {
         // then
         assertThat(result.getProfileImage().getBackgroundColor()).isEqualTo("hehe");
         assertThat(result.getProfileImage().getImage()).isEqualTo("haha");
+    }
+
+    @Test
+    @DisplayName("팀 내 회원 조회 성공")
+    void getMembersByTeam_조회성공() {
+        //given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        TeamMember teamMember = mock(TeamMember.class);
+        when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId))
+                .thenReturn(Optional.of(teamMember));
+        Member member = mock(Member.class);
+        List<Member> expectedMembers = List.of(member);
+        when(memberQueryRepository.findMembersByTeamId(teamId))
+                .thenReturn(expectedMembers);
+
+        //when
+        List<Member> result = memberService.getMembersByTeam(memberId, teamId);
+
+        //then
+        assertThat(result).isEqualTo(expectedMembers);
+    }
+
+    @Test
+    @DisplayName("가입되지 않은 팀 조회 시 예외 발생")
+    void getMembersByTeam_팀미가입예외() {
+        //given
+        Long memberId = 2L;
+        Long teamId = 2L;
+        when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId))
+                .thenReturn(Optional.empty());
+
+        //when then
+        assertThatThrownBy(() -> memberService.getMembersByTeam(memberId, teamId))
+                .isInstanceOf(TeamMembershipNotFoundException.class)
+                .hasMessage("속해있는 팀에 대한 정보만 접근 가능합니다.");
     }
 }
