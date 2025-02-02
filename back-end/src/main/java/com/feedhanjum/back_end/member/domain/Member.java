@@ -37,9 +37,9 @@ public class Member {
 
     @Override
     public final boolean equals(Object o) {
+        if (this == o) return true;
         if (o instanceof Member m)
             return getId() != null && Objects.equals(getId(), m.getId());
         return false;
     }
-
 }
