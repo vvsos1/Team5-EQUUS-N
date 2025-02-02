@@ -57,7 +57,8 @@ public class TeamService {
      * 팀장이 팀원을 제거한다.
      *
      * @throws EntityNotFoundException 해당 팀 또는 팀원 정보가 없을 경우
-     * @throws SecurityException 요청자가 팀장이 아니거나 팀장을 제거하려 할 경우
+     * @throws SecurityException 요청자가 팀장이 아닐 경우
+     * @throws IllegalArgumentException 팀장(자기 자신)을 제거하려 할 경우
      * @throws TeamMembershipNotFoundException 해당 팀원이 팀에 가입된 사용자가 아닌 경우
      */
     @Transactional
