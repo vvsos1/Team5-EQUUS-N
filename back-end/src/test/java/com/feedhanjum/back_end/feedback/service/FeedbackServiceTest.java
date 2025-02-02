@@ -964,4 +964,39 @@ class FeedbackServiceTest {
                     .isInstanceOf(EntityNotFoundException.class);
         }
     }
+
+    @Nested
+    @DisplayName("rejectAllFrequentFeedbackRequests 메서드 테스트")
+    class RejectAllFrequentFeedbackRequestsTest {
+        @Test
+        @DisplayName("모든 수시 피드백 요청 거절 성공")
+        void test1() {
+            // given
+            Long memberId = 1L;
+            Long teamId = 2L;
+            TeamMember teamMember = mock();
+
+            when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId)).thenReturn(Optional.of(teamMember));
+
+            // when
+            feedbackService.rejectAllFrequentFeedbackRequests(memberId, teamId);
+
+            // then
+            verify(frequentFeedbackRequestRepository).deleteAllByTeamMember(teamMember);
+        }
+
+        @Test
+        @DisplayName("모든 수시 피드백 요청 거절 실패 - member가 team에 속하지 않았을 경우")
+        void test2() {
+            // given
+            Long memberId = 1L;
+            Long teamId = 2L;
+
+            when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> feedbackService.rejectAllFrequentFeedbackRequests(memberId, teamId))
+                    .isInstanceOf(EntityNotFoundException.class);
+        }
+    }
 }

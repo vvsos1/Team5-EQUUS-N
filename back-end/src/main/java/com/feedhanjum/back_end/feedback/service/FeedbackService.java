@@ -103,7 +103,7 @@ public class FeedbackService {
     }
 
     /**
-     * @throws EntityNotFoundException receiver가 팀에 속해있지 않을 경우
+     * @throws EntityNotFoundException 팀에 속한 receiver가 없을 경우
      */
     @Transactional(readOnly = true)
     public List<FrequentFeedbackRequest> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
@@ -217,7 +217,7 @@ public class FeedbackService {
     }
 
     /**
-     * @throws EntityNotFoundException receiver가 team에 속해있지 않을 경우
+     * @throws EntityNotFoundException 일정에 속한 receiver가 없을 경우
      */
     @Transactional(readOnly = true)
     public List<RegularFeedbackRequest> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
@@ -225,5 +225,19 @@ public class FeedbackService {
                 .orElseThrow(() -> new EntityNotFoundException("receiver 가 schedule 에 속해있지 않습니다"));
 
         return scheduleMember.getRegularFeedbackRequests();
+    }
+
+    /**
+     * 해당 팀에서 receiver에게 온 모든 수시 피드백 요청을 거절한다.
+     * 수시 피드백 요청 배너닫기 클릭 시 사용
+     *
+     * @throws EntityNotFoundException 팀에 속한 receiver가 없을 경우
+     */
+    @Transactional
+    public void rejectAllFrequentFeedbackRequests(Long receiverId, Long teamId) {
+        TeamMember teamMember = teamMemberRepository.findByMemberIdAndTeamId(receiverId, teamId)
+                .orElseThrow(() -> new EntityNotFoundException("receiver 가 team 에 속해있지 않습니다"));
+
+        frequentFeedbackRequestRepository.deleteAllByTeamMember(teamMember);
     }
 }
