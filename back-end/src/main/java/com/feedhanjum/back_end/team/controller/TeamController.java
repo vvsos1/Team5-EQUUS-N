@@ -25,7 +25,7 @@ public class TeamController {
     public ResponseEntity<TeamResponse> createTeam(@Login Long memberId,
                                                    @Valid @RequestBody TeamCreateRequest request) {
         Team team = teamService.createTeam(memberId,
-                new TeamCreateDto(request.name(), request.startTime(), request.endTime(), request.feedbackType()));
+                new TeamCreateDto(request));
 
         return new ResponseEntity<>(new TeamResponse(team), HttpStatus.CREATED);
     }
