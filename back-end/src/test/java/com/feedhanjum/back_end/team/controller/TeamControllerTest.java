@@ -157,10 +157,26 @@ class TeamControllerTest {
         Long teamId = 1L;
         Long memberId = 2L;
         Long removeMemberId = 3L;
+
         //when
         teamController.deleteMemberFromTeam(memberId, teamId, removeMemberId);
 
         //then
         verify(teamService).removeTeamMember(memberId, teamId, removeMemberId);
+    }
+
+    @Test
+    @DisplayName("컨트롤러 팀 리더 위임 정상 동작")
+    void delegateTeamLeader_정상() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        Long newLeaderId = 2L;
+
+        // when
+        ResponseEntity<Void> response = teamController.delegateTeamLeader(memberId, teamId, newLeaderId);
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }
