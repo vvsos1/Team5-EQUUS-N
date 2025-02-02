@@ -200,4 +200,110 @@ class TeamServiceTest {
                 .isInstanceOf(TeamMembershipNotFoundException.class)
                 .hasMessageContaining("해당 팀원 정보를 찾을 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("팀 리더 위임 정상 동작")
+    void delegateTeamLeader_정상() {
+        // given
+        Long currentLeaderId = 1L;
+        Long teamId = 1L;
+        Long newLeaderId = 2L;
+        Team team = mock(Team.class);
+        Member currentLeader = mock(Member.class);
+        when(currentLeader.getId()).thenReturn(currentLeaderId);
+        when(team.getLeader()).thenReturn(currentLeader);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+
+        TeamMember teamMember = mock(TeamMember.class);
+        Member newLeader = mock(Member.class);
+        when(teamMember.getMember()).thenReturn(newLeader);
+        when(teamMemberRepository.findByMemberIdAndTeamId(newLeaderId, teamId))
+                .thenReturn(Optional.of(teamMember));
+
+        // when
+        teamService.delegateTeamLeader(currentLeaderId, teamId, newLeaderId);
+
+        // then
+        verify(team).changeLeader(newLeader);
+    }
+
+    @Test
+    @DisplayName("팀을 찾을 수 없는 경우 예외 발생")
+    void delegateTeamLeader_팀없음() {
+        // given
+        Long currentLeaderId = 1L;
+        Long teamId = 1L;
+        Long newLeaderId = 2L;
+        when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> teamService.delegateTeamLeader(currentLeaderId, teamId, newLeaderId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("팀을 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("현재 사용자가 팀장이 아닌 경우 예외 발생")
+    void delegateTeamLeader_팀장아님() {
+        // given
+        Long currentLeaderId = 1L;
+        Long teamId = 1L;
+        Long newLeaderId = 2L;
+        Team team = mock(Team.class);
+        Member wrongLeader = mock(Member.class);
+        when(wrongLeader.getId()).thenReturn(999L);
+        when(team.getLeader()).thenReturn(wrongLeader);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+
+        // when & then
+        assertThatThrownBy(() -> teamService.delegateTeamLeader(currentLeaderId, teamId, newLeaderId))
+                .isInstanceOf(SecurityException.class)
+                .hasMessage("현재 사용자는 팀장이 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("새 팀장이 팀의 구성원이 아닌 경우 예외 발생")
+    void delegateTeamLeader_팀구성원아님() {
+        // given
+        Long currentLeaderId = 1L;
+        Long teamId = 1L;
+        Long newLeaderId = 2L;
+        Team team = mock(Team.class);
+        Member currentLeader = mock(Member.class);
+        when(currentLeader.getId()).thenReturn(currentLeaderId);
+        when(team.getLeader()).thenReturn(currentLeader);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+
+        when(teamMemberRepository.findByMemberIdAndTeamId(newLeaderId, teamId))
+                .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> teamService.delegateTeamLeader(currentLeaderId, teamId, newLeaderId))
+                .isInstanceOf(TeamMembershipNotFoundException.class)
+                .hasMessage("새 팀장이 팀의 구성원이 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("새 팀장의 회원 정보가 존재하지 않는 경우 예외 발생")
+    void delegateTeamLeader_회원없음() {
+        // given
+        Long currentLeaderId = 1L;
+        Long teamId = 1L;
+        Long newLeaderId = 2L;
+        Team team = mock(Team.class);
+        Member currentLeader = mock(Member.class);
+        when(currentLeader.getId()).thenReturn(currentLeaderId);
+        when(team.getLeader()).thenReturn(currentLeader);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+
+        TeamMember teamMember = mock(TeamMember.class);
+        when(teamMember.getMember()).thenReturn(null);
+        when(teamMemberRepository.findByMemberIdAndTeamId(newLeaderId, teamId))
+                .thenReturn(Optional.of(teamMember));
+
+        // when & then
+        assertThatThrownBy(() -> teamService.delegateTeamLeader(currentLeaderId, teamId, newLeaderId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("존재하지 않는 회원입니다.");
+    }
 }
