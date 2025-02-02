@@ -38,4 +38,8 @@ public class Team {
         this.endTime = endTime;
         this.leader = leader;
     }
+
+    public void changeLeader(Member newLeader) {
+        this.leader = newLeader;
+    }
 }
