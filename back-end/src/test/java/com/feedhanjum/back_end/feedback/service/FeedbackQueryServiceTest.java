@@ -2,7 +2,7 @@ package com.feedhanjum.back_end.feedback.service;
 
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
-import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedback;
+import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -52,7 +52,7 @@ class FeedbackQueryServiceTest {
             int page = 0;
             Sort.Direction sortOrder = Sort.Direction.ASC;
             Page<Feedback> feedbacks = mock();
-            Page<ReceivedFeedback> receivedFeedbacks = mock();
+            Page<ReceivedFeedbackDto> receivedFeedbacks = mock();
 
             ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.captor();
 
@@ -63,7 +63,7 @@ class FeedbackQueryServiceTest {
             when(feedbacks.map(any(Function.class))).thenReturn(receivedFeedbacks);
 
             // when
-            Page<ReceivedFeedback> result = feedbackQueryService.getReceivedFeedbacks(receiverId, teamId, filterHelpful, page, sortOrder);
+            Page<ReceivedFeedbackDto> result = feedbackQueryService.getReceivedFeedbacks(receiverId, teamId, filterHelpful, page, sortOrder);
 
             // then
             assertThat(result).isEqualTo(receivedFeedbacks);

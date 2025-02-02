@@ -9,7 +9,7 @@ import jakarta.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record ReceivedFeedback(
+public record ReceivedFeedbackDto(
         Long feedbackId,
         boolean isAnonymous,
         @Nullable Sender sender,
@@ -19,7 +19,7 @@ public record ReceivedFeedback(
         LocalDateTime createdAt
 ) {
 
-    public ReceivedFeedback(Long feedbackId, boolean isAnonymous, @Nullable Sender sender, List<String> objectiveFeedbacks, String subjectiveFeedback, String teamName, LocalDateTime createdAt) {
+    public ReceivedFeedbackDto(Long feedbackId, boolean isAnonymous, @Nullable Sender sender, List<String> objectiveFeedbacks, String subjectiveFeedback, String teamName, LocalDateTime createdAt) {
         this.feedbackId = feedbackId;
         this.isAnonymous = isAnonymous;
         this.objectiveFeedbacks = objectiveFeedbacks;
@@ -32,8 +32,8 @@ public record ReceivedFeedback(
             this.sender = sender;
     }
 
-    public static ReceivedFeedback from(Feedback feedback) {
-        return new ReceivedFeedback(
+    public static ReceivedFeedbackDto from(Feedback feedback) {
+        return new ReceivedFeedbackDto(
                 feedback.getId(),
                 feedback.getFeedbackType() == FeedbackType.ANONYMOUS,
                 Sender.from(feedback.getSender()),
@@ -46,7 +46,6 @@ public record ReceivedFeedback(
 
 
     public record Sender(String name, String backgroundColor, String image) {
-
         public static Sender from(Member member) {
             return new Sender(member.getName(), member.getProfileImage().getBackgroundColor(), member.getProfileImage().getImage());
         }

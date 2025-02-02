@@ -3,7 +3,7 @@ package com.feedhanjum.back_end.feedback.service;
 
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
-import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedback;
+import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.annotation.Nullable;
@@ -28,7 +28,7 @@ public class FeedbackQueryService {
      * @throws IllegalArgumentException page가 0 미만일 때
      */
     @Transactional(readOnly = true)
-    public Page<ReceivedFeedback> getReceivedFeedbacks(Long receiverId, @Nullable Long teamId, boolean filterHelpful, int page, Sort.Direction sortOrder) {
+    public Page<ReceivedFeedbackDto> getReceivedFeedbacks(Long receiverId, @Nullable Long teamId, boolean filterHelpful, int page, Sort.Direction sortOrder) {
         if (page < 0) {
             throw new IllegalArgumentException("page는 0 이상의 값을 가져야 합니다.");
         }
@@ -42,6 +42,6 @@ public class FeedbackQueryService {
 
 
         Page<Feedback> receivedFeedbacks = feedbackQueryRepository.findReceivedFeedbacks(receiverId, teamId, filterHelpful, pageRequest, sortOrder);
-        return receivedFeedbacks.map(ReceivedFeedback::from);
+        return receivedFeedbacks.map(ReceivedFeedbackDto::from);
     }
 }
