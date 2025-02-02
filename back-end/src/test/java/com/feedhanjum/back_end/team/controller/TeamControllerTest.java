@@ -3,7 +3,9 @@ package com.feedhanjum.back_end.team.controller;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.member.controller.dto.MemberDto;
 import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.member.service.MemberService;
 import com.feedhanjum.back_end.team.controller.dto.TeamCreateRequest;
+import com.feedhanjum.back_end.team.controller.dto.TeamDetailResponse;
 import com.feedhanjum.back_end.team.controller.dto.TeamResponse;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.service.TeamService;
@@ -28,6 +30,10 @@ class TeamControllerTest {
 
     @Mock
     private TeamService teamService;
+
+    @Mock
+    private MemberService memberService;
+
     @InjectMocks
     private TeamController teamController;
 
@@ -74,5 +80,72 @@ class TeamControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).hasSize(1);
         assertThat(response.getBody().get(0)).isEqualTo(teamResponse);
+    }
+
+    @Test
+    @DisplayName("팀 상세 조회시 팀 정보와 멤버 리스트를 정상적으로 반환하는지 테스트")
+    void getTeamDetail_팀상세조회() {
+        // given
+        Long teamId = 1L;
+        Long memberId = 2L;
+        LocalDateTime now = LocalDateTime.now();
+
+        Member leader = new Member("haha", "haha", null);
+        Team dummyTeam = new Team("haha", leader, now, now.plusHours(1), FeedbackType.IDENTIFIED);
+
+        Member dummyMember = new Member("hoho", "huhu", null);
+        List<Member> memberList = List.of(dummyMember);
+
+        when(teamService.getTeam(teamId)).thenReturn(dummyTeam);
+        when(memberService.getMembersByTeam(memberId, teamId)).thenReturn(memberList);
+
+        // when
+        ResponseEntity<TeamDetailResponse> responseEntity = teamController.getTeamDetail(memberId, teamId);
+
+        // then
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        TeamDetailResponse teamDetailResponse = responseEntity.getBody();
+        assertThat(teamDetailResponse).isNotNull();
+
+        TeamResponse teamResponse = teamDetailResponse.getTeamResponse();
+        assertThat(teamResponse).isNotNull();
+        assertThat(teamResponse.name()).isEqualTo(dummyTeam.getName());
+        assertThat(teamResponse.startTime()).isEqualTo(dummyTeam.getStartTime());
+        assertThat(teamResponse.endTime()).isEqualTo(dummyTeam.getEndTime());
+        assertThat(teamResponse.feedbackType()).isEqualTo(dummyTeam.getFeedbackType());
+
+        assertThat(teamResponse.leader().name()).isEqualTo(dummyTeam.getLeader().getName());
+        assertThat(teamResponse.leader().email()).isEqualTo(dummyTeam.getLeader().getEmail());
+
+        List<MemberDto> members = teamDetailResponse.getMembers();
+        assertThat(members).hasSize(memberList.size());
+        MemberDto memberDto = members.get(0);
+        assertThat(memberDto.name()).isEqualTo(dummyMember.getName());
+        assertThat(memberDto.email()).isEqualTo(dummyMember.getEmail());
+    }
+
+    @Test
+    @DisplayName("팀 멤버 조회시 팀 멤버 리스트를 정상적으로 반환하는지 테스트")
+    void getTeamMembers_팀멤버조회() {
+        // given
+        Long teamId = 3L;
+        Long memberId = 4L;
+
+        Member dummyMember = new Member("hehe", "hoho", null);
+        List<Member> memberList = List.of(dummyMember);
+
+        when(memberService.getMembersByTeam(memberId, teamId)).thenReturn(memberList);
+
+        // when
+        ResponseEntity<List<MemberDto>> responseEntity = teamController.getTeamMembers(memberId, teamId);
+
+        // then
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<MemberDto> memberDtos = responseEntity.getBody();
+        assertThat(memberDtos).isNotNull();
+        assertThat(memberDtos).hasSize(memberList.size());
+        MemberDto memberDto = memberDtos.get(0);
+        assertThat(memberDto.name()).isEqualTo(dummyMember.getName());
+        assertThat(memberDto.email()).isEqualTo(dummyMember.getEmail());
     }
 }
