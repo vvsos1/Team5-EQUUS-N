@@ -207,4 +207,14 @@ public class FeedbackService {
         regularFeedbackRequestRepository.saveAll(requests);
     }
 
+    /**
+     * @throws EntityNotFoundException 일정에 속한 member가 없을 경우
+     */
+    @Transactional
+    public void skipRegularFeedback(Long scheduleId, Long memberId) {
+        ScheduleMember scheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("member가 schedule에 속해있지 않습니다."));
+
+        regularFeedbackRequestRepository.deleteAllByScheduleMember(scheduleMember);
+    }
 }
