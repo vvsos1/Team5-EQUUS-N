@@ -79,4 +79,10 @@ public class TeamController {
         teamService.delegateTeamLeader(memberId, teamId, newLeaderId);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{teamId}/leave")
+    public ResponseEntity<Void> leaveTeam(@Login Long memberId, @PathVariable Long teamId) {
+        teamService.leaveTeam(memberId, teamId);
+        return ResponseEntity.noContent().build();
+    }
 }
