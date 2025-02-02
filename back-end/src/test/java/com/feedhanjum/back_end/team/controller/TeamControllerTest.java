@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -147,5 +148,19 @@ class TeamControllerTest {
         MemberDto memberDto = memberDtos.get(0);
         assertThat(memberDto.name()).isEqualTo(dummyMember.getName());
         assertThat(memberDto.email()).isEqualTo(dummyMember.getEmail());
+    }
+
+    @Test
+    @DisplayName("팀 멤버 제거가 정상적으로 호출되는지 테스트")
+    void deleteMemberFromTeam_팀원제거() {
+        //given
+        Long teamId = 1L;
+        Long memberId = 2L;
+        Long removeMemberId = 3L;
+        //when
+        teamController.deleteMemberFromTeam(memberId, teamId, removeMemberId);
+
+        //then
+        verify(teamService).removeTeamMember(memberId, teamId, removeMemberId);
     }
 }
