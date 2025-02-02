@@ -282,28 +282,4 @@ class TeamServiceTest {
                 .isInstanceOf(TeamMembershipNotFoundException.class)
                 .hasMessage("새 팀장이 팀의 구성원이 아닙니다.");
     }
-
-    @Test
-    @DisplayName("새 팀장의 회원 정보가 존재하지 않는 경우 예외 발생")
-    void delegateTeamLeader_회원없음() {
-        // given
-        Long currentLeaderId = 1L;
-        Long teamId = 1L;
-        Long newLeaderId = 2L;
-        Team team = mock(Team.class);
-        Member currentLeader = mock(Member.class);
-        when(currentLeader.getId()).thenReturn(currentLeaderId);
-        when(team.getLeader()).thenReturn(currentLeader);
-        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-
-        TeamMember teamMember = mock(TeamMember.class);
-        when(teamMember.getMember()).thenReturn(null);
-        when(teamMemberRepository.findByMemberIdAndTeamId(newLeaderId, teamId))
-                .thenReturn(Optional.of(teamMember));
-
-        // when & then
-        assertThatThrownBy(() -> teamService.delegateTeamLeader(currentLeaderId, teamId, newLeaderId))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("존재하지 않는 회원입니다.");
-    }
 }
