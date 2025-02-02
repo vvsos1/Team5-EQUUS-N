@@ -1,9 +1,11 @@
 package com.feedhanjum.back_end.team.service;
 
 import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
+import com.feedhanjum.back_end.team.exception.TeamLeaderMustExistException;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamQueryRepository;
@@ -23,6 +25,7 @@ public class TeamService {
     private final TeamMemberRepository teamMemberRepository;
     private final MemberRepository memberRepository;
     private final TeamQueryRepository teamQueryRepository;
+    private final MemberQueryRepository memberQueryRepository;
 
     /**
      * @throws IllegalArgumentException 프로젝트 기간의 시작일이 종료일보다 앞서지 않을 경우
@@ -92,5 +95,29 @@ public class TeamService {
                 .orElseThrow(() -> new TeamMembershipNotFoundException("새 팀장이 팀의 구성원이 아닙니다."));
         Member newLeader = newLeaderMembership.getMember();
         team.changeLeader(newLeader);
+    }
+
+    /**
+     * @throws EntityNotFoundException      팀 가입 정보가 없을 경우
+     * @throws TeamLeaderMustExistException 팀장은 탈퇴할 수 없으므로 발생
+     */
+    @Transactional
+    public void leaveTeam(Long userId, Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
+        Long memberCount = memberQueryRepository.countMembersByTeamId(teamId);
+        if (team.getLeader().getId().equals(userId) && memberCount >= 2) {
+            throw new TeamLeaderMustExistException("팀장은 반드시 팀에 존재해야 합니다. 팀장직을 다른사람에게 위임해 주세요.");
+        }
+        TeamMember membership = teamMemberRepository.findByMemberIdAndTeamId(userId, teamId)
+                .orElseThrow(() -> new EntityNotFoundException("팀 멤버 정보를 찾을 수 없습니다."));
+        teamMemberRepository.delete(membership);
+        if (memberCount == 1) {
+            deleteTeam(teamId);
+        }
+    }
+
+    private void deleteTeam(Long teamId) {
+        // 팀 삭제 로직 Todo
     }
 }
