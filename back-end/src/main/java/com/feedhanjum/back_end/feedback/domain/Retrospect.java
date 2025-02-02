@@ -31,18 +31,10 @@ public class Retrospect {
     private Team team;
 
     public Retrospect(String content, Member writer, Team team) {
+        this.createdAt = LocalDateTime.now();
         this.content = content;
         this.team = team;
-        setWriter(writer);
+        this.writer = writer;
     }
 
-    public void setWriter(Member writer) {
-        if (this.writer != null) {
-            this.writer.getRetrospects().remove(this);
-        }
-        this.writer = writer;
-        if(writer != null && !writer.getRetrospects().contains(this)) {
-            writer.getRetrospects().add(this);
-        }
-    }
 }

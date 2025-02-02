@@ -36,20 +36,11 @@ public class Schedule {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
-        setTeam(team);
+        this.team = team;
     }
 
     public boolean isEnd() {
         return LocalDateTime.now().isAfter(endTime);
     }
 
-    public void setTeam(Team team) {
-        if (this.team != null) {
-            this.team.getSchedules().remove(this);
-        }
-        this.team = team;
-        if (team != null && !team.getSchedules().contains(this)) {
-            team.getSchedules().add(this);
-        }
-    }
 }
