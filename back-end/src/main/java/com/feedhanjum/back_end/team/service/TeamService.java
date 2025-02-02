@@ -43,6 +43,11 @@ public class TeamService {
     }
 
     @Transactional(readOnly = true)
+    public Team getTeam(Long teamId) {
+        return teamRepository.findById(teamId).orElseThrow(() -> new EntityNotFoundException("해당 팀을 찾을 수 없습니다."));
+    }
+
+    @Transactional(readOnly = true)
     public List<Team> getMyTeams(Long userId) {
         return teamQueryRepository.findTeamByMemberId(userId);
     }
