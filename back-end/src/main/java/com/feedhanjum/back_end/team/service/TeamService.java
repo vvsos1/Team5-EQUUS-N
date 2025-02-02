@@ -91,9 +91,6 @@ public class TeamService {
         TeamMember newLeaderMembership = teamMemberRepository.findByMemberIdAndTeamId(newLeaderId, teamId)
                 .orElseThrow(() -> new TeamMembershipNotFoundException("새 팀장이 팀의 구성원이 아닙니다."));
         Member newLeader = newLeaderMembership.getMember();
-        if (newLeader == null) {
-            throw new EntityNotFoundException("존재하지 않는 회원입니다.");
-        }
         team.changeLeader(newLeader);
     }
 }
