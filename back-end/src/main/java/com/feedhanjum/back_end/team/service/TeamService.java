@@ -73,4 +73,27 @@ public class TeamService {
                 .orElseThrow(() -> new TeamMembershipNotFoundException("해당 팀원 정보를 찾을 수 없습니다."));
         teamMemberRepository.delete(membership);
     }
+
+
+    /**
+     * @throws EntityNotFoundException         해당 팀 또는 회원이 존재하지 않을 경우
+     * @throws SecurityException               현재 사용자가 팀장이 아닐 경우
+     * @throws TeamMembershipNotFoundException 새 팀장이 팀의 구성원이 아닐 경우
+     */
+    @Transactional
+    public void delegateTeamLeader(Long currentLeaderId, Long teamId, Long newLeaderId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
+        if (!team.getLeader().getId().equals(currentLeaderId)) {
+            throw new SecurityException("현재 사용자는 팀장이 아닙니다.");
+        }
+        // 새 팀장이 팀 구성원인지 확인
+        TeamMember newLeaderMembership = teamMemberRepository.findByMemberIdAndTeamId(newLeaderId, teamId)
+                .orElseThrow(() -> new TeamMembershipNotFoundException("새 팀장이 팀의 구성원이 아닙니다."));
+        Member newLeader = newLeaderMembership.getMember();
+        if (newLeader == null) {
+            throw new EntityNotFoundException("존재하지 않는 회원입니다.");
+        }
+        team.changeLeader(newLeader);
+    }
 }
