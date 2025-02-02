@@ -110,7 +110,7 @@ public class TeamService {
             throw new TeamLeaderMustExistException("팀장은 반드시 팀에 존재해야 합니다. 팀장직을 다른사람에게 위임해 주세요.");
         }
         TeamMember membership = teamMemberRepository.findByMemberIdAndTeamId(userId, teamId)
-                .orElseThrow(() -> new EntityNotFoundException("팀 멤버 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
         teamMemberRepository.delete(membership);
         if (memberCount == 1) {
             deleteTeam(teamId);
