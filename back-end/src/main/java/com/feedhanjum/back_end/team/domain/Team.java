@@ -2,6 +2,7 @@ package com.feedhanjum.back_end.team.domain;
 
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.team.exception.TeamLeaderMustExistException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,5 +38,12 @@ public class Team {
         this.startTime = startTime;
         this.endTime = endTime;
         this.leader = leader;
+    }
+
+    public void changeLeader(Member newLeader) {
+        if (newLeader == null) {
+            throw new TeamLeaderMustExistException("팀 리더는 반드시 존재하는 사용자여야 합니다.");
+        }
+        this.leader = newLeader;
     }
 }

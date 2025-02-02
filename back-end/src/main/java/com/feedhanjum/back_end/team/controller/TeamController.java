@@ -71,4 +71,12 @@ public class TeamController {
         teamService.removeTeamMember(memberId, teamId, removeMemberId);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{teamId}/leader")
+    public ResponseEntity<Void> delegateTeamLeader(@Login Long memberId,
+                                                   @PathVariable Long teamId,
+                                                   @RequestParam Long newLeaderId) {
+        teamService.delegateTeamLeader(memberId, teamId, newLeaderId);
+        return ResponseEntity.ok().build();
+    }
 }
