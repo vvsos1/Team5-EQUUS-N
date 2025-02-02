@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,21 +19,23 @@ import java.util.Set;
 public class Feedback {
     private static final int MIN_OBJECTIVE_FEEDBACK_SIZE = 1;
     private static final int MAX_OBJECTIVE_FEEDBACK_SIZE = 5;
-    // 객관식 피드백
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "objective_feedback", joinColumns = @JoinColumn(name = "feedback_id"))
-    private final Set<ObjectiveFeedback> objectiveFeedbacks = new HashSet<>();
+
     @Id
     @Column(name = "feedback_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
     @Enumerated(EnumType.STRING)
     private FeedbackType feedbackType;
+
     @Enumerated(EnumType.STRING)
     private FeedbackFeeling feedbackFeeling;
+
     private String subjectiveFeedback;
 
     private boolean liked = false;
+
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id")
@@ -46,6 +49,11 @@ public class Feedback {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    // 객관식 피드백
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "objective_feedback", joinColumns = @JoinColumn(name = "feedback_id"))
+    private final Set<ObjectiveFeedback> objectiveFeedbacks = new HashSet<>();
+
     /**
      * @throws IllegalArgumentException 피드백 기분에 맞지 객관식 피드백이 있을 경우, 또는 객관식 피드백이 1개 이상 5개 이하가 아닐 경우
      */
@@ -58,6 +66,7 @@ public class Feedback {
         this.sender = sender;
         this.receiver = receiver;
         this.team = team;
+        this.createdAt = LocalDateTime.now();
         validateObjectiveFeedbacks();
     }
 
