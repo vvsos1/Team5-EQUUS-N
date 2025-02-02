@@ -5,6 +5,7 @@ import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
+import com.feedhanjum.back_end.team.repository.TeamQueryRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import com.feedhanjum.back_end.team.service.dto.TeamCreateDto;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,12 +13,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TeamService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final MemberRepository memberRepository;
+    private final TeamQueryRepository teamQueryRepository;
 
     /**
      * @throws IllegalArgumentException 프로젝트 기간의 시작일이 종료일보다 앞서지 않을 경우
@@ -36,5 +40,10 @@ public class TeamService {
         TeamMember teamMember = new TeamMember(team, leader);
         teamMemberRepository.save(teamMember);
         return team;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Team> getMyTeams(Long userId) {
+        return teamQueryRepository.findTeamByMemberId(userId);
     }
 }
