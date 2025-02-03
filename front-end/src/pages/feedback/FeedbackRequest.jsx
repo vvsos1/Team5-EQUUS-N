@@ -17,6 +17,15 @@ export default function FeedbackRequest() {
         isSmall={true}
         items={['프론트엔드', '백엔드', '데이터', '디자인', '기획']}
       />
+      <Dropdown
+        isSmall={false}
+        items={['프론트엔드', '백엔드', '데이터', '디자인', '기획']}
+      />
+      <Dropdown
+        isSmall={false}
+        isFromTime={false}
+        items={['프론트엔드', '백엔드', '데이터', '디자인', '기획']}
+      />
       <h1 className='header-2 text-gray-0 my-6 whitespace-pre-line'>
         {'백현식님에게 요청할\n피드백을 작성해주세요'}
       </h1>
