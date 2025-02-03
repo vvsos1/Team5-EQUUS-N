@@ -8,6 +8,7 @@ import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
 import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
+import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -15,7 +16,6 @@ import com.feedhanjum.back_end.schedule.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
 import com.feedhanjum.back_end.schedule.event.RegularFeedbackRequestCreatedEvent;
-import com.feedhanjum.back_end.schedule.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.schedule.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
@@ -128,6 +128,7 @@ public class FeedbackService {
         Member receiver = receiverScheduleMember.getMember();
 
         Schedule schedule = senderScheduleMember.getSchedule();
+
 
         // 정기 피드백을 보내려면 정기 피드백 요청이 있어야 함
         RegularFeedbackRequest regularFeedbackRequest = regularFeedbackRequestRepository.findByRequesterAndScheduleMember(receiver, senderScheduleMember)
