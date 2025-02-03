@@ -10,9 +10,11 @@ import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
+import com.feedhanjum.back_end.schedule.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
 import com.feedhanjum.back_end.schedule.domain.ScheduleRole;
+import com.feedhanjum.back_end.schedule.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.team.domain.Team;
@@ -64,6 +66,40 @@ class FeedbackControllerTest {
     @Autowired
     private ScheduleMemberRepository scheduleMemberRepository;
 
+    private Member member1;
+    private Member member2;
+    private Team team1;
+    private TeamMember teamMember1;
+    private TeamMember teamMember2;
+    private Schedule schedule1;
+    private ScheduleMember scheduleMember1;
+    private ScheduleMember scheduleMember2;
+    @Autowired
+    private RegularFeedbackRequestRepository regularFeedbackRequestRepository;
+
+    @BeforeEach
+    void setUp() {
+        member1 = new Member("member1", "email1@email.com", null);
+        member2 = new Member("member2", "email2@email.com", null);
+        memberRepository.saveAll(List.of(member1, member2));
+
+        team1 = new Team("team1", member1, LocalDateTime.now(), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
+
+        teamRepository.saveAll(List.of(team1));
+
+        teamMember1 = new TeamMember(team1, member1);
+        teamMember2 = new TeamMember(team1, member2);
+        teamMemberRepository.saveAll(List.of(teamMember1, teamMember2));
+
+        schedule1 = new Schedule("schedule1", LocalDateTime.now(), LocalDateTime.now().plusDays(1), team1);
+        scheduleRepository.save(schedule1);
+
+        scheduleMember1 = new ScheduleMember(ScheduleRole.OWNER, schedule1, member1);
+        scheduleMember2 = new ScheduleMember(ScheduleRole.MEMBER, schedule1, member2);
+        scheduleMemberRepository.saveAll(List.of(scheduleMember1, scheduleMember2));
+
+    }
+
 
     MockHttpSession withLoginUser(Member member) {
         MockHttpSession session = new MockHttpSession();
@@ -74,27 +110,9 @@ class FeedbackControllerTest {
     @Nested
     @DisplayName("수시 피드백 전송 테스트")
     class SendFrequentFeedback {
-        private Member member1;
-        private Member member2;
-        private Team team1;
+
         @Autowired
         private FeedbackRepository feedbackRepository;
-
-        @BeforeEach
-        void setUp() {
-            member1 = new Member("member1", "email1@email.com", null);
-            member2 = new Member("member2", "email2@email.com", null);
-            memberRepository.saveAll(List.of(member1, member2));
-
-            team1 = new Team("team1", member1, LocalDateTime.now(), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
-
-            teamRepository.saveAll(List.of(team1));
-
-            TeamMember teamMember1 = new TeamMember(team1, member1);
-            TeamMember teamMember3 = new TeamMember(team1, member2);
-            teamMemberRepository.saveAll(List.of(teamMember1, teamMember3));
-
-        }
 
         @Test
         @DisplayName("성공 시 204")
@@ -167,35 +185,10 @@ class FeedbackControllerTest {
     @Nested
     @DisplayName("정기 피드백 전송 테스트")
     class SendRegularFeedback {
-        private Member member1;
-        private Member member2;
-        private Team team1;
-        private Schedule schedule1;
+
         @Autowired
         private FeedbackRepository feedbackRepository;
 
-        @BeforeEach
-        void setUp() {
-            member1 = new Member("member1", "email1@email.com", null);
-            member2 = new Member("member2", "email2@email.com", null);
-            memberRepository.saveAll(List.of(member1, member2));
-
-            team1 = new Team("team1", member1, LocalDateTime.now(), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
-
-            teamRepository.saveAll(List.of(team1));
-
-            TeamMember teamMember1 = new TeamMember(team1, member1);
-            TeamMember teamMember2 = new TeamMember(team1, member2);
-            teamMemberRepository.saveAll(List.of(teamMember1, teamMember2));
-
-            schedule1 = new Schedule("schedule1", LocalDateTime.now(), LocalDateTime.now().plusDays(1), team1);
-            scheduleRepository.save(schedule1);
-
-            ScheduleMember scheduleMember1 = new ScheduleMember(ScheduleRole.OWNER, schedule1, member1);
-            ScheduleMember scheduleMember2 = new ScheduleMember(ScheduleRole.MEMBER, schedule1, member2);
-            scheduleMemberRepository.saveAll(List.of(scheduleMember1, scheduleMember2));
-
-        }
 
         @Test
         @DisplayName("성공 시 204")
@@ -205,6 +198,9 @@ class FeedbackControllerTest {
             Member receiver = member2;
             Team team = team1;
             Schedule schedule = schedule1;
+            regularFeedbackRequestRepository.save(
+                    new RegularFeedbackRequest(LocalDateTime.now(), receiver,
+                            scheduleMember1));
             RegularFeedbackSendRequest request = new RegularFeedbackSendRequest(
                     receiver.getId(),
                     schedule.getId(),
@@ -216,7 +212,7 @@ class FeedbackControllerTest {
 
             // when
             assertThat(mvc.post()
-                    .uri("/api/feedbacks/frequent")
+                    .uri("/api/feedbacks/regular")
                     .contentType(MediaType.APPLICATION_JSON)
                     .session(withLoginUser(sender))
                     .content(mapper.writeValueAsString(request))
@@ -254,11 +250,40 @@ class FeedbackControllerTest {
 
             // when
             assertThat(mvc.post()
-                    .uri("/api/feedbacks/frequent")
+                    .uri("/api/feedbacks/regular")
                     .contentType(MediaType.APPLICATION_JSON)
                     .session(withLoginUser(sender))
                     .content(mapper.writeValueAsString(request))
             ).hasStatus(HttpStatus.BAD_REQUEST);
+
+            List<Feedback> feedbacks = feedbackRepository.findAll();
+            assertThat(feedbacks).isEmpty();
+        }
+
+        @Test
+        @DisplayName("수시 피드백 요청이 없을 시 400")
+        void test3() throws Exception {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            Schedule schedule = schedule1;
+            RegularFeedbackSendRequest request = new RegularFeedbackSendRequest(
+                    receiver.getId(),
+                    schedule.getId(),
+                    FeedbackFeeling.CONSTRUCTIVE,
+                    FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(1, 3),
+                    "테스트 내용",
+                    true
+            );
+
+            // when
+            assertThat(mvc.post()
+                    .uri("/api/feedbacks/regular")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .session(withLoginUser(sender))
+                    .content(mapper.writeValueAsString(request))
+            ).hasStatus(HttpStatus.BAD_REQUEST);
+
 
             List<Feedback> feedbacks = feedbackRepository.findAll();
             assertThat(feedbacks).isEmpty();
