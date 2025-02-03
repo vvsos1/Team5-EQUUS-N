@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,6 @@ public class ScheduleMember {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private ScheduleRole role;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
@@ -32,14 +30,19 @@ public class ScheduleMember {
     @OneToMany(mappedBy = "scheduleMember")
     private final List<RegularFeedbackRequest> regularFeedbackRequests = new ArrayList<>();
 
-    @OneToMany(mappedBy = "scheduleMember")
+    @ElementCollection
+    @CollectionTable(
+            name = "todos",
+            joinColumns = @JoinColumn(name = "schedule_member_id")
+    )
+    @Setter
     private List<Todo> todos;
 
-    public ScheduleMember(ScheduleRole role, Schedule schedule, Member member) {
-        this.role = role;
+    public ScheduleMember(Schedule schedule, Member member) {
         this.member = member;
         setSchedule(schedule);
     }
+
 
     private void setSchedule(Schedule schedule) {
         if (this.schedule != null) {
