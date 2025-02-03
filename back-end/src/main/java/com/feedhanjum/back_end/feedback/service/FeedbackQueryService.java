@@ -9,7 +9,6 @@ import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.domain.FrequentFeedbackRequest;
 import com.feedhanjum.back_end.team.repository.FrequentFeedbackRequestQueryRepository;
-import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,7 +28,6 @@ public class FeedbackQueryService {
     private final FeedbackQueryRepository feedbackQueryRepository;
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
-    private final TeamMemberRepository teamMemberRepository;
     private final FrequentFeedbackRequestQueryRepository frequentFeedbackRequestQueryRepository;
 
     /**

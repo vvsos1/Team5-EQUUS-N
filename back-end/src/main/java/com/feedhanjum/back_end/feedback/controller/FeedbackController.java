@@ -2,8 +2,10 @@ package com.feedhanjum.back_end.feedback.controller;
 
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
+import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestQueryRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackSendRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.RegularFeedbackSendRequest;
+import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestDto;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
@@ -14,10 +16,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class FeedbackController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "정기 피드백 전송", description = "정기 피드백을 전송합니다.")
+    @Operation(summary = "정기 피드백 전송", description = "일정별로 정기 피드백을 전송합니다. 정기 피드백 요청을 통해 피드백 작성을 요청받았어야 합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "정기 피드백 전송 성공", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "선행되는 정기 피드백 요청이 없을 경우", useReturnTypeSchema = true)
@@ -62,5 +63,16 @@ public class FeedbackController {
         feedbackService.requestFrequentFeedback(senderId, request.teamId(),
                 request.receiverId(), request.requestedContent());
         return ResponseEntity.accepted().build();
+    }
+
+    @Operation(summary = "수시 피드백 요청 조회", description = "팀별 수시 피드백 요청을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "팀별 수시 피드백 요청 조회 성공", useReturnTypeSchema = true)
+    })
+    @GetMapping("/feedbacks/regular/request")
+    public ResponseEntity<List<FrequentFeedbackRequestDto>> getFrequentFeedbackRequest(@Login Long receiverId,
+                                                                                       @Valid @RequestBody FrequentFeedbackRequestQueryRequest request) {
+        List<FrequentFeedbackRequestDto> frequentFeedbackRequests = feedbackQueryService.getFrequentFeedbackRequests(receiverId, request.teamId());
+        return ResponseEntity.ok(frequentFeedbackRequests);
     }
 }
