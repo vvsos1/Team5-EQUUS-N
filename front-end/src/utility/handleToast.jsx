@@ -4,6 +4,10 @@ import Toast from '../components/toasts/Toast';
 let toastRoot = null;
 let isToastDisplaying = false;
 
+/**
+ * 토스트 메시지 표시
+ * @param {string} content - 토스트 메시지
+ */
 export function showToast(content) {
   if (isToastDisplaying) {
     return;

@@ -14,6 +14,10 @@ import {
 } from '../../utility/inputChecker';
 import { showToast } from '../../utility/handleToast';
 
+/**
+ * 회원가입 페이지
+ * @returns
+ */
 export default function SignUp() {
   const [email, setEmail] = useState('');
   const [certState, setCertState] = useState(CertState.BEFORE_SEND_CODE);
@@ -32,6 +36,7 @@ export default function SignUp() {
     <div className='relative flex h-screen w-full flex-col justify-start'>
       <NavBar title='계정 만들기' />
       <div className='h-2' />
+      {/* 이메일 입력 */}
       <CustomInput
         label='이메일'
         hint='이메일을 입력해 주세요'
@@ -40,12 +45,14 @@ export default function SignUp() {
         type='email'
       />
       <div className='h-4' />
+      {/* 인증 컴포넌트 */}
       <Certification
         email={isValidEmail(email) ? email : ''}
         certState={certState}
         setCertState={setCertState}
       />
       <div className='h-6' />
+      {/* 비밀번호 입력 */}
       <CustomInput
         label='비밀번호'
         hint='영문, 숫자 포함 8글자 이상'
@@ -67,6 +74,7 @@ export default function SignUp() {
           </button>
         }
       />
+      {/* 비밀번호 확인 */}
       <CustomInput
         label='비밀번호 확인'
         hint='비밀번호를 재입력해주세요'
@@ -90,6 +98,7 @@ export default function SignUp() {
         }
       />
       <div className='h-6' />
+      {/* 활동 이름 입력 */}
       <CustomInput
         label='활동 이름'
         hint='팀원이 보게 될 이름이에요'
@@ -98,6 +107,7 @@ export default function SignUp() {
         condition={[(content) => isWithin10Bytes(content)]}
         notification={['한글 최대 5글자, 영어 최대 10글자']}
       />
+      {/* 다음 버튼 */}
       <div className='absolute right-0 bottom-[34px] left-0 bg-gray-900'>
         <LargeButton
           text='다음'
