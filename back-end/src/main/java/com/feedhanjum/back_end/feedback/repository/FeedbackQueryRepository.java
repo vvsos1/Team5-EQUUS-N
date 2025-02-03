@@ -59,5 +59,38 @@ public class FeedbackQueryRepository {
         return new PageImpl<>(result, pageable, total);
     }
 
+    public Page<Feedback> findSentFeedbacks(Long senderId, @Nullable Long teamId, boolean filterHelpful, Pageable pageable, Sort.Direction sortOrder) {
+        Objects.requireNonNull(senderId);
+        Objects.requireNonNull(pageable);
+        Objects.requireNonNull(sortOrder);
+
+        BooleanBuilder predicate = new BooleanBuilder();
+        predicate.and(feedback.sender.id.eq(senderId));
+        if (teamId != null) {
+            predicate.and(feedback.team.id.eq(teamId));
+        }
+        if (filterHelpful) {
+            predicate.and(feedback.liked.isTrue());
+        }
+
+        List<Feedback> result = queryFactory
+                .selectFrom(feedback)
+                .innerJoin(feedback.receiver).fetchJoin()
+                .innerJoin(feedback.team).fetchJoin()
+                .where(predicate)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(sortOrder == Sort.Direction.ASC ? sortProperty.asc() : sortProperty.desc())
+                .fetch();
+        Long total = queryFactory.select(feedback.count())
+                .from(feedback)
+                .where(predicate)
+                .fetchOne();
+        if (total == null) {
+            total = (long) result.size();
+        }
+        return new PageImpl<>(result, pageable, total);
+    }
+
 
 }
