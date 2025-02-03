@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.schedule.controller;
 
-import com.feedhanjum.back_end.schedule.controller.dto.ScheduleCreateRequest;
+import com.feedhanjum.back_end.schedule.controller.dto.ScheduleRequest;
 import com.feedhanjum.back_end.schedule.domain.Todo;
 import com.feedhanjum.back_end.schedule.service.ScheduleService;
 import com.feedhanjum.back_end.schedule.service.dto.ScheduleRequestDto;
@@ -36,7 +36,7 @@ public class ScheduleControllerTest {
         // given
         Long memberId = 1L;
         Long teamId = 2L;
-        ScheduleCreateRequest request = new ScheduleCreateRequest("haha", LocalDateTime.now(), LocalDateTime.now().plusDays(10), List.of(new Todo("hehe")));
+        ScheduleRequest request = new ScheduleRequest("haha", LocalDateTime.now(), LocalDateTime.now().plusDays(10), List.of(new Todo("hehe")));
         ScheduleRequestDto scheduleRequestDto = new ScheduleRequestDto(request);
         ScheduleResponseDto responseDto = mock(ScheduleResponseDto.class);
         when(scheduleService.createSchedule(memberId, teamId, scheduleRequestDto)).thenReturn(responseDto);

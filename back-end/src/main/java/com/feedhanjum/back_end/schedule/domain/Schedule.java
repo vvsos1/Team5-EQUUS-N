@@ -45,8 +45,25 @@ public class Schedule {
         this.owner = owner;
     }
 
+    public boolean isDifferent(String name, LocalDateTime startTime, LocalDateTime endTime) {
+        if (!name.equals(this.name)) return true;
+        if (!startTime.isEqual(this.startTime)) return true;
+        return !endTime.isEqual(this.endTime);
+    }
+
     public boolean isEnd() {
         return LocalDateTime.now().isAfter(endTime);
     }
 
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changeStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void changeEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
 }
