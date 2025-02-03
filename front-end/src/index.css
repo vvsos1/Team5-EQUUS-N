@@ -52,6 +52,13 @@ button:active {
   opacity: 0.8;
 }
 
+a {
+  text-decoration-line: underline;
+  cursor: pointer;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
 .header-1 {
   font-weight: 600;
   font-size: 26px;

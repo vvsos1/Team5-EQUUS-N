@@ -10,7 +10,8 @@ import { forwardRef } from 'react';
  * @param {function} props.setContent - 값 변경 함수
  * @param {string} props.keyboardType - 키보드 타입
  * @param {ReactNode} props.addOn - 오른쪽 아이콘
- * @param {string} props.condition - 하단 조건
+ * @param {function[]} props.condition - 하단 조건
+ * @param {string[]} props.notification - 하단 조건 알림
  * @param {boolean} props.isPassword - 비밀번호 여부
  * @param {boolean} props.disabled - 비활성화 여부
  * @param {boolean} props.isOutlined - 테두리/배경 여부
@@ -26,6 +27,7 @@ const CustomInput = forwardRef(function CustomInput(
     keyboardType = 'text',
     addOn,
     condition,
+    notification,
     isPassword,
     disabled = setContent ? false : true, // setContent가 없으면 비활성화
     isOutlined = true,
@@ -56,14 +58,33 @@ const CustomInput = forwardRef(function CustomInput(
           onChange={(e) => setContent(e.target.value)}
           disabled={disabled}
         ></input>
-        {/* 오른쪽 아이콘 */}
-        {addOn && <div className='absolute top-[14px] right-5'>{addOn}</div>}
         {/* 하단 조건 */}
         {condition && (
-          <p className='caption-1 text-right text-gray-500 group-focus-within:text-lime-300'>
-            {condition}
-          </p>
+          <div className='flex justify-end text-right'>
+            {condition.map((item, index) => (
+              <div key={index} className='flex'>
+                {index > 0 && (
+                  <p
+                    className={`caption-1 ${content.length === 0 ? 'text-gray-500' : 'text-gray-100'}`}
+                  >
+                    &nbsp;•&nbsp;
+                  </p>
+                )}
+                <p
+                  className={`caption-1 ${
+                    content.length === 0 ? 'text-gray-500'
+                    : item(content) ? 'text-lime-300'
+                    : 'text-red-300'
+                  }`}
+                >
+                  {notification[index]}
+                </p>
+              </div>
+            ))}
+          </div>
         )}
+        {/* 오른쪽 아이콘 */}
+        {addOn && <div className='absolute top-[14px] right-5'>{addOn}</div>}
       </div>
     </div>
   );
