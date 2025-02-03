@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import CustomInput from './CustomInput';
 import SmallButton from './buttons/SmallButton';
+import Icon from './Icon';
 
-const CertState = Object.freeze({
+export const CertState = Object.freeze({
   BEFORE_SEND_CODE: '인증코드 전송',
   RESEND_CODE: '재전송',
   AFTER_SEND_CODE: '인증하기',
@@ -15,8 +16,7 @@ const CertState = Object.freeze({
  * @param {string} props.email - 이메일
  * @returns
  */
-export default function Certification({ email = '' }) {
-  const [certState, setCertState] = useState(CertState.BEFORE_SEND_CODE);
+export default function Certification({ email = '', certState, setCertState }) {
   const [certCode, setCertCode] = useState('');
   const dueTime = 300; // 5분
   const [restTime, setRestTime] = useState(dueTime);
@@ -80,15 +80,17 @@ export default function Certification({ email = '' }) {
             setCertCode
           }
           addOn={
-            <p className='text-right text-lime-500'>
-              {timerRef.current ?
-                `${Math.floor(restTime / 60)
-                  .toString()
-                  .padStart(2, '0')}:${(restTime % 60)
-                  .toString()
-                  .padStart(2, '0')}`
-              : ''}
-            </p>
+            certState === CertState.AFTER_CHECK_CODE ?
+              <Icon name='checkBoxClick' color='var(--color-lime-500)' />
+            : <p className='text-right text-lime-500'>
+                {timerRef.current ?
+                  `${Math.floor(restTime / 60)
+                    .toString()
+                    .padStart(2, '0')}:${(restTime % 60)
+                    .toString()
+                    .padStart(2, '0')}`
+                : ''}
+              </p>
           }
           isPassword={certState === CertState.AFTER_CHECK_CODE}
         />
