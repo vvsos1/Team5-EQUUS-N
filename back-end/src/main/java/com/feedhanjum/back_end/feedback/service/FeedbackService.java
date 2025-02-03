@@ -23,6 +23,7 @@ import com.feedhanjum.back_end.team.domain.FrequentFeedbackRequest;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
 import com.feedhanjum.back_end.team.event.FrequentFeedbackRequestCreatedEvent;
+import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
 import com.feedhanjum.back_end.team.repository.FrequentFeedbackRequestRepository;
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
@@ -33,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FeedbackService {
@@ -239,5 +241,30 @@ public class FeedbackService {
                 .orElseThrow(() -> new EntityNotFoundException("receiver 가 team 에 속해있지 않습니다"));
 
         frequentFeedbackRequestRepository.deleteAllByTeamMember(teamMember);
+    }
+
+    /**
+     * 작성된 수시 피드백과 관련된 수시 피드백 요청을 삭제한다
+     * 수시 피드백 작성 시 이벤트를 통해 호출
+     *
+     * @throws EntityNotFoundException         feedback id에 해당하는 feedback이 없을 경우
+     * @throws TeamMembershipNotFoundException sender 가 team 에 속해있지 않을 경우
+     */
+    @Transactional
+    public void deleteRelatedFrequentFeedbackRequest(Long feedbackId) {
+        Feedback feedback = feedbackRepository
+                .findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
+
+        Member requester = feedback.getReceiver();
+        TeamMember teamMember = teamMemberRepository.findByMemberIdAndTeamId(feedback.getSender().getId(), feedback.getTeam().getId())
+                .orElseThrow(() -> new TeamMembershipNotFoundException("sender 가 team 에 속해있지 않습니다"));
+
+        Optional<FrequentFeedbackRequest> request = frequentFeedbackRequestRepository.findByTeamMemberAndRequester(teamMember, requester);
+        if (request.isEmpty()) {
+            // 수시 피드백 요청이 없던 경우
+            return;
+        }
+
+        frequentFeedbackRequestRepository.delete(request.get());
     }
 }
