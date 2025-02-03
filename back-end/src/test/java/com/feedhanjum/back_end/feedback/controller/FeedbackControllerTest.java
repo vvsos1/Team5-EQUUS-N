@@ -3,11 +3,9 @@ package com.feedhanjum.back_end.feedback.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
-import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestQueryRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackSendRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.request.RegularFeedbackSendRequest;
+import com.feedhanjum.back_end.feedback.controller.dto.request.*;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestDto;
+import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestDto;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
@@ -210,8 +208,8 @@ class FeedbackControllerTest {
             Team team = team1;
             Schedule schedule = schedule1;
             regularFeedbackRequestRepository.save(
-                    new RegularFeedbackRequest(LocalDateTime.now(), receiver,
-                            scheduleMember1));
+                    new RegularFeedbackRequest(LocalDateTime.now(), scheduleMember1, receiver
+                    ));
             RegularFeedbackSendRequest request = new RegularFeedbackSendRequest(
                     receiver.getId(),
                     schedule.getId(),
@@ -355,7 +353,7 @@ class FeedbackControllerTest {
 
             // when
             assertThat(mvc.get()
-                    .uri("/api/feedbacks/regular/request")
+                    .uri("/api/feedbacks/frequent/request")
                     .session(withLoginUser(receiver))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(request))
@@ -367,6 +365,41 @@ class FeedbackControllerTest {
                         assertThat(requests).hasSize(2);
                         assertThat(requests).extracting(FrequentFeedbackRequestDto::requestedContent)
                                 .containsExactlyInAnyOrder("내용1", "내용2");
+                        assertThat(requests).extracting(req -> req.requester().email())
+                                .containsExactlyInAnyOrder(sender1.getEmail(), sender2.getEmail());
+                    });
+
+        }
+    }
+
+    @Nested
+    @DisplayName("정기 피드백 요청 조회 테스트")
+    class GetRegularFeedbackRequest {
+
+        @Test
+        @DisplayName("성공 시 200")
+        void test1() throws Exception {
+            // given
+            Member sender1 = member1;
+            Member sender2 = member3;
+            ScheduleMember scheduleMember = scheduleMember2;
+            Member receiver = scheduleMember.getMember();
+            var request = new RegularFeedbackRequestQueryRequest(scheduleMember.getSchedule().getId());
+            regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), scheduleMember, sender1));
+            regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), scheduleMember, sender2));
+
+            // when
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/regular/request")
+                    .session(withLoginUser(receiver))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(request))
+            ).hasStatus(HttpStatus.OK)
+                    .body()
+                    .satisfies(result -> {
+                        List<RegularFeedbackRequestDto> requests = mapper.readValue(result, new TypeReference<List<RegularFeedbackRequestDto>>() {
+                        });
+                        assertThat(requests).hasSize(2);
                         assertThat(requests).extracting(req -> req.requester().email())
                                 .containsExactlyInAnyOrder(sender1.getEmail(), sender2.getEmail());
                     });
