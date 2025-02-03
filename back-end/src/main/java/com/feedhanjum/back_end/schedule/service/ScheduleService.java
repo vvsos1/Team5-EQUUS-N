@@ -27,15 +27,15 @@ public class ScheduleService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final ScheduleRepository scheduleRepository;
-    private final MemberRepository memberRepository;
     private final ScheduleMemberRepository scheduleMemberRepository;
+    private final MemberRepository memberRepository;
 
     /**
      * 일정을 생성하는 메소드
      *
-     * @throws EntityNotFoundException         사용자 혹은 팀이 존재하지 않는 경우
+     * @throws EntityNotFoundException 사용자 혹은 팀이 존재하지 않는 경우
      * @throws TeamMembershipNotFoundException 해당 사용자가 팀에 가입한 상태가 아닌경우
-     * @throws ScheduleAlreadyExistException   해당 일정의 시작 시간에 일정이 존재하는 경우
+     * @throws ScheduleAlreadyExistException 해당 일정의 시작 시간에 일정이 존재하는 경우
      */
     @Transactional
     public ScheduleResponseDto createSchedule(Long memberId, Long teamId, ScheduleRequestDto requestDto) {
