@@ -527,4 +527,30 @@ class FeedbackControllerTest {
             assertThat(likedFeedback.isLiked()).isTrue();
         }
     }
+
+    @Nested
+    @DisplayName("정기 피드백 건너뛰기 테스트")
+    class SkipRegularFeedbackRequest {
+
+        @Test
+        @DisplayName("성공 시 204")
+        void test1() {
+            // given
+            Member receiver = member1;
+            ScheduleMember scheduleMember = scheduleMember1;
+            Member sender = member2;
+            Schedule schedule = schedule1;
+            regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), scheduleMember, sender));
+
+            // when
+            assertThat(mvc.delete()
+                    .uri("/api/feedbacks/regular/request")
+                    .queryParam("scheduleId", schedule.getId().toString())
+                    .session(withLoginUser(receiver))
+            ).hasStatus(HttpStatus.NO_CONTENT);
+
+            var requests = regularFeedbackRequestRepository.findAll();
+            assertThat(requests).isEmpty();
+        }
+    }
 }
