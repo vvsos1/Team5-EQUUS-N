@@ -7,9 +7,11 @@ import com.feedhanjum.back_end.member.service.MemberService;
 import com.feedhanjum.back_end.team.controller.dto.TeamCreateRequest;
 import com.feedhanjum.back_end.team.controller.dto.TeamDetailResponse;
 import com.feedhanjum.back_end.team.controller.dto.TeamResponse;
+import com.feedhanjum.back_end.team.controller.dto.TeamUpdateRequest;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.service.TeamService;
 import com.feedhanjum.back_end.team.service.dto.TeamCreateDto;
+import com.feedhanjum.back_end.team.service.dto.TeamUpdateDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,8 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TeamControllerTest {
@@ -50,9 +51,9 @@ class TeamControllerTest {
                 endTime, FeedbackType.ANONYMOUS);
         TeamCreateDto teamCreateDto = new TeamCreateDto(request);
         TeamResponse teamResponse = new TeamResponse(null, "haha", startTime,
-                endTime, FeedbackType.ANONYMOUS, new MemberDto(new com.feedhanjum.back_end.member.domain.Member("haha", "haha@hoho", null)));
+                endTime, FeedbackType.ANONYMOUS, new MemberDto(new Member("haha", "haha@hoho", null)));
         when(teamService.createTeam(memberId, teamCreateDto))
-                .thenReturn(new com.feedhanjum.back_end.team.domain.Team("haha", new com.feedhanjum.back_end.member.domain.Member("haha", "haha@hoho", null),
+                .thenReturn(new Team("haha", new Member("haha", "haha@hoho", null),
                         request.startTime(), request.endTime(), request.feedbackType()));
 
         //when
@@ -192,5 +193,23 @@ class TeamControllerTest {
 
         // then
         verify(teamService).leaveTeam(memberId, teamId);
+    }
+
+    @Test
+    @DisplayName("팀 정보 변경 API 호출")
+    void updateTeamInfo(){
+        // given
+        Long teamId = 1L;
+        Long memberId = 100L;
+        TeamUpdateRequest teamUpdateRequest = new TeamUpdateRequest("hehe", LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10), FeedbackType.IDENTIFIED);
+
+        Team team = new Team("haha", mock(Member.class), LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10), FeedbackType.ANONYMOUS);
+        when(teamService.updateTeamInfo(memberId, teamId, new TeamUpdateDto(teamUpdateRequest))).thenReturn(team);
+
+        // when
+        teamController.updateTeamInfo(memberId, teamId, teamUpdateRequest);
+
+        // then
+        verify(teamService).updateTeamInfo(memberId, teamId, new TeamUpdateDto(teamUpdateRequest));
     }
 }
