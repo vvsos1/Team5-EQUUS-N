@@ -86,7 +86,7 @@ public class Feedback {
         this.liked = false;
     }
 
-    public boolean isReceiver(Member member) {
+    private boolean isReceiver(Member member) {
         return receiver.equals(member);
     }
 

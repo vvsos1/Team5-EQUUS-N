@@ -13,10 +13,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +27,8 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
     private final FeedbackQueryService feedbackQueryService;
 
-    @ApiResponse(responseCode = "204", description = "수시 피드백 전송 성공", useReturnTypeSchema = true)
+    @Operation(summary = "수시 피드백 전송", description = "팀별로 수시 피드백을 전송합니다.")
+    @ApiResponse(responseCode = "204", description = "수시 피드백 전송 성공. 연관된 수시 피드백 요청도 함께 삭제", useReturnTypeSchema = true)
     @PostMapping("/feedbacks/frequent")
     public ResponseEntity<Void> sendFrequentFeedback(@Login Long senderId,
                                                      @Valid @RequestBody FrequentFeedbackSendRequest request) {
@@ -83,5 +86,33 @@ public class FeedbackController {
                                                                                      @Valid @RequestBody RegularFeedbackRequestQueryRequest request) {
         List<RegularFeedbackRequestDto> regularFeedbackRequests = feedbackQueryService.getRegularFeedbackRequests(receiverId, request.scheduleId());
         return ResponseEntity.ok(regularFeedbackRequests);
+    }
+
+    @Operation(summary = "피드백 좋아요", description = "피드백에 좋아요를 누릅니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "피드백 좋아요 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우", useReturnTypeSchema = true)
+    })
+    @PostMapping("/member/{memberId}/feedbacks/{feedbackId}/liked")
+    public ResponseEntity<Void> likeFeedback(@Login Long loginId, @PathVariable Long memberId, @PathVariable Long feedbackId) {
+        if (!Objects.equals(loginId, memberId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        feedbackService.likeFeedback(feedbackId, memberId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "피드백 좋아요 취소", description = "피드백에 누른 좋아요를 취소합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "피드백 좋아요 취소 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우", useReturnTypeSchema = true)
+    })
+    @DeleteMapping("/member/{memberId}/feedbacks/{feedbackId}/liked")
+    public ResponseEntity<Void> unlikeFeedback(@Login Long loginId, @PathVariable Long memberId, @PathVariable Long feedbackId) {
+        if (!Objects.equals(loginId, memberId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        feedbackService.unlikeFeedback(feedbackId, memberId);
+        return ResponseEntity.noContent().build();
     }
 }
