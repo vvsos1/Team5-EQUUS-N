@@ -5,6 +5,7 @@ import Icon from '../../components/Icon';
 import Certification from '../../components/Certification';
 import { CertState } from '../../components/Certification';
 import { useEffect, useState } from 'react';
+import { isWithin10Bytes } from '../../utility/inputChecker';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
@@ -91,15 +92,8 @@ export default function SignUp() {
         hint='팀원이 보게 될 이름이에요'
         content={nickName}
         setContent={setNickName}
-        addOn={
-          <Icon
-            name={
-              nickName.length > 0 && nickName.length < 10 ?
-                'checkBoxClick'
-              : 'checkBoxNone'
-            }
-          />
-        }
+        condition={[(content) => isWithin10Bytes(content)]}
+        notification={['한글 최대 5글자, 영어 최대 10글자']}
       />
       <div className='absolute right-0 bottom-[34px] left-0 h-20 bg-gray-900'>
         <LargeButton text='다음' isOutlined={false} />
