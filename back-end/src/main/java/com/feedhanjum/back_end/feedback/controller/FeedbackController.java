@@ -72,7 +72,7 @@ public class FeedbackController {
     })
     @GetMapping("/feedbacks/frequent/request")
     public ResponseEntity<List<FrequentFeedbackRequestDto>> getFrequentFeedbackRequest(@Login Long receiverId,
-                                                                                       @Valid @RequestBody FrequentFeedbackRequestQueryRequest request) {
+                                                                                       @Valid FrequentFeedbackRequestQueryRequest request) {
         List<FrequentFeedbackRequestDto> frequentFeedbackRequests = feedbackQueryService.getFrequentFeedbackRequests(receiverId, request.teamId());
         return ResponseEntity.ok(frequentFeedbackRequests);
     }
@@ -83,7 +83,7 @@ public class FeedbackController {
     })
     @GetMapping("/feedbacks/regular/request")
     public ResponseEntity<List<RegularFeedbackRequestDto>> getRegularFeedbackRequest(@Login Long receiverId,
-                                                                                     @Valid @RequestBody RegularFeedbackRequestQueryRequest request) {
+                                                                                     @Valid RegularFeedbackRequestQueryRequest request) {
         List<RegularFeedbackRequestDto> regularFeedbackRequests = feedbackQueryService.getRegularFeedbackRequests(receiverId, request.scheduleId());
         return ResponseEntity.ok(regularFeedbackRequests);
     }

@@ -3,7 +3,9 @@ package com.feedhanjum.back_end.feedback.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
-import com.feedhanjum.back_end.feedback.controller.dto.request.*;
+import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
+import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackSendRequest;
+import com.feedhanjum.back_end.feedback.controller.dto.request.RegularFeedbackSendRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestDto;
 import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestDto;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
@@ -372,22 +374,21 @@ class FeedbackControllerTest {
 
         @Test
         @DisplayName("성공 시 200")
-        void test1() throws Exception {
+        void test1() {
             // given
             Member sender1 = member1;
             Member sender2 = member3;
             TeamMember teamMember = teamMember2;
             Member receiver = teamMember.getMember();
-            var request = new FrequentFeedbackRequestQueryRequest(teamMember.getTeam().getId());
             frequentFeedbackRequestRepository.save(new FrequentFeedbackRequest("내용1", teamMember, sender1));
             frequentFeedbackRequestRepository.save(new FrequentFeedbackRequest("내용2", teamMember, sender2));
 
             // when
             assertThat(mvc.get()
                     .uri("/api/feedbacks/frequent/request")
+                    .queryParam("teamId", teamMember.getTeam().getId().toString())
                     .session(withLoginUser(receiver))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(mapper.writeValueAsString(request))
             ).hasStatus(HttpStatus.OK)
                     .body()
                     .satisfies(result -> {
@@ -409,22 +410,21 @@ class FeedbackControllerTest {
 
         @Test
         @DisplayName("성공 시 200")
-        void test1() throws Exception {
+        void test1() {
             // given
             Member sender1 = member1;
             Member sender2 = member3;
             ScheduleMember scheduleMember = scheduleMember2;
             Member receiver = scheduleMember.getMember();
-            var request = new RegularFeedbackRequestQueryRequest(scheduleMember.getSchedule().getId());
             regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), scheduleMember, sender1));
             regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), scheduleMember, sender2));
 
             // when
             assertThat(mvc.get()
                     .uri("/api/feedbacks/regular/request")
+                    .queryParam("scheduleId", scheduleMember.getSchedule().getId().toString())
                     .session(withLoginUser(receiver))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(mapper.writeValueAsString(request))
             ).hasStatus(HttpStatus.OK)
                     .body()
                     .satisfies(result -> {
