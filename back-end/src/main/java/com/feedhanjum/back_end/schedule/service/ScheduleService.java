@@ -67,8 +67,9 @@ public class ScheduleService {
 
         changeScheduleInfo(requestDto, schedule, member, team);
 
+        ScheduleMember scheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, scheduleId).orElseThrow(() -> new EntityNotFoundException("해당 일정과 관계가 없습니다."));
 
-
+        return new ScheduleResponseDto(schedule, List.of(scheduleMember));
     }
 
     private void changeScheduleInfo(ScheduleRequestDto requestDto, Schedule schedule, Member member, Team team) {
