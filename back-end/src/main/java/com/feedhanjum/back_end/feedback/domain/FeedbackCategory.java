@@ -1,30 +1,23 @@
 package com.feedhanjum.back_end.feedback.domain;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import lombok.Getter;
 
+@Getter
 public enum FeedbackCategory {
-    POSITIVE, CONSTRUCTIVE;
 
-    private static final Map<FeedbackCategory, List<ObjectiveFeedback>> OBJECTIVE_FEEDBACKS;
+    GOOD_HARD_SKILL(FeedbackFeeling.POSITIVE, "하드 스킬"),
+    GOOD_SOFT_SKILL(FeedbackFeeling.POSITIVE, "소프트 스킬"),
+    GOOD_ATTITUDE_AND_POSTURE(FeedbackFeeling.POSITIVE, "태도와 자세"),
 
-    static {
-        OBJECTIVE_FEEDBACKS = new EnumMap<>(FeedbackCategory.class);
-        for (ObjectiveFeedback objectiveFeedback : ObjectiveFeedback.values()) {
-            OBJECTIVE_FEEDBACKS
-                    .computeIfAbsent(objectiveFeedback.getCategory(), discard -> new ArrayList<>())
-                    .add(objectiveFeedback);
-        }
-    }
+    BAD_EFFORT(FeedbackFeeling.CONSTRUCTIVE, "노력"),
+    BAD_COMMUNICATION(FeedbackFeeling.CONSTRUCTIVE, "협업 능력"),
+    BAD_ATTITUDE_AND_POSTURE(FeedbackFeeling.CONSTRUCTIVE, "태도와 자세");
 
-    public boolean isValidObjectiveFeedback(ObjectiveFeedback objectiveFeedback) {
-        return this == objectiveFeedback.getCategory();
-    }
+    private final FeedbackFeeling feeling;
+    private final String description;
 
-    // 카테고리별 허용된 객관식 피드백 목록 반환
-    public List<ObjectiveFeedback> getObjectiveFeedbacks() {
-        return OBJECTIVE_FEEDBACKS.get(this);
+    FeedbackCategory(FeedbackFeeling feeling, String description) {
+        this.feeling = feeling;
+        this.description = description;
     }
 }

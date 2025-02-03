@@ -21,11 +21,11 @@ public class ScheduleMember {
     @Enumerated(EnumType.STRING)
     private ScheduleRole role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -37,8 +37,8 @@ public class ScheduleMember {
 
     public ScheduleMember(ScheduleRole role, Schedule schedule, Member member) {
         this.role = role;
+        this.member = member;
         setSchedule(schedule);
-        setMember(member);
     }
 
     private void setSchedule(Schedule schedule) {
@@ -51,13 +51,4 @@ public class ScheduleMember {
         }
     }
 
-    private void setMember(Member member) {
-        if (this.member != null) {
-            this.member.getScheduleMembers().remove(this);
-        }
-        this.member = member;
-        if (member != null && !member.getScheduleMembers().contains(this)) {
-            member.getScheduleMembers().add(this);
-        }
-    }
 }

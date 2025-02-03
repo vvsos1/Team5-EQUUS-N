@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.auth.exception;
 
-import com.feedhanjum.back_end.auth.controller.dto.MemberSignupResponse;
+import com.feedhanjum.back_end.auth.controller.AuthController;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,8 +10,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestControllerAdvice
-public class AuthExceptionHandler {
+@Order(1)
+@RestControllerAdvice(basePackageClasses = AuthController.class)
+public class AuthControllerAdvice {
 
     /**
      * 이메일이 존재하는 경우
@@ -34,6 +36,20 @@ public class AuthExceptionHandler {
     public ResponseEntity<Map<String, String>> invalidCredentials(InvalidCredentialsException e) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "INVALID_CREDENTIALS");
+        errorResponse.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    /**
+     * 사용자가 로그인 상태가 아닐 경우
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(LoginStateRequiredException.class)
+    public ResponseEntity<Map<String, String>> loginStateRequired(LoginStateRequiredException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "LOGIN_STATE_REQUIRED");
         errorResponse.put("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
