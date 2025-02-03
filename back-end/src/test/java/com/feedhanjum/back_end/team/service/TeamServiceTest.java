@@ -13,6 +13,7 @@ import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamQueryRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import com.feedhanjum.back_end.team.service.dto.TeamCreateDto;
+import com.feedhanjum.back_end.team.service.dto.TeamUpdateDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -398,6 +399,89 @@ class TeamServiceTest {
             // then
             verify(teamMemberRepository).delete(membership);
         }
+    }
 
+    @Nested
+    @DisplayName("팀 정보 업데이트")
+    class UpdateTeamInfo {
+
+        @Test
+        @DisplayName("팀 정보 업데이트 성공")
+        void updateTeamInfo_성공() {
+            // given
+            Long memberId = 1L;
+            Member leader = mock(Member.class);
+            Long teamId = 10L;
+            LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
+            LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto(teamId, "haha", startTime, endTime, FeedbackType.IDENTIFIED);
+
+            Team team = new Team("huhu", leader, startTime, endTime, FeedbackType.ANONYMOUS);
+            when(leader.getId()).thenReturn(1L);
+            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+
+            // when
+            Team updatedTeam = teamService.updateTeamInfo(memberId, teamUpdateDto);
+
+            // then
+            assertThat(updatedTeam.getName()).isEqualTo("haha");
+            assertThat(updatedTeam.getStartTime()).isEqualTo(startTime);
+            assertThat(updatedTeam.getEndTime()).isEqualTo(endTime);
+            assertThat(updatedTeam.getFeedbackType()).isEqualTo(FeedbackType.IDENTIFIED);
+        }
+
+        @Test
+        @DisplayName("시작 시간이 종료 시간보다 늦은 경우 예외 발생")
+        void updateTeamInfo_잘못된기간() {
+            // given
+            Long memberId = 1L;
+            Long teamId = 10L;
+            LocalDateTime startTime = LocalDateTime.of(2025, 1, 3, 10, 0);
+            LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto(teamId, "haha", startTime, endTime, FeedbackType.IDENTIFIED);
+
+            // when, then
+            assertThatThrownBy(() -> teamService.updateTeamInfo(memberId, teamUpdateDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("팀이 존재하지 않을 경우 예외 발생")
+        void updateTeamInfo_팀없음() {
+            // given
+            Long memberId = 1L;
+            Long teamId = 10L;
+            LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
+            LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto(teamId, "haha", startTime, endTime, FeedbackType.ANONYMOUS);
+
+            when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
+
+            // when, then
+            assertThatThrownBy(() -> teamService.updateTeamInfo(memberId, teamUpdateDto))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessageContaining("팀을 찾을 수 없습니다");
+        }
+
+        @Test
+        @DisplayName("요청자가 팀장이 아닐 경우 예외 발생")
+        void updateTeamInfo_팀장아님() {
+            // given
+            Long memberId = 2L;
+            Member leader = mock(Member.class);
+            when(leader.getId()).thenReturn(1L);
+            Long teamId = 10L;
+            LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
+            LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto(teamId, "hoho", startTime, endTime, FeedbackType.ANONYMOUS);
+
+            Team team = new Team("haha", leader, startTime, endTime, FeedbackType.IDENTIFIED);
+            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+
+            // when, then
+            assertThatThrownBy(() -> teamService.updateTeamInfo(memberId, teamUpdateDto))
+                    .isInstanceOf(SecurityException.class)
+                    .hasMessageContaining("팀장이 아닙니다");
+        }
     }
 }
