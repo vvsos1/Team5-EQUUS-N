@@ -17,8 +17,10 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Feedback {
-    private static final int MIN_OBJECTIVE_FEEDBACK_SIZE = 1;
-    private static final int MAX_OBJECTIVE_FEEDBACK_SIZE = 5;
+    public static final int MIN_OBJECTIVE_FEEDBACK_SIZE = 1;
+    public static final int MAX_OBJECTIVE_FEEDBACK_SIZE = 5;
+    public static final int MIN_SUBJECTIVE_FEEDBACK_BYTE = 0;
+    public static final int MAX_SUBJECTIVE_FEEDBACK_BYTE = 400;
 
     @Id
     @Column(name = "feedback_id")
