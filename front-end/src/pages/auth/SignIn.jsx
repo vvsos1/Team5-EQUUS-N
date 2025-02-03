@@ -3,8 +3,8 @@ import CustomInput from '../../components/CustomInput';
 import LargeButton from '../../components/buttons/LargeButton';
 import Icon from '../../components/Icon';
 import { useState } from 'react';
+import { checkSignInInfos } from '../../utility/inputChecker';
 import { showToast } from '../../utility/handleToast';
-import Toast from '../../components/toasts/Toast';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
@@ -47,8 +47,10 @@ export default function SignIn() {
           text='로그인하기'
           isOutlined={false}
           onClick={() => {
-            console.log('click');
-            showToast(<Toast content='로그인 성공' />);
+            if (checkSignInInfos(email, password)) {
+              // TODO: 로그인 요청 절차
+              showToast('로그인 요청 완료');
+            }
           }}
         />
       </div>

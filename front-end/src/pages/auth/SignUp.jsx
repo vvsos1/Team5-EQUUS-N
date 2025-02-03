@@ -5,7 +5,14 @@ import Icon from '../../components/Icon';
 import Certification from '../../components/Certification';
 import { CertState } from '../../components/Certification';
 import { useEffect, useState } from 'react';
-import { isWithin10Bytes } from '../../utility/inputChecker';
+import {
+  isValidComplexity,
+  isValidEmail,
+  isValidLength,
+  isWithin10Bytes,
+  checkSignUpInfos,
+} from '../../utility/inputChecker';
+import { showToast } from '../../utility/handleToast';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
@@ -34,7 +41,7 @@ export default function SignUp() {
       />
       <div className='h-4' />
       <Certification
-        email={/^\S+@\S+$/.test(email) ? email : ''}
+        email={isValidEmail(email) ? email : ''}
         certState={certState}
         setCertState={setCertState}
       />
@@ -45,11 +52,7 @@ export default function SignUp() {
         content={password}
         setContent={setPassword}
         isPassword={!isPasswordVisible}
-        condition={[
-          (content) =>
-            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/.test(content),
-          (content) => content.length >= 8,
-        ]}
+        condition={[isValidComplexity, isValidLength]}
         notification={['영문, 숫자, 특수 문자 포함', '8글자 이상']}
         addOn={
           <button onClick={() => setIsPasswordVisible(!isPasswordVisible)}>
@@ -95,8 +98,19 @@ export default function SignUp() {
         condition={[(content) => isWithin10Bytes(content)]}
         notification={['한글 최대 5글자, 영어 최대 10글자']}
       />
-      <div className='absolute right-0 bottom-[34px] left-0 h-20 bg-gray-900'>
-        <LargeButton text='다음' isOutlined={false} />
+      <div className='absolute right-0 bottom-[34px] left-0 bg-gray-900'>
+        <LargeButton
+          text='다음'
+          isOutlined={false}
+          disabled={
+            checkSignUpInfos(certState, password, passwordConfirm, nickName) ===
+            false
+          }
+          onClick={() => {
+            // TODO: 회원가입 요청 절차
+            showToast('회원가입 요청 완료');
+          }}
+        />
       </div>
     </div>
   );
