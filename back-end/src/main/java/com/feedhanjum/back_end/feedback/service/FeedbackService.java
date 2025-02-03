@@ -139,12 +139,10 @@ public class FeedbackService {
     public void likeFeedback(Long feedbackId, Long memberId) {
         Feedback feedback = feedbackRepository.findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("member id에 해당하는 member가 없습니다."));
-        if (!feedback.isReceiver(member)) {
-            throw new SecurityException("해당 피드백을 좋아요 할 권한이 없습니다.");
-        }
-
-        feedback.like();
-        eventPublisher.publishEvent(new FeedbackLikedEvent(feedbackId));
+        boolean isLiked = feedback.isLiked();
+        feedback.like(member);
+        if (!isLiked)
+            eventPublisher.publishEvent(new FeedbackLikedEvent(feedbackId));
     }
 
     /**
@@ -155,10 +153,7 @@ public class FeedbackService {
     public void unlikeFeedback(Long feedbackId, Long memberId) {
         Feedback feedback = feedbackRepository.findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("member id에 해당하는 member가 없습니다."));
-        if (!feedback.isReceiver(member)) {
-            throw new SecurityException("해당 피드백을 좋아요 취소 할 권한이 없습니다.");
-        }
-        feedback.unlike();
+        feedback.unlike(member);
     }
 
     /**

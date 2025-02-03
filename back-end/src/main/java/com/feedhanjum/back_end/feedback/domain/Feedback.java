@@ -72,16 +72,18 @@ public class Feedback {
         validateObjectiveFeedbacks();
     }
 
-    public void like() {
-        if (!liked) {
-            this.liked = true;
-        }
+    public void like(Member member) {
+        if (!isReceiver(member))
+            throw new SecurityException("수신자만 피드백을 좋아요 할 수 있습니다.");
+        this.liked = true;
+
     }
 
-    public void unlike() {
-        if (liked) {
-            this.liked = false;
-        }
+    public void unlike(Member member) {
+        if (!isReceiver(member))
+            throw new SecurityException("수신자만 피드백 좋아요를 취소할 수 있습니다.");
+
+        this.liked = false;
     }
 
     public boolean isReceiver(Member member) {
