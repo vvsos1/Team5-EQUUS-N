@@ -27,7 +27,7 @@ public class RegularFeedbackRequest {
     @JoinColumn(name = "schedule_member_id")
     private ScheduleMember scheduleMember;
 
-    public RegularFeedbackRequest(LocalDateTime createdAt, Member requester, ScheduleMember scheduleMember) {
+    public RegularFeedbackRequest(LocalDateTime createdAt, ScheduleMember scheduleMember, Member requester) {
         this.createdAt = createdAt;
         this.requester = requester;
         setScheduleMember(scheduleMember);

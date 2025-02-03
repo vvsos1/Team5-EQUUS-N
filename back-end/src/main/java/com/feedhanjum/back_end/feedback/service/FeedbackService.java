@@ -178,7 +178,7 @@ public class FeedbackService {
                 if (senderMember == receiverMember) {
                     continue;
                 }
-                requests.add(new RegularFeedbackRequest(requestTime, senderMember.getMember(), receiverMember));
+                requests.add(new RegularFeedbackRequest(requestTime, receiverMember, senderMember.getMember()));
             }
             // batch insert를 사용하도록 설정 필요
             eventPublisher.publishEvent(new RegularFeedbackRequestCreatedEvent(receiverMember.getMember().getId(), scheduleId));
@@ -196,7 +196,7 @@ public class FeedbackService {
 
         regularFeedbackRequestRepository.deleteAllByScheduleMember(scheduleMember);
     }
-    
+
     /**
      * 해당 팀에서 receiver에게 온 모든 수시 피드백 요청을 거절한다.
      * 수시 피드백 요청 배너닫기 클릭 시 사용

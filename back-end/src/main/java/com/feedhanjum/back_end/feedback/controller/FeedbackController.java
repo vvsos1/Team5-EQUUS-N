@@ -1,11 +1,9 @@
 package com.feedhanjum.back_end.feedback.controller;
 
 import com.feedhanjum.back_end.auth.infra.Login;
-import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestQueryRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackSendRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.request.RegularFeedbackSendRequest;
+import com.feedhanjum.back_end.feedback.controller.dto.request.*;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestDto;
+import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestDto;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
@@ -69,10 +67,21 @@ public class FeedbackController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "팀별 수시 피드백 요청 조회 성공", useReturnTypeSchema = true)
     })
-    @GetMapping("/feedbacks/regular/request")
+    @GetMapping("/feedbacks/frequent/request")
     public ResponseEntity<List<FrequentFeedbackRequestDto>> getFrequentFeedbackRequest(@Login Long receiverId,
                                                                                        @Valid @RequestBody FrequentFeedbackRequestQueryRequest request) {
         List<FrequentFeedbackRequestDto> frequentFeedbackRequests = feedbackQueryService.getFrequentFeedbackRequests(receiverId, request.teamId());
         return ResponseEntity.ok(frequentFeedbackRequests);
+    }
+
+    @Operation(summary = "정기 피드백 요청 조회", description = "일정별 정기 피드백 요청을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "일정별 정기 피드백 요청 조회 성공", useReturnTypeSchema = true)
+    })
+    @GetMapping("/feedbacks/regular/request")
+    public ResponseEntity<List<RegularFeedbackRequestDto>> getRegularFeedbackRequest(@Login Long receiverId,
+                                                                                     @Valid @RequestBody RegularFeedbackRequestQueryRequest request) {
+        List<RegularFeedbackRequestDto> regularFeedbackRequests = feedbackQueryService.getRegularFeedbackRequests(receiverId, request.scheduleId());
+        return ResponseEntity.ok(regularFeedbackRequests);
     }
 }
