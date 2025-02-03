@@ -5,6 +5,7 @@ import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
 import com.feedhanjum.back_end.schedule.exception.ScheduleAlreadyExistException;
+import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.schedule.service.dto.ScheduleRequestDto;
 import com.feedhanjum.back_end.schedule.service.dto.ScheduleResponseDto;
@@ -26,6 +27,7 @@ public class ScheduleService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final ScheduleRepository scheduleRepository;
+    private final ScheduleMemberRepository scheduleMemberRepository;
     private final MemberRepository memberRepository;
 
     /**
@@ -54,6 +56,7 @@ public class ScheduleService {
                 ));
         ScheduleMember scheduleMember = new ScheduleMember(schedule, member);
         scheduleMember.setTodos(scheduleDto.todos());
-        return new ScheduleResponseDto(schedule, List.of(scheduleMember));
+        ScheduleMember savedScheduleMember = scheduleMemberRepository.save(scheduleMember);
+        return new ScheduleResponseDto(schedule, List.of(savedScheduleMember));
     }
 }

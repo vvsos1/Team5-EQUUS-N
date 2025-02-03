@@ -3,8 +3,10 @@ package com.feedhanjum.back_end.schedule.service;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
+import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
 import com.feedhanjum.back_end.schedule.domain.Todo;
 import com.feedhanjum.back_end.schedule.exception.ScheduleAlreadyExistException;
+import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.schedule.service.dto.ScheduleDto;
 import com.feedhanjum.back_end.schedule.service.dto.ScheduleRequestDto;
@@ -29,8 +31,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ScheduleServiceTest {
@@ -43,6 +44,9 @@ class ScheduleServiceTest {
 
     @Mock
     private ScheduleRepository scheduleRepository;
+
+    @Mock
+    private ScheduleMemberRepository scheduleMemberRepository;
 
     @Mock
     private MemberRepository memberRepository;
@@ -68,7 +72,9 @@ class ScheduleServiceTest {
         when(scheduleRepository.findByStartTime(startTime)).thenReturn(Optional.empty());
         Schedule savedSchedule = new Schedule("haha", startTime, endTime, team, member);
         ScheduleDto scheduleDto = new ScheduleDto(savedSchedule);
+        ScheduleMember scheduleMember = new ScheduleMember(savedSchedule, member);
         when(scheduleRepository.save(any(Schedule.class))).thenReturn(savedSchedule);
+        when(scheduleMemberRepository.save(any(ScheduleMember.class))).thenReturn(scheduleMember);
 
         //when
         ScheduleResponseDto responseDto = scheduleService.createSchedule(memberId, teamId, requestDto);
@@ -77,6 +83,7 @@ class ScheduleServiceTest {
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getSchedule()).isEqualTo(scheduleDto);
         assertThat(responseDto.getTodoListDto()).hasSize(1);
+        verify(scheduleMemberRepository).save(any(ScheduleMember.class));
     }
 
     @Test
