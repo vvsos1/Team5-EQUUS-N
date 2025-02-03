@@ -141,3 +141,11 @@ button:active {
   font-size: 14px;
   line-height: 140%;
 }
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.scrollbar-hidden {
+  scrollbar-width: none; /* Firefox */
+}
