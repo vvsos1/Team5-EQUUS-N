@@ -1,9 +1,23 @@
-function App() {
+import React from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router';
+import './index.css';
+import Layout from './Layout';
+
+export default function App() {
   return (
-    <div className='mx-5 h-full w-2xl bg-gray-900'>
-      <div className='flex h-full flex-col items-center justify-center gap-4 overflow-auto'></div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route
+            path='/'
+            element={<div className='size-full bg-amber-100' />}
+          />
+          <Route
+            path='home'
+            element={<div className='size-full bg-cyan-100' />}
+          />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
