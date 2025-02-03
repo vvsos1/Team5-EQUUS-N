@@ -1,13 +1,9 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import App3 from './App3.jsx';
-import ModalBase from './components/modals/ModalBase.jsx';
+import React, { StrictMode } from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
 
-createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App3 />
-    {/* 모달을 이렇게 최상위에 둘 예정임다 */}
-    <ModalBase />
+    <App />
   </StrictMode>,
 );
