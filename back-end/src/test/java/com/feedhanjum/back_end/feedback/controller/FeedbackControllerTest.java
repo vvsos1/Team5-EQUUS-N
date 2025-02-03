@@ -2,6 +2,7 @@ package com.feedhanjum.back_end.feedback.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
+import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackSendRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.RegularFeedbackSendRequest;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
@@ -19,6 +20,7 @@ import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
+import com.feedhanjum.back_end.team.repository.FrequentFeedbackRequestRepository;
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,9 +39,11 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -50,21 +54,25 @@ class FeedbackControllerTest {
 
     @Autowired
     private MockMvcTester mvc;
+    @Autowired
+    private ObjectMapper mapper;
 
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private TeamRepository teamRepository;
-
     @Autowired
     private TeamMemberRepository teamMemberRepository;
-
-    @Autowired
-    private ObjectMapper mapper;
     @Autowired
     private ScheduleRepository scheduleRepository;
     @Autowired
     private ScheduleMemberRepository scheduleMemberRepository;
+    @Autowired
+    private FeedbackRepository feedbackRepository;
+    @Autowired
+    private RegularFeedbackRequestRepository regularFeedbackRequestRepository;
+    @Autowired
+    private FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
 
     private Member member1;
     private Member member2;
@@ -74,8 +82,6 @@ class FeedbackControllerTest {
     private Schedule schedule1;
     private ScheduleMember scheduleMember1;
     private ScheduleMember scheduleMember2;
-    @Autowired
-    private RegularFeedbackRequestRepository regularFeedbackRequestRepository;
 
     @BeforeEach
     void setUp() {
@@ -110,9 +116,6 @@ class FeedbackControllerTest {
     @Nested
     @DisplayName("수시 피드백 전송 테스트")
     class SendFrequentFeedback {
-
-        @Autowired
-        private FeedbackRepository feedbackRepository;
 
         @Test
         @DisplayName("성공 시 204")
@@ -185,9 +188,6 @@ class FeedbackControllerTest {
     @Nested
     @DisplayName("정기 피드백 전송 테스트")
     class SendRegularFeedback {
-
-        @Autowired
-        private FeedbackRepository feedbackRepository;
 
 
         @Test
@@ -267,7 +267,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             Schedule schedule = schedule1;
-            RegularFeedbackSendRequest request = new RegularFeedbackSendRequest(
+            RegularFeedbackSendRequest body = new RegularFeedbackSendRequest(
                     receiver.getId(),
                     schedule.getId(),
                     FeedbackFeeling.CONSTRUCTIVE,
@@ -281,12 +281,48 @@ class FeedbackControllerTest {
                     .uri("/api/feedbacks/regular")
                     .contentType(MediaType.APPLICATION_JSON)
                     .session(withLoginUser(sender))
-                    .content(mapper.writeValueAsString(request))
+                    .content(mapper.writeValueAsString(body))
             ).hasStatus(HttpStatus.BAD_REQUEST);
 
 
             List<Feedback> feedbacks = feedbackRepository.findAll();
             assertThat(feedbacks).isEmpty();
         }
+    }
+
+    @Nested
+    @DisplayName("수시 피드백 요청 테스트")
+    class RequestFrequentFeedback {
+
+        @Test
+        @DisplayName("성공 시 202")
+        void test1() throws Exception {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            Team team = team1;
+            String requestedContent = "테스트 요청 내용";
+
+            var body = new FrequentFeedbackRequestForApiRequest(receiver.getId(), team.getId(), requestedContent);
+
+            // when
+            assertThat(mvc.post()
+                    .uri("/api/feedbacks/frequent/request")
+                    .session(withLoginUser(sender))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(body))
+            ).hasStatus(HttpStatus.ACCEPTED);
+
+            var requests = frequentFeedbackRequestRepository.findAll();
+
+            assertThat(requests).hasSize(1);
+            var request = requests.get(0);
+            assertThat(request.getRequester()).isEqualTo(sender);
+            assertThat(request.getTeamMember().getMember()).isEqualTo(receiver);
+            assertThat(request.getTeamMember().getTeam()).isEqualTo(team);
+            assertThat(request.getRequestedContent()).isEqualTo(requestedContent);
+            assertThat(request.getCreatedAt()).isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
+        }
+
     }
 }

@@ -54,6 +54,7 @@ public class FeedbackController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "수시 피드백 요청", description = "수시 피드백을 요청합니다.")
     @ApiResponse(responseCode = "202", description = "수시 피드백 요청 성공", useReturnTypeSchema = true)
     @PostMapping("/feedbacks/frequent/request")
     public ResponseEntity<Void> requestFrequentFeedback(@Login Long senderId,
