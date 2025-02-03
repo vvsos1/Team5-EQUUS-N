@@ -414,14 +414,14 @@ class TeamServiceTest {
             Long teamId = 10L;
             LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
             LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
-            TeamUpdateDto teamUpdateDto = new TeamUpdateDto(teamId, "haha", startTime, endTime, FeedbackType.IDENTIFIED);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startTime, endTime, FeedbackType.IDENTIFIED);
 
             Team team = new Team("huhu", leader, startTime, endTime, FeedbackType.ANONYMOUS);
             when(leader.getId()).thenReturn(1L);
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
 
             // when
-            Team updatedTeam = teamService.updateTeamInfo(memberId, teamUpdateDto);
+            Team updatedTeam = teamService.updateTeamInfo(memberId, teamId, teamUpdateDto);
 
             // then
             assertThat(updatedTeam.getName()).isEqualTo("haha");
@@ -438,10 +438,10 @@ class TeamServiceTest {
             Long teamId = 10L;
             LocalDateTime startTime = LocalDateTime.of(2025, 1, 3, 10, 0);
             LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
-            TeamUpdateDto teamUpdateDto = new TeamUpdateDto(teamId, "haha", startTime, endTime, FeedbackType.IDENTIFIED);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startTime, endTime, FeedbackType.IDENTIFIED);
 
             // when, then
-            assertThatThrownBy(() -> teamService.updateTeamInfo(memberId, teamUpdateDto))
+            assertThatThrownBy(() -> teamService.updateTeamInfo(memberId, teamId, teamUpdateDto))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -453,12 +453,12 @@ class TeamServiceTest {
             Long teamId = 10L;
             LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
             LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
-            TeamUpdateDto teamUpdateDto = new TeamUpdateDto(teamId, "haha", startTime, endTime, FeedbackType.ANONYMOUS);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startTime, endTime, FeedbackType.ANONYMOUS);
 
             when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
 
             // when, then
-            assertThatThrownBy(() -> teamService.updateTeamInfo(memberId, teamUpdateDto))
+            assertThatThrownBy(() -> teamService.updateTeamInfo(memberId, teamId, teamUpdateDto))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessageContaining("팀을 찾을 수 없습니다");
         }
@@ -473,13 +473,13 @@ class TeamServiceTest {
             Long teamId = 10L;
             LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
             LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
-            TeamUpdateDto teamUpdateDto = new TeamUpdateDto(teamId, "hoho", startTime, endTime, FeedbackType.ANONYMOUS);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("hoho", startTime, endTime, FeedbackType.ANONYMOUS);
 
             Team team = new Team("haha", leader, startTime, endTime, FeedbackType.IDENTIFIED);
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
 
             // when, then
-            assertThatThrownBy(() -> teamService.updateTeamInfo(memberId, teamUpdateDto))
+            assertThatThrownBy(() -> teamService.updateTeamInfo(memberId, teamId, teamUpdateDto))
                     .isInstanceOf(SecurityException.class)
                     .hasMessageContaining("팀장이 아닙니다");
         }

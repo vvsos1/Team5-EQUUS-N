@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 public record TeamUpdateRequest(
-        @NotNull Long id,
         @NotBlank @Size(min = 1, max = 20) String name,
         @NotNull LocalDateTime startTime,
         LocalDateTime endTime,

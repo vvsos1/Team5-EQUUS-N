@@ -99,9 +99,9 @@ public class TeamService {
      * @throws SecurityException        요청자가 팀장이 아닐 경우
      */
     @Transactional
-    public Team updateTeamInfo(Long memberId, TeamUpdateDto teamUpdateDto) {
+    public Team updateTeamInfo(Long memberId, Long teamId, TeamUpdateDto teamUpdateDto) {
         validateProjectDuration(teamUpdateDto.startTime(), teamUpdateDto.endTime());
-        Team team = teamRepository.findById(teamUpdateDto.teamId())
+        Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
         validateUserIsTeamLeader(memberId, team);
         team.updateInfo(teamUpdateDto.teamName(), teamUpdateDto.startTime(), teamUpdateDto.endTime(), teamUpdateDto.feedbackType());
