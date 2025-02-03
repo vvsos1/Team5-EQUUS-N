@@ -115,4 +115,15 @@ public class FeedbackController {
         feedbackService.unlikeFeedback(feedbackId, memberId);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "정기 피드백 건너뛰기", description = "해당 일정 정기 피드백을 건너뛰기합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "건너뛰기 성공", useReturnTypeSchema = true)
+    })
+    @DeleteMapping("/feedbacks/regular/request")
+    public ResponseEntity<Void> getRegularFeedbackRequests(@Login Long receiverId,
+                                                           @Valid RegularFeedbackRequestQueryRequest request) {
+        feedbackService.skipRegularFeedback(request.scheduleId(), receiverId);
+        return ResponseEntity.noContent().build();
+    }
 }
