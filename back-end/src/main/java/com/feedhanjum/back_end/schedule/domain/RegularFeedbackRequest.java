@@ -17,7 +17,7 @@ public class RegularFeedbackRequest {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    private LocalDateTime requestTime;
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "requester_id")
@@ -27,8 +27,8 @@ public class RegularFeedbackRequest {
     @JoinColumn(name = "schedule_member_id")
     private ScheduleMember scheduleMember;
 
-    public RegularFeedbackRequest(LocalDateTime requestTime, Member requester, ScheduleMember scheduleMember) {
-        this.requestTime = requestTime;
+    public RegularFeedbackRequest(LocalDateTime createdAt, Member requester, ScheduleMember scheduleMember) {
+        this.createdAt = createdAt;
         this.requester = requester;
         setScheduleMember(scheduleMember);
     }
