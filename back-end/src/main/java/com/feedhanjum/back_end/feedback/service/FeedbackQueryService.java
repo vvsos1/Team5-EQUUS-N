@@ -2,11 +2,14 @@ package com.feedhanjum.back_end.feedback.service;
 
 
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestDto;
+import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestDto;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
+import com.feedhanjum.back_end.schedule.domain.RegularFeedbackRequest;
+import com.feedhanjum.back_end.schedule.repository.RegularFeedbackRequestQueryRepository;
 import com.feedhanjum.back_end.team.domain.FrequentFeedbackRequest;
 import com.feedhanjum.back_end.team.repository.FrequentFeedbackRequestQueryRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
@@ -29,6 +32,7 @@ public class FeedbackQueryService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final FrequentFeedbackRequestQueryRepository frequentFeedbackRequestQueryRepository;
+    private final RegularFeedbackRequestQueryRepository regularFeedbackRequestQueryRepository;
 
     /**
      * @throws EntityNotFoundException  receiver나 team이 없을 때
@@ -78,5 +82,11 @@ public class FeedbackQueryService {
     public List<FrequentFeedbackRequestDto> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
         List<FrequentFeedbackRequest> requests = frequentFeedbackRequestQueryRepository.getFrequentFeedbackRequests(receiverId, teamId);
         return requests.stream().map(FrequentFeedbackRequestDto::from).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<RegularFeedbackRequestDto> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
+        List<RegularFeedbackRequest> requests = regularFeedbackRequestQueryRepository.getRegularFeedbackRequests(receiverId, scheduleId);
+        return requests.stream().map(RegularFeedbackRequestDto::from).toList();
     }
 }

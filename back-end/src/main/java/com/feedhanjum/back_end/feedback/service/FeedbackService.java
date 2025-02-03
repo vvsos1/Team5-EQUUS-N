@@ -196,18 +196,7 @@ public class FeedbackService {
 
         regularFeedbackRequestRepository.deleteAllByScheduleMember(scheduleMember);
     }
-
-    /**
-     * @throws EntityNotFoundException 일정에 속한 receiver가 없을 경우
-     */
-    @Transactional(readOnly = true)
-    public List<RegularFeedbackRequest> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
-        ScheduleMember scheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(receiverId, scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("receiver 가 schedule 에 속해있지 않습니다"));
-
-        return scheduleMember.getRegularFeedbackRequests();
-    }
-
+    
     /**
      * 해당 팀에서 receiver에게 온 모든 수시 피드백 요청을 거절한다.
      * 수시 피드백 요청 배너닫기 클릭 시 사용
