@@ -77,6 +77,38 @@ class FeedbackControllerTest {
     @Autowired
     private FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
 
+    private Member createMember(String name) {
+        return new Member(name, name + "@test.com", new ProfileImage("bg-" + name, "profile-" + name));
+    }
+
+    private Team createTeam(String name, Member leader) {
+        return new Team(name, leader, LocalDateTime.now(), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
+    }
+
+    private Schedule createSchedule(String name, Team team, boolean isEnd) {
+        LocalDateTime start, end;
+        if (isEnd) {
+            start = LocalDateTime.now().minusDays(1);
+            end = LocalDateTime.now().minusMinutes(1);
+        } else {
+            start = LocalDateTime.now();
+            end = LocalDateTime.now().plusDays(1);
+        }
+        return new Schedule(name, start, end, team);
+    }
+
+    private Feedback createFeedback(Member sender, Member receiver, Team team) {
+        return Feedback.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .team(team)
+                .feedbackType(FeedbackType.IDENTIFIED)
+                .feedbackFeeling(FeedbackFeeling.POSITIVE)
+                .objectiveFeedbacks(FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 2))
+                .subjectiveFeedback("좋아요")
+                .build();
+    }
+
     private Member member1;
     private Member member2;
     private Member member3;
@@ -91,13 +123,12 @@ class FeedbackControllerTest {
 
     @BeforeEach
     void setUp() {
-        member1 = new Member("member1", "email1@email.com", new ProfileImage("bg1", "character1"));
-        member2 = new Member("member2", "email2@email.com", new ProfileImage("bg2", "character2"));
-        member3 = new Member("member3", "email3@email.com", new ProfileImage("bg3", "character3"));
+        member1 = createMember("member1");
+        member2 = createMember("member2");
+        member3 = createMember("member3");
         memberRepository.saveAll(List.of(member1, member2, member3));
 
-        team1 = new Team("team1", member1, LocalDateTime.now(), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
-
+        team1 = createTeam("team1", member1);
         teamRepository.saveAll(List.of(team1));
 
         teamMember1 = new TeamMember(team1, member1);
@@ -105,7 +136,7 @@ class FeedbackControllerTest {
         teamMember3 = new TeamMember(team1, member3);
         teamMemberRepository.saveAll(List.of(teamMember1, teamMember2, teamMember3));
 
-        schedule1 = new Schedule("schedule1", LocalDateTime.now(), LocalDateTime.now().plusDays(1), team1);
+        schedule1 = createSchedule("schedule1", team1, false);
         scheduleRepository.save(schedule1);
 
         scheduleMember1 = new ScheduleMember(ScheduleRole.OWNER, schedule1, member1);
@@ -404,6 +435,96 @@ class FeedbackControllerTest {
                                 .containsExactlyInAnyOrder(sender1.getEmail(), sender2.getEmail());
                     });
 
+        }
+    }
+
+    @Nested
+    @DisplayName("피드백 좋아요 테스트")
+    class LikeFeedback {
+
+        @Test
+        @DisplayName("성공 시 204")
+        void test1() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            Feedback feedback = createFeedback(sender, receiver, team1);
+            feedbackRepository.save(feedback);
+
+            // when
+            assertThat(mvc.post()
+                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId())
+                    .session(withLoginUser(receiver))
+            ).hasStatus(HttpStatus.NO_CONTENT);
+
+            var likedFeedback = feedbackRepository.findById(feedback.getId()).get();
+            assertThat(likedFeedback.isLiked()).isTrue();
+        }
+
+        @Test
+        @DisplayName("본인이 아닌 경우 403")
+        void test2() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            Member notReceiver = member3;
+            Feedback feedback = createFeedback(sender, receiver, team1);
+            feedbackRepository.save(feedback);
+
+            // when
+            assertThat(mvc.post()
+                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId())
+                    .session(withLoginUser(notReceiver))
+            ).hasStatus(HttpStatus.FORBIDDEN);
+
+            var likedFeedback = feedbackRepository.findById(feedback.getId()).get();
+            assertThat(likedFeedback.isLiked()).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("피드백 좋아요 취소 테스트")
+    class UnlikeFeedback {
+
+        @Test
+        @DisplayName("성공 시 204")
+        void test1() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            Feedback feedback = createFeedback(sender, receiver, team1);
+            feedback.like(receiver);
+            feedbackRepository.save(feedback);
+
+            // when
+            assertThat(mvc.delete()
+                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId())
+                    .session(withLoginUser(receiver))
+            ).hasStatus(HttpStatus.NO_CONTENT);
+
+            var likedFeedback = feedbackRepository.findById(feedback.getId()).get();
+            assertThat(likedFeedback.isLiked()).isFalse();
+        }
+
+        @Test
+        @DisplayName("본인이 아닌 경우 403")
+        void test2() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            Member notReceiver = member3;
+            Feedback feedback = createFeedback(sender, receiver, team1);
+            feedback.like(receiver);
+            feedbackRepository.save(feedback);
+
+            // when
+            assertThat(mvc.delete()
+                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId())
+                    .session(withLoginUser(notReceiver))
+            ).hasStatus(HttpStatus.FORBIDDEN);
+
+            var likedFeedback = feedbackRepository.findById(feedback.getId()).get();
+            assertThat(likedFeedback.isLiked()).isTrue();
         }
     }
 }
