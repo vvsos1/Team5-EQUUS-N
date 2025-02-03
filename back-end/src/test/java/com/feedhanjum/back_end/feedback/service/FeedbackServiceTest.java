@@ -384,44 +384,6 @@ class FeedbackServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("getFrequentFeedbackRequests 메서드 테스트")
-    class GetFrequentFeedbackRequestTest {
-        @Test
-        @DisplayName("수시 피드백 요청 조회 성공")
-        void test1() {
-            // given
-            Long receiverId = 1L;
-            Long teamId = 2L;
-            TeamMember teamMember = mock();
-            List<FrequentFeedbackRequest> requests = List.of(mock(), mock());
-
-            when(teamMemberRepository.findByMemberIdAndTeamId(receiverId, teamId)).thenReturn(Optional.of(teamMember));
-            when(teamMember.getFrequentFeedbackRequests()).thenReturn(requests);
-
-            // when
-            List<FrequentFeedbackRequest> result = feedbackService.getFrequentFeedbackRequests(receiverId, teamId);
-
-            // then
-            assertThat(result).isEqualTo(requests);
-        }
-
-
-        @Test
-        @DisplayName("수시 피드백 요청 조회 실패 - receiver가 team에 속하지 않았을 경우")
-        void test4() {
-            // given
-            Long receiverId = 1L;
-            Long teamId = 2L;
-
-            when(teamMemberRepository.findByMemberIdAndTeamId(receiverId, teamId)).thenReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> feedbackService.getFrequentFeedbackRequests(receiverId, teamId))
-                    .isInstanceOf(EntityNotFoundException.class);
-
-        }
-    }
 
     @Nested
     @DisplayName("sendRegularFeedback 메서드 테스트")

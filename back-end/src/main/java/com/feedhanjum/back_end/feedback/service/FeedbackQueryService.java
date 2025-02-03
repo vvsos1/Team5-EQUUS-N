@@ -1,11 +1,15 @@
 package com.feedhanjum.back_end.feedback.service;
 
 
+import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestDto;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
+import com.feedhanjum.back_end.team.domain.FrequentFeedbackRequest;
+import com.feedhanjum.back_end.team.repository.FrequentFeedbackRequestQueryRepository;
+import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,6 +20,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Service
 public class FeedbackQueryService {
@@ -23,6 +29,8 @@ public class FeedbackQueryService {
     private final FeedbackQueryRepository feedbackQueryRepository;
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
+    private final TeamMemberRepository teamMemberRepository;
+    private final FrequentFeedbackRequestQueryRepository frequentFeedbackRequestQueryRepository;
 
     /**
      * @throws EntityNotFoundException  receiver나 team이 없을 때
@@ -66,5 +74,11 @@ public class FeedbackQueryService {
 
         Page<Feedback> receivedFeedbacks = feedbackQueryRepository.findSentFeedbacks(senderId, teamId, filterHelpful, pageRequest, sortOrder);
         return receivedFeedbacks.map(SentFeedbackDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FrequentFeedbackRequestDto> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
+        List<FrequentFeedbackRequest> requests = frequentFeedbackRequestQueryRepository.getFrequentFeedbackRequests(receiverId, teamId);
+        return requests.stream().map(FrequentFeedbackRequestDto::from).toList();
     }
 }

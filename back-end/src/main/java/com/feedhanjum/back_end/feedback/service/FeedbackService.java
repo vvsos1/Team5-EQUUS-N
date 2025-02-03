@@ -27,6 +27,7 @@ import com.feedhanjum.back_end.team.repository.FrequentFeedbackRequestRepository
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class FeedbackService {
     private final MemberRepository memberRepository;
@@ -45,18 +47,6 @@ public class FeedbackService {
     private final FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
     private final RegularFeedbackRequestRepository regularFeedbackRequestRepository;
     private final EventPublisher eventPublisher;
-
-    public FeedbackService(MemberRepository memberRepository, TeamRepository teamRepository, ScheduleRepository scheduleRepository, FeedbackRepository feedbackRepository, TeamMemberRepository teamMemberRepository, ScheduleMemberRepository scheduleMemberRepository, FrequentFeedbackRequestRepository frequentFeedbackRequestRepository, RegularFeedbackRequestRepository regularFeedbackRequestRepository, EventPublisher eventPublisher) {
-        this.memberRepository = memberRepository;
-        this.teamRepository = teamRepository;
-        this.scheduleRepository = scheduleRepository;
-        this.feedbackRepository = feedbackRepository;
-        this.teamMemberRepository = teamMemberRepository;
-        this.scheduleMemberRepository = scheduleMemberRepository;
-        this.frequentFeedbackRequestRepository = frequentFeedbackRequestRepository;
-        this.regularFeedbackRequestRepository = regularFeedbackRequestRepository;
-        this.eventPublisher = eventPublisher;
-    }
 
     /**
      * @throws EntityNotFoundException  sender id, receiver id, team id에 해당하는 엔티티가 없을 경우
@@ -100,16 +90,6 @@ public class FeedbackService {
         frequentFeedbackRequestRepository.save(frequentFeedbackRequest);
         eventPublisher.publishEvent(new FrequentFeedbackRequestCreatedEvent(frequentFeedbackRequest.getId()));
         return frequentFeedbackRequest;
-    }
-
-    /**
-     * @throws EntityNotFoundException 팀에 속한 receiver가 없을 경우
-     */
-    @Transactional(readOnly = true)
-    public List<FrequentFeedbackRequest> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
-        TeamMember teamMember = teamMemberRepository.findByMemberIdAndTeamId(receiverId, teamId).orElseThrow(() -> new EntityNotFoundException("receiver 가 team 에 속해있지 않습니다"));
-
-        return teamMember.getFrequentFeedbackRequests();
     }
 
     /**
