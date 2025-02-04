@@ -21,7 +21,6 @@ import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
-import com.feedhanjum.back_end.schedule.domain.ScheduleRole;
 import com.feedhanjum.back_end.schedule.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
@@ -91,7 +90,7 @@ class FeedbackControllerTest {
         return new Team(name, leader, LocalDateTime.now(), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
     }
 
-    private Schedule createSchedule(String name, Team team, boolean isEnd) {
+    private Schedule createSchedule(String name, Team team, Member leader, boolean isEnd) {
         LocalDateTime start, end;
         if (isEnd) {
             start = LocalDateTime.now().minusDays(1);
@@ -100,7 +99,7 @@ class FeedbackControllerTest {
             start = LocalDateTime.now();
             end = LocalDateTime.now().plusDays(1);
         }
-        return new Schedule(name, start, end, team);
+        return new Schedule(name, start, end, team, leader);
     }
 
     private Feedback createFeedback(Member sender, Member receiver, Team team) {
@@ -157,12 +156,12 @@ class FeedbackControllerTest {
         teamMember23 = new TeamMember(team2, member3);
         teamMemberRepository.saveAll(List.of(teamMember11, teamMember12, teamMember13, teamMember21, teamMember22, teamMember23));
 
-        schedule1 = createSchedule("schedule1", team1, false);
+        schedule1 = createSchedule("schedule1", team1, member1, false);
         scheduleRepository.save(schedule1);
 
-        scheduleMember1 = new ScheduleMember(ScheduleRole.OWNER, schedule1, member1);
-        scheduleMember2 = new ScheduleMember(ScheduleRole.MEMBER, schedule1, member2);
-        scheduleMember3 = new ScheduleMember(ScheduleRole.MEMBER, schedule1, member3);
+        scheduleMember1 = new ScheduleMember(schedule1, member1);
+        scheduleMember2 = new ScheduleMember(schedule1, member2);
+        scheduleMember3 = new ScheduleMember(schedule1, member3);
         scheduleMemberRepository.saveAll(List.of(scheduleMember1, scheduleMember2, scheduleMember3));
 
     }

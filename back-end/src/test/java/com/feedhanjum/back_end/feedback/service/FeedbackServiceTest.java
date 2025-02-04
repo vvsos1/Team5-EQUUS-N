@@ -16,7 +16,6 @@ import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
-import com.feedhanjum.back_end.schedule.domain.ScheduleRole;
 import com.feedhanjum.back_end.schedule.event.RegularFeedbackRequestCreatedEvent;
 import com.feedhanjum.back_end.schedule.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
@@ -91,7 +90,7 @@ class FeedbackServiceTest {
         return team;
     }
 
-    private Schedule createSchedule(String name, Team team, boolean isEnd) {
+    private Schedule createSchedule(String name, Team team, Member leader, boolean isEnd) {
         LocalDateTime start, end;
         if (isEnd) {
             start = LocalDateTime.now().minusDays(1);
@@ -100,7 +99,7 @@ class FeedbackServiceTest {
             start = LocalDateTime.now();
             end = LocalDateTime.now().plusDays(1);
         }
-        Schedule schedule = new Schedule(name, start, end, team);
+        Schedule schedule = new Schedule(name, start, end, team, leader);
         ReflectionTestUtils.setField(schedule, "id", nextId++);
         return schedule;
     }
@@ -803,10 +802,10 @@ class FeedbackServiceTest {
             Member member2 = createMember("member2");
             Member member3 = createMember("member3");
             Team team = createTeam("team", member1);
-            Schedule schedule = createSchedule("schedule", team, true);
-            ScheduleMember scheduleMember1 = new ScheduleMember(ScheduleRole.OWNER, schedule, member1);
-            ScheduleMember scheduleMember2 = new ScheduleMember(ScheduleRole.MEMBER, schedule, member2);
-            ScheduleMember scheduleMember3 = new ScheduleMember(ScheduleRole.MEMBER, schedule, member3);
+            Schedule schedule = createSchedule("schedule", team, member1, true);
+            ScheduleMember scheduleMember1 = new ScheduleMember(schedule, member1);
+            ScheduleMember scheduleMember2 = new ScheduleMember(schedule, member2);
+            ScheduleMember scheduleMember3 = new ScheduleMember(schedule, member3);
 
             when(scheduleRepository.findByIdWithMembers(schedule.getId())).thenReturn(Optional.of(schedule));
             // when
