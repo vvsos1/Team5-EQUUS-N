@@ -4,15 +4,16 @@ name: AWS EC2 Backend Deploy
 # 워크 플로우가 언제 실행 될지를 정한다.
 on:
   workflow_dispatch:
-
   push:
     branches:
-      - dev
+      - develop
+      - main
     paths:
       - back-end/**
   pull_request:
     branches:
-      - dev
+      - develop
+      - main
     paths:
       - back-end/**
 
@@ -25,7 +26,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-24.04
-
+    defaults:
+      run:
+        working-directory: ./back-end
     steps:
       - uses: actions/checkout@v4
 
@@ -42,21 +45,19 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Copy application-prod.yml
+        run: echo "${{ secrets.APPLICATION_PROD_YML }}" > src/main/resources/application-prod.yml
+
       - name: Build with Gradle
         run: ./gradlew build
 
       - name: Rename JAR file
         run: mv build/libs/*SNAPSHOT.jar app.jar
 
-      # EC2에 배포
-      # EC2 SSH 키를 private_key.pem 파일로 저장 ( 위치는 GitHub 서버 )
-      # SCP를 사용하여 JAR 파일을 EC2 서버로 복사
-      # SSH를 사용하여 EC2 서버에 연결하고 현재 실행 중인 Java 프로세스를 종료한 다음 새로운 Java 프로세스 생성 및 실행!!
-      ## NLP 적용하면 IP -> 도메인으로 수정 + EC2 늘리면 run 추가
       - name: Deploy to EC2
         run: |
           echo "${{ secrets.EC2_SSH_KEYPAIR }}" > private_key.pem
           chmod 600 private_key.pem
           scp -i private_key.pem -o StrictHostKeyChecking=no app.jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/app.jar
-          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "pgrep java | xargs kill -9; nohup java -jar /home/${{ secrets.EC2_USERNAME }}/app.jar > app.log 2>&1 &"
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "pgrep java | xargs sudo kill -9; sudo nohup java -jar /home/${{ secrets.EC2_USERNAME }}/app.jar --spring.profiles.active=prod > app.log 2>&1 &"
           rm -f private_key.pem
