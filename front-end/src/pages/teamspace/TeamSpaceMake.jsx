@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CustomInput from '../../components/CustomInput';
 import NavBar from '../auth/components/NavBar';
 import NavBar2 from '../../components/NavBar2';
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { DropdownLarge } from '../../components/Dropdown';
 import DatePicker from 'react-datepicker';
 import CustomDatePicker from './components/CustomDatePicker';
+import { showToast } from '../../utility/handleToast';
 
 /**
  * @param {object} props
@@ -31,6 +32,13 @@ export default function TeamSpaceMake({ isFirst = false }) {
     navigate(-1);
   };
 
+  useEffect(() => {
+    if (startDate > endDate) {
+      setEndDate(startDate);
+      showToast('종료일은 시작일보다 빠를 수 없습니다');
+    }
+  }, [startDate, endDate]);
+
   return (
     <div className='relative flex h-dvh w-full flex-col justify-start'>
       {isFirst ?
@@ -53,19 +61,12 @@ export default function TeamSpaceMake({ isFirst = false }) {
         {<p className='subtitle-2 text-gray-0'>프로젝트 기간</p>}
         {/* 인풋 */}
         <div className='flex'>
-          <CustomDatePicker
-            date={startDate}
-            setDate={setStartDate}
-            startDate={startDate}
-            endDate={endDate}
-          />
+          <CustomDatePicker date={startDate} setDate={setStartDate} />
           <div className='w-3 shrink-0' />
           <CustomDatePicker
             date={endDate}
             setDate={setEndDate}
-            isFromTime
-            startDate={startDate}
-            endDate={endDate}
+            isStartTime={false}
           />
         </div>
       </div>
