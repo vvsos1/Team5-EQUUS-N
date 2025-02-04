@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import ModalBase from './components/modals/ModalBase';
+import ToastBase from './components/toasts/ToastBase';
 
 function Layout() {
   return (
@@ -8,6 +9,7 @@ function Layout() {
         <Outlet />
       </div>
       <ModalBase />
+      <ToastBase />
     </div>
   );
 }

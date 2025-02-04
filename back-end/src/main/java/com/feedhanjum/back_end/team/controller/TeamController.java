@@ -6,9 +6,11 @@ import com.feedhanjum.back_end.member.service.MemberService;
 import com.feedhanjum.back_end.team.controller.dto.TeamCreateRequest;
 import com.feedhanjum.back_end.team.controller.dto.TeamDetailResponse;
 import com.feedhanjum.back_end.team.controller.dto.TeamResponse;
+import com.feedhanjum.back_end.team.controller.dto.TeamUpdateRequest;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.service.TeamService;
 import com.feedhanjum.back_end.team.service.dto.TeamCreateDto;
+import com.feedhanjum.back_end.team.service.dto.TeamUpdateDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -70,6 +72,13 @@ public class TeamController {
     public ResponseEntity<Void> deleteMemberFromTeam(@Login Long memberId, @PathVariable Long teamId, @PathVariable Long removeMemberId) {
         teamService.removeTeamMember(memberId, teamId, removeMemberId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{teamId}")
+    public ResponseEntity<TeamResponse> updateTeamInfo(@Login Long memberId, @PathVariable Long teamId, @Valid @RequestBody TeamUpdateRequest request){
+        Team team = teamService.updateTeamInfo(memberId, teamId, new TeamUpdateDto(request));
+        TeamResponse teamResponse = new TeamResponse(team);
+        return ResponseEntity.ok(teamResponse);
     }
 
     @PostMapping("/{teamId}/leader")
