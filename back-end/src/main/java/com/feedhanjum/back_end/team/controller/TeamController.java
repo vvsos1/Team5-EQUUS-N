@@ -6,9 +6,11 @@ import com.feedhanjum.back_end.member.service.MemberService;
 import com.feedhanjum.back_end.team.controller.dto.TeamCreateRequest;
 import com.feedhanjum.back_end.team.controller.dto.TeamDetailResponse;
 import com.feedhanjum.back_end.team.controller.dto.TeamResponse;
+import com.feedhanjum.back_end.team.controller.dto.TeamUpdateRequest;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.service.TeamService;
 import com.feedhanjum.back_end.team.service.dto.TeamCreateDto;
+import com.feedhanjum.back_end.team.service.dto.TeamUpdateDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -64,5 +66,32 @@ public class TeamController {
         List<MemberDto> membersByTeam = memberService.getMembersByTeam(memberId, teamId)
                 .stream().map(MemberDto::new).toList();
         return ResponseEntity.ok(membersByTeam);
+    }
+
+    @DeleteMapping("/{teamId}/member/{removeMemberId}")
+    public ResponseEntity<Void> deleteMemberFromTeam(@Login Long memberId, @PathVariable Long teamId, @PathVariable Long removeMemberId) {
+        teamService.removeTeamMember(memberId, teamId, removeMemberId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{teamId}")
+    public ResponseEntity<TeamResponse> updateTeamInfo(@Login Long memberId, @PathVariable Long teamId, @Valid @RequestBody TeamUpdateRequest request){
+        Team team = teamService.updateTeamInfo(memberId, teamId, new TeamUpdateDto(request));
+        TeamResponse teamResponse = new TeamResponse(team);
+        return ResponseEntity.ok(teamResponse);
+    }
+
+    @PostMapping("/{teamId}/leader")
+    public ResponseEntity<Void> delegateTeamLeader(@Login Long memberId,
+                                                   @PathVariable Long teamId,
+                                                   @RequestParam Long newLeaderId) {
+        teamService.delegateTeamLeader(memberId, teamId, newLeaderId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{teamId}/leave")
+    public ResponseEntity<Void> leaveTeam(@Login Long memberId, @PathVariable Long teamId) {
+        teamService.leaveTeam(memberId, teamId);
+        return ResponseEntity.noContent().build();
     }
 }

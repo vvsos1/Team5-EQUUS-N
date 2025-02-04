@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import CustomInput from './CustomInput';
 import SmallButton from './buttons/SmallButton';
+import Icon from './Icon';
+import { showToast } from '../utility/handleToast';
 
-const CertState = Object.freeze({
+export const CertState = Object.freeze({
   BEFORE_SEND_CODE: '인증코드 전송',
   RESEND_CODE: '재전송',
   AFTER_SEND_CODE: '인증하기',
@@ -15,13 +17,13 @@ const CertState = Object.freeze({
  * @param {string} props.email - 이메일
  * @returns
  */
-export default function Certification({ email = '' }) {
-  const [certState, setCertState] = useState(CertState.BEFORE_SEND_CODE);
+export default function Certification({ email = '', certState, setCertState }) {
   const [certCode, setCertCode] = useState('');
   const dueTime = 300; // 5분
   const [restTime, setRestTime] = useState(dueTime);
   const timerRef = useRef(null);
   const inputRef = useRef(null);
+  const [shouldFocus, setShouldFocus] = useState(false);
 
   // 제한시간 설정
   const setTimer = () => {
@@ -44,6 +46,9 @@ export default function Certification({ email = '' }) {
 
   // 인증코드 4자리, 제한시간 이내인 경우 인증하기 버튼 활성화
   useEffect(() => {
+    if (certCode.length > 4) {
+      setCertCode(certCode.slice(0, 4));
+    }
     if (
       certState === CertState.RESEND_CODE &&
       restTime <= dueTime &&
@@ -59,12 +64,13 @@ export default function Certification({ email = '' }) {
     }
   }, [certCode]);
 
-  // 인증코드 입력창으로 포커스 이동
+  // 상태가 변경될 때마다 focus 처리
   useEffect(() => {
-    if (certState === CertState.RESEND_CODE || restTime < dueTime) {
-      inputRef.current.focus();
+    if (shouldFocus) {
+      inputRef.current?.focus();
+      setShouldFocus(false);
     }
-  }, [certState, restTime]);
+  }, [shouldFocus]);
 
   return (
     <div className='flex gap-3'>
@@ -80,15 +86,17 @@ export default function Certification({ email = '' }) {
             setCertCode
           }
           addOn={
-            <p className='text-right text-lime-500'>
-              {timerRef.current ?
-                `${Math.floor(restTime / 60)
-                  .toString()
-                  .padStart(2, '0')}:${(restTime % 60)
-                  .toString()
-                  .padStart(2, '0')}`
-              : ''}
-            </p>
+            certState === CertState.AFTER_CHECK_CODE ?
+              <Icon name='checkBoxClick' color='var(--color-lime-500)' />
+            : <p className='text-right text-lime-500'>
+                {timerRef.current ?
+                  `${Math.floor(restTime / 60)
+                    .toString()
+                    .padStart(2, '0')}:${(restTime % 60)
+                    .toString()
+                    .padStart(2, '0')}`
+                : ''}
+              </p>
           }
           isPassword={certState === CertState.AFTER_CHECK_CODE}
         />
@@ -106,23 +114,27 @@ export default function Certification({ email = '' }) {
 
             // 인증코드 전송 절차
             setCertState(CertState.RESEND_CODE);
+            showToast('인증번호를 전송했습니다');
             setTimer();
-            inputRef.current.focus();
+            setShouldFocus(true);
           } else if (certState === CertState.RESEND_CODE) {
             setCertCode('');
-            // 인증코드 재전송 절차
+            // TODO: 인증코드 재전송 절차
+            showToast('인증번호를 재전송했습니다');
             setTimer();
+            setShouldFocus(true);
           } else if (certState === CertState.AFTER_SEND_CODE) {
-            // 인증코드 확인 절차
+            // TODO: 인증코드 확인 절차
 
             // 틀림
-            // 팝업 띄우기
+            // TODO: 팝업 띄우기
             // setCertCode('');
             // setCertState(CertState.BEFORE_SEND_CODE);
 
             // 맞음
             clearInterval(timerRef.current);
             setCertState(CertState.AFTER_CHECK_CODE);
+            showToast('이메일 인증 완료');
           }
         }}
         isOutlined={false}

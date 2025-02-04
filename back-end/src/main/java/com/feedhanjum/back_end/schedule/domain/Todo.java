@@ -1,38 +1,16 @@
 package com.feedhanjum.back_end.schedule.domain;
 
-import jakarta.persistence.*;
-import lombok.AccessLevel;
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Embeddable
+@NoArgsConstructor
 @Getter
 public class Todo {
-
-    @Id
-    @Column(name = "todo_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_member_id")
-    private ScheduleMember scheduleMember;
-
     private String content;
 
-    public Todo(ScheduleMember scheduleMember, String content) {
+    public Todo(String content) {
         this.content = content;
-        setScheduleMember(scheduleMember);
-    }
-
-    private void setScheduleMember(ScheduleMember scheduleMember) {
-        if (this.scheduleMember != null) {
-            this.scheduleMember.getTodos().remove(this);
-        }
-        this.scheduleMember = scheduleMember;
-        if (scheduleMember != null && !scheduleMember.getTodos().contains(this)) {
-            scheduleMember.getTodos().add(this);
-        }
     }
 }

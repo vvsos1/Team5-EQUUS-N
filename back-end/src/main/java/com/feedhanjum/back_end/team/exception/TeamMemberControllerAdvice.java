@@ -11,4 +11,9 @@ public class TeamMemberControllerAdvice {
     public ResponseEntity<String> teamMembershipNotFoundException(TeamMembershipNotFoundException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(TeamLeaderMustExistException.class)
+    public ResponseEntity<String> teamLeaderMustExistException(TeamLeaderMustExistException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
