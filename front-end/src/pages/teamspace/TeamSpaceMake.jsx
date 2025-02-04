@@ -9,6 +9,10 @@ import { DropdownLarge } from '../../components/Dropdown';
 import DatePicker from 'react-datepicker';
 import CustomDatePicker from './components/CustomDatePicker';
 import { showToast } from '../../utility/handleToast';
+import {
+  checkTeamSpaceMakingInfo,
+  isValidTeamName,
+} from '../../utility/inputChecker';
 
 /**
  * @param {object} props
@@ -23,6 +27,11 @@ export default function TeamSpaceMake({ isFirst = false }) {
   const navigate = useNavigate();
 
   const onClickNext = () => {
+    if (!checkTeamSpaceMakingInfo(teamSpaceName, startDate, endDate)) {
+      return;
+    } else {
+      //TODO: 팀 공간 만들기 요청
+    }
     navigate(`/teamspace/make/success?teamName=${teamSpaceName}`, {
       state: isFirst ? { from: '/first' } : { from: '/' },
     });
