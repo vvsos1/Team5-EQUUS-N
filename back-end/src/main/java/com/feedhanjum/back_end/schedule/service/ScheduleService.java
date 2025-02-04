@@ -78,9 +78,6 @@ public class ScheduleService {
         scheduleMember.setTodos(requestDto.todos());
     }
 
-    // 일정 및 전체 할 일 조회 Todo
-    // 가장 가까운 일정 조회 Todo
-
     private void changeScheduleInfo(ScheduleRequestDto requestDto, Schedule schedule, Member member, Team team) {
         if (schedule.isDifferent(requestDto.name(), requestDto.startTime(), requestDto.endTime())) {
             validateOwnerOrLeader(requestDto, schedule, member, team);
