@@ -15,6 +15,7 @@ public record SentFeedbackDto(
         List<String> objectiveFeedbacks,
         String subjectiveFeedback,
         String teamName,
+        boolean liked,
         LocalDateTime createdAt
 ) {
 
@@ -27,6 +28,7 @@ public record SentFeedbackDto(
                 feedback.getObjectiveFeedbacks().stream().map(ObjectiveFeedback::getDescription).toList(),
                 feedback.getSubjectiveFeedback(),
                 feedback.getTeam().getName(),
+                feedback.isLiked(),
                 feedback.getCreatedAt()
         );
     }

@@ -1,5 +1,7 @@
 package com.feedhanjum.back_end.feedback.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -7,7 +9,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-@Getter
 public enum FeedbackFeeling {
     POSITIVE("칭찬해요"),
     CONSTRUCTIVE("아쉬워요");
@@ -23,6 +24,7 @@ public enum FeedbackFeeling {
         }
     }
 
+    @Getter(onMethod_ = @JsonValue)
     private final String description;
 
     FeedbackFeeling(String description) {
@@ -38,4 +40,14 @@ public enum FeedbackFeeling {
         return OBJECTIVE_FEEDBACKS.get(this);
     }
 
+
+    @JsonCreator
+    public static FeedbackFeeling fromDescription(String description) {
+        for (FeedbackFeeling feeling : values()) {
+            if (feeling.description.equals(description)) {
+                return feeling;
+            }
+        }
+        throw new IllegalArgumentException("Invalid description: " + description);
+    }
 }

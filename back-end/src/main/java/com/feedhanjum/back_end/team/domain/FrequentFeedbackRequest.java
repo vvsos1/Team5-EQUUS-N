@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class FrequentFeedbackRequest {
+    public static final int MIN_REQUESTED_CONTENT_BYTE = 0;
+    public static final int MAX_REQUESTED_CONTENT_BYTE = 400;
     @Id
     @Column(name = "frequent_feedback_request_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
