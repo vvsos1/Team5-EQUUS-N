@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.schedule.service;
 
 import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
@@ -38,6 +39,9 @@ class ScheduleServiceTest {
     private TeamRepository teamRepository;
 
     @Mock
+    private MemberQueryRepository memberQueryRepository;
+
+    @Mock
     private TeamMemberRepository teamMemberRepository;
 
     @Mock
@@ -73,6 +77,8 @@ class ScheduleServiceTest {
         ScheduleMember scheduleMember = new ScheduleMember(savedSchedule, member);
         when(scheduleRepository.save(any(Schedule.class))).thenReturn(savedSchedule);
         when(scheduleMemberRepository.save(any(ScheduleMember.class))).thenReturn(scheduleMember);
+        when(memberQueryRepository.findMembersByTeamId(teamId)).thenReturn(List.of(member));
+        when(scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, savedSchedule.getId())).thenReturn(Optional.of(scheduleMember));
 
         //when
         scheduleService.createSchedule(memberId, teamId, requestDto);
