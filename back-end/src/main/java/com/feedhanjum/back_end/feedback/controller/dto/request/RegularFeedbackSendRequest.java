@@ -25,11 +25,11 @@ public record RegularFeedbackSendRequest(
         @NotNull
         FeedbackFeeling feedbackFeeling,
 
-        @Schema(description = "주관식 피드백")
+        @Schema(description = "객관식 피드백 목록")
         @Size(min = Feedback.MIN_OBJECTIVE_FEEDBACK_SIZE, max = Feedback.MAX_OBJECTIVE_FEEDBACK_SIZE)
         List<ObjectiveFeedback> objectiveFeedbacks,
 
-        @Schema(description = "객관식 피드백 목록")
+        @Schema(description = "주관식 피드백")
         @NotBlank
         @ByteLength(min = Feedback.MIN_SUBJECTIVE_FEEDBACK_BYTE, max = Feedback.MAX_SUBJECTIVE_FEEDBACK_BYTE, strip = true)
         String subjectiveFeedback,
