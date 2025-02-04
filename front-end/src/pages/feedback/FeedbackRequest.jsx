@@ -3,6 +3,7 @@ import NavBar2 from '../../components/NavBar2';
 import TextArea from '../../components/TextArea';
 import { DropdownLarge, DropdownSmall } from '../../components/Dropdown';
 import Notification, { notiType } from '../main/components/notification';
+import MainCard from '../main/components/MainCard';
 
 export default function FeedbackRequest() {
   const [triggerText, setTriggerText] = useState('1/24');
@@ -14,7 +15,76 @@ export default function FeedbackRequest() {
           console.log('pop click');
         }}
       />
-      <DropdownSmall
+      <MainCard isInTeam={false} />
+      {/* <MainCard recentSchedule={[]} /> */}
+      <MainCard
+        recentSchedule={[
+          {
+            name: '다음 일정',
+            start: '2022-12-12T17:00:00',
+            end: '2025-02-02T18:00:00',
+            roles: [
+              {
+                memberId: 1,
+                task: ['똥싸기', '씻기', '화장실 가기'],
+                name: '백현식',
+              },
+              {
+                memberId: 2,
+                task: ['밥먹기', '숨쉬기', '공부하기'],
+                name: '양준호',
+              },
+              { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
+            ],
+          },
+        ]}
+      />
+      <MainCard
+        recentSchedule={[
+          {
+            name: '다음 일정',
+            start: '2022-12-12T17:00:00',
+            end: '2025-02-04T18:00:00',
+            roles: [
+              {
+                memberId: 3,
+                task: ['똥싸기', '씻기', '화장실 가기'],
+                name: '백현식',
+              },
+              {
+                memberId: 2,
+                task: ['밥먹기', '숨쉬기', '공부하기'],
+                name: '양준호',
+              },
+              { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
+            ],
+          },
+        ]}
+      />
+      <MainCard
+        recentSchedule={[
+          {
+            name: '다음 일정',
+            start: '2022-12-12T17:00:00',
+            end: '2025-02-06T18:00:00',
+            roles: [
+              {
+                memberId: 3,
+                task: ['똥싸기', '씻기', '화장실 가기'],
+                name: '백현식',
+              },
+              {
+                memberId: 2,
+                task: ['밥먹기', '숨쉬기', '공부하기'],
+                name: '양준호',
+              },
+              { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
+            ],
+          },
+        ]}
+      />
+
+      {/* <DropdownSmall
         triggerText={'전체 보기'}
         setTriggerText={() => {}}
         items={['프론트엔드', '백엔드', '데이터', '디자인', '기획']}
@@ -40,7 +110,7 @@ export default function FeedbackRequest() {
           isTransparent={true}
           items={['1/25', '1/26', '1/27', '1/28', '1/29']}
         />
-      </div>
+      </div> */}
       <h1 className='header-2 text-gray-0 my-6 whitespace-pre-line'>
         {'백현식님에게 요청할\n피드백을 작성해주세요'}
       </h1>
