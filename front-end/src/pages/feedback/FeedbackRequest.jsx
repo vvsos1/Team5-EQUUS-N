@@ -44,9 +44,9 @@ export default function FeedbackRequest() {
       <h1 className='header-2 text-gray-0 my-6 whitespace-pre-line'>
         {'백현식님에게 요청할\n피드백을 작성해주세요'}
       </h1>
-      <TextArea isWithGpt={true} gene={true} />
-      <TextArea isWithAi={true} />
-      <TextArea isWithAi={true} canToggleAnonymous={true} />
+      <TextArea generatedByGpt={true} />
+      <TextArea isWithGpt={false} />
+      <TextArea isWithGpt={true} canToggleAnonymous={true} />
     </div>
   );
 }

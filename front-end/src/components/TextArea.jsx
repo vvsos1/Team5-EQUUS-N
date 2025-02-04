@@ -26,7 +26,7 @@ export default function TextArea({
             '자유롭게 적고 AI를 통해 다듬어 보세요.(선택사항)'
           : '여기에 적어주세요')
         }
-        disabled={isWithGpt}
+        disabled={generatedByGpt}
       />
       <p className='caption-1 absolute right-5 bottom-5 text-gray-300'>{`${textLength}/400 byte`}</p>
       {canToggleAnonymous && (
