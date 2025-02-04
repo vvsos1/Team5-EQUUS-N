@@ -74,7 +74,7 @@ public class TeamService {
         }
         TeamMember membership = teamMemberRepository.findByMemberIdAndTeamId(memberIdToRemove, teamId)
                 .orElseThrow(() -> new TeamMembershipNotFoundException("해당 팀원 정보를 찾을 수 없습니다."));
-        teamMemberRepository.delete(membership);
+        deleteTeamMemberAndRemainingScheduleMember(membership);
     }
 
     /**
@@ -123,10 +123,15 @@ public class TeamService {
         }
         TeamMember membership = teamMemberRepository.findByMemberIdAndTeamId(userId, teamId)
                 .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
-        teamMemberRepository.delete(membership);
+        deleteTeamMemberAndRemainingScheduleMember(membership);
         if (memberCount == 1) {
             deleteTeam(teamId);
         }
+    }
+
+    private void deleteTeamMemberAndRemainingScheduleMember(TeamMember membership) {
+        teamMemberRepository.delete(membership);
+        // 남은 일정에 기록된 할 일 제거 로직 필요 Todo
     }
 
     private void validateUserIsTeamLeader(Long leaderId, Team team) {

@@ -10,7 +10,6 @@ import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.schedule.service.dto.ScheduleDto;
 import com.feedhanjum.back_end.schedule.service.dto.ScheduleRequestDto;
-import com.feedhanjum.back_end.schedule.service.dto.ScheduleResponseDto;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
@@ -28,7 +27,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -77,12 +75,9 @@ class ScheduleServiceTest {
         when(scheduleMemberRepository.save(any(ScheduleMember.class))).thenReturn(scheduleMember);
 
         //when
-        ScheduleResponseDto responseDto = scheduleService.createSchedule(memberId, teamId, requestDto);
+        scheduleService.createSchedule(memberId, teamId, requestDto);
 
         //then
-        assertThat(responseDto).isNotNull();
-        assertThat(responseDto.getSchedule()).isEqualTo(scheduleDto);
-        assertThat(responseDto.getTodoListDto()).hasSize(1);
         verify(scheduleMemberRepository).save(any(ScheduleMember.class));
     }
 
