@@ -1,10 +1,11 @@
 import NavBar from '../auth/components/NavBar';
 import LargeButton from '../../components/buttons/LargeButton';
 import { showToast } from '../../utility/handleToast';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 export default function TeamSpaceMakeSuccess() {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const teamName = searchParams.get('teamName');
 
   return (
@@ -30,7 +31,11 @@ export default function TeamSpaceMakeSuccess() {
       </div>
       {/* 다음 버튼 */}
       <div className='absolute right-0 bottom-[34px] left-0 flex flex-col bg-gray-900'>
-        <LargeButton text='시작하기' isOutlined={false} onClick={() => {}} />
+        <LargeButton
+          text={location.state?.from === '/first' ? '시작하기' : '흠으로'}
+          isOutlined={false}
+          onClick={location.state?.from === '/first' ? () => {} : () => {}}
+        />
       </div>
     </div>
   );

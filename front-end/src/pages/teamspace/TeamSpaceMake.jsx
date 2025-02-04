@@ -1,23 +1,42 @@
 import { useState } from 'react';
 import CustomInput from '../../components/CustomInput';
 import NavBar from '../auth/components/NavBar';
+import NavBar2 from '../../components/NavBar2';
 import Icon from '../../components/Icon';
 import LargeButton from '../../components/buttons/LargeButton';
 import { useNavigate } from 'react-router-dom';
 
-export default function TeamSpaceMake() {
+/**
+ * @param {object} props
+ * @param {boolean} props.isFirst
+ * @returns
+ */
+export default function TeamSpaceMake({ isFirst = false }) {
   const [teamSpaceName, setTeamSpaceName] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate(`/teamspace/make/success?teamName=${teamSpaceName}`);
+  const onClickNext = () => {
+    navigate(`/teamspace/make/success?teamName=${teamSpaceName}`, {
+      state: isFirst ? { from: '/first' } : { from: '/' },
+    });
+  };
+
+  const onClickPop = () => {
+    navigate(-1);
   };
 
   return (
     <div className='relative flex h-dvh w-full flex-col justify-start'>
-      <NavBar title='새로운 팀 스페이스 만들기' />
-      <div className='h-2' />
+      {isFirst ?
+        <NavBar title='새로운 팀 스페이스 만들기' />
+      : <NavBar2
+          canPop={true}
+          title='팀 스페이스 생성하기'
+          onClickPop={onClickPop}
+        />
+      }
+      <div className={`h-${isFirst ? '2' : '4'}`} />
       <CustomInput
         label='팀 이름'
         content={teamSpaceName}
@@ -47,17 +66,19 @@ export default function TeamSpaceMake() {
           text='다음'
           isOutlined={false}
           onClick={() => {
-            handleClick();
+            onClickNext();
           }}
         />
-        <div className='h-3' />
-        <div
-          className={
-            'rounded-300 flex h-[56px] w-full items-center justify-center px-4 py-2 text-gray-300'
-          }
-        >
-          <a>건너뛰기</a>
-        </div>
+        {isFirst && <div className='h-3' />}
+        {isFirst && (
+          <div
+            className={
+              'rounded-300 flex h-[56px] w-full items-center justify-center px-4 py-2 text-gray-300'
+            }
+          >
+            <a>건너뛰기</a>
+          </div>
+        )}
       </div>
     </div>
   );
