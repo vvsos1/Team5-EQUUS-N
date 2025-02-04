@@ -1,5 +1,6 @@
 import { useReducer, useState } from 'react';
 import Icon from './Icon';
+import { transformToBytes } from '../utility/inputChecker';
 
 export default function TextArea({
   isWithGpt = false,
@@ -7,12 +8,26 @@ export default function TextArea({
   generatedByGpt = false,
 }) {
   const [textLength, setTextLength] = useState(0);
+  const [overflownIndex, setOverflownIndex] = useState();
   const [isAnonymous, toggleAnonymous] = useReducer((state) => !state, false);
 
   const onInput = (e) => {
     e.target.style.height = 'auto';
     e.target.style.height = `${e.target.scrollHeight}px`;
-    setTextLength(e.target.value.length);
+
+    const { byteCount, overflowedIndex } = transformToBytes(e.target.value);
+    setTextLength(byteCount);
+
+    if (byteCount >= 400) {
+      if (!overflownIndex) {
+        console.log('wefwef');
+        setOverflownIndex(overflowedIndex);
+      }
+      console.log(byteCount, overflownIndex, e.target.value.length);
+      e.target.value = e.target.value.slice(0, overflownIndex);
+    } else {
+      if (overflownIndex) setOverflownIndex(null);
+    }
   };
 
   return (
@@ -21,10 +36,10 @@ export default function TextArea({
         onInput={onInput}
         className={`text-gray-0 placeholder:body-1 rounded-300 relative min-h-44 w-full resize-none p-5 pb-14 ring-gray-500 outline-none focus:ring-gray-300 ${generatedByGpt ? 'bg-gray-800' : 'ring'}`}
         placeholder={
-          !generatedByGpt &&
-          (isWithGpt ?
+          generatedByGpt ? undefined
+          : isWithGpt ?
             '자유롭게 적고 AI를 통해 다듬어 보세요.(선택사항)'
-          : '여기에 적어주세요')
+          : '여기에 적어주세요'
         }
         disabled={generatedByGpt}
       />
