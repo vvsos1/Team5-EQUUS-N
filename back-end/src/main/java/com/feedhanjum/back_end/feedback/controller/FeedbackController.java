@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.feedback.controller;
 
 import com.feedhanjum.back_end.auth.infra.Login;
+import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.controller.dto.request.*;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestDto;
 import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestDto;
@@ -8,11 +9,15 @@ import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
 import com.feedhanjum.back_end.feedback.service.FeedbackService;
+import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
+import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +33,9 @@ public class FeedbackController {
     private final FeedbackQueryService feedbackQueryService;
 
     @Operation(summary = "수시 피드백 전송", description = "팀별로 수시 피드백을 전송합니다.")
-    @ApiResponse(responseCode = "204", description = "수시 피드백 전송 성공. 연관된 수시 피드백 요청도 함께 삭제", useReturnTypeSchema = true)
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "수시 피드백 전송 성공. 연관된 수시 피드백 요청도 함께 삭제", useReturnTypeSchema = true)
+    })
     @PostMapping("/feedbacks/frequent")
     public ResponseEntity<Void> sendFrequentFeedback(@Login Long senderId,
                                                      @Valid @RequestBody FrequentFeedbackSendRequest request) {
@@ -57,7 +64,9 @@ public class FeedbackController {
     }
 
     @Operation(summary = "수시 피드백 요청", description = "수시 피드백을 요청합니다.")
-    @ApiResponse(responseCode = "202", description = "수시 피드백 요청 성공", useReturnTypeSchema = true)
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "수시 피드백 요청 성공", useReturnTypeSchema = true)
+    })
     @PostMapping("/feedbacks/frequent/request")
     public ResponseEntity<Void> requestFrequentFeedback(@Login Long senderId,
                                                         @Valid @RequestBody FrequentFeedbackRequestForApiRequest request) {
@@ -72,7 +81,7 @@ public class FeedbackController {
     })
     @GetMapping("/feedbacks/frequent/request")
     public ResponseEntity<List<FrequentFeedbackRequestDto>> getFrequentFeedbackRequest(@Login Long receiverId,
-                                                                                       @Valid FrequentFeedbackRequestQueryRequest request) {
+                                                                                       @ParameterObject @Valid FrequentFeedbackRequestQueryRequest request) {
         List<FrequentFeedbackRequestDto> frequentFeedbackRequests = feedbackQueryService.getFrequentFeedbackRequests(receiverId, request.teamId());
         return ResponseEntity.ok(frequentFeedbackRequests);
     }
@@ -83,7 +92,7 @@ public class FeedbackController {
     })
     @GetMapping("/feedbacks/regular/request")
     public ResponseEntity<List<RegularFeedbackRequestDto>> getRegularFeedbackRequest(@Login Long receiverId,
-                                                                                     @Valid RegularFeedbackRequestQueryRequest request) {
+                                                                                     @ParameterObject @Valid RegularFeedbackRequestQueryRequest request) {
         List<RegularFeedbackRequestDto> regularFeedbackRequests = feedbackQueryService.getRegularFeedbackRequests(receiverId, request.scheduleId());
         return ResponseEntity.ok(regularFeedbackRequests);
     }
@@ -91,7 +100,7 @@ public class FeedbackController {
     @Operation(summary = "피드백 좋아요", description = "피드백에 좋아요를 누릅니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "피드백 좋아요 성공", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우", useReturnTypeSchema = true)
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우")
     })
     @PostMapping("/member/{memberId}/feedbacks/{feedbackId}/liked")
     public ResponseEntity<Void> likeFeedback(@Login Long loginId, @PathVariable Long memberId, @PathVariable Long feedbackId) {
@@ -105,7 +114,7 @@ public class FeedbackController {
     @Operation(summary = "피드백 좋아요 취소", description = "피드백에 누른 좋아요를 취소합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "피드백 좋아요 취소 성공", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우", useReturnTypeSchema = true)
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우")
     })
     @DeleteMapping("/member/{memberId}/feedbacks/{feedbackId}/liked")
     public ResponseEntity<Void> unlikeFeedback(@Login Long loginId, @PathVariable Long memberId, @PathVariable Long feedbackId) {
@@ -122,8 +131,41 @@ public class FeedbackController {
     })
     @DeleteMapping("/feedbacks/regular/request")
     public ResponseEntity<Void> getRegularFeedbackRequests(@Login Long receiverId,
-                                                           @Valid RegularFeedbackRequestQueryRequest request) {
+                                                           @ParameterObject @Valid RegularFeedbackRequestQueryRequest request) {
         feedbackService.skipRegularFeedback(request.scheduleId(), receiverId);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "보낸 피드백 조회하기", description = "받은 피드백을 조회힙니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "보낸 피드백 조회 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우")
+    })
+    @GetMapping("/feedbacks/sender/{senderId}")
+    public ResponseEntity<Paged<SentFeedbackDto>> getSentFeedbacks(@Login Long loginId,
+                                                                   @PathVariable Long senderId,
+                                                                   @ParameterObject @Valid SentFeedbacksQueryRequest request) {
+        if (!Objects.equals(loginId, senderId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Page<SentFeedbackDto> sentFeedbacks = feedbackQueryService.getSentFeedbacks(senderId, request.teamId(), request.filterHelpful(), request.page(), request.sortOrder());
+        return ResponseEntity.ok(Paged.from(sentFeedbacks));
+    }
+
+    @Operation(summary = "받은 피드백 조회하기", description = "받은 피드백을 조회힙니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "보낸 피드백 조회 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우")
+    })
+    @GetMapping("/feedbacks/receiver/{receiverId}")
+    public ResponseEntity<Paged<ReceivedFeedbackDto>> getReceivedFeedbacks(@Login Long loginId,
+                                                                           @PathVariable Long receiverId,
+                                                                           @ParameterObject @Valid ReceivedFeedbacksQueryRequest request) {
+        if (!Objects.equals(loginId, receiverId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Page<ReceivedFeedbackDto> receivedFeedbacks = feedbackQueryService.getReceivedFeedbacks(receiverId, request.teamId(), request.filterHelpful(), request.page(), request.sortOrder());
+        return ResponseEntity.ok(Paged.from(receivedFeedbacks));
+    }
+
 }
