@@ -5,6 +5,8 @@ import Layout from './Layout';
 import Splash from './pages/auth/Splash';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
+import TeamSpaceMake from './pages/teamspace/TeamSpaceMake';
+import TeamSpaceMakeSuccess from './pages/teamspace/TeamSpaceMakeSuccess';
 
 export default function App() {
   return (
@@ -18,6 +20,11 @@ export default function App() {
           />
           <Route path='signin' element={<SignIn />} />
           <Route path='signup' element={<SignUp />} />
+          <Route path='teamspace/make' element={<TeamSpaceMake />} />
+          <Route
+            path='teamspace/make/success'
+            element={<TeamSpaceMakeSuccess />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>
