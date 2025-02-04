@@ -7,10 +7,11 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
-public record TeamCreateRequest(
+public record TeamUpdateRequest(
         @NotBlank @Size(min = 1, max = 20) String name,
         @NotNull LocalDateTime startTime,
         LocalDateTime endTime,
         @NotNull FeedbackType feedbackType
 ) {
 }
+
