@@ -21,4 +21,13 @@ public class ScheduleController {
         scheduleService.createSchedule(memberId, teamId, new ScheduleRequestDto(request));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+    
+    @PostMapping("/{scheduleId}")
+    public ResponseEntity<Void> updateSchedule(@Login Long memberId, 
+                                               @PathVariable Long teamId, 
+                                               @PathVariable Long scheduleId, 
+                                               @Valid @RequestBody ScheduleRequest request) {
+        scheduleService.updateSchedule(memberId, teamId, scheduleId, new ScheduleRequestDto(request));
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
