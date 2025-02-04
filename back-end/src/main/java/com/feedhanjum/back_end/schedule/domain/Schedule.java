@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.schedule.domain;
 
+import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.team.domain.Team;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -29,14 +30,19 @@ public class Schedule {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private Member owner;
+
     @OneToMany(mappedBy = "schedule")
     private final List<ScheduleMember> scheduleMembers = new ArrayList<>();
 
-    public Schedule(String name, LocalDateTime startTime, LocalDateTime endTime, Team team) {
+    public Schedule(String name, LocalDateTime startTime, LocalDateTime endTime, Team team, Member owner) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.team = team;
+        this.owner = owner;
     }
 
     public boolean isEnd() {
