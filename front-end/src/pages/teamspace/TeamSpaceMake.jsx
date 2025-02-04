@@ -5,6 +5,9 @@ import NavBar2 from '../../components/NavBar2';
 import Icon from '../../components/Icon';
 import LargeButton from '../../components/buttons/LargeButton';
 import { useNavigate } from 'react-router-dom';
+import { DropdownLarge } from '../../components/Dropdown';
+import DatePicker from 'react-datepicker';
+import CustomDatePicker from './components/CustomDatePicker';
 
 /**
  * @param {object} props
@@ -13,6 +16,8 @@ import { useNavigate } from 'react-router-dom';
  */
 export default function TeamSpaceMake({ isFirst = false }) {
   const [teamSpaceName, setTeamSpaceName] = useState('');
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [isAnonymous, setIsAnonymous] = useState(false);
   const navigate = useNavigate();
 
@@ -42,7 +47,29 @@ export default function TeamSpaceMake({ isFirst = false }) {
         content={teamSpaceName}
         setContent={setTeamSpaceName}
       />
-      <div className='flex h-[85px]'></div>
+      <div className='h-6' />
+      <div className='flex flex-col gap-2'>
+        {/* 제목 */}
+        {<p className='subtitle-2 text-gray-0'>프로젝트 기간</p>}
+        {/* 인풋 */}
+        <div className='flex'>
+          <CustomDatePicker
+            date={startDate}
+            setDate={setStartDate}
+            startDate={startDate}
+            endDate={endDate}
+          />
+          <div className='w-3 shrink-0' />
+          <CustomDatePicker
+            date={endDate}
+            setDate={setEndDate}
+            isFromTime
+            startDate={startDate}
+            endDate={endDate}
+          />
+        </div>
+      </div>
+      <div className='h-6' />
       <CustomInput
         label='피드백 방식'
         isOutlined={false}
