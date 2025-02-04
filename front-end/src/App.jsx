@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router';
+import 'react-datepicker/dist/react-datepicker.css';
 import './index.css';
 import Layout from './Layout';
 import FeedbackRequest from './pages/feedback/FeedbackRequest';
