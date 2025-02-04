@@ -6,7 +6,6 @@ import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public enum ObjectiveFeedback {
     LOGICAL(FeedbackCategory.GOOD_HARD_SKILL, "논리적으로 말해요"),
@@ -63,8 +62,12 @@ public enum ObjectiveFeedback {
     }
 
     @JsonCreator
-    public static Optional<ObjectiveFeedback> fromDescription(String content) {
-        return Optional.ofNullable(FEEDBACK_MAP.get(content));
+    public static ObjectiveFeedback fromDescription(String content) {
+        ObjectiveFeedback objectiveFeedback = FEEDBACK_MAP.get(content);
+        if (objectiveFeedback == null) {
+            throw new IllegalArgumentException("Invalid description: " + content);
+        }
+        return objectiveFeedback;
     }
 
 }
