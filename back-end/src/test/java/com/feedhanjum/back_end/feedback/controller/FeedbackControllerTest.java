@@ -3,6 +3,7 @@ package com.feedhanjum.back_end.feedback.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
+import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackSendRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.RegularFeedbackSendRequest;
@@ -12,6 +13,8 @@ import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
+import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
+import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -45,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,24 +104,35 @@ class FeedbackControllerTest {
     }
 
     private Feedback createFeedback(Member sender, Member receiver, Team team) {
-        return Feedback.builder()
+        return createFeedback(sender, receiver, team, false, false);
+    }
+
+    private Feedback createFeedback(Member sender, Member receiver, Team team, boolean isAnonymous, boolean isLiked) {
+        Feedback feedback = Feedback.builder()
                 .sender(sender)
                 .receiver(receiver)
                 .team(team)
-                .feedbackType(FeedbackType.IDENTIFIED)
+                .feedbackType(isAnonymous ? FeedbackType.ANONYMOUS : FeedbackType.IDENTIFIED)
                 .feedbackFeeling(FeedbackFeeling.POSITIVE)
                 .objectiveFeedbacks(FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 2))
                 .subjectiveFeedback("좋아요")
                 .build();
+        if (isLiked)
+            feedback.like(receiver);
+        return feedback;
     }
 
     private Member member1;
     private Member member2;
     private Member member3;
     private Team team1;
-    private TeamMember teamMember1;
-    private TeamMember teamMember2;
-    private TeamMember teamMember3;
+    private Team team2;
+    private TeamMember teamMember11;
+    private TeamMember teamMember12;
+    private TeamMember teamMember13;
+    private TeamMember teamMember21;
+    private TeamMember teamMember22;
+    private TeamMember teamMember23;
     private Schedule schedule1;
     private ScheduleMember scheduleMember1;
     private ScheduleMember scheduleMember2;
@@ -131,12 +146,16 @@ class FeedbackControllerTest {
         memberRepository.saveAll(List.of(member1, member2, member3));
 
         team1 = createTeam("team1", member1);
-        teamRepository.saveAll(List.of(team1));
+        team2 = createTeam("team2", member2);
+        teamRepository.saveAll(List.of(team1, team2));
 
-        teamMember1 = new TeamMember(team1, member1);
-        teamMember2 = new TeamMember(team1, member2);
-        teamMember3 = new TeamMember(team1, member3);
-        teamMemberRepository.saveAll(List.of(teamMember1, teamMember2, teamMember3));
+        teamMember11 = new TeamMember(team1, member1);
+        teamMember12 = new TeamMember(team1, member2);
+        teamMember13 = new TeamMember(team1, member3);
+        teamMember21 = new TeamMember(team2, member1);
+        teamMember22 = new TeamMember(team2, member2);
+        teamMember23 = new TeamMember(team2, member3);
+        teamMemberRepository.saveAll(List.of(teamMember11, teamMember12, teamMember13, teamMember21, teamMember22, teamMember23));
 
         schedule1 = createSchedule("schedule1", team1, false);
         scheduleRepository.save(schedule1);
@@ -378,7 +397,7 @@ class FeedbackControllerTest {
             // given
             Member sender1 = member1;
             Member sender2 = member3;
-            TeamMember teamMember = teamMember2;
+            TeamMember teamMember = teamMember12;
             Member receiver = teamMember.getMember();
             frequentFeedbackRequestRepository.save(new FrequentFeedbackRequest("내용1", teamMember, sender1));
             frequentFeedbackRequestRepository.save(new FrequentFeedbackRequest("내용2", teamMember, sender2));
@@ -457,7 +476,7 @@ class FeedbackControllerTest {
                     .session(withLoginUser(receiver))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-            var likedFeedback = feedbackRepository.findById(feedback.getId()).get();
+            var likedFeedback = feedbackRepository.findById(feedback.getId()).orElseThrow();
             assertThat(likedFeedback.isLiked()).isTrue();
         }
 
@@ -477,7 +496,7 @@ class FeedbackControllerTest {
                     .session(withLoginUser(notReceiver))
             ).hasStatus(HttpStatus.FORBIDDEN);
 
-            var likedFeedback = feedbackRepository.findById(feedback.getId()).get();
+            var likedFeedback = feedbackRepository.findById(feedback.getId()).orElseThrow();
             assertThat(likedFeedback.isLiked()).isFalse();
         }
     }
@@ -492,8 +511,7 @@ class FeedbackControllerTest {
             // given
             Member sender = member1;
             Member receiver = member2;
-            Feedback feedback = createFeedback(sender, receiver, team1);
-            feedback.like(receiver);
+            Feedback feedback = createFeedback(sender, receiver, team1, true, true);
             feedbackRepository.save(feedback);
 
             // when
@@ -502,7 +520,7 @@ class FeedbackControllerTest {
                     .session(withLoginUser(receiver))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-            var likedFeedback = feedbackRepository.findById(feedback.getId()).get();
+            var likedFeedback = feedbackRepository.findById(feedback.getId()).orElseThrow();
             assertThat(likedFeedback.isLiked()).isFalse();
         }
 
@@ -513,8 +531,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             Member notReceiver = member3;
-            Feedback feedback = createFeedback(sender, receiver, team1);
-            feedback.like(receiver);
+            Feedback feedback = createFeedback(sender, receiver, team1, false, true);
             feedbackRepository.save(feedback);
 
             // when
@@ -523,7 +540,7 @@ class FeedbackControllerTest {
                     .session(withLoginUser(notReceiver))
             ).hasStatus(HttpStatus.FORBIDDEN);
 
-            var likedFeedback = feedbackRepository.findById(feedback.getId()).get();
+            var likedFeedback = feedbackRepository.findById(feedback.getId()).orElseThrow();
             assertThat(likedFeedback.isLiked()).isTrue();
         }
     }
@@ -551,6 +568,296 @@ class FeedbackControllerTest {
 
             var requests = regularFeedbackRequestRepository.findAll();
             assertThat(requests).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("보낸 피드백 조회 테스트")
+    class GetSentFeedbacks {
+
+        @Test
+        @DisplayName("성공 시 200")
+        void test1() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            Feedback feedback1 = createFeedback(sender, receiver, team1);
+            Feedback feedback2 = createFeedback(sender, receiver, team1);
+            feedbackRepository.saveAll(List.of(feedback1, feedback2));
+
+            // when
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/sender/{senderId}", sender.getId())
+                    .session(withLoginUser(sender))
+            ).hasStatus(HttpStatus.OK);
+        }
+
+        @Test
+        @DisplayName("팀으로 조회")
+        void test2() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            Team team = team2;
+            feedbackRepository.saveAll(List.of(
+                    createFeedback(sender, receiver, team1),
+                    createFeedback(sender, receiver, team2),
+                    createFeedback(sender, receiver, team2)));
+
+            // when & then
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/sender/{senderId}", sender.getId())
+                    .queryParam("teamId", team.getId().toString())
+                    .session(withLoginUser(sender))
+            ).hasStatus(HttpStatus.OK)
+                    .body()
+                    .satisfies(result -> {
+                        Paged<SentFeedbackDto> requests = mapper.readValue(result, new TypeReference<>() {
+                        });
+                        assertThat(requests.content()).hasSize(2);
+                        assertThat(requests.content()).extracting(SentFeedbackDto::teamName)
+                                .containsOnly(team.getName());
+                    });
+
+        }
+
+        @Test
+        @DisplayName("도움 여부로 조회")
+        void test3() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            feedbackRepository.saveAll(List.of(
+                    createFeedback(sender, receiver, team1, false, true),
+                    createFeedback(sender, receiver, team2, false, false),
+                    createFeedback(sender, receiver, team2, false, true)));
+
+            // when & then
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/sender/{senderId}", sender.getId())
+                    .queryParam("filterHelpful", "true")
+                    .session(withLoginUser(sender))
+            ).hasStatus(HttpStatus.OK)
+                    .body()
+                    .satisfies(result -> {
+                        Paged<SentFeedbackDto> requests = mapper.readValue(result, new TypeReference<>() {
+                        });
+                        assertThat(requests.content()).extracting(SentFeedbackDto::liked)
+                                .containsOnly(true);
+                    });
+
+        }
+
+        @Test
+        @DisplayName("페이지로 조회")
+        void test4() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            for (int i = 0; i < 20; i++) {
+                feedbackRepository.save(createFeedback(sender, receiver, team1));
+            }
+
+            // when & then
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/sender/{senderId}", sender.getId())
+                    .queryParam("page", "1")
+                    .session(withLoginUser(sender))
+            ).hasStatus(HttpStatus.OK)
+                    .body()
+                    .satisfies(result -> {
+                        Paged<SentFeedbackDto> requests = mapper.readValue(result, new TypeReference<>() {
+                        });
+                        assertThat(requests.page()).isEqualTo(1);
+                        assertThat(requests.hasNext()).isEqualTo(false);
+                        assertThat(requests.content()).hasSize(10);
+                    });
+        }
+
+        @Test
+        @DisplayName("정렬로 조회")
+        void test5() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            for (int i = 0; i < 20; i++) {
+                feedbackRepository.save(createFeedback(sender, receiver, team1));
+            }
+            // when & then
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/sender/{senderId}", sender.getId())
+                    .queryParam("sortOrder", "ASC")
+                    .session(withLoginUser(sender))
+            ).hasStatus(HttpStatus.OK)
+                    .body()
+                    .satisfies(result -> {
+                        Paged<SentFeedbackDto> requests = mapper.readValue(result, new TypeReference<>() {
+                        });
+                        assertThat(requests.content()).extracting(SentFeedbackDto::createdAt)
+                                .isSortedAccordingTo(Comparator.naturalOrder());
+                    });
+        }
+
+        @Test
+        @DisplayName("본인이 아닌 경우 403")
+        void test6() {
+            // given
+            Member sender = member1;
+            Member notSender = member3;
+            Member receiver = member2;
+            Feedback feedback = createFeedback(sender, receiver, team1);
+            feedbackRepository.save(feedback);
+
+            // when
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/sender/{senderId}", sender.getId())
+                    .session(withLoginUser(notSender))
+            ).hasStatus(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @Nested
+    @DisplayName("받은 피드백 조회 테스트")
+    class GetReceivedFeedbacks {
+
+        @Test
+        @DisplayName("성공 시 200")
+        void test1() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            Feedback feedback1 = createFeedback(sender, receiver, team1);
+            Feedback feedback2 = createFeedback(sender, receiver, team1);
+            feedbackRepository.saveAll(List.of(feedback1, feedback2));
+
+            // when
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/receiver/{receiverId}", receiver.getId())
+                    .session(withLoginUser(receiver))
+            ).hasStatus(HttpStatus.OK);
+        }
+
+        @Test
+        @DisplayName("팀으로 조회")
+        void test2() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            Team team = team2;
+            feedbackRepository.saveAll(List.of(
+                    createFeedback(sender, receiver, team1),
+                    createFeedback(sender, receiver, team2),
+                    createFeedback(sender, receiver, team2)));
+
+            // when & then
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/receiver/{receiverId}", receiver.getId())
+                    .queryParam("teamId", team.getId().toString())
+                    .session(withLoginUser(receiver))
+            ).hasStatus(HttpStatus.OK)
+                    .body()
+                    .satisfies(result -> {
+                        Paged<ReceivedFeedbackDto> requests = mapper.readValue(result, new TypeReference<>() {
+                        });
+                        assertThat(requests.content()).hasSize(2);
+                        assertThat(requests.content()).extracting(ReceivedFeedbackDto::teamName)
+                                .containsOnly(team.getName());
+                    });
+
+        }
+
+        @Test
+        @DisplayName("도움 여부로 조회")
+        void test3() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            feedbackRepository.saveAll(List.of(
+                    createFeedback(sender, receiver, team1, false, true),
+                    createFeedback(sender, receiver, team2, false, false),
+                    createFeedback(sender, receiver, team2, false, true)));
+
+            // when & then
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/receiver/{receiverId}", receiver.getId())
+                    .queryParam("filterHelpful", "true")
+                    .session(withLoginUser(receiver))
+            ).hasStatus(HttpStatus.OK)
+                    .body()
+                    .satisfies(result -> {
+                        Paged<ReceivedFeedbackDto> requests = mapper.readValue(result, new TypeReference<>() {
+                        });
+                        assertThat(requests.content()).extracting(ReceivedFeedbackDto::liked)
+                                .containsOnly(true);
+                    });
+
+        }
+
+        @Test
+        @DisplayName("페이지로 조회")
+        void test4() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            for (int i = 0; i < 20; i++) {
+                feedbackRepository.save(createFeedback(sender, receiver, team1));
+            }
+
+            // when & then
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/receiver/{receiverId}", receiver.getId())
+                    .queryParam("page", "1")
+                    .session(withLoginUser(receiver))
+            ).hasStatus(HttpStatus.OK)
+                    .body()
+                    .satisfies(result -> {
+                        Paged<ReceivedFeedbackDto> requests = mapper.readValue(result, new TypeReference<>() {
+                        });
+                        assertThat(requests.page()).isEqualTo(1);
+                        assertThat(requests.hasNext()).isEqualTo(false);
+                        assertThat(requests.content()).hasSize(10);
+                    });
+        }
+
+        @Test
+        @DisplayName("정렬로 조회")
+        void test5() {
+            // given
+            Member sender = member1;
+            Member receiver = member2;
+            for (int i = 0; i < 20; i++) {
+                feedbackRepository.save(createFeedback(sender, receiver, team1));
+            }
+            // when & then
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/receiver/{receiverId}", receiver.getId())
+                    .queryParam("sortOrder", "ASC")
+                    .session(withLoginUser(receiver))
+            ).hasStatus(HttpStatus.OK)
+                    .body()
+                    .satisfies(result -> {
+                        Paged<ReceivedFeedbackDto> requests = mapper.readValue(result, new TypeReference<>() {
+                        });
+                        assertThat(requests.content()).extracting(ReceivedFeedbackDto::createdAt)
+                                .isSortedAccordingTo(Comparator.naturalOrder());
+                    });
+        }
+
+        @Test
+        @DisplayName("본인이 아닌 경우 403")
+        void test6() {
+            // given
+            Member sender = member1;
+            Member notReceiver = member3;
+            Member receiver = member2;
+            Feedback feedback = createFeedback(sender, receiver, team1);
+            feedbackRepository.save(feedback);
+
+            // when
+            assertThat(mvc.get()
+                    .uri("/api/feedbacks/receiver/{receiverId}", receiver.getId())
+                    .session(withLoginUser(notReceiver))
+            ).hasStatus(HttpStatus.FORBIDDEN);
         }
     }
 }
