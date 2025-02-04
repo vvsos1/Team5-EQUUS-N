@@ -20,8 +20,8 @@ export default function FeedbackRequest() {
       <MainCard
         recentSchedule={{
           name: '동해물과',
-          start: '2022-12-12T17:00:00',
-          end: '2025-02-03T18:41:00',
+          start: '2022-02-05T00:00:00',
+          end: '2025-02-05T00:23:00',
           roles: [
             {
               memberId: 1,
@@ -40,8 +40,8 @@ export default function FeedbackRequest() {
       <MainCard
         recentSchedule={{
           name: '백두산이',
-          start: '2022-12-12T17:00:00',
-          end: '2025-02-09T18:00:00',
+          start: '2025-02-08T17:00:00',
+          end: '2025-03-22T18:00:00',
           roles: [
             {
               memberId: 1,
@@ -60,8 +60,8 @@ export default function FeedbackRequest() {
       <MainCard
         recentSchedule={{
           name: '마르고 닳도록',
-          start: '2022-12-12T17:00:00',
-          end: '2025-02-06T18:00:00',
+          start: '2025-02-05T23:59:00',
+          end: '2025-02-06T00:10:00',
           roles: [
             {
               memberId: 3,

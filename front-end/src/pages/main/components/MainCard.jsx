@@ -64,7 +64,7 @@ export default function MainCard({
   const [isOpen, setIsOpen] = useState(false);
   const [height, setHeight] = useState(0);
 
-  const scheduleDifferece = getScheduleDifferece(recentSchedule);
+  const scheduleDifferece = getScheduleTimeDiff(recentSchedule);
 
   // 스케줄 컨텐츠 높이 계산
   useEffect(() => {
@@ -73,15 +73,12 @@ export default function MainCard({
     }
   }, [isOpen]);
 
-  if (-1 < scheduleDifferece && scheduleDifferece <= 0) {
-    console.log(scheduleDifferece);
+  // 마지막 일정이 끝난 후 24시간이 안된 경우: response 있음 && timeDiff가 0보다 작거나 같음
+  if (scheduleDifferece <= 0) {
     return (
       <MainCardFrame>
         <div className='flex flex-col items-center justify-center'>
-          <p className='body-1 mt-6 mb-1 text-gray-300'>
-            {'일정 종료'}
-            <span className='body-4 ml-2 text-lime-200'>{`D+${scheduleDifferece}`}</span>
-          </p>
+          <p className='body-1 mt-6 mb-1 text-gray-300'>일정 종료</p>
           <h1 className='header-1 mb-7 text-gray-400'>{recentSchedule.name}</h1>
           <MediumButton
             text={'피드백 작성하기'}
@@ -99,7 +96,7 @@ export default function MainCard({
       </MainCardFrame>
     );
   } else {
-    console.log(scheduleDifferece);
+    // 다음 일정
     return (
       <MainCardFrame>
         <div className='flex flex-col items-center justify-center pt-6'>
@@ -197,10 +194,21 @@ function MainCardFrame({ children }) {
   );
 }
 
-function getScheduleDifferece(recentSchedule) {
-  const millisecondsDiff =
-    new Date(recentSchedule.end) - new Date(new Date().toISOString());
+function getScheduleTimeDiff(recentSchedule) {
+  const today = new Date();
+  const startDay = new Date(recentSchedule.start);
+  const endDay = new Date(recentSchedule.end);
 
-  // 밀리초를 하루(day)로 변환: 1000 * 60 * 60 * 24 = 86400000
-  return Math.ceil(millisecondsDiff / 86400000);
+  if (Math.abs(startDay - today) < Math.abs(endDay - today)) {
+    // 미래 일정인 경우, today를 자정으로 설정하여 계산
+    today.setHours(0, 0, 0, 0);
+
+    const diffDay = Math.floor((startDay - today) / (1000 * 60 * 60 * 24));
+
+    if (diffDay === 0) return 'DAY';
+    return diffDay;
+  } else {
+    // 과거 일정인 경우
+    return Math.ceil((endDay - today) / (1000 * 60 * 60 * 24));
+  }
 }
