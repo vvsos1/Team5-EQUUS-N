@@ -6,6 +6,7 @@ import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
 import com.feedhanjum.back_end.schedule.exception.ScheduleAlreadyExistException;
+import com.feedhanjum.back_end.schedule.exception.ScheduleMembershipNotFoundException;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleQueryRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
@@ -62,7 +63,7 @@ public class ScheduleService {
 
     /**
      * @throws EntityNotFoundException 팀, 사용자 또는 일정을 찾을 수 없는 경우
-     * @throws TeamMembershipNotFoundException 회원이 팀에 존재하지 않을 경우
+     * @throws ScheduleMembershipNotFoundException 회원이 해당 일정과 연관이 없을 경우
      */
     @Transactional
     public void updateSchedule(Long memberId, Long teamId, Long scheduleId, ScheduleRequestDto requestDto) {
@@ -73,7 +74,7 @@ public class ScheduleService {
         changeScheduleInfo(requestDto, schedule, member, team);
 
         ScheduleMember scheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, scheduleId)
-                .orElseThrow(() -> new TeamMembershipNotFoundException("회원이 팀에 존재하지 않습니다."));
+                .orElseThrow(() -> new ScheduleMembershipNotFoundException("해당 사용자와 관련이 없는 일정입니다."));
 
         scheduleMember.setTodos(requestDto.todos());
     }

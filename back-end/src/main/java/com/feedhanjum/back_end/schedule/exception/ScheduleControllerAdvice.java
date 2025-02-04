@@ -13,4 +13,10 @@ public class ScheduleControllerAdvice {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
+    
+    @ExceptionHandler(ScheduleMembershipNotFoundException.class)
+    public ResponseEntity<String> scheduleMembershipNotFound(ScheduleMembershipNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
+    }
 }
