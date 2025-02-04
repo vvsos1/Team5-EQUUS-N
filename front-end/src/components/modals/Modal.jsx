@@ -27,7 +27,7 @@ export default function Modal({
   subButton,
 }) {
   return (
-    <div className='rounded-400 text-gray-0 relative flex w-[353px] flex-col bg-gray-800 p-4'>
+    <div className='rounded-400 text-gray-0 relative flex w-full flex-col bg-gray-800 p-4'>
       {type === ModalType.PROFILE && (
         <div className='flex flex-col items-center justify-center gap-3 pt-10'>
           {profileImage}
