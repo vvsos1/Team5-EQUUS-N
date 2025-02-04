@@ -99,74 +99,10 @@ export default function MainCard({
     // 다음 일정
     return (
       <MainCardFrame>
-        <div className='flex flex-col items-center justify-center pt-6'>
-          <p className='body-1 text-gray-300'>
-            {'다음 일정까지'}
-            <span className='body-4 ml-2 text-lime-200'>{`D-${scheduleDifferece}`}</span>
-          </p>
-          <h1 className='header-1 my-2 text-gray-100'>{recentSchedule.name}</h1>
-          <Tag
-            type={TagType.TEAM_SCHEDULE}
-            children={{ date: '12일 목요일', time: '17:00' }}
-          />
-        </div>
+        {renderTitle(recentSchedule, scheduleDifferece)}
         <hr className='my-6 w-full border-gray-500' />
-        {/* 나의 역할 */}
-        {recentSchedule.roles.find((role) => role.memberId === 1) ?
-          <div className='flex flex-col gap-3'>
-            <Tag type={TagType.MY_ROLE} />
-            <div className='flex flex-col gap-1'>
-              {recentSchedule.roles
-                .find((role) => role.memberId === 1)
-                .task.map((role, index) => (
-                  <li
-                    key={index}
-                    className='body-1 pl-2 text-gray-100 last:mb-3'
-                  >
-                    {role}
-                  </li>
-                ))}
-            </div>
-          </div>
-        : <div className='mb-3 flex flex-col gap-6'>
-            <p className='body-1 text-center text-gray-400'>
-              나의 역할이 비어있어요
-            </p>
-            {/* 일정 종료 전에만 나의 역할 추가 버튼 표시 */}
-            <MediumButton text={'나의 역할 추가하기'} isOutlined={false} />
-          </div>
-        }
-        {/* 팀원 역할 */}
-        <div
-          ref={contentRef}
-          className={`flex flex-col overflow-hidden transition-all duration-300 ease-in-out`}
-          style={contentRef.current ? { height: `${height}px` } : { height: 0 }}
-        >
-          {recentSchedule.roles.map((role, index) => {
-            if (role.memberId === 1) return null;
-            return (
-              <div key={index} className='flex flex-col gap-3 first:mt-3'>
-                <Tag type={TagType.MEMBER_ROLE}>{role.name}</Tag>
-                {role.task.length > 0 ?
-                  <div className='flex flex-col gap-1'>
-                    {role.task.map((task, index) => (
-                      <li
-                        key={index}
-                        className='body-1 pl-1 text-gray-100 last:mb-6'
-                      >
-                        {task}
-                      </li>
-                    ))}
-                  </div>
-                : <p className='body-1 text-gray-500'>
-                    아직 담당 업무를 입력하지 않았어요
-                  </p>
-                }
-              </div>
-            );
-          })}
-        </div>
-        {/* 팀원 역할 보기 토글 버튼 */}
+        {renderMyRole(recentSchedule)}
+        {renderTeamRole(recentSchedule, contentRef, height)}
         <MediumButton
           text={
             <div className='flex items-center gap-2'>
@@ -211,4 +147,78 @@ function getScheduleTimeDiff(recentSchedule) {
     // 과거 일정인 경우
     return Math.ceil((endDay - today) / (1000 * 60 * 60 * 24));
   }
+}
+
+function renderTitle(recentSchedule, scheduleDifferece) {
+  return (
+    <div className='flex flex-col items-center justify-center pt-6'>
+      <p className='body-1 text-gray-300'>
+        {'다음 일정까지'}
+        <span className='body-4 ml-2 text-lime-200'>{`D-${scheduleDifferece}`}</span>
+      </p>
+      <h1 className='header-1 my-2 text-gray-100'>{recentSchedule.name}</h1>
+      <Tag
+        type={TagType.TEAM_SCHEDULE}
+        children={{ date: '12일 목요일', time: '17:00' }}
+      />
+    </div>
+  );
+}
+
+function renderMyRole(recentSchedule) {
+  return recentSchedule.roles.find((role) => role.memberId === 1) ?
+      <div className='flex flex-col gap-3'>
+        <Tag type={TagType.MY_ROLE} />
+        <div className='flex flex-col gap-1'>
+          {recentSchedule.roles
+            .find((role) => role.memberId === 1)
+            .task.map((role, index) => (
+              <li key={index} className='body-1 pl-2 text-gray-100 last:mb-3'>
+                {role}
+              </li>
+            ))}
+        </div>
+      </div>
+    : <div className='mb-3 flex flex-col gap-6'>
+        <p className='body-1 text-center text-gray-400'>
+          나의 역할이 비어있어요
+        </p>
+        <MediumButton text={'나의 역할 추가하기'} isOutlined={false} />
+      </div>;
+}
+
+function renderTeamRole(recentSchedule, contentRef, currentHeight) {
+  return (
+    <div
+      ref={contentRef}
+      className={`flex flex-col overflow-hidden transition-all duration-300 ease-in-out`}
+      style={
+        contentRef.current ? { height: `${currentHeight}px` } : { height: 0 }
+      }
+    >
+      {recentSchedule.roles.map((role, index) => {
+        if (role.memberId === 1) return null;
+        return (
+          <div key={index} className='flex flex-col gap-3 first:mt-3'>
+            <Tag type={TagType.MEMBER_ROLE}>{role.name}</Tag>
+            {role.task.length > 0 ?
+              <div className='flex flex-col gap-1'>
+                {role.task.map((task, index) => (
+                  <li
+                    key={index}
+                    className='body-1 pl-1 text-gray-100 last:mb-6'
+                  >
+                    {task}
+                  </li>
+                ))}
+              </div>
+            : <p className='body-1 text-gray-500'>
+                아직 담당 업무를 입력하지 않았어요
+              </p>
+            }
+          </div>
+        );
+      })}
+    </div>
+  );
 }
