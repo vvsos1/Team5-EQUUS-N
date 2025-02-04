@@ -62,9 +62,12 @@ public class ScheduleService {
     }
 
     /**
+     *
+     * @throws SecurityException 일정 내용을 수정하려는 사람이 팀장, 일정의 주인이 아닌 경우
      * @throws EntityNotFoundException 팀, 사용자 또는 일정을 찾을 수 없는 경우
      * @throws ScheduleMembershipNotFoundException 회원이 해당 일정과 연관이 없을 경우
      */
+    
     @Transactional
     public void updateSchedule(Long memberId, Long teamId, Long scheduleId, ScheduleRequestDto requestDto) {
         Team team = teamRepository.findById(teamId).orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
