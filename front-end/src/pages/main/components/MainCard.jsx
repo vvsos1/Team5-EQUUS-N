@@ -3,10 +3,6 @@ import { TagType } from '../../../components/Tag';
 import Icon from '../../../components/Icon';
 import MediumButton from '../../../components/buttons/MediumButton';
 import { useEffect, useRef, useState } from 'react';
-import classNames from 'classnames';
-import { hideModal, showModal } from '../../../utility/handleModal';
-import Modal, { ModalType } from '../../../components/modals/Modal';
-import ProfileImage from '../../../components/ProfileImage';
 
 /**
  * 메인 카드 컴포넌트
@@ -26,6 +22,7 @@ export default function MainCard({
   onClickChevronButton,
 }) {
   if (!isInTeam) {
+    // 팀에 속하지 않은 경우 무조건 팀 만들어야 함
     return (
       <MainCardFrame>
         <>
@@ -42,13 +39,8 @@ export default function MainCard({
     );
   }
 
-  // 2022-12-12T17:00:00 와 같은 형식으로 비교
-  const scheduleDifferece =
-    new Date(recentSchedule.at(-1).end) - new Date(new Date().toISOString());
-  console.log(scheduleDifferece);
-
-  // recentschedule의 종료시각이 현시각으로부터 24시간 이상 차이날경우: 로직필요
-  if (recentSchedule.length === 0 || scheduleDifferece < -86400000) {
+  // 마지막 일정이 끝난지 24시간이 넘은 경우 -> response 자체가 없음
+  if (!recentSchedule) {
     return (
       <MainCardFrame>
         <>
@@ -72,6 +64,8 @@ export default function MainCard({
   const [isOpen, setIsOpen] = useState(false);
   const [height, setHeight] = useState(0);
 
+  const scheduleDifferece = getScheduleDifferece(recentSchedule);
+
   // 스케줄 컨텐츠 높이 계산
   useEffect(() => {
     if (contentRef.current) {
@@ -79,32 +73,41 @@ export default function MainCard({
     }
   }, [isOpen]);
 
-  if (0 < scheduleDifferece && scheduleDifferece < 86400000) {
+  if (-1 < scheduleDifferece && scheduleDifferece <= 0) {
+    console.log(scheduleDifferece);
     return (
       <MainCardFrame>
-        <div className='rounded-400 flex h-fit w-full flex-col gap-6 overflow-hidden bg-gray-800 transition-all duration-300'>
-          <p className='body-1 text-center text-gray-400'>
-            {recentSchedule.name}
+        <div className='flex flex-col items-center justify-center'>
+          <p className='body-1 mt-6 mb-1 text-gray-300'>
+            {'일정 종료'}
+            <span className='body-4 ml-2 text-lime-200'>{`D+${scheduleDifferece}`}</span>
           </p>
+          <h1 className='header-1 mb-7 text-gray-400'>{recentSchedule.name}</h1>
           <MediumButton
             text={'피드백 작성하기'}
             isOutlined={false}
             onClick={onClickMainButton}
-          ></MediumButton>
+          />
+          <div className='h-3' />
+          <MediumButton
+            text={'다음 일정 추가하기'}
+            isOutlined={true}
+            disabled={true}
+            onClick={onClickSubButton}
+          />
         </div>
       </MainCardFrame>
     );
   } else {
+    console.log(scheduleDifferece);
     return (
       <MainCardFrame>
         <div className='flex flex-col items-center justify-center pt-6'>
           <p className='body-1 text-gray-300'>
             {'다음 일정까지'}
-            <span className='body-4 ml-2 text-lime-200'>{`D-${1}`}</span>
+            <span className='body-4 ml-2 text-lime-200'>{`D-${scheduleDifferece}`}</span>
           </p>
-          <h1 className='header-1 my-2 text-gray-100'>
-            {recentSchedule.at(-1).name}
-          </h1>
+          <h1 className='header-1 my-2 text-gray-100'>{recentSchedule.name}</h1>
           <Tag
             type={TagType.TEAM_SCHEDULE}
             children={{ date: '12일 목요일', time: '17:00' }}
@@ -112,24 +115,23 @@ export default function MainCard({
         </div>
         <hr className='my-6 w-full border-gray-500' />
         {/* 나의 역할 */}
-        {recentSchedule.at(-1).roles.find((role) => role.memberId === 1) ?
+        {recentSchedule.roles.find((role) => role.memberId === 1) ?
           <div className='flex flex-col gap-3'>
             <Tag type={TagType.MY_ROLE} />
             <div className='flex flex-col gap-1'>
-              {recentSchedule
-                .at(-1)
-                .roles.find((role) => role.memberId === 1)
+              {recentSchedule.roles
+                .find((role) => role.memberId === 1)
                 .task.map((role, index) => (
                   <li
                     key={index}
-                    className='body-1 pl-2 text-gray-100 last:mb-6'
+                    className='body-1 pl-2 text-gray-100 last:mb-3'
                   >
                     {role}
                   </li>
                 ))}
             </div>
           </div>
-        : <div className='mb-6 flex flex-col gap-6'>
+        : <div className='mb-3 flex flex-col gap-6'>
             <p className='body-1 text-center text-gray-400'>
               나의 역할이 비어있어요
             </p>
@@ -143,10 +145,10 @@ export default function MainCard({
           className={`flex flex-col overflow-hidden transition-all duration-300 ease-in-out`}
           style={contentRef.current ? { height: `${height}px` } : { height: 0 }}
         >
-          {recentSchedule.at(-1).roles.map((role, index) => {
+          {recentSchedule.roles.map((role, index) => {
             if (role.memberId === 1) return null;
             return (
-              <div key={index} className='flex flex-col gap-3'>
+              <div key={index} className='flex flex-col gap-3 first:mt-3'>
                 <Tag type={TagType.MEMBER_ROLE}>{role.name}</Tag>
                 {role.task.length > 0 ?
                   <div className='flex flex-col gap-1'>
@@ -193,4 +195,12 @@ function MainCardFrame({ children }) {
       {children}
     </div>
   );
+}
+
+function getScheduleDifferece(recentSchedule) {
+  const millisecondsDiff =
+    new Date(recentSchedule.end) - new Date(new Date().toISOString());
+
+  // 밀리초를 하루(day)로 변환: 1000 * 60 * 60 * 24 = 86400000
+  return Math.ceil(millisecondsDiff / 86400000);
 }

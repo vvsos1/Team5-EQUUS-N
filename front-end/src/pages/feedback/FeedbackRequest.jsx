@@ -16,72 +16,66 @@ export default function FeedbackRequest() {
         }}
       />
       <MainCard isInTeam={false} />
-      {/* <MainCard recentSchedule={[]} /> */}
+      <MainCard />
       <MainCard
-        recentSchedule={[
-          {
-            name: '다음 일정',
-            start: '2022-12-12T17:00:00',
-            end: '2025-02-02T18:00:00',
-            roles: [
-              {
-                memberId: 1,
-                task: ['똥싸기', '씻기', '화장실 가기'],
-                name: '백현식',
-              },
-              {
-                memberId: 2,
-                task: ['밥먹기', '숨쉬기', '공부하기'],
-                name: '양준호',
-              },
-              { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
-            ],
-          },
-        ]}
+        recentSchedule={{
+          name: '동해물과',
+          start: '2022-12-12T17:00:00',
+          end: '2025-02-03T18:41:00',
+          roles: [
+            {
+              memberId: 1,
+              task: ['똥싸기', '씻기', '화장실 가기'],
+              name: '백현식',
+            },
+            {
+              memberId: 2,
+              task: ['밥먹기', '숨쉬기', '공부하기'],
+              name: '양준호',
+            },
+            { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
+          ],
+        }}
       />
       <MainCard
-        recentSchedule={[
-          {
-            name: '다음 일정',
-            start: '2022-12-12T17:00:00',
-            end: '2025-02-04T18:00:00',
-            roles: [
-              {
-                memberId: 3,
-                task: ['똥싸기', '씻기', '화장실 가기'],
-                name: '백현식',
-              },
-              {
-                memberId: 2,
-                task: ['밥먹기', '숨쉬기', '공부하기'],
-                name: '양준호',
-              },
-              { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
-            ],
-          },
-        ]}
+        recentSchedule={{
+          name: '백두산이',
+          start: '2022-12-12T17:00:00',
+          end: '2025-02-09T18:00:00',
+          roles: [
+            {
+              memberId: 1,
+              task: ['똥싸기', '씻기', '화장실 가기'],
+              name: '백현식',
+            },
+            {
+              memberId: 2,
+              task: ['밥먹기', '숨쉬기', '공부하기'],
+              name: '양준호',
+            },
+            { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
+          ],
+        }}
       />
       <MainCard
-        recentSchedule={[
-          {
-            name: '다음 일정',
-            start: '2022-12-12T17:00:00',
-            end: '2025-02-06T18:00:00',
-            roles: [
-              {
-                memberId: 3,
-                task: ['똥싸기', '씻기', '화장실 가기'],
-                name: '백현식',
-              },
-              {
-                memberId: 2,
-                task: ['밥먹기', '숨쉬기', '공부하기'],
-                name: '양준호',
-              },
-              { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
-            ],
-          },
-        ]}
+        recentSchedule={{
+          name: '마르고 닳도록',
+          start: '2022-12-12T17:00:00',
+          end: '2025-02-06T18:00:00',
+          roles: [
+            {
+              memberId: 3,
+              task: ['똥싸기', '씻기', '화장실 가기'],
+              name: '백현식',
+            },
+            {
+              memberId: 2,
+              task: ['밥먹기', '숨쉬기', '공부하기'],
+              name: '양준호',
+            },
+            { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
+          ],
+        }}
       />
 
       {/* <DropdownSmall
