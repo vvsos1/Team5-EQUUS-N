@@ -1,14 +1,10 @@
 import { CertState } from '../components/Certification';
 import { showToast } from './handleToast';
 
-/**
- * 10바이트 이하인지 확인
- * @param {string} str - 문자열
- * @returns {boolean} - 10바이트 이하인지 여부
- */
-export function isWithin10Bytes(str) {
+export function transformToBytes(str) {
   let byteCount = 0;
 
+  let overflowedIndex = 0;
   for (const ch of str) {
     // 한글 완성형 (AC00-D7A3), 자음/모음 (3131-318E)
     if (
@@ -21,7 +17,16 @@ export function isWithin10Bytes(str) {
     }
   }
 
-  return byteCount <= 10;
+  return { byteCount: byteCount, overflowedIndex: overflowedIndex };
+}
+
+/**
+ * 10바이트 이하인지 확인
+ * @param {string} str - 문자열
+ * @returns {boolean} - 10바이트 이하인지 여부
+ */
+export function isWithin10Bytes(str) {
+  return transformToBytes(str).byteCount <= 10;
 }
 
 /**
