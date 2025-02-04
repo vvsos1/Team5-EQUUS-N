@@ -47,4 +47,20 @@ public class ScheduleControllerTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         verify(scheduleService).createSchedule(memberId, teamId, new ScheduleRequestDto(request));
     }
+    @Test
+    @DisplayName("스케줄 수정 요청 성공")
+    void updateSchedule_성공() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 2L;
+        Long scheduleId = 3L;
+        LocalDateTime now = LocalDateTime.now();
+        ScheduleRequest request = new ScheduleRequest("haha", now.plusHours(1), now.plusHours(2), List.of(new Todo("hehe")));
+
+        // when
+        ResponseEntity<Void> response = scheduleController.updateSchedule(memberId, teamId, scheduleId, request);
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
 }
