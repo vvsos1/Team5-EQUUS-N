@@ -11,7 +11,7 @@ import java.util.List;
 public record ScheduleRequest(
         @NotBlank @Size(min = 1, max = 20) String name,
         @NotNull LocalDateTime startTime,
-        LocalDateTime endTime,
+        @NotNull LocalDateTime endTime,
         List<Todo> todos
 ) {
 }

@@ -13,7 +13,6 @@ import java.util.List;
 import static com.feedhanjum.back_end.member.domain.QMember.member;
 import static com.feedhanjum.back_end.schedule.domain.QSchedule.schedule;
 import static com.feedhanjum.back_end.schedule.domain.QScheduleMember.scheduleMember;
-import static com.feedhanjum.back_end.schedule.domain.QTodo.todo;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,10 +22,9 @@ public class ScheduleQueryRepository {
     public List<ScheduleMember> findScheduleTodoList(Long scheduleId, Long memberId) {
         return queryFactory.select(scheduleMember)
                 .from(schedule)
-                .join(schedule.scheduleMembers, scheduleMember)
-                .join(scheduleMember.todos, todo)
-                .join(scheduleMember.member, member)
-                .fetchJoin()
+                .join(schedule.scheduleMembers, scheduleMember).fetchJoin()
+                .join(scheduleMember.todos).fetchJoin()
+                .join(scheduleMember.member).fetchJoin()
                 .where(schedule.id.eq(scheduleId), memberIdEq(memberId))
                 .fetch();
     }
