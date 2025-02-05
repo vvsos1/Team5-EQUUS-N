@@ -35,7 +35,8 @@ public class ScheduleControllerTest {
         // given
         Long memberId = 1L;
         Long teamId = 2L;
-        ScheduleRequest request = new ScheduleRequest("haha", LocalDateTime.now(), LocalDateTime.now().plusDays(10), List.of(new Todo("hehe")));
+        Todo hehe = new Todo("hehe");
+        ScheduleRequest request = new ScheduleRequest("haha", LocalDateTime.now(), LocalDateTime.now().plusDays(10), List.of(hehe));
         ScheduleRequestDto scheduleRequestDto = new ScheduleRequestDto(request);
         doNothing().when(scheduleService).createSchedule(memberId, teamId, scheduleRequestDto);
 
@@ -55,7 +56,8 @@ public class ScheduleControllerTest {
         Long teamId = 2L;
         Long scheduleId = 3L;
         LocalDateTime now = LocalDateTime.now();
-        ScheduleRequest request = new ScheduleRequest("haha", now.plusHours(1), now.plusHours(2), List.of(new Todo("hehe")));
+        Todo hehe = new Todo("hehe");
+        ScheduleRequest request = new ScheduleRequest("haha", now.plusHours(1), now.plusHours(2), List.of(hehe));
 
         // when
         ResponseEntity<Void> response = scheduleController.updateSchedule(memberId, teamId, scheduleId, request);

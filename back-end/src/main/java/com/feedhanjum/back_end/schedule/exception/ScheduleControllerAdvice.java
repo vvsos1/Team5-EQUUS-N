@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ScheduleControllerAdvice {
 
     @ExceptionHandler(ScheduleAlreadyExistException.class)
-    public ResponseEntity<String> ScheduleAlreadyExists(ScheduleAlreadyExistException e){
+    public ResponseEntity<String> scheduleAlreadyExists(ScheduleAlreadyExistException e){
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
@@ -19,4 +19,11 @@ public class ScheduleControllerAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(e.getMessage());
     }
+    
+    @ExceptionHandler(ScheduleIsAlreadyEndException.class)
+    public ResponseEntity<String> scheduleIsAlreadyEnd(ScheduleIsAlreadyEndException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
+    
 }

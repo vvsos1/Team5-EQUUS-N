@@ -51,6 +51,7 @@ public class AuthController {
         MemberDetails member = authService.authenticate(request.email(), request.password());
 
         session.setAttribute(SessionConst.MEMBER_ID, member.getId());
+        session.setMaxInactiveInterval(Integer.MAX_VALUE);
 
         LoginResponse response = new LoginResponse("로그인에 성공했습니다.", member.getId(), member.getEmail());
 

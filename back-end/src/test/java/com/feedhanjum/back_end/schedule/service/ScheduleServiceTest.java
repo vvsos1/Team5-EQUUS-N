@@ -1,18 +1,16 @@
 package com.feedhanjum.back_end.schedule.service;
 
-import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.member.domain.Member;
-import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
 import com.feedhanjum.back_end.schedule.domain.Todo;
 import com.feedhanjum.back_end.schedule.exception.ScheduleAlreadyExistException;
-import com.feedhanjum.back_end.schedule.exception.ScheduleMembershipNotFoundException;
+import com.feedhanjum.back_end.schedule.exception.ScheduleIsAlreadyEndException;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
+import com.feedhanjum.back_end.schedule.repository.ScheduleQueryRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
-import com.feedhanjum.back_end.schedule.service.dto.ScheduleDto;
 import com.feedhanjum.back_end.schedule.service.dto.ScheduleRequestDto;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
@@ -21,353 +19,258 @@ import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.time.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ScheduleServiceTest {
 
     @Mock
-    private TeamRepository teamRepository;
+    Clock clock;
 
     @Mock
-    private MemberQueryRepository memberQueryRepository;
+    TeamRepository teamRepository;
 
     @Mock
-    private TeamMemberRepository teamMemberRepository;
+    TeamMemberRepository teamMemberRepository;
 
     @Mock
-    private ScheduleRepository scheduleRepository;
+    ScheduleRepository scheduleRepository;
 
     @Mock
-    private ScheduleMemberRepository scheduleMemberRepository;
+    ScheduleMemberRepository scheduleMemberRepository;
 
     @Mock
-    private MemberRepository memberRepository;
+    MemberRepository memberRepository;
+
+    @Mock
+    ScheduleQueryRepository scheduleQueryRepository;
+
+    @Mock
+    MemberQueryRepository memberQueryRepository;
 
     @InjectMocks
-    private ScheduleService scheduleService;
+    ScheduleService scheduleService;
 
-    @Nested
-    @DisplayName("일정 생성 테스트")
-    class CreateScheduleTest{
+    @Test
+    @DisplayName("일정 생성 성공")
+    void createSchedule_성공() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        ScheduleRequestDto requestDto = mock(ScheduleRequestDto.class);
+        when(requestDto.name()).thenReturn("haha");
+        LocalDateTime startTime = LocalDateTime.of(2025, 3, 1, 10, 0);
+        LocalDateTime endTime = LocalDateTime.of(2025, 3, 1, 12, 0);
+        when(requestDto.startTime()).thenReturn(startTime);
+        when(requestDto.endTime()).thenReturn(endTime);
+        Todo hehe = new Todo("hoho");
+        when(requestDto.todos()).thenReturn(List.of(hehe));
 
-        @Test
-        @DisplayName("일정 생성 성공")
-        void createSchedule_성공() {
-            //given
-            Long memberId = 1L;
-            Long teamId = 1L;
-            LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
-            LocalDateTime endTime = LocalDateTime.of(2025, 1, 1, 11, 0);
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("haha", startTime, endTime, List.of(new Todo("hh")));
+        Team team = mock(Team.class);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        when(team.getStartDate()).thenReturn(LocalDate.of(2025, 2, 28));
+        when(team.getEndDate()).thenReturn(LocalDate.of(2025, 3, 2));
 
-            Team team = mock(Team.class);
-            Member member = mock(Member.class);
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
-            when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId)).thenReturn(Optional.of(new TeamMember(team, member)));
-            when(scheduleRepository.findByStartTime(startTime)).thenReturn(Optional.empty());
-            Schedule savedSchedule = new Schedule("haha", startTime, endTime, team, member);
-            ScheduleDto scheduleDto = new ScheduleDto(savedSchedule);
-            ScheduleMember scheduleMember = new ScheduleMember(savedSchedule, member);
-            when(scheduleRepository.save(any(Schedule.class))).thenReturn(savedSchedule);
-            when(scheduleMemberRepository.save(any(ScheduleMember.class))).thenReturn(scheduleMember);
-            when(memberQueryRepository.findMembersByTeamId(teamId)).thenReturn(List.of(member));
-            when(scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, savedSchedule.getId())).thenReturn(Optional.of(scheduleMember));
+        Member member = mock(Member.class);
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
 
-            //when
-            scheduleService.createSchedule(memberId, teamId, requestDto);
+        // 존재하는 팀 멤버 체크 (dummy object 사용)
+        when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId))
+                .thenReturn(Optional.of(new TeamMember(team, member)));
 
-            //then
-            verify(scheduleMemberRepository).save(any(ScheduleMember.class));
-        }
+        // 중복 일정 없음
+        when(scheduleRepository.findByTeamIdAndStartTime(teamId, startTime))
+                .thenReturn(Optional.empty());
 
-        @Test
-        @DisplayName("팀이 없을 때 일정 생성 실패")
-        void createSchedule_팀없음() {
-            //given
-            Long memberId = 1L;
-            Long teamId = 1L;
-            LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
-            LocalDateTime endTime = LocalDateTime.of(2025, 1, 1, 11, 0);
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("haha", startTime, endTime, List.of(new Todo("hoho")));
+        // clock 고정
+        LocalDateTime now = LocalDateTime.of(2025, 2, 28, 9, 0);
+        Clock fixedClock = Clock.fixed(Instant.parse("2025-02-28T09:00:00Z"), ZoneId.of("UTC"));
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
 
-            when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
+        // 저장될 일정 mock
+        Schedule schedule = mock(Schedule.class);
+        when(schedule.getId()).thenReturn(100L);
+        when(scheduleRepository.save(any(Schedule.class))).thenReturn(schedule);
 
-            //when, then
-            assertThatThrownBy(() -> scheduleService.createSchedule(memberId, teamId, requestDto))
-                    .isInstanceOf(EntityNotFoundException.class)
-                    .hasMessageContaining("팀을 찾을 수 없습니다.");
-        }
+        Member memberFromTeam = mock(Member.class);
+        when(memberQueryRepository.findMembersByTeamId(teamId)).thenReturn(Collections.singletonList(memberFromTeam));
 
-        @Test
-        @DisplayName("사용자가 없을 때 일정 생성 실패")
-        void createSchedule_사용자없음() {
-            //given
-            Long memberId = 1L;
-            Long teamId = 1L;
-            LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
-            LocalDateTime endTime = LocalDateTime.of(2025, 1, 1, 11, 0);
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("haha", startTime, endTime, List.of(new Todo("hoho")));
+        ScheduleMember scheduleMember = mock(ScheduleMember.class);
+        when(scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, 100L))
+                .thenReturn(Optional.of(scheduleMember));
 
-            Team team = mock(Team.class);
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-            when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+        // when
+        scheduleService.createSchedule(memberId, teamId, requestDto);
 
-            //when, then
-            assertThatThrownBy(() -> scheduleService.createSchedule(memberId, teamId, requestDto))
-                    .isInstanceOf(EntityNotFoundException.class)
-                    .hasMessageContaining("해당 사용자를 찾을 수 없습니다.");
-        }
-
-        @Test
-        @DisplayName("팀 멤버십이 없을 때 일정 생성 실패")
-        void createSchedule_팀멤버십없음() {
-            //given
-            Long memberId = 1L;
-            Long teamId = 1L;
-            LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
-            LocalDateTime endTime = LocalDateTime.of(2025, 1, 1, 11, 0);
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("haha", startTime, endTime, List.of(new Todo("hoho")));
-
-            Team team = mock(Team.class);
-            Member member = mock(Member.class);
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
-            when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId)).thenReturn(Optional.empty());
-
-            //when, then
-            assertThatThrownBy(() -> scheduleService.createSchedule(memberId, teamId, requestDto))
-                    .isInstanceOf(TeamMembershipNotFoundException.class)
-                    .hasMessageContaining("해당 팀에 존재하는 사람만 일정을 생성할 수 있습니다.");
-        }
-
-        @Test
-        @DisplayName("같은 시작시간 일정이 있을 때 일정 생성 실패")
-        void createSchedule_중복일정() {
-            //given
-            Long memberId = 1L;
-            Long teamId = 1L;
-            LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
-            LocalDateTime endTime = LocalDateTime.of(2025, 1, 1, 11, 0);
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("haha", startTime, endTime, List.of(new Todo("hoho")));
-
-            Team team = mock(Team.class);
-            Member member = mock(Member.class);
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
-            when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId)).thenReturn(Optional.of(new TeamMember(team, member)));
-            when(scheduleRepository.findByStartTime(startTime)).thenReturn(Optional.of(mock(Schedule.class)));
-
-            //when, then
-            assertThatThrownBy(() -> scheduleService.createSchedule(memberId, teamId, requestDto))
-                    .isInstanceOf(ScheduleAlreadyExistException.class)
-                    .hasMessageContaining("이미 같은 시작시간에 일정이 있습니다.");
-        }
+        // then
+        verify(scheduleMember, times(1)).setTodos(List.of(hehe));
     }
 
-    @Nested
-    @DisplayName("일정 수정 테스트")
-    class updateSchedule{
+    @Test
+    @DisplayName("일정 생성 실패 - 팀 미존재")
+    void createSchedule_팀미존재() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        ScheduleRequestDto requestDto = mock(ScheduleRequestDto.class);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
 
-        @Test
-        @DisplayName("일정 수정 성공")
-        void updateSchedule_성공() {
-            // given
-            Long memberId = 1L;
-            Long teamId = 2L;
-            Long scheduleId = 3L;
-            LocalDateTime now = LocalDateTime.now();
+        // when, then
+        assertThatThrownBy(() ->
+                scheduleService.createSchedule(memberId, teamId, requestDto)
+        ).isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("팀을 찾을 수 없습니다.");
+    }
 
-            Member member = new Member("haha", "haha@example.com", new ProfileImage("bg", "img"));
-            Team team = new Team("팀이름", member, now.minusDays(1), now.plusDays(1), FeedbackType.IDENTIFIED);
-            LocalDateTime origStart = now.plusHours(1);
-            LocalDateTime origEnd = now.plusHours(2);
-            Schedule schedule = new Schedule("원래이름", origStart, origEnd, team, member);
-            ScheduleMember scheduleMember = new ScheduleMember(schedule, member);
+    @Test
+    @DisplayName("일정 생성 실패 - 사용자 미존재")
+    void createSchedule_사용자미존재() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        ScheduleRequestDto requestDto = mock(ScheduleRequestDto.class);
+        Team team = mock(Team.class);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
 
-            LocalDateTime newStart = origStart.plusDays(1);
-            LocalDateTime newEnd = origEnd.plusDays(1);
-            List<Todo> todos = List.of(new Todo("hehe"));
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("huhu", newStart, newEnd, todos);
+        // when, then
+        assertThatThrownBy(() ->
+                scheduleService.createSchedule(memberId, teamId, requestDto)
+        ).isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("해당 사용자를 찾을 수 없습니다.");
+    }
 
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
-            when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.of(schedule));
-            when(scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, scheduleId))
-                    .thenReturn(Optional.of(scheduleMember));
-            when(scheduleRepository.findByStartTime(newStart)).thenReturn(Optional.empty());
+    @Test
+    @DisplayName("일정 생성 실패 - 팀 멤버 아님")
+    void createSchedule_팀멤버아님() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        ScheduleRequestDto requestDto = mock(ScheduleRequestDto.class);
+        Team team = mock(Team.class);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        Member member = mock(Member.class);
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId))
+                .thenReturn(Optional.empty());
 
-            // when, then
-            assertThatCode(() -> scheduleService.updateSchedule(memberId, teamId, scheduleId, requestDto))
-                    .doesNotThrowAnyException();
-            assertThat(schedule.getName()).isEqualTo("huhu");
-            assertThat(schedule.getStartTime()).isEqualTo(newStart);
-            assertThat(schedule.getEndTime()).isEqualTo(newEnd);
-            assertThat(scheduleMember.getTodos()).extracting(Todo::getContent).containsExactly("hehe");
-        }
+        // when, then
+        assertThatThrownBy(() ->
+                scheduleService.createSchedule(memberId, teamId, requestDto)
+        ).isInstanceOf(TeamMembershipNotFoundException.class)
+                .hasMessageContaining("해당 팀에 존재하는 사람만 일정을 생성할 수 있습니다.");
+    }
 
-        @Test
-        @DisplayName("팀을 찾을 수 없는 경우")
-        void updateSchedule_팀없음() {
-            // given
-            Long teamId = 2L;
-            when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
+    @Test
+    @DisplayName("일정 생성 실패 - 중복 일정 존재")
+    void createSchedule_중복일정존재() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        ScheduleRequestDto requestDto = mock(ScheduleRequestDto.class);
+        when(requestDto.startTime()).thenReturn(LocalDateTime.of(2025, 3, 1, 10, 0));
+        Team team = mock(Team.class);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        Member member = mock(Member.class);
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId))
+                .thenReturn(Optional.of(new TeamMember(team, member)));
 
-            // when, then
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("huhu",
-                    LocalDateTime.now().plusDays(1),
-                    LocalDateTime.now().plusDays(1).plusHours(1),
-                    List.of(new Todo("hehe")));
-            assertThatExceptionOfType(EntityNotFoundException.class)
-                    .isThrownBy(() -> scheduleService.updateSchedule(1L, teamId, 3L, requestDto))
-                    .withMessage("팀을 찾을 수 없습니다.");
-        }
+        when(scheduleRepository.findByTeamIdAndStartTime(teamId, LocalDateTime.of(2025, 3, 1, 10, 0)))
+                .thenReturn(Optional.of(mock(Schedule.class)));
 
-        @Test
-        @DisplayName("사용자를 찾을 수 없는 경우")
-        void updateSchedule_사용자없음() {
-            // given
-            Long memberId = 1L;
-            Long teamId = 2L;
-            Team team = new Team("팀이름",
-                    new Member("hoho", "hoho@example.com", new ProfileImage("bg", "img")),
-                    LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1),
-                    FeedbackType.IDENTIFIED);
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-            when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+        // when, then
+        assertThatThrownBy(() ->
+                scheduleService.createSchedule(memberId, teamId, requestDto)
+        ).isInstanceOf(ScheduleAlreadyExistException.class)
+                .hasMessageContaining("이미 같은 시작시간에 일정이 있습니다.");
+    }
 
-            // when, then
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("huhu",
-                    LocalDateTime.now().plusDays(1),
-                    LocalDateTime.now().plusDays(1).plusHours(1),
-                    List.of(new Todo("hehe")));
-            assertThatExceptionOfType(EntityNotFoundException.class)
-                    .isThrownBy(() -> scheduleService.updateSchedule(memberId, teamId, 3L, requestDto))
-                    .withMessage("해당 사용자를 찾을 수 없습니다.");
-        }
+    @Test
+    @DisplayName("일정 수정 성공")
+    void updateSchedule_성공() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        Long scheduleId = 100L;
+        ScheduleRequestDto requestDto = mock(ScheduleRequestDto.class);
+        when(requestDto.name()).thenReturn("haha");
+        LocalDateTime newStartTime = LocalDateTime.of(2025, 4, 1, 10, 0);
+        LocalDateTime newEndTime = LocalDateTime.of(2025, 4, 1, 12, 0);
+        when(requestDto.startTime()).thenReturn(newStartTime);
+        when(requestDto.endTime()).thenReturn(newEndTime);
+        Todo hehe = new Todo("hehe");
+        when(requestDto.todos()).thenReturn(List.of(hehe));
 
-        @Test
-        @DisplayName("일정을 찾을 수 없는 경우")
-        void updateSchedule_일정없음() {
-            // given
-            Long memberId = 1L;
-            Long teamId = 2L;
-            Member member = new Member("haha", "haha@example.com", new ProfileImage("bg", "img"));
-            Team team = new Team("팀이름", member, LocalDateTime.now().minusDays(1),
-                    LocalDateTime.now().plusDays(1), FeedbackType.IDENTIFIED);
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
-            when(scheduleRepository.findById(3L)).thenReturn(Optional.empty());
+        Team team = mock(Team.class);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
 
-            // when, then
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("huhu",
-                    LocalDateTime.now().plusDays(1),
-                    LocalDateTime.now().plusDays(1).plusHours(1),
-                    List.of(new Todo("hehe")));
-            assertThatExceptionOfType(EntityNotFoundException.class)
-                    .isThrownBy(() -> scheduleService.updateSchedule(memberId, teamId, 3L, requestDto))
-                    .withMessage("해당 일정을 찾을 수 없습니다.");
-        }
+        Member member = mock(Member.class);
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
 
-        @Test
-        @DisplayName("일정 회원이 존재하지 않는 경우")
-        void updateSchedule_일정회원없음() {
-            // given
-            Long memberId = 1L;
-            Long teamId = 2L;
-            LocalDateTime now = LocalDateTime.now();
-            Member member = new Member("haha", "haha@example.com", new ProfileImage("bg", "img"));
-            Team team = new Team("팀이름", member, now.minusDays(1), now.plusDays(1), FeedbackType.IDENTIFIED);
-            LocalDateTime origStart = now.plusHours(1);
-            LocalDateTime origEnd = now.plusHours(2);
-            Schedule schedule = new Schedule("원래이름", origStart, origEnd, team, member);
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
-            when(scheduleRepository.findById(3L)).thenReturn(Optional.of(schedule));
-            when(scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, 3L))
-                    .thenReturn(Optional.empty());
-            when(scheduleRepository.findByStartTime(origStart.plusDays(1))).thenReturn(Optional.empty());
+        Schedule schedule = mock(Schedule.class);
+        when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.of(schedule));
+        LocalDateTime futureTime = LocalDateTime.of(2025, 4, 1, 13, 0);
+        when(schedule.getEndTime()).thenReturn(futureTime);
 
-            // when, then
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("huhu",
-                    origStart.plusDays(1),
-                    origEnd.plusDays(1),
-                    List.of(new Todo("hehe")));
-            assertThatExceptionOfType(ScheduleMembershipNotFoundException.class)
-                    .isThrownBy(() -> scheduleService.updateSchedule(memberId, teamId, 3L, requestDto))
-                    .withMessage("해당 사용자와 관련이 없는 일정입니다.");
-        }
+        ScheduleMember scheduleMember = mock(ScheduleMember.class);
+        when(scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, scheduleId))
+                .thenReturn(Optional.of(scheduleMember));
 
-        @Test
-        @DisplayName("수정 권한이 없는 경우")
-        void updateSchedule_권한없음() {
-            // given
-            Long memberId = 1L;
-            Long teamId = 2L;
-            LocalDateTime now = LocalDateTime.now();
-            // 소유자와 요청 사용자가 다름
-            Member owner = new Member("haha", "haha@example.com", new ProfileImage("bg", "img"));
-            Member other = new Member("hoho", "hoho@example.com", new ProfileImage("bg", "img"));
-            Team team = new Team("팀이름",
-                    new Member("huhu", "huhu@example.com", new ProfileImage("bg", "img")),
-                    now.minusDays(1), now.plusDays(1), FeedbackType.IDENTIFIED);
-            LocalDateTime origStart = now.plusHours(1);
-            LocalDateTime origEnd = now.plusHours(2);
-            Schedule schedule = new Schedule("원래이름", origStart, origEnd, team, owner);
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-            when(memberRepository.findById(memberId)).thenReturn(Optional.of(other));
-            when(scheduleRepository.findById(3L)).thenReturn(Optional.of(schedule));
+        // clock 고정
+        Clock fixedClock = Clock.fixed(Instant.parse("2025-04-01T09:00:00Z"), ZoneId.of("UTC"));
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
 
-            // when, then
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("hehe",
-                    origStart.plusDays(1),
-                    origEnd.plusDays(1),
-                    List.of(new Todo("huhu")));
-            assertThatExceptionOfType(SecurityException.class)
-                    .isThrownBy(() -> scheduleService.updateSchedule(memberId, teamId, 3L, requestDto))
-                    .withMessage("일정을 생성한 사람, 혹은 팀장만 일정을 수정할 수 있습니다.");
-        }
+        // when
+        scheduleService.updateSchedule(memberId, teamId, scheduleId, requestDto);
 
-        @Test
-        @DisplayName("시작 시간이 중복된 경우")
-        void updateSchedule_중복일정() {
-            // given
-            Long memberId = 1L;
-            Long teamId = 2L;
-            LocalDateTime now = LocalDateTime.now();
+        // then
+        verify(scheduleMember, times(1)).setTodos(List.of(hehe));
+    }
 
-            Member member = new Member("haha", "haha@example.com", new ProfileImage("bg", "img"));
-            Team team = new Team("팀이름", member, now.minusDays(1), now.plusDays(1), FeedbackType.IDENTIFIED);
-            LocalDateTime origStart = now.plusHours(1);
-            LocalDateTime origEnd = now.plusHours(2);
-            Schedule schedule = new Schedule("원래이름", origStart, origEnd, team, member);
-            LocalDateTime newStart = origStart.plusDays(1);
-            LocalDateTime newEnd = origEnd.plusDays(1);
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-            when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
-            when(scheduleRepository.findById(3L)).thenReturn(Optional.of(schedule));
-            when(scheduleRepository.findByStartTime(newStart))
-                    .thenReturn(Optional.of(new Schedule("dummy", newStart, newEnd, team, member)));
+    @Test
+    @DisplayName("일정 수정 실패 - 이미 종료된 일정")
+    void updateSchedule_종료된일정() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        Long scheduleId = 100L;
+        ScheduleRequestDto requestDto = mock(ScheduleRequestDto.class);
 
-            // when, then
-            ScheduleRequestDto requestDto = new ScheduleRequestDto("hehe", newStart, newEnd, List.of(new Todo("huhu")));
-            assertThatExceptionOfType(ScheduleAlreadyExistException.class)
-                    .isThrownBy(() -> scheduleService.updateSchedule(memberId, teamId, 3L, requestDto))
-                    .withMessage("이미 같은 시작시간에 일정이 있습니다.");
-        }
+        Team team = mock(Team.class);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+
+        Member member = mock(Member.class);
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+
+        Schedule schedule = mock(Schedule.class);
+        when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.of(schedule));
+        // 종료 시간이 현재 시간보다 이전
+        LocalDateTime pastTime = LocalDateTime.of(2025, 1, 1, 10, 0);
+        when(schedule.getEndTime()).thenReturn(pastTime);
+
+        Clock fixedClock = Clock.fixed(Instant.parse("2025-02-01T09:00:00Z"), ZoneId.of("UTC"));
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
+
+        // when, then
+        assertThatThrownBy(() ->
+                scheduleService.updateSchedule(memberId, teamId, scheduleId, requestDto)
+        ).isInstanceOf(ScheduleIsAlreadyEndException.class)
+                .hasMessageContaining("해당 일정은 이미 종료되었습니다.");
     }
 }
