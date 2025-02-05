@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Retrospect {
+    public static final int MAX_TITLE_LENGTH = 50;
+    public static final int MAX_CONTENT_BYTE = 400;
     @Id
     @Column(name = "retrospect_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
