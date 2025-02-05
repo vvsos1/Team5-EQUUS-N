@@ -10,6 +10,7 @@ import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
 import TeamSpaceMake from './pages/teamspace/TeamSpaceMake';
 import TeamSpaceMakeSuccess from './pages/teamspace/TeamSpaceMakeSuccess';
+import Calendar from './pages/calendar/Calendar';
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
             path='teamspace/make/success'
             element={<TeamSpaceMakeSuccess />}
           />
+          <Route path='calendar' element={<Calendar />} />
         </Route>
       </Routes>
     </BrowserRouter>
