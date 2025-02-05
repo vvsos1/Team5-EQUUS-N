@@ -1,7 +1,7 @@
 /**
  * sticky wrapper component
  * @param {object} props
- * @param {css} props.bgColor
+ * @param {string} props.bgColor
  * @param {ReactElement} props.children
  * @returns {ReactElement}
  */
