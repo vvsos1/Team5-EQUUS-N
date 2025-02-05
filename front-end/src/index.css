@@ -38,6 +38,10 @@
   --radius-200: 6px;
   --radius-300: 8px;
   --radius-400: 22px;
+
+  --breakpoint-mobile: 440px;
+  --breakpoint-tablet: 650px;
+  --breakpoint-desktop: 1024px;
 }
 
 body {
