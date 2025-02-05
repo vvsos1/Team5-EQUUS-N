@@ -8,6 +8,7 @@ import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
 import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
+import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -15,7 +16,6 @@ import com.feedhanjum.back_end.schedule.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
 import com.feedhanjum.back_end.schedule.event.RegularFeedbackRequestCreatedEvent;
-import com.feedhanjum.back_end.schedule.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.schedule.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
@@ -28,6 +28,7 @@ import com.feedhanjum.back_end.team.repository.FrequentFeedbackRequestRepository
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class FeedbackService {
     private final MemberRepository memberRepository;
@@ -47,18 +49,6 @@ public class FeedbackService {
     private final FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
     private final RegularFeedbackRequestRepository regularFeedbackRequestRepository;
     private final EventPublisher eventPublisher;
-
-    public FeedbackService(MemberRepository memberRepository, TeamRepository teamRepository, ScheduleRepository scheduleRepository, FeedbackRepository feedbackRepository, TeamMemberRepository teamMemberRepository, ScheduleMemberRepository scheduleMemberRepository, FrequentFeedbackRequestRepository frequentFeedbackRequestRepository, RegularFeedbackRequestRepository regularFeedbackRequestRepository, EventPublisher eventPublisher) {
-        this.memberRepository = memberRepository;
-        this.teamRepository = teamRepository;
-        this.scheduleRepository = scheduleRepository;
-        this.feedbackRepository = feedbackRepository;
-        this.teamMemberRepository = teamMemberRepository;
-        this.scheduleMemberRepository = scheduleMemberRepository;
-        this.frequentFeedbackRequestRepository = frequentFeedbackRequestRepository;
-        this.regularFeedbackRequestRepository = regularFeedbackRequestRepository;
-        this.eventPublisher = eventPublisher;
-    }
 
     /**
      * @throws EntityNotFoundException  sender id, receiver id, team id에 해당하는 엔티티가 없을 경우
@@ -105,16 +95,6 @@ public class FeedbackService {
     }
 
     /**
-     * @throws EntityNotFoundException 팀에 속한 receiver가 없을 경우
-     */
-    @Transactional(readOnly = true)
-    public List<FrequentFeedbackRequest> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
-        TeamMember teamMember = teamMemberRepository.findByMemberIdAndTeamId(receiverId, teamId).orElseThrow(() -> new EntityNotFoundException("receiver 가 team 에 속해있지 않습니다"));
-
-        return teamMember.getFrequentFeedbackRequests();
-    }
-
-    /**
      * @throws EntityNotFoundException           일정에 속한 sender, receiver가 없을 경우
      * @throws IllegalArgumentException          피드백 기분에 맞지 않는 객관식 피드백이 있을 경우, 또는 객관식 피드백이 1개 이상 5개 이하가 아닐 경우
      * @throws NoRegularFeedbackRequestException 정기 피드백 요청이 없을 경우
@@ -130,6 +110,7 @@ public class FeedbackService {
         Member receiver = receiverScheduleMember.getMember();
 
         Schedule schedule = senderScheduleMember.getSchedule();
+
 
         // 정기 피드백을 보내려면 정기 피드백 요청이 있어야 함
         RegularFeedbackRequest regularFeedbackRequest = regularFeedbackRequestRepository.findByRequesterAndScheduleMember(receiver, senderScheduleMember)
@@ -160,12 +141,10 @@ public class FeedbackService {
     public void likeFeedback(Long feedbackId, Long memberId) {
         Feedback feedback = feedbackRepository.findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("member id에 해당하는 member가 없습니다."));
-        if (!feedback.isReceiver(member)) {
-            throw new SecurityException("해당 피드백을 좋아요 할 권한이 없습니다.");
-        }
-
-        feedback.like();
-        eventPublisher.publishEvent(new FeedbackLikedEvent(feedbackId));
+        boolean isLiked = feedback.isLiked();
+        feedback.like(member);
+        if (!isLiked)
+            eventPublisher.publishEvent(new FeedbackLikedEvent(feedbackId));
     }
 
     /**
@@ -176,10 +155,7 @@ public class FeedbackService {
     public void unlikeFeedback(Long feedbackId, Long memberId) {
         Feedback feedback = feedbackRepository.findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("member id에 해당하는 member가 없습니다."));
-        if (!feedback.isReceiver(member)) {
-            throw new SecurityException("해당 피드백을 좋아요 취소 할 권한이 없습니다.");
-        }
-        feedback.unlike();
+        feedback.unlike(member);
     }
 
     /**
@@ -199,7 +175,7 @@ public class FeedbackService {
                 if (senderMember == receiverMember) {
                     continue;
                 }
-                requests.add(new RegularFeedbackRequest(requestTime, senderMember.getMember(), receiverMember));
+                requests.add(new RegularFeedbackRequest(requestTime, receiverMember, senderMember.getMember()));
             }
             // batch insert를 사용하도록 설정 필요
             eventPublisher.publishEvent(new RegularFeedbackRequestCreatedEvent(receiverMember.getMember().getId(), scheduleId));
@@ -216,17 +192,6 @@ public class FeedbackService {
                 .orElseThrow(() -> new EntityNotFoundException("member가 schedule에 속해있지 않습니다."));
 
         regularFeedbackRequestRepository.deleteAllByScheduleMember(scheduleMember);
-    }
-
-    /**
-     * @throws EntityNotFoundException 일정에 속한 receiver가 없을 경우
-     */
-    @Transactional(readOnly = true)
-    public List<RegularFeedbackRequest> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
-        ScheduleMember scheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(receiverId, scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("receiver 가 schedule 에 속해있지 않습니다"));
-
-        return scheduleMember.getRegularFeedbackRequests();
     }
 
     /**

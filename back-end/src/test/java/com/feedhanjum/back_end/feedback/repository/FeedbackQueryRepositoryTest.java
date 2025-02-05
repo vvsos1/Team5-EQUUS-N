@@ -74,7 +74,7 @@ class FeedbackQueryRepositoryTest {
                 .subjectiveFeedback(team.toString() + ", " + sender.toString() + "->" + receiver.toString())
                 .build();
         if (like) {
-            feedback.like();
+            feedback.like(receiver);
         }
         return feedback;
     }

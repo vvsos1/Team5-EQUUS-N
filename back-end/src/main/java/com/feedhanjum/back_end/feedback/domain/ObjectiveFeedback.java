@@ -1,12 +1,12 @@
 package com.feedhanjum.back_end.feedback.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
-@Getter
 public enum ObjectiveFeedback {
     LOGICAL(FeedbackCategory.GOOD_HARD_SKILL, "논리적으로 말해요"),
     CREATIVE(FeedbackCategory.GOOD_HARD_SKILL, "창의적이에요"),
@@ -50,8 +50,10 @@ public enum ObjectiveFeedback {
         }
     }
 
+    @Getter
     private final FeedbackCategory category;
 
+    @Getter(onMethod_ = @JsonValue)
     private final String description;
 
     ObjectiveFeedback(FeedbackCategory category, String description) {
@@ -59,9 +61,13 @@ public enum ObjectiveFeedback {
         this.description = description;
     }
 
-
-    public static Optional<ObjectiveFeedback> from(String content) {
-        return Optional.ofNullable(FEEDBACK_MAP.get(content));
+    @JsonCreator
+    public static ObjectiveFeedback fromDescription(String content) {
+        ObjectiveFeedback objectiveFeedback = FEEDBACK_MAP.get(content);
+        if (objectiveFeedback == null) {
+            throw new IllegalArgumentException("Invalid description: " + content);
+        }
+        return objectiveFeedback;
     }
 
 }

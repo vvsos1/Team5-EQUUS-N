@@ -62,3 +62,23 @@ export function getRecentSunday(date) {
   sunday.setDate(sunday.getDate() - sunday.getDay());
   return sunday;
 }
+
+export function changeDayName(dayName) {
+  let day = '';
+  if (dayName === 'Sun') {
+    day = '일';
+  } else if (dayName === 'Mon') {
+    day = '월';
+  } else if (dayName === 'Tue') {
+    day = '화';
+  } else if (dayName === 'Wed') {
+    day = '수';
+  } else if (dayName === 'Thu') {
+    day = '목';
+  } else if (dayName === 'Fri') {
+    day = '금';
+  } else if (dayName === 'Sat') {
+    day = '토';
+  }
+  return day;
+}
