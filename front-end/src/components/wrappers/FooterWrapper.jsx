@@ -1,0 +1,10 @@
+export default function FooterWrapper({ bgColor = 'gray-900', children }) {
+  return (
+    <footer className='fixed right-0 bottom-0 left-0 mx-5 pt-3 pb-8'>
+      {children}
+      <div
+        className={`absolute bottom-0 -z-10 h-full bg-${bgColor} left-[50%] w-screen -translate-x-[50%]`}
+      />
+    </footer>
+  );
+}
