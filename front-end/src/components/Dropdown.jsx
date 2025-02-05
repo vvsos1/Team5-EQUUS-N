@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, forwardRef } from 'react';
 import Icon from './Icon';
 
 export function DropdownSmall({ triggerText, setTriggerText, items }) {

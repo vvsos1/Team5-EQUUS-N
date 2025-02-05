@@ -16,15 +16,17 @@ public record ReceivedFeedbackDto(
         List<String> objectiveFeedbacks,
         String subjectiveFeedback,
         String teamName,
+        boolean liked,
         LocalDateTime createdAt
 ) {
 
-    public ReceivedFeedbackDto(Long feedbackId, boolean isAnonymous, @Nullable Sender sender, List<String> objectiveFeedbacks, String subjectiveFeedback, String teamName, LocalDateTime createdAt) {
+    public ReceivedFeedbackDto(Long feedbackId, boolean isAnonymous, @Nullable Sender sender, List<String> objectiveFeedbacks, String subjectiveFeedback, String teamName, boolean liked, LocalDateTime createdAt) {
         this.feedbackId = feedbackId;
         this.isAnonymous = isAnonymous;
         this.objectiveFeedbacks = objectiveFeedbacks;
         this.subjectiveFeedback = subjectiveFeedback;
         this.teamName = teamName;
+        this.liked = liked;
         this.createdAt = createdAt;
         if (isAnonymous)
             this.sender = null;
@@ -40,6 +42,7 @@ public record ReceivedFeedbackDto(
                 feedback.getObjectiveFeedbacks().stream().map(ObjectiveFeedback::getDescription).toList(),
                 feedback.getSubjectiveFeedback(),
                 feedback.getTeam().getName(),
+                feedback.isLiked(),
                 feedback.getCreatedAt()
         );
     }
