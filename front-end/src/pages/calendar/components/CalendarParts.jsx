@@ -117,7 +117,7 @@ export function CalendarWeek({ curSunday, selectedDate, setSelectedDate }) {
 export function SelectedDateInfo({ date, isScrolling }) {
   const { weekDay, monthWeek, year } = getDateInfo(date);
   return (
-    <div className='flex h-[80px] items-center justify-between px-5'>
+    <div className='flex h-[80px] items-center justify-between'>
       <h1 className='text-[40px] font-semibold text-gray-100'>{`${weekDay}${isScrolling ? `, ${date.getDate().toString().padStart(2, '0')}` : ''}`}</h1>
       <div className='subtitle-2 flex flex-col text-end text-gray-200'>
         <p>{monthWeek}</p>
