@@ -44,6 +44,7 @@ class RetrospectServiceTest {
     @DisplayName("회고 작성 성공")
     void test1() {
         // given
+        String title = "title";
         String content = "content";
         Long writerId = 1L;
         Long teamId = 1L;
@@ -55,11 +56,12 @@ class RetrospectServiceTest {
         when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
 
         // when
-        Retrospect result = retrospectService.writeRetrospect(content, writerId, teamId);
+        Retrospect result = retrospectService.writeRetrospect(title, content, writerId, teamId);
 
         // then
         verify(retrospectRepository, times(1)).save(any());
         assertThat(result).isNotNull();
+        assertThat(result.getTitle()).isEqualTo(title);
         assertThat(result.getContent()).isEqualTo(content);
         assertThat(result.getWriter()).isEqualTo(writer);
         assertThat(result.getTeam()).isEqualTo(team);
@@ -69,15 +71,15 @@ class RetrospectServiceTest {
     @DisplayName("회고 작성 실패 - writerId에 해당하는 Member가 없을 때")
     void test2() {
         // given
+        String title = "title";
         String content = "content";
         Long writerId = 1L;
         Long teamId = 1L;
 
         when(memberRepository.findById(writerId)).thenReturn(Optional.empty());
-        when(teamRepository.findById(teamId)).thenReturn(Optional.of(mock()));
 
         // when & then
-        assertThatThrownBy(() -> retrospectService.writeRetrospect(content, writerId, teamId))
+        assertThatThrownBy(() -> retrospectService.writeRetrospect(title, content, writerId, teamId))
                 .isInstanceOf(EntityNotFoundException.class);
 
     }
@@ -86,6 +88,7 @@ class RetrospectServiceTest {
     @DisplayName("회고 작성 실패 - teamId에 해당하는 Team이 없을 때")
     void test3() {
         // given
+        String title = "title";
         String content = "content";
         Long writerId = 1L;
         Long teamId = 1L;
@@ -95,7 +98,7 @@ class RetrospectServiceTest {
 
 
         // when & then
-        assertThatThrownBy(() -> retrospectService.writeRetrospect(content, writerId, teamId))
+        assertThatThrownBy(() -> retrospectService.writeRetrospect(title, content, writerId, teamId))
                 .isInstanceOf(EntityNotFoundException.class);
 
     }

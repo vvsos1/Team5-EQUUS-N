@@ -18,6 +18,8 @@ public class Retrospect {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    private String title;
+
     private String content;
 
     private LocalDateTime createdAt;
@@ -30,11 +32,12 @@ public class Retrospect {
     @JoinColumn(name = "team_id")
     private Team team;
 
-    public Retrospect(String content, Member writer, Team team) {
-        this.createdAt = LocalDateTime.now();
+    public Retrospect(String title, String content, Member writer, Team team) {
+        this.title = title;
         this.content = content;
         this.team = team;
         this.writer = writer;
+        this.createdAt = LocalDateTime.now();
     }
 
 }
