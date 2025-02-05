@@ -2,23 +2,47 @@ import { useEffect, useRef, useState } from 'react';
 import { SelectedDateInfo } from './components/CalendarParts';
 import CalendarWeeks from './components/CalendarWeeks';
 import Accordion from '../../components/Accordion';
-import MainCard from '../main/components/MainCard';
 import ScheduleCard from './components/ScheduleCard';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import LargeButton from '../../components/buttons/LargeButton';
+import Icon from '../../components/Icon';
+import { checkIsFinished, timeInPeriod } from '../../utility/time';
 
 export default function Calendar() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(
+    new Date(new Date().setHours(0, 0, 0, 0)),
+  );
   const [isScrolling, setIsScrolling] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
+  const [selectedTeamId, setSelectedTeamId] = useState(1);
   const scrollRef = useRef(null);
+  const [scheduleOnDate, setScheduleOnDate] = useState(exampleSchedules);
+  const [scheduleSet, setScheduleSet] = useState(new Set());
 
   useEffect(() => {
-    if (selectedDate.getTime().valueOf() < new Date().setHours(0, 0, 0, 0)) {
-      setIsFinished(true);
-    } else {
-      setIsFinished(false);
-    }
+    setScheduleSet(
+      new Set(
+        exampleSchedules
+          .filter((data) => {
+            return data.teamId === selectedTeamId;
+          })
+          .map(
+            (data) =>
+              new Date(data.schedule.startTime).toISOString().split('T')[0],
+          ),
+      ),
+    );
+  }, [exampleSchedules, selectedTeamId]);
+
+  useEffect(() => {
+    setScheduleOnDate(
+      exampleSchedules.filter((data) => {
+        return timeInPeriod(
+          new Date(data.schedule.startTime),
+          selectedDate,
+          new Date(selectedDate.getTime() + 86400000),
+        );
+      }),
+    );
   }, [selectedDate]);
 
   useEffect(() => {
@@ -48,32 +72,39 @@ export default function Calendar() {
       <StickyWrapper>
         <Accordion
           isMainPage={false}
-          selectedTeamId={1}
-          teamList={[]}
-          onTeamClick={() => {}}
+          selectedTeamId={selectedTeamId}
+          teamList={exampleTeamList}
+          onTeamClick={setSelectedTeamId}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
       </StickyWrapper>
       <CalendarWeeks
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
+        scheduleSet={scheduleSet}
       />
       <ul className='flex flex-col gap-6'>
-        {exampleDatas.map((schedule, index) => {
+        {scheduleOnDate.map((schedule, index) => {
+          if (schedule.teamId !== selectedTeamId) return null;
           return (
             <li key={index} className='last:mb-5'>
               <ScheduleCard
                 teamName={schedule.teamName}
                 schedule={schedule.schedule}
                 roles={schedule.roles}
-                isFinished={isFinished}
+                isFinished={checkIsFinished(schedule.schedule.endTime)}
               />
             </li>
           );
         })}
-        <li>
+        <li className='mb-5'>
           <LargeButton
-            text='일정 추가'
+            text={
+              <p className='flex items-center gap-2'>
+                <Icon name='plusS' />
+                새로운 일정 추가
+              </p>
+            }
             onClick={() => {}}
             isOutlined={true}
             disabled={true}
@@ -84,16 +115,40 @@ export default function Calendar() {
   );
 }
 
-const exampleDatas = [
+const exampleTeamList = [
   {
+    id: 1,
+    name: '소프티어 5조',
+  },
+  {
+    id: 2,
+    name: '에쿠스 N',
+  },
+  {
+    id: 3,
+    name: '협곡의 전사들',
+  },
+  {
+    id: 4,
+    name: '한박백임',
+  },
+];
+
+const exampleSchedules = [
+  {
+    teamId: 1,
     teamName: '소프티어 5조',
-    schedule: { start: '17:00', content: '스케줄 내용' },
+    schedule: {
+      startTime: '2025-02-05T17:00:00.000Z',
+      endTime: '2025-02-05T18:00:00.000Z',
+      content: '스케줄 내용',
+    },
     roles: [
-      {
-        memberId: 1,
-        name: '임세준',
-        task: ['데스크 리서치 하기', '설문지 작성하기'],
-      },
+      // {
+      //   memberId: 1,
+      //   name: '임세준',
+      //   task: ['데스크 리서치 하기', '설문지 작성하기'],
+      // },
       {
         memberId: 2,
         name: '백현식',
@@ -112,8 +167,13 @@ const exampleDatas = [
     ],
   },
   {
+    teamId: 2,
     teamName: '에쿠스 N',
-    schedule: { start: '17:00', content: '스케줄 내용' },
+    schedule: {
+      startTime: '2025-02-04T17:00:00.000Z',
+      endTime: '2025-02-04T18:00:00.000Z',
+      content: '스케줄 내용',
+    },
     roles: [
       {
         memberId: 1,
@@ -138,8 +198,13 @@ const exampleDatas = [
     ],
   },
   {
+    teamId: 3,
     teamName: '협곡의 전사들',
-    schedule: { start: '17:00', content: '스케줄 내용' },
+    schedule: {
+      startTime: '2025-02-07T17:00:00.000Z',
+      endTime: '2025-02-08T18:00:00.000Z',
+      content: '스케줄 내용',
+    },
     roles: [
       {
         memberId: 1,
@@ -164,8 +229,13 @@ const exampleDatas = [
     ],
   },
   {
+    teamId: 4,
     teamName: '한박백임',
-    schedule: { start: '17:00', content: '스케줄 내용' },
+    schedule: {
+      startTime: '2025-02-06T17:00:00.000Z',
+      endTime: '2025-02-06T19:00:00.000Z',
+      content: '스케줄 내용',
+    },
     roles: [
       {
         memberId: 1,
