@@ -78,8 +78,14 @@ function CalendarDate({ date, isSelected, haveSchedule }) {
  * @param {function} props.setSelectedDate - 선택된 날짜 설정 함수
  * @returns {JSX.Element} - 주 컴포넌트
  */
-export function CalendarWeek({ curSunday, selectedDate, setSelectedDate }) {
+export function CalendarWeek({
+  curSunday,
+  selectedDate,
+  setSelectedDate,
+  scheduleSet,
+}) {
   const dateList = getDateList(curSunday);
+  console.log(scheduleSet);
   return (
     <div className='min-w-full'>
       <div className='grid w-full grid-cols-7 gap-4'>
@@ -89,14 +95,16 @@ export function CalendarWeek({ curSunday, selectedDate, setSelectedDate }) {
               key={index}
               className='flex flex-col gap-1'
               onClick={() => {
-                setSelectedDate(new Date(date.date));
+                setSelectedDate(new Date(new Date(date).setHours(0, 0, 0, 0)));
               }}
             >
               <CalenderDay dayIndex={index} />
               <CalendarDate
-                date={new Date(date.date)}
-                isSelected={date.date === selectedDate.valueOf()}
-                haveSchedule={date.haveSchedule}
+                date={new Date(date)}
+                isSelected={date === selectedDate.valueOf()}
+                haveSchedule={scheduleSet.has(
+                  new Date(date).toISOString().split('T')[0],
+                )}
                 setSelectedDate={setSelectedDate}
               />
             </div>
@@ -136,10 +144,9 @@ export function SelectedDateInfo({ date, isScrolling }) {
 function getDateList(curSunday) {
   const dateList = [];
   for (let i = 0; i < 7; i++) {
-    dateList.push({
-      date: new Date(curSunday).setDate(new Date(curSunday).getDate() + i),
-      haveSchedule: false,
-    });
+    dateList.push(
+      new Date(curSunday).setDate(new Date(curSunday).getDate() + i),
+    );
   }
   return dateList;
 }

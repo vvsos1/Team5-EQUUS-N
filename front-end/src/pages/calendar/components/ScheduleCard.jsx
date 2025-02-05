@@ -33,7 +33,6 @@ export default function ScheduleCard({
 
   // 나의 역할 찾기
   const myRole = roles.find((role) => role.memberId === 1)?.task;
-
   return (
     <div
       className={classNames(
@@ -45,7 +44,9 @@ export default function ScheduleCard({
         <div className='flex flex-1 flex-col gap-3'>
           {teamName && <Tag type={TagType.TEAM_NAME}>{teamName}</Tag>}
           <div className='flex items-center gap-2'>
-            <div className='subtitle-2 text-lime-500'>{schedule.start}</div>
+            <div className='subtitle-2 text-lime-500'>
+              {schedule.startTime.split('T')[1].substring(0, 5)}
+            </div>
             <hr className='h-4 w-1 bg-lime-500' />
             <p className='subtitle-2 text-gray-100'>{schedule.content}</p>
           </div>

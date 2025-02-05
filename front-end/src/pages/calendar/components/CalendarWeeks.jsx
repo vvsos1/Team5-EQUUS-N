@@ -10,8 +10,12 @@ import classNames from 'classnames';
  * @param {function} props.setSelectedDate - 선택된 날짜 설정 함수
  * @returns {JSX.Element} - 캘린더 컴포넌트
  */
-export default function CalendarWeeks({ selectedDate, setSelectedDate }) {
-  const [curSunday, setCurSunday] = useState(getRecentSunday(new Date()));
+export default function CalendarWeeks({
+  selectedDate,
+  setSelectedDate,
+  scheduleSet,
+}) {
+  const [curSunday, setCurSunday] = useState(getRecentSunday(selectedDate));
   const [isDragging, setIsDragging] = useState(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
@@ -57,7 +61,7 @@ export default function CalendarWeeks({ selectedDate, setSelectedDate }) {
     if (!isDragging) return;
     const x =
       (e.clientX || e.touches[0].clientX) - containerRef.current.offsetLeft;
-    const walk = (x - startX.current) * 1.5;
+    const walk = (x - startX.current) * 2;
     containerRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
@@ -127,6 +131,7 @@ export default function CalendarWeeks({ selectedDate, setSelectedDate }) {
           curSunday={new Date(curSunday).setDate(curSunday.getDate() - 7)}
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
+          scheduleSet={scheduleSet}
         />
       </div>
       {/* 이번주 */}
@@ -135,6 +140,7 @@ export default function CalendarWeeks({ selectedDate, setSelectedDate }) {
           curSunday={new Date(curSunday)}
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
+          scheduleSet={scheduleSet}
         />
       </div>
       {/* 다음주 */}
@@ -143,6 +149,7 @@ export default function CalendarWeeks({ selectedDate, setSelectedDate }) {
           curSunday={new Date(curSunday).setDate(curSunday.getDate() + 7)}
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
+          scheduleSet={scheduleSet}
         />
       </div>
     </div>
