@@ -21,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,16 +45,16 @@ class TeamControllerTest {
     void createTeam_팀생성_컨트롤러() {
         //given
         Long memberId = 1L;
-        LocalDateTime startTime = LocalDateTime.now().plusDays(1);
-        LocalDateTime endTime = LocalDateTime.now().plusDays(10);
-        TeamCreateRequest request = new TeamCreateRequest("haha", startTime,
-                endTime, FeedbackType.ANONYMOUS);
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = LocalDate.now().plusDays(10);
+        TeamCreateRequest request = new TeamCreateRequest("haha", startDate,
+                endDate, FeedbackType.ANONYMOUS);
         TeamCreateDto teamCreateDto = new TeamCreateDto(request);
-        TeamResponse teamResponse = new TeamResponse(null, "haha", startTime,
-                endTime, FeedbackType.ANONYMOUS, new MemberDto(new Member("haha", "haha@hoho", null)));
+        TeamResponse teamResponse = new TeamResponse(null, "haha", startDate,
+                endDate, FeedbackType.ANONYMOUS, new MemberDto(new Member("haha", "haha@hoho", null)));
         when(teamService.createTeam(memberId, teamCreateDto))
                 .thenReturn(new Team("haha", new Member("haha", "haha@hoho", null),
-                        request.startTime(), request.endTime(), request.feedbackType()));
+                        request.startDate(), request.endDate(), request.feedbackType()));
 
         //when
         ResponseEntity<TeamResponse> response = teamController.createTeam(memberId, request);
@@ -70,8 +70,8 @@ class TeamControllerTest {
     void getMyTeams_팀조회_컨트롤러() {
         //given
         Long memberId = 1L;
-        Team team = new Team("haha", new Member("haha", "haha@hoho", null), LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(10), FeedbackType.ANONYMOUS);
+        Team team = new Team("haha", new Member("haha", "haha@hoho", null), LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(10), FeedbackType.ANONYMOUS);
         TeamResponse teamResponse = new TeamResponse(team);
         when(teamService.getMyTeams(memberId)).thenReturn(List.of(team));
 
@@ -90,10 +90,10 @@ class TeamControllerTest {
         // given
         Long teamId = 1L;
         Long memberId = 2L;
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
 
         Member leader = new Member("haha", "haha", null);
-        Team dummyTeam = new Team("haha", leader, now, now.plusHours(1), FeedbackType.IDENTIFIED);
+        Team dummyTeam = new Team("haha", leader, now, now.plusDays(1), FeedbackType.IDENTIFIED);
 
         Member dummyMember = new Member("hoho", "huhu", null);
         List<Member> memberList = List.of(dummyMember);
@@ -112,8 +112,8 @@ class TeamControllerTest {
         TeamResponse teamResponse = teamDetailResponse.getTeamResponse();
         assertThat(teamResponse).isNotNull();
         assertThat(teamResponse.name()).isEqualTo(dummyTeam.getName());
-        assertThat(teamResponse.startTime()).isEqualTo(dummyTeam.getStartTime());
-        assertThat(teamResponse.endTime()).isEqualTo(dummyTeam.getEndTime());
+        assertThat(teamResponse.startDate()).isEqualTo(dummyTeam.getStartDate());
+        assertThat(teamResponse.endDate()).isEqualTo(dummyTeam.getEndDate());
         assertThat(teamResponse.feedbackType()).isEqualTo(dummyTeam.getFeedbackType());
 
         assertThat(teamResponse.leader().name()).isEqualTo(dummyTeam.getLeader().getName());
@@ -201,9 +201,9 @@ class TeamControllerTest {
         // given
         Long teamId = 1L;
         Long memberId = 100L;
-        TeamUpdateRequest teamUpdateRequest = new TeamUpdateRequest("hehe", LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10), FeedbackType.IDENTIFIED);
+        TeamUpdateRequest teamUpdateRequest = new TeamUpdateRequest("hehe", LocalDate.now().plusDays(1), LocalDate.now().plusDays(10), FeedbackType.IDENTIFIED);
 
-        Team team = new Team("haha", mock(Member.class), LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10), FeedbackType.ANONYMOUS);
+        Team team = new Team("haha", mock(Member.class), LocalDate.now().plusDays(1), LocalDate.now().plusDays(10), FeedbackType.ANONYMOUS);
         when(teamService.updateTeamInfo(memberId, teamId, new TeamUpdateDto(teamUpdateRequest))).thenReturn(team);
 
         // when

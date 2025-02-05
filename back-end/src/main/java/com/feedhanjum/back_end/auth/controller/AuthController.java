@@ -1,20 +1,22 @@
 package com.feedhanjum.back_end.auth.controller;
 
-import com.feedhanjum.back_end.auth.controller.dto.LoginRequest;
-import com.feedhanjum.back_end.auth.controller.dto.LoginResponse;
-import com.feedhanjum.back_end.auth.controller.dto.MemberSignupRequest;
-import com.feedhanjum.back_end.auth.controller.dto.MemberSignupResponse;
+import com.feedhanjum.back_end.auth.controller.dto.*;
 import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.auth.service.AuthService;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +33,8 @@ public class AuthController {
 
     /**
      * 회원가입을 처리하는 핸들러
-     * @param request 
+     *
+     * @param request
      * @return 회원 가입 성공 여부
      */
     @PostMapping("/signup")
@@ -51,6 +54,7 @@ public class AuthController {
         MemberDetails member = authService.authenticate(request.email(), request.password());
 
         session.setAttribute(SessionConst.MEMBER_ID, member.getId());
+        session.setMaxInactiveInterval(Integer.MAX_VALUE);
 
         LoginResponse response = new LoginResponse("로그인에 성공했습니다.", member.getId(), member.getEmail());
 
@@ -69,4 +73,47 @@ public class AuthController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "회원가입 이메일 중복검증 & 토큰 발송")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "이메일 검증 토큰 발송 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "409", description = "이메일 중복", content = @Content),
+            @ApiResponse(responseCode = "429", description = "이메일 발송 지연으로 인해 실패", content = @Content)
+    })
+    @PostMapping(value = "/send-signup-verification-email", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SignupEmailSendResponse> sendSignupVerificationEmail(@Valid @RequestBody SignupEmailSendRequest request) {
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "회원가입 이메일 토큰 인증")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "이메일 토큰 인증 성공. 세션에 해당 내역 저장"),
+            @ApiResponse(responseCode = "400", description = "이메일 토큰 인증 실패")
+    })
+    @PostMapping("/verify-signup-email-token")
+    public ResponseEntity<Void> verifySignupEmailToken(@Valid @RequestBody SignupEmailVerifyRequest request) {
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "비밀번호 초가화 이메일 토큰 발송")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "비밀번호 초기화 토큰 발송 성공. 이메일이 존재하지 않아도 보안상 발송 성공처리"),
+            @ApiResponse(responseCode = "429", description = "이메일 발송 지연으로 인해 실패", content = @Content)
+
+    })
+    @PostMapping(value = "/send-password-reset-email", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PasswordResetEmailSendResponse> sendPasswordResetEmail(@Valid @RequestBody PasswordResetEmailSendRequest request) {
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "비밀번호 초가화 이메일 토큰 인증")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "비밀번호 초기화 토큰 발송 성공. 세션에 해당 내역 저장"),
+            @ApiResponse(responseCode = "400", description = "비밀번호 초기화 토큰 발송 실패")
+    })
+    @PostMapping("/verify-password-reset-token")
+    public ResponseEntity<Void> verifyPasswordResetToken(@Valid @RequestBody PasswordResetEmailVerifyRequest request) {
+        return ResponseEntity.noContent().build();
+    }
+
 }

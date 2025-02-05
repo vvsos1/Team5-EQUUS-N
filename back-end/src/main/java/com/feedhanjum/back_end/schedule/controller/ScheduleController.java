@@ -1,10 +1,9 @@
 package com.feedhanjum.back_end.schedule.controller;
 
 import com.feedhanjum.back_end.auth.infra.Login;
-import com.feedhanjum.back_end.schedule.controller.dto.ScheduleCreateRequest;
+import com.feedhanjum.back_end.schedule.controller.dto.ScheduleRequest;
 import com.feedhanjum.back_end.schedule.service.ScheduleService;
 import com.feedhanjum.back_end.schedule.service.dto.ScheduleRequestDto;
-import com.feedhanjum.back_end.schedule.service.dto.ScheduleResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +17,17 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping("/create")
-    public ResponseEntity<ScheduleResponseDto> createSchedule(@Login Long memberId, @PathVariable Long teamId, @Valid @RequestBody ScheduleCreateRequest request) {
-        ScheduleResponseDto schedule = scheduleService.createSchedule(memberId, teamId, new ScheduleRequestDto(request));
-        return new ResponseEntity<>(schedule, HttpStatus.CREATED);
+    public ResponseEntity<Void> createSchedule(@Login Long memberId, @PathVariable Long teamId, @Valid @RequestBody ScheduleRequest request) {
+        scheduleService.createSchedule(memberId, teamId, new ScheduleRequestDto(request));
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+    
+    @PostMapping("/{scheduleId}")
+    public ResponseEntity<Void> updateSchedule(@Login Long memberId, 
+                                               @PathVariable Long teamId, 
+                                               @PathVariable Long scheduleId, 
+                                               @Valid @RequestBody ScheduleRequest request) {
+        scheduleService.updateSchedule(memberId, teamId, scheduleId, new ScheduleRequestDto(request));
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
