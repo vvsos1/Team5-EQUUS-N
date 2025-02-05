@@ -1,9 +1,11 @@
 package com.feedhanjum.back_end.feedback.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.core.dto.Paged;
+import com.feedhanjum.back_end.feedback.controller.dto.request.RetrospectWriteRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.response.RetrospectResponse;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.Retrospect;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
@@ -232,6 +235,55 @@ class RetrospectControllerTest {
                     .uri("/api/retrospect/{writerId}", writer.getId())
                     .session(withLoginUser(notWriter))
             ).hasStatus(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @Nested
+    @DisplayName("회고 작성하기 테스트")
+    class WriteRetrospectTest {
+        @Test
+        @DisplayName("성공 시 201")
+        void test1() throws JsonProcessingException {
+            // given
+            Member writer = member2;
+            Team team = team1;
+
+            // when
+            assertThat(mvc.post()
+                    .uri("/api/retrospect")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsBytes(new RetrospectWriteRequest(writer.getId(), team.getId(), "title", "content")))
+                    .session(withLoginUser(writer))
+            ).hasStatus(HttpStatus.CREATED);
+
+            // then
+            List<Retrospect> retrospects = retrospectRepository.findAll();
+            assertThat(retrospects).hasSize(1);
+            Retrospect retrospect = retrospects.get(0);
+            assertThat(retrospect.getTitle()).isEqualTo("title");
+            assertThat(retrospect.getContent()).isEqualTo("content");
+            assertThat(retrospect.getWriter()).isEqualTo(writer);
+            assertThat(retrospect.getTeam()).isEqualTo(team);
+        }
+
+        @Test
+        @DisplayName("본인이 아닌 경우 403")
+        void test2() throws JsonProcessingException {
+            // given
+            Member writer = member2;
+            Member notWriter = member1;
+            Team team = team1;
+
+            // when
+            assertThat(mvc.post()
+                    .uri("/api/retrospect")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsBytes(new RetrospectWriteRequest(writer.getId(), team.getId(), "title", "content")))
+                    .session(withLoginUser(notWriter))
+            ).hasStatus(HttpStatus.FORBIDDEN);
+
+            // then
+            assertThat(retrospectRepository.findAll()).isEmpty();
         }
     }
 
