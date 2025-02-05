@@ -48,6 +48,7 @@ public class RetrospectController {
     @Operation(summary = "회고 작성하기", description = "회고를 작성합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회고 작성 성공", content = @Content),
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우", content = @Content)
     })
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> writeRetrospect(@Login Long loginId,
