@@ -103,3 +103,52 @@ export const checkSignInInfos = (email, password) => {
   }
   return true;
 };
+
+/**
+ * 팀 공간 이름 검사
+ * @param {string} teamSpaceName - 팀 공간 이름
+ * @returns {boolean} - 팀 공간 이름 검사 결과
+ */
+export const isValidTeamName = (teamSpaceName) => {
+  if (teamSpaceName.length === 0) {
+    showToast('팀 이름을 입력해주세요');
+    return false;
+  }
+  return true;
+};
+
+/**
+ * 종료일 검사
+ * @param {Date} startDate - 시작일
+ * @param {Date} endDate - 종료일
+ * @returns {boolean} - 종료일 검사 결과
+ */
+export const isValidEndDate = (startDate, endDate) => {
+  if (startDate > endDate) {
+    showToast('종료일은 시작일보다 빠를 수 없습니다');
+    return false;
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (endDate < today) {
+    showToast('종료일은 오늘 이후여야 합니다');
+    return false;
+  }
+  return true;
+};
+
+/**
+ * 팀 공간 만들기 정보 검사
+ * @param {string} teamName - 팀 이름
+ * @param {Date} startDate - 시작일
+ * @param {Date} endDate - 종료일
+ * @returns {boolean} - 팀 공간 만들기 정보 검사 결과
+ */
+export const checkTeamSpaceMakingInfo = (teamName, startDate, endDate) => {
+  if (!isValidTeamName(teamName)) {
+    return false;
+  } else if (!isValidEndDate(startDate, endDate)) {
+    return false;
+  }
+  return true;
+};
