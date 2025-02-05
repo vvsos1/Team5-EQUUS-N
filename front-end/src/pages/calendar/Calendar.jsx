@@ -4,6 +4,8 @@ import CalendarWeeks from './components/CalendarWeeks';
 import Accordion from '../../components/Accordion';
 import MainCard from '../main/components/MainCard';
 import ScheduleCard from './components/ScheduleCard';
+import StickyWrapper from '../../components/wrappers/StickyWrapper';
+import LargeButton from '../../components/buttons/LargeButton';
 
 export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -39,8 +41,11 @@ export default function Calendar() {
   }, []);
 
   return (
-    <div ref={scrollRef} className='scrollbar-hidden h-screen overflow-y-auto'>
-      <div className='sticky top-0 z-10 bg-gray-900'>
+    <div
+      ref={scrollRef}
+      className='scrollbar-hidden size-full overflow-x-hidden overflow-y-auto'
+    >
+      <StickyWrapper>
         <Accordion
           isMainPage={false}
           selectedTeamId={1}
@@ -48,7 +53,7 @@ export default function Calendar() {
           onTeamClick={() => {}}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
-      </div>
+      </StickyWrapper>
       <CalendarWeeks
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
@@ -66,6 +71,14 @@ export default function Calendar() {
             </li>
           );
         })}
+        <li>
+          <LargeButton
+            text='일정 추가'
+            onClick={() => {}}
+            isOutlined={true}
+            disabled={true}
+          />
+        </li>
       </ul>
     </div>
   );
