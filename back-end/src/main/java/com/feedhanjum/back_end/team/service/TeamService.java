@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -35,10 +35,10 @@ public class TeamService {
      */
     @Transactional
     public Team createTeam(Long leaderId, TeamCreateDto teamCreateDto) {
-        validateProjectDuration(teamCreateDto.startTime(), teamCreateDto.endTime());
+        validateProjectDuration(teamCreateDto.startDate(), teamCreateDto.endDate());
         Member leader = memberRepository.findById(leaderId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-        Team team = new Team(teamCreateDto.teamName(), leader, teamCreateDto.startTime(), teamCreateDto.endTime(), teamCreateDto.feedbackType());
+        Team team = new Team(teamCreateDto.teamName(), leader, teamCreateDto.startDate(), teamCreateDto.endDate(), teamCreateDto.feedbackType());
         teamRepository.save(team);
 
         TeamMember teamMember = new TeamMember(team, leader);
@@ -74,7 +74,7 @@ public class TeamService {
         }
         TeamMember membership = teamMemberRepository.findByMemberIdAndTeamId(memberIdToRemove, teamId)
                 .orElseThrow(() -> new TeamMembershipNotFoundException("해당 팀원 정보를 찾을 수 없습니다."));
-        teamMemberRepository.delete(membership);
+        deleteTeamMemberAndRemainingScheduleMember(membership);
     }
 
     /**
@@ -100,11 +100,11 @@ public class TeamService {
      */
     @Transactional
     public Team updateTeamInfo(Long memberId, Long teamId, TeamUpdateDto teamUpdateDto) {
-        validateProjectDuration(teamUpdateDto.startTime(), teamUpdateDto.endTime());
+        validateProjectDuration(teamUpdateDto.startDate(), teamUpdateDto.endDate());
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
         validateUserIsTeamLeader(memberId, team);
-        team.updateInfo(teamUpdateDto.teamName(), teamUpdateDto.startTime(), teamUpdateDto.endTime(), teamUpdateDto.feedbackType());
+        team.updateInfo(teamUpdateDto.teamName(), teamUpdateDto.startDate(), teamUpdateDto.endDate(), teamUpdateDto.feedbackType());
         return team;
     }
 
@@ -123,10 +123,15 @@ public class TeamService {
         }
         TeamMember membership = teamMemberRepository.findByMemberIdAndTeamId(userId, teamId)
                 .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
-        teamMemberRepository.delete(membership);
+        deleteTeamMemberAndRemainingScheduleMember(membership);
         if (memberCount == 1) {
             deleteTeam(teamId);
         }
+    }
+
+    private void deleteTeamMemberAndRemainingScheduleMember(TeamMember membership) {
+        teamMemberRepository.delete(membership);
+        // 남은 일정에 기록된 할 일 제거 로직 필요 Todo
     }
 
     private void validateUserIsTeamLeader(Long leaderId, Team team) {
@@ -135,8 +140,8 @@ public class TeamService {
         }
     }
 
-    private void validateProjectDuration(LocalDateTime startTime, LocalDateTime endTime) {
-        if (endTime != null && !startTime.isBefore(endTime)) {
+    private void validateProjectDuration(LocalDate startDate, LocalDate endDate) {
+        if (endDate != null && !startDate.isBefore(endDate)) {
             throw new IllegalArgumentException("프로젝트 시작 시간이 종료 시간보다 앞서야 합니다.");
         }
     }

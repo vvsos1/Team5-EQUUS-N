@@ -4,13 +4,13 @@ import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.member.controller.dto.MemberDto;
 import com.feedhanjum.back_end.team.domain.Team;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record TeamResponse(
         Long id,
         String name,
-        LocalDateTime startTime,
-        LocalDateTime endTime,
+        LocalDate startDate,
+        LocalDate endDate,
         FeedbackType feedbackType,
         MemberDto leader
 ) {
@@ -18,8 +18,8 @@ public record TeamResponse(
         this(
                 team.getId(),
                 team.getName(),
-                team.getStartTime(),
-                team.getEndTime(),
+                team.getStartDate(),
+                team.getEndDate(),
                 team.getFeedbackType(),
                 new MemberDto(team.getLeader()));
     }

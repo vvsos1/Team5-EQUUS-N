@@ -94,8 +94,8 @@ class FeedbackQueryRepositoryTest {
             member2 = new Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"));
             memberRepository.saveAll(List.of(member1, member2));
 
-            team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
-            team2 = new Team("team2", member2, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
+            team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS);
+            team2 = new Team("team2", member2, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS);
             teamRepository.saveAll(List.of(team1, team2));
         }
 
@@ -289,8 +289,8 @@ class FeedbackQueryRepositoryTest {
             member2 = new Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"));
             memberRepository.saveAll(List.of(member1, member2));
 
-            team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
-            team2 = new Team("team2", member2, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
+            team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS);
+            team2 = new Team("team2", member2, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS);
             teamRepository.saveAll(List.of(team1, team2));
         }
 

@@ -23,7 +23,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TeamServiceTest {
 
+    @Mock
+    private Clock clock;
+    
     @Mock
     private TeamRepository teamRepository;
 
@@ -54,6 +58,25 @@ class TeamServiceTest {
     @InjectMocks
     private TeamService teamService;
 
+    @Test
+    @DisplayName("내가 가입한 팀 목록 조회 성공")
+    void getMyTeams_팀조회() {
+        //given
+        Long userId = 1L;
+        when(clock.instant()).thenReturn(LocalDate.of(2023, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+        when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
+        Member leader = new Member("haha", "haha@hoho", new ProfileImage("blue", "image1"));
+        Team team = new Team("haha", leader, LocalDate.now(clock).plusDays(1), LocalDate.now(clock).plusDays(10), FeedbackType.ANONYMOUS);
+        when(teamQueryRepository.findTeamByMemberId(userId)).thenReturn(List.of(team));
+
+        //when
+        List<Team> result = teamService.getMyTeams(userId);
+
+        //then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(team.getId());
+    }
+
     @Nested
     @DisplayName("팀 생성 테스트")
     class CreateTeam {
@@ -63,8 +86,10 @@ class TeamServiceTest {
             //given
             Long userId = 1L;
             String teamName = "haha";
-            LocalDateTime startTime = LocalDateTime.now().plusDays(1);
-            LocalDateTime endTime = LocalDateTime.now().plusDays(10);
+            when(clock.instant()).thenReturn(LocalDate.of(2023, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
+            LocalDate startDate = LocalDate.now(clock).plusDays(1);
+            LocalDate endDate = LocalDate.now(clock).plusDays(10);
             FeedbackType feedbackType = FeedbackType.ANONYMOUS;
             Member leader = mock(Member.class);
 
@@ -73,13 +98,13 @@ class TeamServiceTest {
             when(teamMemberRepository.save(any(TeamMember.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             //when
-            Team team = teamService.createTeam(userId, new TeamCreateDto(teamName, startTime, endTime, feedbackType));
+            Team team = teamService.createTeam(userId, new TeamCreateDto(teamName, startDate, endDate, feedbackType));
 
             //then
             assertThat(team.getName()).isEqualTo(teamName);
             assertThat(team.getLeader()).isEqualTo(leader);
-            assertThat(team.getStartTime()).isEqualTo(startTime);
-            assertThat(team.getEndTime()).isEqualTo(endTime);
+            assertThat(team.getStartDate()).isEqualTo(startDate);
+            assertThat(team.getEndDate()).isEqualTo(endDate);
             assertThat(team.getFeedbackType()).isEqualTo(feedbackType);
         }
 
@@ -89,32 +114,17 @@ class TeamServiceTest {
             //given
             Long userId = 1L;
             String teamName = "haha";
-            LocalDateTime startTime = LocalDateTime.now().plusDays(10);
-            LocalDateTime endTime = LocalDateTime.now().plusDays(1);
+            when(clock.instant()).thenReturn(LocalDate.of(2023, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
+            LocalDate startDate = LocalDate.now(clock).plusDays(10);
+            LocalDate endDate = LocalDate.now(clock).plusDays(1);
             FeedbackType feedbackType = FeedbackType.ANONYMOUS;
 
             //when & then
-            assertThatThrownBy(() -> teamService.createTeam(userId, new TeamCreateDto(teamName, startTime, endTime, feedbackType)))
+            assertThatThrownBy(() -> teamService.createTeam(userId, new TeamCreateDto(teamName, startDate, endDate, feedbackType)))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("프로젝트 시작 시간이 종료 시간보다 앞서야 합니다.");
         }
-    }
-
-    @Test
-    @DisplayName("내가 가입한 팀 목록 조회 성공")
-    void getMyTeams_팀조회() {
-        //given
-        Long userId = 1L;
-        Member leader = new Member("haha", "haha@hoho", new ProfileImage("blue", "image1"));
-        Team team = new Team("haha", leader, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10), FeedbackType.ANONYMOUS);
-        when(teamQueryRepository.findTeamByMemberId(userId)).thenReturn(List.of(team));
-
-        //when
-        List<Team> result = teamService.getMyTeams(userId);
-
-        //then
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(team.getId());
     }
 
     @Nested
@@ -130,7 +140,9 @@ class TeamServiceTest {
             Long memberIdToRemove = 3L;
             Member leader = mock(Member.class);
             Member member = new Member("huhu", "huhu@hehe", new ProfileImage("red", "image2"));
-            Team team = new Team("haha", leader, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10), FeedbackType.ANONYMOUS);
+            when(clock.instant()).thenReturn(LocalDate.of(2023, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
+            Team team = new Team("haha", leader, LocalDate.now(clock).plusDays(1), LocalDate.now(clock).plusDays(10), FeedbackType.ANONYMOUS);
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
             when(leader.getId()).thenReturn(leaderId);
             TeamMember membership = new TeamMember(team, member);
@@ -151,7 +163,9 @@ class TeamServiceTest {
             Long teamId = 100L;
             Long memberIdToRemove = 1L;
             Member leader = mock(Member.class);
-            Team team = new Team("haha", leader, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10), FeedbackType.ANONYMOUS);
+            when(clock.instant()).thenReturn(LocalDate.of(2023, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
+            Team team = new Team("haha", leader, LocalDate.now(clock).plusDays(1), LocalDate.now(clock).plusDays(10), FeedbackType.ANONYMOUS);
             when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
 
             //when & then
@@ -168,7 +182,9 @@ class TeamServiceTest {
             Long teamId = 100L;
             Long memberIdToRemove = 1L;
             Member leader = mock(Member.class);
-            Team team = new Team("haha", leader, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10), FeedbackType.ANONYMOUS);
+            when(clock.instant()).thenReturn(LocalDate.of(2023, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
+            Team team = new Team("haha", leader, LocalDate.now(clock).plusDays(1), LocalDate.now(clock).plusDays(10), FeedbackType.ANONYMOUS);
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
             when(leader.getId()).thenReturn(leaderId);
 
@@ -187,7 +203,9 @@ class TeamServiceTest {
             Long teamId = 100L;
             Long memberIdToRemove = 3L;
             Member leader = mock(Member.class);
-            Team team = new Team("haha", leader, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10), FeedbackType.ANONYMOUS);
+            when(clock.instant()).thenReturn(LocalDate.of(2023, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
+            Team team = new Team("haha", leader, LocalDate.now(clock).plusDays(1), LocalDate.now(clock).plusDays(10), FeedbackType.ANONYMOUS);
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
             when(team.getLeader().getId()).thenReturn(leaderId);
 
@@ -205,7 +223,9 @@ class TeamServiceTest {
             Long teamId = 100L;
             Long memberIdToRemove = 3L;
             Member leader = mock(Member.class);
-            Team team = new Team("haha", leader, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10), FeedbackType.ANONYMOUS);
+            when(clock.instant()).thenReturn(LocalDate.of(2023, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
+            Team team = new Team("haha", leader, LocalDate.now(clock).plusDays(1), LocalDate.now(clock).plusDays(10), FeedbackType.ANONYMOUS);
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
             when(team.getLeader().getId()).thenReturn(leaderId);
             when(teamMemberRepository.findByMemberIdAndTeamId(memberIdToRemove, teamId)).thenReturn(Optional.empty());
@@ -412,11 +432,11 @@ class TeamServiceTest {
             Long memberId = 1L;
             Member leader = mock(Member.class);
             Long teamId = 10L;
-            LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
-            LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
-            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startTime, endTime, FeedbackType.IDENTIFIED);
+            LocalDate startDate = LocalDate.of(2025, 1, 1);
+            LocalDate endDate = LocalDate.of(2025, 1, 2);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startDate, endDate, FeedbackType.IDENTIFIED);
 
-            Team team = new Team("huhu", leader, startTime, endTime, FeedbackType.ANONYMOUS);
+            Team team = new Team("huhu", leader, startDate, endDate, FeedbackType.ANONYMOUS);
             when(leader.getId()).thenReturn(1L);
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
 
@@ -425,8 +445,8 @@ class TeamServiceTest {
 
             // then
             assertThat(updatedTeam.getName()).isEqualTo("haha");
-            assertThat(updatedTeam.getStartTime()).isEqualTo(startTime);
-            assertThat(updatedTeam.getEndTime()).isEqualTo(endTime);
+            assertThat(updatedTeam.getStartDate()).isEqualTo(startDate);
+            assertThat(updatedTeam.getEndDate()).isEqualTo(endDate);
             assertThat(updatedTeam.getFeedbackType()).isEqualTo(FeedbackType.IDENTIFIED);
         }
 
@@ -436,9 +456,9 @@ class TeamServiceTest {
             // given
             Long memberId = 1L;
             Long teamId = 10L;
-            LocalDateTime startTime = LocalDateTime.of(2025, 1, 3, 10, 0);
-            LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
-            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startTime, endTime, FeedbackType.IDENTIFIED);
+            LocalDate startDate = LocalDate.of(2025, 1, 3);
+            LocalDate endDate = LocalDate.of(2025, 1, 2);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startDate, endDate, FeedbackType.IDENTIFIED);
 
             // when, then
             assertThatThrownBy(() -> teamService.updateTeamInfo(memberId, teamId, teamUpdateDto))
@@ -451,9 +471,9 @@ class TeamServiceTest {
             // given
             Long memberId = 1L;
             Long teamId = 10L;
-            LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
-            LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
-            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startTime, endTime, FeedbackType.ANONYMOUS);
+            LocalDate startDate = LocalDate.of(2025, 1, 1);
+            LocalDate endDate = LocalDate.of(2025, 1, 2);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startDate, endDate, FeedbackType.ANONYMOUS);
 
             when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
 
@@ -471,11 +491,11 @@ class TeamServiceTest {
             Member leader = mock(Member.class);
             when(leader.getId()).thenReturn(1L);
             Long teamId = 10L;
-            LocalDateTime startTime = LocalDateTime.of(2025, 1, 1, 10, 0);
-            LocalDateTime endTime = LocalDateTime.of(2025, 1, 2, 10, 0);
-            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("hoho", startTime, endTime, FeedbackType.ANONYMOUS);
+            LocalDate startDate = LocalDate.of(2025, 1, 1);
+            LocalDate endDate = LocalDate.of(2025, 1, 2);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("hoho", startDate, endDate, FeedbackType.ANONYMOUS);
 
-            Team team = new Team("haha", leader, startTime, endTime, FeedbackType.IDENTIFIED);
+            Team team = new Team("haha", leader, startDate, endDate, FeedbackType.IDENTIFIED);
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
 
             // when, then

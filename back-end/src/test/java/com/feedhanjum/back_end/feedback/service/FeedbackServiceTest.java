@@ -40,7 +40,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -71,6 +71,8 @@ class FeedbackServiceTest {
     @InjectMocks
     private FeedbackService feedbackService;
 
+    private final Clock clock = Clock.fixed(Instant.parse("2025-01-10T12:00:00Z"), ZoneId.systemDefault());
+
     private Long nextId;
 
     @BeforeEach
@@ -85,7 +87,7 @@ class FeedbackServiceTest {
     }
 
     private Team createTeam(String name, Member leader) {
-        Team team = new Team(name, leader, LocalDateTime.now(), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
+        Team team = new Team(name, leader, LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS);
         ReflectionTestUtils.setField(team, "id", nextId++);
         return team;
     }
@@ -93,11 +95,11 @@ class FeedbackServiceTest {
     private Schedule createSchedule(String name, Team team, Member leader, boolean isEnd) {
         LocalDateTime start, end;
         if (isEnd) {
-            start = LocalDateTime.now().minusDays(1);
-            end = LocalDateTime.now().minusMinutes(1);
+            start = LocalDateTime.now(clock).minusHours(1);
+            end = LocalDateTime.now(clock).minusMinutes(10);
         } else {
-            start = LocalDateTime.now();
-            end = LocalDateTime.now().plusDays(1);
+            start = LocalDateTime.now(clock);
+            end = LocalDateTime.now(clock).plusHours(1);
         }
         Schedule schedule = new Schedule(name, start, end, team, leader);
         ReflectionTestUtils.setField(schedule, "id", nextId++);

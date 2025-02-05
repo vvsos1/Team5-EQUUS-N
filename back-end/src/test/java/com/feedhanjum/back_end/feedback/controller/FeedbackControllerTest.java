@@ -45,7 +45,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -81,23 +81,24 @@ class FeedbackControllerTest {
     private RegularFeedbackRequestRepository regularFeedbackRequestRepository;
     @Autowired
     private FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
+    private final Clock clock = Clock.fixed(Instant.parse("2025-01-10T12:00:00Z"), ZoneId.systemDefault());
 
     private Member createMember(String name) {
         return new Member(name, name + "@test.com", new ProfileImage("bg-" + name, "profile-" + name));
     }
 
     private Team createTeam(String name, Member leader) {
-        return new Team(name, leader, LocalDateTime.now(), LocalDateTime.now().plusDays(1), FeedbackType.ANONYMOUS);
+        return new Team(name, leader, LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS);
     }
 
     private Schedule createSchedule(String name, Team team, Member leader, boolean isEnd) {
         LocalDateTime start, end;
         if (isEnd) {
-            start = LocalDateTime.now().minusDays(1);
-            end = LocalDateTime.now().minusMinutes(1);
+            start = LocalDateTime.now(clock).minusHours(1);
+            end = LocalDateTime.now(clock).minusMinutes(10);
         } else {
-            start = LocalDateTime.now();
-            end = LocalDateTime.now().plusDays(1);
+            start = LocalDateTime.now(clock);
+            end = LocalDateTime.now(clock).plusHours(1);
         }
         return new Schedule(name, start, end, team, leader);
     }

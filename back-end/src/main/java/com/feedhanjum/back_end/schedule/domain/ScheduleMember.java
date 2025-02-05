@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,14 +34,20 @@ public class ScheduleMember {
             name = "todos",
             joinColumns = @JoinColumn(name = "schedule_member_id")
     )
-    @Setter
-    private List<Todo> todos;
+
+    private final List<Todo> todos = new ArrayList<>();
 
     public ScheduleMember(Schedule schedule, Member member) {
         this.member = member;
         setSchedule(schedule);
     }
 
+    public void setTodos(List<Todo> todos){
+        this.todos.clear();
+        if(todos != null){
+            this.todos.addAll(todos);
+        }
+    }
 
     private void setSchedule(Schedule schedule) {
         if (this.schedule != null) {

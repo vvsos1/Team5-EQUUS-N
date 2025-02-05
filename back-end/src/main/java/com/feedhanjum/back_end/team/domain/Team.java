@@ -8,7 +8,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,9 +21,9 @@ public class Team {
 
     private String name;
 
-    private LocalDateTime startTime;
+    private LocalDate startDate;
 
-    private LocalDateTime endTime;
+    private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
     private FeedbackType feedbackType;
@@ -32,11 +32,11 @@ public class Team {
     @JoinColumn(name = "leader_id", nullable = false)
     private Member leader;
 
-    public Team(String name, Member leader, LocalDateTime startTime, LocalDateTime endTime, FeedbackType feedbackType) {
+    public Team(String name, Member leader, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType) {
         this.feedbackType = feedbackType;
         this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.leader = leader;
     }
 
@@ -47,10 +47,10 @@ public class Team {
         this.leader = newLeader;
     }
 
-    public void updateInfo(String name, LocalDateTime startTime, LocalDateTime endTime, FeedbackType feedbackType) {
+    public void updateInfo(String name, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType) {
         this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.feedbackType = feedbackType;
     }
 }
