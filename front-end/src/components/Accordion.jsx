@@ -14,7 +14,7 @@ import Icon from './Icon';
 export default function Accordion({
   isMainPage,
   selectedTeamId,
-  teamList,
+  teamList = [],
   onTeamClick,
 }) {
   const [isAlarmRead, setIsAlarmRead] = useState(true);
