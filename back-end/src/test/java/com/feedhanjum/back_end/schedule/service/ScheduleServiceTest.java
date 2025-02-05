@@ -95,10 +95,8 @@ class ScheduleServiceTest {
                 .thenReturn(Optional.empty());
 
         // clock 고정
-        LocalDateTime now = LocalDateTime.of(2025, 2, 28, 9, 0);
-        Clock fixedClock = Clock.fixed(Instant.parse("2025-02-28T09:00:00Z"), ZoneId.of("UTC"));
-        when(clock.instant()).thenReturn(fixedClock.instant());
-        when(clock.getZone()).thenReturn(fixedClock.getZone());
+        when(clock.instant()).thenReturn(Instant.parse("2025-02-28T09:00:00Z"));
+        when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
 
         // 저장될 일정 mock
         Schedule schedule = mock(Schedule.class);
@@ -231,9 +229,8 @@ class ScheduleServiceTest {
                 .thenReturn(Optional.of(scheduleMember));
 
         // clock 고정
-        Clock fixedClock = Clock.fixed(Instant.parse("2025-04-01T09:00:00Z"), ZoneId.of("UTC"));
-        when(clock.instant()).thenReturn(fixedClock.instant());
-        when(clock.getZone()).thenReturn(fixedClock.getZone());
+        when(clock.instant()).thenReturn(Instant.parse("2025-04-01T09:00:00Z"));
+        when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
 
         // when
         scheduleService.updateSchedule(memberId, teamId, scheduleId, requestDto);
@@ -263,9 +260,8 @@ class ScheduleServiceTest {
         LocalDateTime pastTime = LocalDateTime.of(2025, 1, 1, 10, 0);
         when(schedule.getEndTime()).thenReturn(pastTime);
 
-        Clock fixedClock = Clock.fixed(Instant.parse("2025-02-01T09:00:00Z"), ZoneId.of("UTC"));
-        when(clock.instant()).thenReturn(fixedClock.instant());
-        when(clock.getZone()).thenReturn(fixedClock.getZone());
+        when(clock.instant()).thenReturn(Instant.parse("2025-02-01T09:00:00Z"));
+        when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
 
         // when, then
         assertThatThrownBy(() ->
