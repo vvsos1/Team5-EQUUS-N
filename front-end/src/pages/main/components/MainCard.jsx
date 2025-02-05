@@ -21,20 +21,29 @@ export default function MainCard({
   onClickSubButton,
   onClickChevronButton,
 }) {
+  const contentRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [height, setHeight] = useState(0);
+
+  // 스케줄 컨텐츠 높이 계산
+  useEffect(() => {
+    if (contentRef.current) {
+      setHeight(isOpen ? contentRef.current.scrollHeight : 0);
+    }
+  }, [isOpen]);
+
   if (!isInTeam) {
     // 팀에 속하지 않은 경우 무조건 팀 만들어야 함
     return (
       <MainCardFrame>
-        <>
-          <p className='body-1 mt-11 mb-10 text-center text-gray-300'>
-            팀 스페이스가 비어있어요
-          </p>
-          <MediumButton
-            text={'팀 스페이스 생성하기'}
-            isOutlined={false}
-            onClick={onClickMainButton}
-          />
-        </>
+        <p className='body-1 mt-11 mb-10 text-center text-gray-300'>
+          팀 스페이스가 비어있어요
+        </p>
+        <MediumButton
+          text={'팀 스페이스 생성하기'}
+          isOutlined={false}
+          onClick={onClickMainButton}
+        />
       </MainCardFrame>
     );
   }
@@ -43,35 +52,22 @@ export default function MainCard({
   if (!recentSchedule) {
     return (
       <MainCardFrame>
-        <>
-          <p className='body-1 mt-11 mb-10 text-center text-gray-300'>
-            다음 일정이 비어있어요
-          </p>
-          <MediumButton
-            text={'일정 추가하기'}
-            isOutlined={false}
-            onClick={onClickMainButton}
-          />
-          <button onClick={onClickChevronButton}>
-            <Icon name='chevronRight' className='absolute top-4 right-4' />
-          </button>
-        </>
+        <p className='body-1 mt-11 mb-10 text-center text-gray-300'>
+          다음 일정이 비어있어요
+        </p>
+        <MediumButton
+          text={'일정 추가하기'}
+          isOutlined={false}
+          onClick={onClickMainButton}
+        />
+        <button onClick={onClickChevronButton}>
+          <Icon name='chevronRight' className='absolute top-4 right-4' />
+        </button>
       </MainCardFrame>
     );
   }
 
-  const contentRef = useRef(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [height, setHeight] = useState(0);
-
   const scheduleDifferece = getScheduleTimeDiff(recentSchedule);
-
-  // 스케줄 컨텐츠 높이 계산
-  useEffect(() => {
-    if (contentRef.current) {
-      setHeight(isOpen ? contentRef.current.scrollHeight : 0);
-    }
-  }, [isOpen]);
 
   // 마지막 일정이 끝난 후 24시간이 안된 경우: response 있음 && timeDiff가 0보다 작거나 같음
   if (scheduleDifferece <= 0) {
@@ -116,7 +112,7 @@ export default function MainCard({
           onClick={() => setIsOpen(!isOpen)}
           isOutlined={true}
           disabled={true}
-        ></MediumButton>
+        />
       </MainCardFrame>
     );
   }
@@ -169,7 +165,7 @@ function renderMyRole(recentSchedule) {
   return recentSchedule.roles.find((role) => role.memberId === 1) ?
       <div className='flex flex-col gap-3'>
         <Tag type={TagType.MY_ROLE} />
-        <div className='flex flex-col gap-1'>
+        <ul className='flex list-disc flex-col gap-1 pl-6'>
           {recentSchedule.roles
             .find((role) => role.memberId === 1)
             .task.map((role, index) => (
@@ -177,7 +173,7 @@ function renderMyRole(recentSchedule) {
                 {role}
               </li>
             ))}
-        </div>
+        </ul>
       </div>
     : <div className='mb-3 flex flex-col gap-6'>
         <p className='body-1 text-center text-gray-400'>
@@ -202,7 +198,7 @@ function renderTeamRole(recentSchedule, contentRef, currentHeight) {
           <div key={index} className='flex flex-col gap-3 first:mt-3'>
             <Tag type={TagType.MEMBER_ROLE}>{role.name}</Tag>
             {role.task.length > 0 ?
-              <div className='flex flex-col gap-1'>
+              <ul className='flex list-disc flex-col gap-1 pl-6'>
                 {role.task.map((task, index) => (
                   <li
                     key={index}
@@ -211,7 +207,7 @@ function renderTeamRole(recentSchedule, contentRef, currentHeight) {
                     {task}
                   </li>
                 ))}
-              </div>
+              </ul>
             : <p className='body-1 text-gray-500'>
                 아직 담당 업무를 입력하지 않았어요
               </p>
