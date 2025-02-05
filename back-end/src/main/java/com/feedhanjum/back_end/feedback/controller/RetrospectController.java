@@ -3,7 +3,7 @@ package com.feedhanjum.back_end.feedback.controller;
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.controller.dto.request.RetrospectsQueryRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.response.RetrospectResponseDto;
+import com.feedhanjum.back_end.feedback.controller.dto.response.RetrospectResponse;
 import com.feedhanjum.back_end.feedback.domain.Retrospect;
 import com.feedhanjum.back_end.feedback.service.RetrospectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,14 +36,14 @@ public class RetrospectController {
             @ApiResponse(responseCode = "403", description = "본인이 아닌 경우", content = @Content)
     })
     @GetMapping("/{writerId}")
-    public ResponseEntity<Paged<RetrospectResponseDto>> getRetrospects(@Login Long loginId,
-                                                                       @PathVariable Long writerId,
-                                                                       @ParameterObject @Valid RetrospectsQueryRequest request) {
+    public ResponseEntity<Paged<RetrospectResponse>> getRetrospects(@Login Long loginId,
+                                                                    @PathVariable Long writerId,
+                                                                    @ParameterObject @Valid RetrospectsQueryRequest request) {
         if (!Objects.equals(loginId, writerId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         Page<Retrospect> retrospects = retrospectService.getRetrospects(writerId, request.teamId(), request.page(), request.sortOrder());
-        return ResponseEntity.ok(Paged.from(retrospects.map(RetrospectResponseDto::from)));
+        return ResponseEntity.ok(Paged.from(retrospects.map(RetrospectResponse::from)));
     }
 
 }

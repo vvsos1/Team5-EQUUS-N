@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Builder
 @Schema(description = "회고 조회 응답")
-public record RetrospectResponseDto(
+public record RetrospectResponse(
         @Schema(description = "회고 제목")
         String title,
         @Schema(description = "팀 이름")
@@ -18,8 +18,8 @@ public record RetrospectResponseDto(
         @Schema(description = "작성일")
         LocalDateTime createdAt
 ) {
-    public static RetrospectResponseDto from(Retrospect retrospect) {
-        return RetrospectResponseDto.builder()
+    public static RetrospectResponse from(Retrospect retrospect) {
+        return RetrospectResponse.builder()
                 .title(retrospect.getTitle())
                 .content(retrospect.getContent())
                 .createdAt(retrospect.getCreatedAt())
