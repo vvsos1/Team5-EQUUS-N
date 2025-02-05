@@ -6,6 +6,7 @@ import Modal, { ModalType } from './components/modals/Modal';
 import ProfileImage from './components/ProfileImage';
 import Tag, { TagType } from './components/Tag';
 import ProgressBar from './pages/feedback/components/ProgressBar';
+import MainCard from './pages/main/components/MainCard';
 import Notification, { notiType } from './pages/main/components/notification';
 import ReportKeywords from './pages/mypage/components/ReportKeywords';
 import ReportResults from './pages/mypage/components/ReportResults';
@@ -24,21 +25,18 @@ function App2() {
         type={TagType.TEAM_SCHEDULE}
         children={{ date: '12일 목요일', time: '17:00' }}
       />
-
       <AiButton isActive={false} onClick={() => {}}>
         적용하기
       </AiButton>
       <AiButton isActive={true} onClick={() => {}}>
         재생성하기
       </AiButton>
-
       <KeywordButton isActive={true} onClick={() => {}}>
         완곡하게
       </KeywordButton>
       <KeywordButton isActive={false} onClick={() => {}}>
         대안을 제시하는
       </KeywordButton>
-
       <hr className='h-20' />
       <KeywordButton
         isActive={true}
@@ -178,7 +176,6 @@ function App2() {
       >
         탈퇴 모달 예시
       </KeywordButton>
-
       <div className='flex h-[852px] w-[393px] flex-col gap-10 bg-gray-900 px-5'>
         <Accordion
           selectedTeamId={1}
@@ -241,6 +238,27 @@ function App2() {
       <Notification type={notiType.NEW} />
       <Notification type={notiType.REPORT} name={'백현식'} />
       <Notification type={notiType.REQUEST} name={'백현식'} count={3} />
+      <MainCard
+        isInTeam={true}
+        recentSchedule={{
+          name: '다음 일정',
+          start: '2022-12-12T17:00:00',
+          end: '2025-02-02T18:00:00',
+          roles: [
+            {
+              memberId: 1,
+              task: ['똥싸기', '씻기', '화장실 가기'],
+              name: '백현식',
+            },
+            {
+              memberId: 2,
+              task: ['밥먹기', '숨쉬기', '공부하기'],
+              name: '양준호',
+            },
+            { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
+          ],
+        }}
+      />
     </div>
   );
 }
