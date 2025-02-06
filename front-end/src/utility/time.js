@@ -1,3 +1,12 @@
+// 0~24시까지 10분단위로 Date 객체 배열 생성
+export const timeOptions = Array.from({ length: 144 }, (_, i) => {
+  return (
+    `${Math.floor(i / 6)}`.padStart(2, '0') +
+    ':' +
+    `${(i % 6) * 10}`.padStart(2, '0')
+  );
+});
+
 /**
  * 시간 경과 계산 함수
  * @param {Date} date - 기준 날짜

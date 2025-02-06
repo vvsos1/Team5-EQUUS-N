@@ -1,7 +1,11 @@
 import classNames from 'classnames';
 import Icon from '../../../components/Icon';
 import { useRef, useState } from 'react';
-import { changeDayName, timePickerToDate } from '../../../utility/time';
+import {
+  changeDayName,
+  timeOptions,
+  timePickerToDate,
+} from '../../../utility/time';
 import CustomInput from '../../../components/CustomInput';
 import { DropdownLarge } from '../../../components/Dropdown';
 import LargeButton from '../../../components/buttons/LargeButton';
@@ -27,15 +31,6 @@ export default function ScheduleAdd({
     setEndTime('12:00');
     setTodo([]);
   }
-
-  // 0~24시까지 10분단위로 Date 객체 생성
-  const timeOptions = Array.from({ length: 144 }, (_, i) => {
-    return (
-      `${Math.floor(i / 6)}`.padStart(2, '0') +
-      ':' +
-      `${(i % 6) * 10}`.padStart(2, '0')
-    );
-  });
 
   return (
     <div
