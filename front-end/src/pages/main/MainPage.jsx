@@ -27,6 +27,7 @@ export default function MainPage() {
   const settings = {
     dots: true,
     arrows: false,
+    infinite: false,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -48,8 +49,8 @@ export default function MainPage() {
       {notificationsData && (
         <Slider {...settings} className='my-4'>
           {notificationsData.map((_, index) => (
-            <div className='px-[6px]'>
-              <Notification type='NEW' key={index} />
+            <div className='px-[6px]' key={index}>
+              <Notification type='NEW' />
             </div>
           ))}
         </Slider>
