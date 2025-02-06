@@ -8,6 +8,7 @@ import LargeButton from '../../components/buttons/LargeButton';
 import Icon from '../../components/Icon';
 import { checkIsFinished, timeInPeriod } from '../../utility/time';
 import ScheduleAdd from './components/ScheduleAdd';
+import ScheduleEdit from './components/ScheduleEdit';
 
 export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(
@@ -18,8 +19,8 @@ export default function Calendar() {
   const scrollRef = useRef(null);
   const [scheduleOnDate, setScheduleOnDate] = useState(exampleSchedules);
   const [scheduleSet, setScheduleSet] = useState(new Set());
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [isScheduleAdded, setIsScheduleAdded] = useState(false);
+  const [isAddingSchedule, setIsAddingSchedule] = useState(false);
+  const [isEditingSchedule, setIsEditingSchedule] = useState(false);
 
   useEffect(() => {
     setScheduleSet(
@@ -78,7 +79,7 @@ export default function Calendar() {
           selectedTeamId={selectedTeamId}
           teamList={exampleTeamList}
           onTeamClick={setSelectedTeamId}
-          canClose={!isBottomSheetOpen}
+          canClose={!isAddingSchedule}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
       </StickyWrapper>
@@ -97,6 +98,7 @@ export default function Calendar() {
                 schedule={schedule.schedule}
                 roles={schedule.roles}
                 isFinished={checkIsFinished(schedule.schedule.endTime)}
+                onClickEdit={() => setIsEditingSchedule(true)}
               />
             </li>
           );
@@ -110,7 +112,7 @@ export default function Calendar() {
               </p>
             }
             onClick={() => {
-              setIsBottomSheetOpen(true);
+              setIsAddingSchedule(true);
             }}
             isOutlined={true}
             disabled={true}
@@ -118,11 +120,22 @@ export default function Calendar() {
         </li>
       </ul>
       <ScheduleAdd
-        isOpen={isBottomSheetOpen}
+        isOpen={isAddingSchedule}
         selectedDate={selectedDate}
-        onClose={() => setIsBottomSheetOpen(false)}
+        onClose={() => setIsAddingSchedule(false)}
         onSubmit={(postSuccess) => {
-          setIsBottomSheetOpen(false);
+          setIsAddingSchedule(false);
+          if (postSuccess) {
+            // TODO: 일정 재조회
+          }
+        }}
+      />
+      <ScheduleEdit
+        isOpen={isEditingSchedule}
+        selectedDate={selectedDate}
+        onClose={() => setIsEditingSchedule(false)}
+        onSubmit={(postSuccess) => {
+          setIsEditingSchedule(false);
           if (postSuccess) {
             // TODO: 일정 재조회
           }
@@ -158,7 +171,7 @@ const exampleSchedules = [
     schedule: {
       startTime: '2025-02-05T17:00:00.000Z',
       endTime: '2025-02-05T18:00:00.000Z',
-      content: '스케줄 내용',
+      scheduleName: '스케줄 내용',
     },
     roles: [
       // {
@@ -189,7 +202,7 @@ const exampleSchedules = [
     schedule: {
       startTime: '2025-02-04T17:00:00.000Z',
       endTime: '2025-02-04T18:00:00.000Z',
-      content: '스케줄 내용',
+      scheduleName: '스케줄 내용',
     },
     roles: [
       {
@@ -220,7 +233,7 @@ const exampleSchedules = [
     schedule: {
       startTime: '2025-02-07T17:00:00.000Z',
       endTime: '2025-02-08T18:00:00.000Z',
-      content: '스케줄 내용',
+      scheduleName: '스케줄 내용',
     },
     roles: [
       {
@@ -251,7 +264,7 @@ const exampleSchedules = [
     schedule: {
       startTime: '2025-02-06T17:00:00.000Z',
       endTime: '2025-02-06T19:00:00.000Z',
-      content: '스케줄 내용',
+      scheduleName: '스케줄 내용',
     },
     roles: [
       {
