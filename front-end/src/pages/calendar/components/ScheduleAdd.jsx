@@ -52,6 +52,7 @@ export default function ScheduleAdd({
         <button
           onClick={() => {
             clearData();
+            onClose();
           }}
         >
           <Icon name='delete' className='absolute top-5 right-0 text-white' />
