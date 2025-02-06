@@ -15,9 +15,9 @@ public class FeedbackReceiveNotificationDto extends InAppNotificationDto {
     @Schema(description = "알림 타입", allowableValues = NotificationType.FEEDBACK_RECEIVE)
     private final String type = NotificationType.FEEDBACK_RECEIVE;
     @Schema(description = "보낸 사람 이름")
-    private String senderName;
+    private final String senderName;
     @Schema(description = "팀 이름")
-    private String teamName;
+    private final String teamName;
 
     @Builder
     public FeedbackReceiveNotificationDto(Long notificationId, Long receiverId, LocalDateTime createdAt, boolean isRead, String senderName, String teamName) {

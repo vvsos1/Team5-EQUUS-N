@@ -14,9 +14,9 @@ public class FeedbackReportCreateNotificationDto extends InAppNotificationDto {
     @Schema(description = "알림 타입", allowableValues = NotificationType.FEEDBACK_REPORT_CREATE)
     private final String type = NotificationType.FEEDBACK_REPORT_CREATE;
     @Schema(description = "종료된 팀 이름")
-    private String teamName;
+    private final String teamName;
     @Schema(description = "받는 사람 이름")
-    private String receiverName;
+    private final String receiverName;
 
     @Builder
     public FeedbackReportCreateNotificationDto(Long notificationId, Long receiverId, LocalDateTime createdAt, boolean isRead, String teamName, String receiverName) {
