@@ -114,7 +114,7 @@ class InAppNotificationControllerTest {
             notificationRepository.saveAll(notifications);
 
             assertThat(mvc.get()
-                    .uri("/api/notification/receiver/{receiverId}", receiver.getId())
+                    .uri("/api/notification")
                     .session(withLoginUser(receiver))
             ).hasStatusOk()
                     .body().satisfies(result -> {
@@ -125,71 +125,33 @@ class InAppNotificationControllerTest {
                     });
         }
 
-        @Test
-        @DisplayName("본인이 아닌 경우 403")
-        void test2() {
-            Member receiver = member1;
-            Member notReceiver = member2;
-            Team team = team1;
-            List<InAppNotification> notifications = List.of(
-                    createInAppNotification(receiver, team)
-            );
-            notificationRepository.saveAll(notifications);
+        @Nested
+        @DisplayName("여러 알림 읽음 처리 테스트")
+        class MarkNotificationAsRead {
+            @Test
+            @DisplayName("성공시 204")
+            void test1() throws JsonProcessingException {
+                Member receiver = member1;
+                Team team = team1;
+                List<InAppNotification> notifications = List.of(
+                        createInAppNotification(receiver, team),
+                        createInAppNotification(receiver, team),
+                        createInAppNotification(receiver, team)
+                );
+                notificationRepository.saveAll(notifications);
 
-            assertThat(mvc.get()
-                    .uri("/api/notification/receiver/{receiverId}", receiver.getId())
-                    .session(withLoginUser(notReceiver))
-            ).hasStatus(HttpStatus.FORBIDDEN);
-        }
-    }
+                MultipleNotificationReadRequest request = new MultipleNotificationReadRequest(notifications.stream().map(InAppNotification::getId).toList());
 
-    @Nested
-    @DisplayName("여러 알림 읽음 처리 테스트")
-    class MarkNotificationAsRead {
-        @Test
-        @DisplayName("성공시 204")
-        void test1() throws JsonProcessingException {
-            Member receiver = member1;
-            Team team = team1;
-            List<InAppNotification> notifications = List.of(
-                    createInAppNotification(receiver, team),
-                    createInAppNotification(receiver, team),
-                    createInAppNotification(receiver, team)
-            );
-            notificationRepository.saveAll(notifications);
+                assertThat(mvc.post()
+                        .uri("/api/notification/mark-as-read")
+                        .session(withLoginUser(receiver))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapper.writeValueAsBytes(request))
+                ).hasStatus(HttpStatus.NO_CONTENT);
 
-            MultipleNotificationReadRequest request = new MultipleNotificationReadRequest(notifications.stream().map(InAppNotification::getId).toList());
-
-            assertThat(mvc.post()
-                    .uri("/api/notification/receiver/{receiverId}/mark-as-read", receiver.getId())
-                    .session(withLoginUser(receiver))
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content(mapper.writeValueAsBytes(request))
-            ).hasStatus(HttpStatus.NO_CONTENT);
-
-            List<InAppNotification> all = notificationRepository.findAll();
-            assertThat(all).allMatch(InAppNotification::isRead);
-        }
-
-        @Test
-        @DisplayName("본인이 아닐 시 403")
-        void test2() throws JsonProcessingException {
-            Member receiver = member1;
-            Team team = team1;
-            List<InAppNotification> notifications = List.of(
-                    createInAppNotification(receiver, team)
-            );
-            notificationRepository.saveAll(notifications);
-            MultipleNotificationReadRequest request = new MultipleNotificationReadRequest(notifications.stream().map(InAppNotification::getId).toList());
-            assertThat(mvc.post()
-                    .uri("/api/notification/receiver/{receiverId}/mark-as-read", receiver.getId())
-                    .session(withLoginUser(member2))
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content(mapper.writeValueAsBytes(request))
-            ).hasStatus(HttpStatus.FORBIDDEN);
-
-            List<InAppNotification> all = notificationRepository.findAll();
-            assertThat(all).allMatch(n -> !n.isRead());
+                List<InAppNotification> all = notificationRepository.findAll();
+                assertThat(all).allMatch(InAppNotification::isRead);
+            }
         }
     }
 }
