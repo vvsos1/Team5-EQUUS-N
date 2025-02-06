@@ -6,16 +6,21 @@ import classNames from 'classnames';
 /**
  * 캘린더 컴포넌트
  * @param {object} props
- * @param {boolean} props.isScrolling - 스크롤 여부
+ * @param {Date} props.selectedDate - 선택된 날짜
+ * @param {function} props.setSelectedDate - 선택된 날짜 설정 함수
  * @returns {JSX.Element} - 캘린더 컴포넌트
  */
-export default function Calendar({ isScrolling = false }) {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [curSunday, setCurSunday] = useState(getRecentSunday(new Date()));
+export default function CalendarWeeks({
+  selectedDate,
+  setSelectedDate,
+  scheduleSet,
+}) {
+  const [curSunday, setCurSunday] = useState(getRecentSunday(selectedDate));
   const [isDragging, setIsDragging] = useState(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
   const containerRef = useRef(null);
+  const dragSensitivity = 1.7;
 
   // 현재 주를 가운데에 배치
   useEffect(() => {
@@ -45,17 +50,19 @@ export default function Calendar({ isScrolling = false }) {
 
   // 드래그 시작 - 시작 위치 저장
   const handleDragStart = (e) => {
+    e.preventDefault(); // 이벤트 기본 동작 방지
     setIsDragging(true);
-    startX.current = e.clientX - containerRef.current.offsetLeft;
+    startX.current =
+      (e.clientX || e.touches[0].clientX) - containerRef.current.offsetLeft;
     scrollLeft.current = containerRef.current.scrollLeft;
   };
 
   // 드래그 중 - 드래그 거리에 따라 스크롤 이동
   const handleDrag = (e) => {
-    // e.preventDefault(); // 이벤트 기본 동작 방지
     if (!isDragging) return;
-    const x = e.clientX - containerRef.current.offsetLeft;
-    const walk = (x - startX.current) * 1.5;
+    const x =
+      (e.clientX || e.touches[0].clientX) - containerRef.current.offsetLeft;
+    const walk = (x - startX.current) * dragSensitivity;
     containerRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
@@ -103,52 +110,49 @@ export default function Calendar({ isScrolling = false }) {
   };
 
   return (
-    <div>
-      {/* 선택된 날짜 정보 */}
-      <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
-      {!isScrolling && (
-        <div
-          ref={containerRef}
-          className={classNames(
-            'flex w-full overflow-hidden select-none',
-            isDragging && 'cursor-grabbing',
-            !isDragging && 'cursor-grab',
-          )}
-          onMouseDown={handleDragStart}
-          onMouseMove={handleDrag}
-          onMouseUp={handleDragEnd}
-          onMouseLeave={handleDragEnd}
-          onTouchEnd={handleDragEnd}
-          onTouchStart={handleDragStart}
-          onTouchMove={handleDrag}
-          onTouchCancel={handleDragEnd}
-        >
-          {/* 저번주 */}
-          <div className='min-w-full px-5 py-4'>
-            <CalendarWeek
-              curSunday={new Date(curSunday).setDate(curSunday.getDate() - 7)}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-            />
-          </div>
-          {/* 이번주 */}
-          <div className='min-w-full px-5 py-4'>
-            <CalendarWeek
-              curSunday={new Date(curSunday)}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-            />
-          </div>
-          {/* 다음주 */}
-          <div className='min-w-full px-5 py-4'>
-            <CalendarWeek
-              curSunday={new Date(curSunday).setDate(curSunday.getDate() + 7)}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-            />
-          </div>
-        </div>
+    <div
+      ref={containerRef}
+      className={classNames(
+        'flex w-full overflow-hidden select-none',
+        isDragging && 'cursor-grabbing',
+        !isDragging && 'cursor-grab',
       )}
+      onMouseDown={handleDragStart}
+      onMouseMove={handleDrag}
+      onMouseUp={handleDragEnd}
+      onMouseLeave={handleDragEnd}
+      onTouchEnd={handleDragEnd}
+      onTouchStart={handleDragStart}
+      onTouchMove={handleDrag}
+      onTouchCancel={handleDragEnd}
+    >
+      {/* 저번주 */}
+      <div className='min-w-full py-4'>
+        <CalendarWeek
+          curSunday={new Date(curSunday).setDate(curSunday.getDate() - 7)}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          scheduleSet={scheduleSet}
+        />
+      </div>
+      {/* 이번주 */}
+      <div className='min-w-full py-4'>
+        <CalendarWeek
+          curSunday={new Date(curSunday)}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          scheduleSet={scheduleSet}
+        />
+      </div>
+      {/* 다음주 */}
+      <div className='min-w-full py-4'>
+        <CalendarWeek
+          curSunday={new Date(curSunday).setDate(curSunday.getDate() + 7)}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          scheduleSet={scheduleSet}
+        />
+      </div>
     </div>
   );
 }
