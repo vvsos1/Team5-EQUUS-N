@@ -25,12 +25,21 @@ export const useMainCard = (teamId) => {
 /**
  * 메인카드2 데이터를 가져오는 훅
  * @param {number} teamId
- * @returns
  */
 export const useMainCard2 = (teamId) => {
   return useQuery({
     queryKey: ['mainCard2', teamId],
     queryFn: () => api.get(`/api/team/${teamId}/members`),
+  });
+};
+
+/**
+ * 사용자의 알람데이터를 가져오는 훅
+ */
+export const useNotification = () => {
+  return useQuery({
+    queryKey: ['notification'],
+    queryFn: () => api.get('/api/notification'),
   });
 };
 
