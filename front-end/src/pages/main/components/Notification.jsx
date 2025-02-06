@@ -60,7 +60,7 @@ export default function Notification({ type, onClick, onClose, name, count }) {
   return (
     <div
       className={classNames(
-        'rounded-400 relative h-[150px] w-full',
+        'rounded-400 relative w-full',
         type === notiType.REQUEST || type === notiType.UNCONFIRM ?
           'bg-gray-100'
         : 'bg-lime-500',

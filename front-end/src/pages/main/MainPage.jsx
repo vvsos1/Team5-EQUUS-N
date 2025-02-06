@@ -13,6 +13,7 @@ import Notification from './components/Notification';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import './components/slider.css';
 
 export default function MainPage() {
   const [selectedTeamId, setSelectedTeamId] = useState(1);
@@ -24,16 +25,6 @@ export default function MainPage() {
 
   // TODO: 로딩 중 혹은 에러 발생 시 처리
 
-  const settings = {
-    dots: true,
-    arrows: false,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    centerMode: true,
-    centerPadding: '14px',
-  };
   return (
     <div className='flex w-full flex-col'>
       <StickyWrapper className='px-5'>
@@ -47,7 +38,7 @@ export default function MainPage() {
         )}
       </StickyWrapper>
       {notificationsData && (
-        <Slider {...settings} className='my-4'>
+        <Slider {...sliderSettings} className='my-4'>
           {notificationsData.map((_, index) => (
             <div className='px-[6px]' key={index}>
               <Notification type='NEW' />
@@ -55,12 +46,24 @@ export default function MainPage() {
           ))}
         </Slider>
       )}
-      <div className='h-4' />
+      <div className='h-2' />
       {recentScheduleData && (
         <MainCard recentSchedule={recentScheduleData} className='' />
       )}
       <div className='h-8' />
       {matesData && <MainCard2 teamMates={matesData} className='' />}
+      <div className='h-8' />
     </div>
   );
 }
+
+const sliderSettings = {
+  dots: true,
+  arrows: false,
+  infinite: false,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  centerMode: true,
+  centerPadding: '14px',
+};
