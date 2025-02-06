@@ -79,13 +79,23 @@ export const checkSignUpInfos = (
   passwordConfirm,
   nickName,
 ) => {
-  return (
-    certState === CertState.AFTER_CHECK_CODE &&
-    isValidPassword(password) &&
-    password === passwordConfirm &&
-    nickName.length > 0 &&
-    isWithin10Bytes(nickName)
-  );
+  if (certState !== CertState.AFTER_CHECK_CODE) {
+    showToast('이메일 인증이 필요해요');
+    return false;
+  } else if (!isValidPassword(password)) {
+    showToast('비밀번호 형식이 올바르지 않아요');
+    return false;
+  } else if (password !== passwordConfirm) {
+    showToast('비밀번호가 일치하지 않아요');
+    return false;
+  } else if (nickName.length === 0) {
+    showToast('활동 이름을 입력해주세요');
+    return false;
+  } else if (!isWithin10Bytes(nickName)) {
+    showToast('활동 이름은 한글 5자, 영어 10자 이내여야 해요');
+    return false;
+  }
+  return true;
 };
 
 /**

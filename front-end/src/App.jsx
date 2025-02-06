@@ -11,6 +11,7 @@ import SignUp from './pages/auth/SignUp';
 import TeamSpaceMake from './pages/teamspace/TeamSpaceMake';
 import TeamSpaceMakeSuccess from './pages/teamspace/TeamSpaceMakeSuccess';
 import Calendar from './pages/calendar/Calendar';
+import MainPage from './pages/main/MainPage';
 
 export default function App() {
   return (
@@ -18,10 +19,6 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path='/' element={<Splash />} />
-          <Route
-            path='home'
-            element={<div className='size-full bg-cyan-100' />}
-          />
           <Route path='feedback'>
             <Route path='request' element={<FeedbackRequest />} />
           </Route>
@@ -37,6 +34,10 @@ export default function App() {
             element={<TeamSpaceMakeSuccess />}
           />
           <Route path='calendar' element={<Calendar />} />
+          <Route path='main'>
+            <Route index element={<MainPage />} />
+            <Route path='notification' element={<div></div>} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
