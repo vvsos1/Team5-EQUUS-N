@@ -10,6 +10,7 @@ import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
 import TeamSpaceMake from './pages/teamspace/TeamSpaceMake';
 import TeamSpaceMakeSuccess from './pages/teamspace/TeamSpaceMakeSuccess';
+import MainPage from './pages/main/MainPage';
 
 export default function App() {
   return (
@@ -17,10 +18,6 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path='/' element={<Splash />} />
-          <Route
-            path='home'
-            element={<div className='size-full bg-cyan-100' />}
-          />
           <Route path='feedback'>
             <Route path='request' element={<FeedbackRequest />} />
           </Route>
@@ -35,6 +32,10 @@ export default function App() {
             path='teamspace/make/success'
             element={<TeamSpaceMakeSuccess />}
           />
+          <Route path='main'>
+            <Route index element={<MainPage />} />
+            <Route path='notification' element={<div></div>} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
