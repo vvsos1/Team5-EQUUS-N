@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.notification.dto;
+package com.feedhanjum.back_end.notification.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

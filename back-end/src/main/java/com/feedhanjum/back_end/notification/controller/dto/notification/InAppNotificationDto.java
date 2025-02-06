@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.notification.dto.notification;
+package com.feedhanjum.back_end.notification.controller.dto.notification;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -14,5 +14,6 @@ public abstract class InAppNotificationDto {
     protected Long receiverId;
     @Schema(description = "알림 생성 시간")
     protected LocalDateTime createdAt;
-
+    @Schema(description = "읽음 여부")
+    private boolean isRead;
 }
