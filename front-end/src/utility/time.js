@@ -58,7 +58,7 @@ export function getDateInfo(date) {
  * @returns {Date} - 최근 일요일 날짜
  */
 export function getRecentSunday(date) {
-  const sunday = new Date(date);
+  const sunday = new Date(new Date(date).setHours(0, 0, 0, 0));
   sunday.setDate(sunday.getDate() - sunday.getDay());
   return sunday;
 }
@@ -81,4 +81,31 @@ export function changeDayName(dayName) {
     day = '토';
   }
   return day;
+}
+
+/**
+ * 기준 날짜가 시작 날짜와 종료 날짜 사이에 있는지 확인하는 함수
+ * @param {Date} stdDate - 기준 날짜
+ * @param {Date} startDate - 시작 날짜
+ * @param {Date} endDate - 종료 날짜
+ * @returns {boolean} - 기준 날짜가 시작 날짜와 종료 날짜 사이에 있는지 여부
+ */
+export function timeInPeriod(stdDate, startDate, endDate) {
+  const startTime = new Date(startDate).getTime();
+  const endTime = new Date(endDate).getTime();
+  const stdTime = new Date(stdDate).getTime();
+  return startTime <= stdTime && endTime >= stdTime;
+}
+
+/**
+ * 현 시간 기준 일정이 종료되었는지 확인하는 함수
+ * @param {Date} date - 일정 종료 날짜
+ * @returns {boolean} - 일정이 종료되었는지 여부
+ */
+export function checkIsFinished(date) {
+  if (new Date(date).getTime().valueOf() < new Date()) {
+    return true;
+  } else {
+    return false;
+  }
 }

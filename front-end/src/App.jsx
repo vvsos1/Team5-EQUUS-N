@@ -11,6 +11,7 @@ import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
 import TeamSpaceMake from './pages/teamspace/TeamSpaceMake';
 import TeamSpaceMakeSuccess from './pages/teamspace/TeamSpaceMakeSuccess';
+import Calendar from './pages/calendar/Calendar';
 import MainPage from './pages/main/MainPage';
 
 const queryClient = new QueryClient();
@@ -36,10 +37,10 @@ export default function App() {
               path='teamspace/make/success'
               element={<TeamSpaceMakeSuccess />}
             />
+            <Route path='calendar' element={<Calendar />} />
             <Route path='main'>
               <Route index element={<MainPage />} />
               <Route path='notification' element={<div></div>} />
-            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
