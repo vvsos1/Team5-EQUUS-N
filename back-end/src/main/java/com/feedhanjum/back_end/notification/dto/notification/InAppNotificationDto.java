@@ -14,5 +14,6 @@ public abstract class InAppNotificationDto {
     protected Long receiverId;
     @Schema(description = "알림 생성 시간")
     protected LocalDateTime createdAt;
-
+    @Schema(description = "읽음 여부")
+    private boolean isRead;
 }
