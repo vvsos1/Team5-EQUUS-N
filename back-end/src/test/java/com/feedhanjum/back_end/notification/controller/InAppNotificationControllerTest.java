@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.notification.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
@@ -7,6 +8,7 @@ import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
+import com.feedhanjum.back_end.notification.controller.dto.MultipleNotificationReadRequest;
 import com.feedhanjum.back_end.notification.controller.dto.notification.InAppNotificationDto;
 import com.feedhanjum.back_end.notification.domain.FeedbackReportCreateNotification;
 import com.feedhanjum.back_end.notification.domain.InAppNotification;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
@@ -137,6 +140,56 @@ class InAppNotificationControllerTest {
                     .uri("/api/notification/receiver/{receiverId}", receiver.getId())
                     .session(withLoginUser(notReceiver))
             ).hasStatus(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @Nested
+    @DisplayName("여러 알림 읽음 처리 테스트")
+    class MarkNotificationAsRead {
+        @Test
+        @DisplayName("성공시 204")
+        void test1() throws JsonProcessingException {
+            Member receiver = member1;
+            Team team = team1;
+            List<InAppNotification> notifications = List.of(
+                    createInAppNotification(receiver, team),
+                    createInAppNotification(receiver, team),
+                    createInAppNotification(receiver, team)
+            );
+            notificationRepository.saveAll(notifications);
+
+            MultipleNotificationReadRequest request = new MultipleNotificationReadRequest(notifications.stream().map(InAppNotification::getId).toList());
+
+            assertThat(mvc.post()
+                    .uri("/api/notification/receiver/{receiverId}/mark-as-read", receiver.getId())
+                    .session(withLoginUser(receiver))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(mapper.writeValueAsBytes(request))
+            ).hasStatus(HttpStatus.NO_CONTENT);
+
+            List<InAppNotification> all = notificationRepository.findAll();
+            assertThat(all).allMatch(InAppNotification::isRead);
+        }
+
+        @Test
+        @DisplayName("본인이 아닐 시 403")
+        void test2() throws JsonProcessingException {
+            Member receiver = member1;
+            Team team = team1;
+            List<InAppNotification> notifications = List.of(
+                    createInAppNotification(receiver, team)
+            );
+            notificationRepository.saveAll(notifications);
+            MultipleNotificationReadRequest request = new MultipleNotificationReadRequest(notifications.stream().map(InAppNotification::getId).toList());
+            assertThat(mvc.post()
+                    .uri("/api/notification/receiver/{receiverId}/mark-as-read", receiver.getId())
+                    .session(withLoginUser(member2))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(mapper.writeValueAsBytes(request))
+            ).hasStatus(HttpStatus.FORBIDDEN);
+
+            List<InAppNotification> all = notificationRepository.findAll();
+            assertThat(all).allMatch(n -> !n.isRead());
         }
     }
 }
