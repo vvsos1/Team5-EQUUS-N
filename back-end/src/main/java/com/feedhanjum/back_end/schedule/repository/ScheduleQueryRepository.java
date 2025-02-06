@@ -60,6 +60,7 @@ public class ScheduleQueryRepository {
                 .select(team.id)
                 .from(teamMember)
                 .join(teamMember.team, team)
+                .join(teamMember.member, member)
                 .where(teamIdEq(teamId), memberIdEq(memberId));
         return queryScheduleProjectionDto()
                 .where(schedule.team.id.in(subQuery), schedule.endTime.between(startTime, endTime))
@@ -94,6 +95,6 @@ public class ScheduleQueryRepository {
                 .join(scheduleMember.schedule, schedule)
                 .join(schedule.team, team)
                 .leftJoin(scheduleMember.todos, todo)
-                .join(scheduleMember.member);
+                .join(scheduleMember.member, member);
     }
 }

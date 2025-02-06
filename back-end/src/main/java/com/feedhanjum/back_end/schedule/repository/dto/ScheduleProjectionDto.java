@@ -1,10 +1,12 @@
 package com.feedhanjum.back_end.schedule.repository.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
 public class ScheduleProjectionDto {
     private Long teamId;
     private String teamName;

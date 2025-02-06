@@ -211,13 +211,11 @@ public class ScheduleService {
     }
 
     private void validateScheduleTimeIntoTeamTime(ScheduleRequestDto requestDto, Team team) {
-        if (team.getStartDate().isAfter(requestDto.startTime().toLocalDate())
-                || team.getEndDate().isEqual(requestDto.endTime().toLocalDate())
-        ) {
+        if (team.getStartDate().isAfter(requestDto.startTime().toLocalDate())) {
             throw new IllegalArgumentException("일정 시작 시간이 팀의 시작 시간 이후여야 합니다.");
         }
-        if (team.getEndDate().isBefore(requestDto.endTime().toLocalDate())
-                || team.getEndDate().isEqual(requestDto.endTime().toLocalDate())) {
+        if (team.getEndDate() != null &&
+                team.getEndDate().isBefore(requestDto.endTime().toLocalDate())) {
             throw new IllegalArgumentException("일정 종료 시간이 팀의 종료 시간 이전이어야 합니다.");
         }
     }
