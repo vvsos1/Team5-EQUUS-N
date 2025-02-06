@@ -48,19 +48,17 @@ export default function ScheduleCard({
               {schedule.startTime.split('T')[1].substring(0, 5)}
             </div>
             <hr className='h-4 w-1 bg-lime-500' />
-            <p className='subtitle-2 text-gray-100'>{schedule.content}</p>
+            <p className='subtitle-2 text-gray-100'>{schedule.scheduleName}</p>
           </div>
         </div>
         {/* 일정 종료 전에만 수정 버튼 표시 */}
         {!isFinished && (
-          <Icon
-            name='edit'
-            className={classNames(
-              'h-max w-max cursor-pointer',
-              teamName && 'pt-1',
-            )}
-            onClick={onClickEdit}
-          />
+          <button onClick={onClickEdit}>
+            <Icon
+              name='edit'
+              className={classNames('h-max w-max', teamName && 'pt-1')}
+            />
+          </button>
         )}
       </div>
       <hr className='w-full border-gray-500' />
