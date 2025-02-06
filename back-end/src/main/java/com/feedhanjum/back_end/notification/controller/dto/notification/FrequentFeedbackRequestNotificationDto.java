@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.notification.dto.notification;
+package com.feedhanjum.back_end.notification.controller.dto.notification;
 
 import com.feedhanjum.back_end.notification.domain.NotificationType;
 import io.swagger.v3.oas.annotations.media.Schema;

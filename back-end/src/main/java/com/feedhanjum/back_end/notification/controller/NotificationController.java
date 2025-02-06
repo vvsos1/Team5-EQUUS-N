@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.notification.controller;
 
-import com.feedhanjum.back_end.notification.dto.UnreadNotificationResponse;
-import com.feedhanjum.back_end.notification.dto.notification.InAppNotificationDto;
+import com.feedhanjum.back_end.notification.controller.dto.UnreadNotificationResponse;
+import com.feedhanjum.back_end.notification.controller.dto.notification.InAppNotificationDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
