@@ -7,8 +7,8 @@ import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackSendRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.RegularFeedbackSendRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestDto;
-import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestDto;
+import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
+import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
@@ -411,10 +411,10 @@ class FeedbackControllerTest {
             ).hasStatus(HttpStatus.OK)
                     .body()
                     .satisfies(result -> {
-                        List<FrequentFeedbackRequestDto> requests = mapper.readValue(result, new TypeReference<List<FrequentFeedbackRequestDto>>() {
+                        List<FrequentFeedbackRequestForApiResponse> requests = mapper.readValue(result, new TypeReference<List<FrequentFeedbackRequestForApiResponse>>() {
                         });
                         assertThat(requests).hasSize(2);
-                        assertThat(requests).extracting(FrequentFeedbackRequestDto::requestedContent)
+                        assertThat(requests).extracting(FrequentFeedbackRequestForApiResponse::requestedContent)
                                 .containsExactlyInAnyOrder("내용1", "내용2");
                         assertThat(requests).extracting(req -> req.requester().email())
                                 .containsExactlyInAnyOrder(sender1.getEmail(), sender2.getEmail());
@@ -447,7 +447,7 @@ class FeedbackControllerTest {
             ).hasStatus(HttpStatus.OK)
                     .body()
                     .satisfies(result -> {
-                        List<RegularFeedbackRequestDto> requests = mapper.readValue(result, new TypeReference<List<RegularFeedbackRequestDto>>() {
+                        List<RegularFeedbackRequestForApiResponse> requests = mapper.readValue(result, new TypeReference<List<RegularFeedbackRequestForApiResponse>>() {
                         });
                         assertThat(requests).hasSize(2);
                         assertThat(requests).extracting(req -> req.requester().email())

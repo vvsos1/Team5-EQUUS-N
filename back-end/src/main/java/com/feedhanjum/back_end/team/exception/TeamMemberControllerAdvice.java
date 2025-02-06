@@ -1,10 +1,12 @@
 package com.feedhanjum.back_end.team.exception;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Order(1)
 @RestControllerAdvice
 public class TeamMemberControllerAdvice {
     @ExceptionHandler(TeamMembershipNotFoundException.class)

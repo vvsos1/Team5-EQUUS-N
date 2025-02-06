@@ -17,9 +17,8 @@ public class MemberQueryRepository {
 
     public List<Member> findMembersByTeamId(Long teamId) {
         return jpaQueryFactory.select(member)
-                .from(teamMember)
-                .join(teamMember.member, member)
-                .fetchJoin()
+                .from(member)
+                .join(teamMember).on(teamMember.member.id.eq(member.id)).fetchJoin()
                 .where(teamMember.team.id.eq(teamId))
                 .fetch();
     }

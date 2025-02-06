@@ -16,8 +16,8 @@ export default function Accordion({
   selectedTeamId,
   teamList = [],
   onTeamClick,
+  isAlarmRead = false,
 }) {
-  const [isAlarmRead, setIsAlarmRead] = useState(true);
   const detailsRef = useRef(null);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function Accordion({
               className='transition group-open:rotate-180'
             />
           </summary>
-          <div className='rounded-400 absolute top-full flex w-[353px] flex-col divide-y-1 divide-gray-600 bg-gray-800 px-5'>
+          <div className='rounded-400 scrollbar-hidden absolute top-full flex max-h-96 w-full flex-col divide-y-1 divide-gray-600 overflow-y-auto bg-gray-800 px-5'>
             {teamList.map((team) => (
               <TextButton
                 key={team.id}
@@ -55,8 +55,11 @@ export default function Accordion({
                 {team.name}
               </TextButton>
             ))}
-            <TextButton type={TextButtonType.PLUS} onClick={() => {}}>
-              {isMainPage ? '팀 추가하기' : '전체 일정 보기'}
+            <TextButton
+              type={isMainPage ? TextButtonType.PLUS : TextButtonType.DEFAULT}
+              onClick={() => {}}
+            >
+              {isMainPage ? '새로운 팀 스페이스 만들기' : '전체 일정 보기'}
             </TextButton>
           </div>
           {/* 빽드롭필터 */}

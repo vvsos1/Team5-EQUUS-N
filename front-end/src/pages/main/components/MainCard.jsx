@@ -169,7 +169,7 @@ function renderMyRole(recentSchedule) {
           {recentSchedule.roles
             .find((role) => role.memberId === 1)
             .task.map((role, index) => (
-              <li key={index} className='body-1 pl-2 text-gray-100 last:mb-3'>
+              <li key={index} className='body-1 pl-1 text-gray-100 last:mb-3'>
                 {role}
               </li>
             ))}
@@ -185,7 +185,7 @@ function renderMyRole(recentSchedule) {
 
 function renderTeamRole(recentSchedule, contentRef, currentHeight) {
   return (
-    <div
+    <ul
       ref={contentRef}
       className={`flex flex-col overflow-hidden transition-all duration-300 ease-in-out`}
       style={
@@ -195,7 +195,7 @@ function renderTeamRole(recentSchedule, contentRef, currentHeight) {
       {recentSchedule.roles.map((role, index) => {
         if (role.memberId === 1) return null;
         return (
-          <div key={index} className='flex flex-col gap-3 first:mt-3'>
+          <li key={index} className='flex flex-col gap-3 first:mt-3'>
             <Tag type={TagType.MEMBER_ROLE}>{role.name}</Tag>
             {role.task.length > 0 ?
               <ul className='flex list-disc flex-col gap-1 pl-6'>
@@ -212,9 +212,9 @@ function renderTeamRole(recentSchedule, contentRef, currentHeight) {
                 아직 담당 업무를 입력하지 않았어요
               </p>
             }
-          </div>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 }
