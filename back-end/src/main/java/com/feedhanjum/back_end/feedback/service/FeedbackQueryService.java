@@ -1,8 +1,8 @@
 package com.feedhanjum.back_end.feedback.service;
 
 
-import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestDto;
-import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestDto;
+import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
+import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
@@ -79,14 +79,14 @@ public class FeedbackQueryService {
     }
 
     @Transactional(readOnly = true)
-    public List<FrequentFeedbackRequestDto> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
+    public List<FrequentFeedbackRequestForApiResponse> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
         List<FrequentFeedbackRequest> requests = frequentFeedbackRequestQueryRepository.getFrequentFeedbackRequests(receiverId, teamId);
-        return requests.stream().map(FrequentFeedbackRequestDto::from).toList();
+        return requests.stream().map(FrequentFeedbackRequestForApiResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
-    public List<RegularFeedbackRequestDto> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
+    public List<RegularFeedbackRequestForApiResponse> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
         List<RegularFeedbackRequest> requests = regularFeedbackRequestQueryRepository.getRegularFeedbackRequests(receiverId, scheduleId);
-        return requests.stream().map(RegularFeedbackRequestDto::from).toList();
+        return requests.stream().map(RegularFeedbackRequestForApiResponse::from).toList();
     }
 }
