@@ -17,6 +17,7 @@ export default function Accordion({
   teamList = [],
   onTeamClick,
   isAlarmRead = false,
+  canClose = true,
 }) {
   const detailsRef = useRef(null);
 
@@ -84,10 +85,11 @@ export default function Accordion({
             <Icon name='hamburger' />
           </button>
         </div>
-      : <button onClick={() => console.log('뒤로가기')}>
+      : canClose ?
+        <button onClick={() => console.log('뒤로가기')}>
           <Icon name='delete' color='var(--color-gray-100)' />
         </button>
-      }
+      : null}
     </header>
   );
 }

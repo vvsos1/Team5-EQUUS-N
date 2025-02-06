@@ -7,6 +7,7 @@ import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import LargeButton from '../../components/buttons/LargeButton';
 import Icon from '../../components/Icon';
 import { checkIsFinished, timeInPeriod } from '../../utility/time';
+import ScheduleAdd from './components/ScheduleAdd';
 
 export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(
@@ -17,6 +18,7 @@ export default function Calendar() {
   const scrollRef = useRef(null);
   const [scheduleOnDate, setScheduleOnDate] = useState(exampleSchedules);
   const [scheduleSet, setScheduleSet] = useState(new Set());
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   useEffect(() => {
     setScheduleSet(
@@ -67,7 +69,7 @@ export default function Calendar() {
   return (
     <div
       ref={scrollRef}
-      className='scrollbar-hidden size-full overflow-x-hidden overflow-y-auto'
+      className='scrollbar-hidden relative size-full overflow-x-hidden overflow-y-auto'
     >
       <StickyWrapper>
         <Accordion
@@ -75,6 +77,7 @@ export default function Calendar() {
           selectedTeamId={selectedTeamId}
           teamList={exampleTeamList}
           onTeamClick={setSelectedTeamId}
+          canClose={!isBottomSheetOpen}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
       </StickyWrapper>
@@ -105,12 +108,15 @@ export default function Calendar() {
                 새로운 일정 추가
               </p>
             }
-            onClick={() => {}}
+            onClick={() => {
+              setIsBottomSheetOpen(true);
+            }}
             isOutlined={true}
             disabled={true}
           />
         </li>
       </ul>
+      <ScheduleAdd isOpen={isBottomSheetOpen} />
     </div>
   );
 }
