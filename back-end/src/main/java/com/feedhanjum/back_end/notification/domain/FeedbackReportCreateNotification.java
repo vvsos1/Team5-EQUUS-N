@@ -19,7 +19,7 @@ public class FeedbackReportCreateNotification extends InAppNotification {
     private String receiverName;
 
     public FeedbackReportCreateNotification(Member receiver, @Nullable Team team) {
-        super(receiver);
+        super(receiver.getId());
         if (team != null)
             teamName = team.getName();
         else

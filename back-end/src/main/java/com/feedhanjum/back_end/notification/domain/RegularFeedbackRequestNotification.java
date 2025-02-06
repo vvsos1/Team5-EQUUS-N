@@ -19,7 +19,7 @@ public class RegularFeedbackRequestNotification extends InAppNotification {
     private Long teamId;
 
     public RegularFeedbackRequestNotification(Member receiver, Schedule schedule) {
-        super(receiver);
+        super(receiver.getId());
         this.scheduleName = schedule.getName();
         this.scheduleId = schedule.getId();
         this.teamId = schedule.getTeam().getId();

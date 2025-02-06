@@ -16,7 +16,7 @@ public class HeartReactionNotification extends InAppNotification {
     private String teamName;
 
     public HeartReactionNotification(Feedback feedback) {
-        super(feedback.getReceiver());
+        super(feedback.getReceiver().getId());
         this.senderName = feedback.getSender().getName();
         this.teamName = feedback.getTeam().getName();
     }
