@@ -10,6 +10,9 @@ import MainCard2 from '../../components/MainCard2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import MainCard from './components/MainCard';
 import Notification from './components/Notification';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 export default function MainPage() {
   const [selectedTeamId, setSelectedTeamId] = useState(1);
@@ -21,6 +24,16 @@ export default function MainPage() {
 
   // TODO: 로딩 중 혹은 에러 발생 시 처리
 
+  const settings = {
+    dots: true,
+    arrows: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    centerMode: true,
+    centerPadding: '30px',
+  };
   return (
     <div className='flex w-full flex-col'>
       <StickyWrapper>
@@ -34,10 +47,14 @@ export default function MainPage() {
         )}
       </StickyWrapper>
       {notificationsData && (
-        <div className='flex w-screen -translate-x-5 justify-center overflow-x-auto overflow-y-hidden px-5 py-4'>
-          {notificationsData.map((notification, index) => (
-            <Notification type='NEW' />
-          ))}
+        <div className='flex w-screen -translate-x-5 py-4'>
+          <Slider {...settings} className='w-screen'>
+            {notificationsData.map((notification, index) => (
+              <div className='w-screen px-5'>
+                <Notification type='NEW' key={index} />
+              </div>
+            ))}
+          </Slider>
         </div>
       )}
       <div className='h-4' />
