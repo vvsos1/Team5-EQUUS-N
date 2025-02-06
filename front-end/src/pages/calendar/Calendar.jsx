@@ -19,6 +19,7 @@ export default function Calendar() {
   const [scheduleOnDate, setScheduleOnDate] = useState(exampleSchedules);
   const [scheduleSet, setScheduleSet] = useState(new Set());
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isScheduleAdded, setIsScheduleAdded] = useState(false);
 
   useEffect(() => {
     setScheduleSet(
@@ -116,7 +117,17 @@ export default function Calendar() {
           />
         </li>
       </ul>
-      <ScheduleAdd isOpen={isBottomSheetOpen} />
+      <ScheduleAdd
+        isOpen={isBottomSheetOpen}
+        selectedDate={selectedDate}
+        onClose={() => setIsBottomSheetOpen(false)}
+        onSubmit={(postSuccess) => {
+          setIsBottomSheetOpen(false);
+          if (postSuccess) {
+            // TODO: 일정 재조회
+          }
+        }}
+      />
     </div>
   );
 }

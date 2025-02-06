@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import {
   isValidComplexity,
   isValidEmail,
-  isValidLength,
+  isEnoughLength,
   isWithin10Bytes,
   checkSignUpInfos,
   isValidPassword,
@@ -68,7 +68,7 @@ export default function SignUp() {
         content={password}
         setContent={setPassword}
         isPassword={!isPasswordVisible}
-        condition={[isValidComplexity, isValidLength]}
+        condition={[isValidComplexity, isEnoughLength]}
         notification={['영문, 숫자, 특수 문자 포함', '8글자 이상']}
         addOn={
           <button onClick={() => setIsPasswordVisible(!isPasswordVisible)}>
