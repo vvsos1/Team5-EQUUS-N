@@ -65,19 +65,19 @@ export function getRecentSunday(date) {
 
 export function changeDayName(dayName) {
   let day = '';
-  if (dayName === 'Sun') {
+  if (dayName === 'Sun' || dayName === 0) {
     day = '일';
-  } else if (dayName === 'Mon') {
+  } else if (dayName === 'Mon' || dayName === 1) {
     day = '월';
-  } else if (dayName === 'Tue') {
+  } else if (dayName === 'Tue' || dayName === 2) {
     day = '화';
-  } else if (dayName === 'Wed') {
+  } else if (dayName === 'Wed' || dayName === 3) {
     day = '수';
-  } else if (dayName === 'Thu') {
+  } else if (dayName === 'Thu' || dayName === 4) {
     day = '목';
-  } else if (dayName === 'Fri') {
+  } else if (dayName === 'Fri' || dayName === 5) {
     day = '금';
-  } else if (dayName === 'Sat') {
+  } else if (dayName === 'Sat' || dayName === 6) {
     day = '토';
   }
   return day;
@@ -108,4 +108,15 @@ export function checkIsFinished(date) {
   } else {
     return false;
   }
+}
+
+export function timePickerToDate(date, time) {
+  const [hour, minute] = time.split(':').map(Number);
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    hour,
+    minute,
+  );
 }
