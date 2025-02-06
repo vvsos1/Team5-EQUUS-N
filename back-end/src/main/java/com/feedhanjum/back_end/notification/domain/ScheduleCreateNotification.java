@@ -1,5 +1,7 @@
 package com.feedhanjum.back_end.notification.domain;
 
+import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.schedule.domain.Schedule;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -17,4 +19,10 @@ public class ScheduleCreateNotification extends InAppNotification {
     private LocalDateTime scheduleDate;
     private Long teamId;
 
+    public ScheduleCreateNotification(Member receiver, Schedule schedule) {
+        super(receiver);
+        this.teamName = schedule.getTeam().getName();
+        this.scheduleDate = schedule.getStartTime().toLocalDate().atStartOfDay();
+        this.teamId = schedule.getTeam().getId();
+    }
 }

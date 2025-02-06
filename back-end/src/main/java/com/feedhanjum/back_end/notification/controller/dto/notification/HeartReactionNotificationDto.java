@@ -1,8 +1,12 @@
 package com.feedhanjum.back_end.notification.controller.dto.notification;
 
+import com.feedhanjum.back_end.notification.domain.HeartReactionNotification;
 import com.feedhanjum.back_end.notification.domain.NotificationType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Schema(description = "피드백 하트 반응 알림")
 @Getter
@@ -14,5 +18,21 @@ public class HeartReactionNotificationDto extends InAppNotificationDto {
     @Schema(description = "팀 이름")
     private String teamName;
 
+    @Builder
+    public HeartReactionNotificationDto(Long notificationId, Long receiverId, LocalDateTime createdAt, boolean isRead, String senderName, String teamName) {
+        super(notificationId, receiverId, createdAt, isRead);
+        this.senderName = senderName;
+        this.teamName = teamName;
+    }
 
+    public static HeartReactionNotificationDto from(HeartReactionNotification notification) {
+        return builder()
+                .notificationId(notification.getId())
+                .receiverId(notification.getReceiverId())
+                .createdAt(notification.getCreatedAt())
+                .isRead(notification.isRead())
+                .senderName(notification.getSenderName())
+                .teamName(notification.getTeamName())
+                .build();
+    }
 }

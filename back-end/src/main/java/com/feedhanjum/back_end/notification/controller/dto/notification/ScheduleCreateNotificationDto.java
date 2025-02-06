@@ -1,7 +1,9 @@
 package com.feedhanjum.back_end.notification.controller.dto.notification;
 
 import com.feedhanjum.back_end.notification.domain.NotificationType;
+import com.feedhanjum.back_end.notification.domain.ScheduleCreateNotification;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -17,4 +19,25 @@ public class ScheduleCreateNotificationDto extends InAppNotificationDto {
     private LocalDateTime scheduleDate;
     @Schema(description = "생성된 일정의 ID")
     private Long teamId;
+
+    @Builder
+    public ScheduleCreateNotificationDto(Long notificationId, Long receiverId, LocalDateTime createdAt, boolean isRead, String teamName, LocalDateTime scheduleDate, Long teamId) {
+        super(notificationId, receiverId, createdAt, isRead);
+        this.teamName = teamName;
+        this.scheduleDate = scheduleDate;
+        this.teamId = teamId;
+    }
+
+    public static ScheduleCreateNotificationDto from(ScheduleCreateNotification notification) {
+        return builder()
+                .notificationId(notification.getId())
+                .receiverId(notification.getReceiverId())
+                .createdAt(notification.getCreatedAt())
+                .isRead(notification.isRead())
+                .teamId(notification.getTeamId())
+                .teamName(notification.getTeamName())
+                .scheduleDate(notification.getScheduleDate())
+                .build();
+
+    }
 }
