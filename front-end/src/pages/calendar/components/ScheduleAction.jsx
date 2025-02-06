@@ -67,7 +67,9 @@ export default function ScheduleAction({
           {type === ScheduleActionType.ADD ? '일정 추가하기' : '일정 수정하기'}
         </h1>
         {type === ScheduleActionType.EDIT && (
-          <button onClick={() => showModal(<ScheduleDeleteModal />)}>
+          <button
+            onClick={() => showModal(<ScheduleDeleteModal onClose={onClose} />)}
+          >
             <Icon name='remove' className='absolute top-5 left-0 text-white' />
           </button>
         )}

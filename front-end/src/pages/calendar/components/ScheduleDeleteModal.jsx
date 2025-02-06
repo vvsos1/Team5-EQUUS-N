@@ -2,7 +2,7 @@ import MediumButton from '../../../components/buttons/MediumButton';
 import Modal, { ModalType } from '../../../components/modals/Modal';
 import { hideModal } from '../../../utility/handleModal';
 
-export default function ScheduleDeleteModal() {
+export default function ScheduleDeleteModal({ onClose }) {
   return (
     <Modal
       type={ModalType.DOUBLE}
