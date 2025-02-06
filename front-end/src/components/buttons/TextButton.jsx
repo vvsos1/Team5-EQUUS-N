@@ -18,9 +18,7 @@ export const TextButtonType = Object.freeze({
 export default function TextButton({ type, onClick, children }) {
   return (
     <button
-      className={`subtitle-2 flex w-full justify-between py-3 ${
-        type === TextButtonType.PLUS ? 'text-lime-500' : 'text-gray-300'
-      }`}
+      className='subtitle-2 flex w-full justify-between py-3 text-gray-300 transition hover:text-lime-500'
       onClick={onClick}
     >
       {children}

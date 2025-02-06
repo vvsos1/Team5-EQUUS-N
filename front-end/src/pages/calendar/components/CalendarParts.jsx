@@ -48,7 +48,7 @@ function CalenderDay({ dayIndex }) {
  * @returns {JSX.Element} - 날짜 컴포넌트
  */
 function CalendarDate({ date, isSelected, haveSchedule }) {
-  const today = new Date();
+  const today = new Date(new Date().setHours(0, 0, 0, 0));
   const isToday =
     today.toISOString().split('T')[0] === date.toISOString().split('T')[0];
   return (
@@ -78,7 +78,12 @@ function CalendarDate({ date, isSelected, haveSchedule }) {
  * @param {function} props.setSelectedDate - 선택된 날짜 설정 함수
  * @returns {JSX.Element} - 주 컴포넌트
  */
-export function CalendarWeek({ curSunday, selectedDate, setSelectedDate }) {
+export function CalendarWeek({
+  curSunday,
+  selectedDate,
+  setSelectedDate,
+  scheduleSet,
+}) {
   const dateList = getDateList(curSunday);
   return (
     <div className='min-w-full'>
@@ -89,14 +94,16 @@ export function CalendarWeek({ curSunday, selectedDate, setSelectedDate }) {
               key={index}
               className='flex flex-col gap-1'
               onClick={() => {
-                setSelectedDate(new Date(date.date));
+                setSelectedDate(new Date(date));
               }}
             >
               <CalenderDay dayIndex={index} />
               <CalendarDate
-                date={new Date(date.date)}
-                isSelected={date.date === selectedDate.valueOf()}
-                haveSchedule={date.haveSchedule}
+                date={new Date(date)}
+                isSelected={date === selectedDate.valueOf()}
+                haveSchedule={scheduleSet.has(
+                  new Date(date).toISOString().split('T')[0],
+                )}
                 setSelectedDate={setSelectedDate}
               />
             </div>
@@ -117,7 +124,7 @@ export function CalendarWeek({ curSunday, selectedDate, setSelectedDate }) {
 export function SelectedDateInfo({ date, isScrolling }) {
   const { weekDay, monthWeek, year } = getDateInfo(date);
   return (
-    <div className='flex h-[80px] items-center justify-between px-5'>
+    <div className='flex h-[80px] items-center justify-between'>
       <h1 className='text-[40px] font-semibold text-gray-100'>{`${weekDay}${isScrolling ? `, ${date.getDate().toString().padStart(2, '0')}` : ''}`}</h1>
       <div className='subtitle-2 flex flex-col text-end text-gray-200'>
         <p>{monthWeek}</p>
@@ -136,10 +143,9 @@ export function SelectedDateInfo({ date, isScrolling }) {
 function getDateList(curSunday) {
   const dateList = [];
   for (let i = 0; i < 7; i++) {
-    dateList.push({
-      date: new Date(curSunday).setDate(new Date(curSunday).getDate() + i),
-      haveSchedule: false,
-    });
+    dateList.push(
+      new Date(curSunday).setDate(new Date(curSunday).getDate() + i),
+    );
   }
   return dateList;
 }

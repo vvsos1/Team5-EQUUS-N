@@ -18,7 +18,7 @@ export default function LargeButton({
 }) {
   return (
     <button
-      disabled={disabled}
+      // disabled={disabled}
       className={classNames(
         'rounded-300 flex h-[56px] w-full items-center justify-center px-4 py-2 text-gray-300',
         isOutlined ?

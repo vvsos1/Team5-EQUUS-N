@@ -1,6 +1,7 @@
 import NavBar from './components/NavBar';
 import CustomInput from '../../components/CustomInput';
 import LargeButton from '../../components/buttons/LargeButton';
+import logo from '../../assets/images/logo.png';
 import Icon from '../../components/Icon';
 import { useState } from 'react';
 import { checkSignInInfos } from '../../utility/inputChecker';
@@ -17,7 +18,14 @@ export default function SignIn() {
 
   return (
     <div className='relative flex h-dvh w-full flex-col justify-start'>
-      <NavBar title='로그인' />
+      <NavBar
+        title={
+          <p className='flex items-center justify-between'>
+            로그인
+            <img src={logo} className='w-8' />
+          </p>
+        }
+      />
       <div className='h-2' />
       {/* 이메일 입력 */}
       <CustomInput
