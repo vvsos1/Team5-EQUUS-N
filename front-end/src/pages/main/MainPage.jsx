@@ -34,14 +34,11 @@ export default function MainPage() {
         )}
       </StickyWrapper>
       {notificationsData && (
-        <>
-          <div className='fixed top-19 left-0 flex w-screen justify-center px-5'>
-            {/* {notificationsData.map((notification, index) => (
-          ))} */}
+        <div className='flex w-screen -translate-x-5 justify-center overflow-x-auto overflow-y-hidden px-5 py-4'>
+          {notificationsData.map((notification, index) => (
             <Notification type='NEW' />
-          </div>
-          <div className='h-[182px]' />
-        </>
+          ))}
+        </div>
       )}
       <div className='h-4' />
       {recentScheduleData && <MainCard recentSchedule={recentScheduleData} />}
