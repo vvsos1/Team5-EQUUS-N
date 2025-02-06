@@ -11,6 +11,7 @@ import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.notification.controller.dto.notification.InAppNotificationDto;
 import com.feedhanjum.back_end.notification.domain.*;
+import com.feedhanjum.back_end.notification.event.FeedbackReceiveNotificationUnreadEvent;
 import com.feedhanjum.back_end.notification.event.InAppNotificationCreatedEvent;
 import com.feedhanjum.back_end.notification.repository.InAppNotificationQueryRepository;
 import com.feedhanjum.back_end.notification.repository.InAppNotificationRepository;
@@ -172,5 +173,22 @@ public class InAppNotificationService {
             inAppNotificationRepository.save(notification);
             eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
         }
+    }
+
+
+    @Transactional
+    public void createNotification(FeedbackReceiveNotificationUnreadEvent event) {
+        Long notificationId = event.notificationId();
+
+        InAppNotification feedbackReceiveNotification = inAppNotificationRepository.findById(notificationId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        if (!(feedbackReceiveNotification instanceof FeedbackReceiveNotification)) {
+            throw new RuntimeException("피드백 도착 알림이 아닙니다.");
+        }
+
+        InAppNotification notification = new UnreadFeedbackExistNotification((FeedbackReceiveNotification) feedbackReceiveNotification);
+        inAppNotificationRepository.save(notification);
+        eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
     }
 }
