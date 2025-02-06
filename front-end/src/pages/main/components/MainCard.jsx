@@ -127,21 +127,23 @@ function MainCardFrame({ children }) {
 }
 
 function getScheduleTimeDiff(recentSchedule) {
-  const today = new Date();
-  const startDay = new Date(recentSchedule.start);
-  const endDay = new Date(recentSchedule.end);
+  const todayTime = new Date();
+  const startTime = new Date(recentSchedule.startTime);
+  const endTime = new Date(recentSchedule.endTime);
 
-  if (Math.abs(startDay - today) < Math.abs(endDay - today)) {
+  console.log(todayTime, startTime, endTime);
+
+  if (Math.abs(startTime - todayTime) < Math.abs(endTime - todayTime)) {
     // 미래 일정인 경우, today를 자정으로 설정하여 계산
-    today.setHours(0, 0, 0, 0);
+    todayTime.setHours(0, 0, 0, 0);
 
-    const diffDay = Math.floor((startDay - today) / (1000 * 60 * 60 * 24));
+    const diffDay = Math.floor((startTime - todayTime) / (1000 * 60 * 60 * 24));
 
     if (diffDay === 0) return 'DAY';
     return diffDay;
   } else {
     // 과거 일정인 경우
-    return Math.ceil((endDay - today) / (1000 * 60 * 60 * 24));
+    return Math.ceil((endTime - todayTime) / (1000 * 60 * 60 * 24));
   }
 }
 
