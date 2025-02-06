@@ -1,4 +1,4 @@
-import { api } from './api';
+import { api } from './baseApi';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 /**

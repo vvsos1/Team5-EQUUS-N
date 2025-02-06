@@ -41,6 +41,7 @@ export default function App() {
             <Route path='main'>
               <Route index element={<MainPage />} />
               <Route path='notification' element={<div></div>} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
