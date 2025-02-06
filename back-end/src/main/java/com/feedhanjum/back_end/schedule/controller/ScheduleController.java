@@ -47,7 +47,7 @@ public class ScheduleController {
     @GetMapping("/schedules")
     public ResponseEntity<List<ScheduleNestedDto>> getScheduleBetweenDurations(
             @Login Long memberId,
-            @Valid @ModelAttribute ScheduleBetweenDurationRequest scheduleBetweenDurationRequest
+            @Valid ScheduleBetweenDurationRequest scheduleBetweenDurationRequest
     ){
         List<ScheduleNestedDto> scheduleDurations = scheduleService.getScheduleDurations(
                 memberId,
