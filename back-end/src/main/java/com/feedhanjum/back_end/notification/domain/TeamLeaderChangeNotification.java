@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.notification.domain;
 
+import com.feedhanjum.back_end.team.domain.Team;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -14,4 +15,9 @@ public class TeamLeaderChangeNotification extends InAppNotification {
     private String teamName;
     private Long teamId;
 
+    public TeamLeaderChangeNotification(Team team) {
+        super(team.getLeader());
+        this.teamName = team.getName();
+        this.teamId = team.getId();
+    }
 }

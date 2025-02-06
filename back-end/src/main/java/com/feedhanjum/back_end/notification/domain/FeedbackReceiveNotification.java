@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.notification.domain;
 
+import com.feedhanjum.back_end.feedback.domain.Feedback;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -15,5 +16,9 @@ public class FeedbackReceiveNotification extends InAppNotification {
     private String senderName;
     private String teamName;
 
-
+    public FeedbackReceiveNotification(Feedback receivedFeedback) {
+        super(receivedFeedback.getReceiver());
+        this.senderName = receivedFeedback.getSender().getName();
+        this.teamName = receivedFeedback.getTeam().getName();
+    }
 }

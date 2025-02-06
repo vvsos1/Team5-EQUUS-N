@@ -1,11 +1,28 @@
 package com.feedhanjum.back_end.notification.controller.dto.notification;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.feedhanjum.back_end.notification.domain.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = FeedbackReceiveNotificationDto.class, name = NotificationType.FEEDBACK_RECEIVE),
+        @JsonSubTypes.Type(value = FeedbackReportCreateNotificationDto.class, name = NotificationType.FEEDBACK_REPORT_CREATE),
+        @JsonSubTypes.Type(value = FrequentFeedbackRequestNotificationDto.class, name = NotificationType.FREQUENT_FEEDBACK_REQUEST),
+        @JsonSubTypes.Type(value = HeartReactionNotificationDto.class, name = NotificationType.HEART_REACTION),
+        @JsonSubTypes.Type(value = RegularFeedbackRequestNotificationDto.class, name = NotificationType.REGULAR_FEEDBACK_REQUEST),
+        @JsonSubTypes.Type(value = ScheduleCreateNotificationDto.class, name = NotificationType.SCHEDULE_CREATE),
+        @JsonSubTypes.Type(value = TeamLeaderChangeNotificationDto.class, name = NotificationType.TEAM_LEADER_CHANGE),
+        @JsonSubTypes.Type(value = UnreadFeedbackExistNotificationDto.class, name = NotificationType.UNREAD_FEEDBACK_EXIST)
+})
 @Schema(subTypes = {FeedbackReceiveNotificationDto.class, FeedbackReportCreateNotificationDto.class, FrequentFeedbackRequestNotificationDto.class, HeartReactionNotificationDto.class, RegularFeedbackRequestNotificationDto.class, ScheduleCreateNotificationDto.class, TeamLeaderChangeNotificationDto.class, UnreadFeedbackExistNotificationDto.class})
 @Getter
 public abstract class InAppNotificationDto {

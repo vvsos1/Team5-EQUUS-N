@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.notification.domain;
 
+import com.feedhanjum.back_end.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,7 +31,10 @@ public class InAppNotification {
     @Column(name = "type", nullable = false, updatable = false, insertable = false)
     protected String type;
 
-    protected InAppNotification(Long receiverId) {
-        this.receiverId = receiverId;
+    protected InAppNotification(Member receiver) {
+        this.id = null;
+        this.receiverId = receiver.getId();
+        this.createdAt = LocalDateTime.now();
+        this.isRead = false;
     }
 }
