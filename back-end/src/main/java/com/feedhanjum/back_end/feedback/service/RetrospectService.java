@@ -8,14 +8,14 @@ import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
+@RequiredArgsConstructor
 @Service
 public class RetrospectService {
     private static final int PAGE_SIZE = 10;
@@ -24,24 +24,15 @@ public class RetrospectService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
 
-    public RetrospectService(RetrospectRepository retrospectRepository, MemberRepository memberRepository, TeamRepository teamRepository) {
-        this.retrospectRepository = retrospectRepository;
-        this.memberRepository = memberRepository;
-        this.teamRepository = teamRepository;
-    }
-
     /**
      * @throws EntityNotFoundException writerId에 해당하는 Member가 없거나 teamId에 해당하는 Team이 없을 때
      */
     @Transactional
-    public Retrospect writeRetrospect(String content, Long writerId, Long teamId) {
-        Optional<Member> writer = memberRepository.findById(writerId);
-        Optional<Team> team = teamRepository.findById(teamId);
+    public Retrospect writeRetrospect(String title, String content, Long writerId, Long teamId) {
+        Member writer = memberRepository.findById(writerId).orElseThrow(() -> new EntityNotFoundException("writerId에 해당하는 Member가 없습니다."));
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new EntityNotFoundException("teamId에 해당하는 Team이 없습니다."));
 
-        writer.orElseThrow(() -> new EntityNotFoundException("writerId에 해당하는 Member가 없습니다."));
-        team.orElseThrow(() -> new EntityNotFoundException("teamId에 해당하는 Team이 없습니다."));
-
-        Retrospect retrospect = new Retrospect(content, writer.get(), team.get());
+        Retrospect retrospect = new Retrospect(title, content, writer, team);
         retrospectRepository.save(retrospect);
         return retrospect;
     }
