@@ -7,8 +7,9 @@ import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import LargeButton from '../../components/buttons/LargeButton';
 import Icon from '../../components/Icon';
 import { checkIsFinished, timeInPeriod } from '../../utility/time';
-import ScheduleAdd from './components/ScheduleAdd';
+import ScheduleAdd, { ScheduleActionType } from './components/ScheduleAction';
 import ScheduleEdit from './components/ScheduleEdit';
+import ScheduleAction from './components/ScheduleAction';
 
 export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(
@@ -19,8 +20,8 @@ export default function Calendar() {
   const scrollRef = useRef(null);
   const [scheduleOnDate, setScheduleOnDate] = useState(exampleSchedules);
   const [scheduleSet, setScheduleSet] = useState(new Set());
-  const [isAddingSchedule, setIsAddingSchedule] = useState(false);
-  const [isEditingSchedule, setIsEditingSchedule] = useState(false);
+  const [isDisplaying, setIsDisplaying] = useState(false);
+  const [actionType, setActionType] = useState(ScheduleActionType.ADD);
 
   useEffect(() => {
     setScheduleSet(
@@ -79,7 +80,7 @@ export default function Calendar() {
           selectedTeamId={selectedTeamId}
           teamList={exampleTeamList}
           onTeamClick={setSelectedTeamId}
-          canClose={!isAddingSchedule}
+          canClose={!isDisplaying}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
       </StickyWrapper>
@@ -98,7 +99,10 @@ export default function Calendar() {
                 schedule={schedule.schedule}
                 roles={schedule.roles}
                 isFinished={checkIsFinished(schedule.schedule.endTime)}
-                onClickEdit={() => setIsEditingSchedule(true)}
+                onClickEdit={() => {
+                  setActionType(ScheduleActionType.EDIT);
+                  setIsDisplaying(true);
+                }}
               />
             </li>
           );
@@ -112,30 +116,21 @@ export default function Calendar() {
               </p>
             }
             onClick={() => {
-              setIsAddingSchedule(true);
+              setActionType(ScheduleActionType.ADD);
+              setIsDisplaying(true);
             }}
             isOutlined={true}
             disabled={true}
           />
         </li>
       </ul>
-      <ScheduleAdd
-        isOpen={isAddingSchedule}
-        selectedDate={selectedDate}
-        onClose={() => setIsAddingSchedule(false)}
+      <ScheduleAction
+        type={actionType}
+        isOpen={isDisplaying}
+        selectedDateFromParent={selectedDate}
+        onClose={() => setIsDisplaying(false)}
         onSubmit={(postSuccess) => {
-          setIsAddingSchedule(false);
-          if (postSuccess) {
-            // TODO: 일정 재조회
-          }
-        }}
-      />
-      <ScheduleEdit
-        isOpen={isEditingSchedule}
-        selectedDate={selectedDate}
-        onClose={() => setIsEditingSchedule(false)}
-        onSubmit={(postSuccess) => {
-          setIsEditingSchedule(false);
+          setIsDisplaying(false);
           if (postSuccess) {
             // TODO: 일정 재조회
           }
