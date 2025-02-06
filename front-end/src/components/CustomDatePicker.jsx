@@ -1,26 +1,23 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
-import Icon from '../../../components/Icon';
-import { changeDayName } from '../../../utility/time';
+import Icon from './Icon';
+import { changeDayName } from '../utility/time';
+import CustomInput from './CustomInput';
 
 export default function CustomDatePicker({
+  dateFormat = 'MM/dd',
   date,
   setDate,
-  isStartTime = true,
+  customInput,
+  setIsPickerOpen = () => {},
 }) {
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
   return (
     <div className='relative w-full'>
       <DatePicker
-        dateFormat='MM/dd'
+        dateFormat={dateFormat}
         selected={date}
         onChange={(date) => setDate(date)}
-        customInput={
-          <DatePickerDropdown
-            isStartTime={isStartTime}
-            isPickerOpen={isPickerOpen}
-          />
-        }
+        customInput={customInput}
         onCalendarOpen={() => setIsPickerOpen(true)}
         onCalendarClose={() => setIsPickerOpen(false)}
         dayClassName={(d) => {
@@ -36,7 +33,7 @@ export default function CustomDatePicker({
   );
 }
 
-const DatePickerDropdown = forwardRef(function DatePickerDropdown(
+export const DatePickerDropdown = forwardRef(function DatePickerDropdown(
   { value, isStartTime, onClick, isPickerOpen },
   ref,
 ) {
@@ -53,6 +50,30 @@ const DatePickerDropdown = forwardRef(function DatePickerDropdown(
           className={`ml-0.5 transition ${isPickerOpen ? 'rotate-180' : ''}`}
         />
       </div>
+    </div>
+  );
+});
+
+export const DatePickerButton = forwardRef(function DatePickerButton(
+  { value, onClick },
+  ref,
+) {
+  let selectedDay = value.split(' ')[1];
+  selectedDay = changeDayName(selectedDay);
+  const output = value.split(' ')[0] + ' ' + selectedDay + '요일';
+  return (
+    <div ref={ref} onClick={onClick}>
+      <CustomInput
+        label={'날짜'}
+        content={output}
+        isOutlined={false}
+        bgColor='gray-700'
+        addOn={
+          <button onClick={onClick}>
+            <Icon name='calendar' />
+          </button>
+        }
+      />
     </div>
   );
 });
