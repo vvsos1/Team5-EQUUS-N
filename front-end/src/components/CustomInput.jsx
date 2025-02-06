@@ -31,6 +31,7 @@ const CustomInput = forwardRef(function CustomInput(
     isPassword,
     disabled = setContent ? false : true, // setContent가 없으면 비활성화
     isOutlined = true,
+    bgColor = 'gray-800',
   },
   ref,
 ) {
@@ -47,7 +48,7 @@ const CustomInput = forwardRef(function CustomInput(
             // 오른쪽 아이콘 있으면 입력 길이를 줄임
             addOn ? 'pr-14 pl-5' : 'px-5',
             // 테두리 여부
-            isOutlined ? 'border-gray-600' : 'border-none bg-gray-800',
+            isOutlined ? 'border-gray-600' : `border-none bg-${bgColor}`,
             // 포커스 시 스타일
             'placeholder:text-gray-500 focus:border-gray-300 focus:outline-none focus:placeholder:text-gray-400',
           )}
