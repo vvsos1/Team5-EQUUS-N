@@ -17,7 +17,7 @@ export const handlers = [
 
   // 메인 카드 조회
   http.get(`${BASE_URL}/recentSchedule/:teamId`, () => {
-    return HttpResponse.json(teams);
+    return HttpResponse.json(schedules[0]);
   }),
 
   // 팀 멤버 조회

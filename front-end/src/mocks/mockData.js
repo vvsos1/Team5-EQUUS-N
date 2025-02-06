@@ -25,14 +25,17 @@ export const schedules = [
     roles: [
       {
         memberId: 1,
+        name: '백현식',
         task: ['task 1', 'task 2', 'task 3'],
       },
       {
         memberId: 2,
+        name: '양준호',
         task: ['task 4', 'task 5', 'task 6'],
       },
       {
         memberId: 3,
+        name: '김민수',
         task: ['task 7', 'task 8'],
       },
     ],
