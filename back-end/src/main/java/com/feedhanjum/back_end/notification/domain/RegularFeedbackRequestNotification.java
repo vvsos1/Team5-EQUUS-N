@@ -1,7 +1,8 @@
 package com.feedhanjum.back_end.notification.domain;
 
 
-import com.feedhanjum.back_end.schedule.domain.RegularFeedbackRequest;
+import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.schedule.domain.Schedule;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -17,10 +18,10 @@ public class RegularFeedbackRequestNotification extends InAppNotification {
     private Long scheduleId;
     private Long teamId;
 
-    public RegularFeedbackRequestNotification(RegularFeedbackRequest request) {
-        super(request.getScheduleMember().getMember());
-        this.scheduleName = request.getScheduleMember().getSchedule().getName();
-        this.scheduleId = request.getScheduleMember().getSchedule().getId();
-        this.teamId = request.getScheduleMember().getSchedule().getTeam().getId();
+    public RegularFeedbackRequestNotification(Member receiver, Schedule schedule) {
+        super(receiver);
+        this.scheduleName = schedule.getName();
+        this.scheduleId = schedule.getId();
+        this.teamId = schedule.getTeam().getId();
     }
 }

@@ -1,11 +1,31 @@
 package com.feedhanjum.back_end.notification.service;
 
+import com.feedhanjum.back_end.event.EventPublisher;
+import com.feedhanjum.back_end.feedback.domain.Feedback;
+import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
+import com.feedhanjum.back_end.feedback.event.FeedbackReportCreatedEvent;
+import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
+import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
+import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.notification.controller.dto.notification.InAppNotificationDto;
-import com.feedhanjum.back_end.notification.domain.InAppNotification;
+import com.feedhanjum.back_end.notification.domain.*;
+import com.feedhanjum.back_end.notification.event.InAppNotificationCreatedEvent;
 import com.feedhanjum.back_end.notification.repository.InAppNotificationQueryRepository;
 import com.feedhanjum.back_end.notification.repository.InAppNotificationRepository;
+import com.feedhanjum.back_end.schedule.domain.Schedule;
+import com.feedhanjum.back_end.schedule.event.RegularFeedbackRequestCreatedEvent;
+import com.feedhanjum.back_end.schedule.event.ScheduleCreatedEvent;
+import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
+import com.feedhanjum.back_end.team.domain.FrequentFeedbackRequest;
+import com.feedhanjum.back_end.team.domain.Team;
+import com.feedhanjum.back_end.team.domain.TeamMember;
+import com.feedhanjum.back_end.team.event.FrequentFeedbackRequestCreatedEvent;
+import com.feedhanjum.back_end.team.event.TeamLeaderChangedEvent;
+import com.feedhanjum.back_end.team.repository.FrequentFeedbackRequestRepository;
+import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
+import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +39,12 @@ public class InAppNotificationService {
     private final InAppNotificationRepository inAppNotificationRepository;
     private final InAppNotificationQueryRepository inAppNotificationQueryRepository;
     private final MemberRepository memberRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final EventPublisher eventPublisher;
+    private final FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
+    private final FeedbackRepository feedbackRepository;
+    private final TeamRepository teamRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
 
     @Transactional(readOnly = true)
@@ -39,4 +65,112 @@ public class InAppNotificationService {
         }
     }
 
+    @Transactional
+    public void createNotification(FrequentFeedbackRequestCreatedEvent event) {
+        Long feedbackRequestId = event.frequentFeedbackRequestId();
+
+        FrequentFeedbackRequest request = frequentFeedbackRequestRepository.findById(feedbackRequestId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        InAppNotification notification = new FrequentFeedbackRequestNotification(request);
+        inAppNotificationRepository.save(notification);
+        eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
+    }
+
+    @Transactional
+    public void createNotification(RegularFeedbackRequestCreatedEvent event) {
+        Long receiverId = event.receiverId();
+        Long scheduleId = event.scheduleId();
+
+        Member receiver = memberRepository.findById(receiverId)
+                .orElseThrow(EntityNotFoundException::new);
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        InAppNotification notification = new RegularFeedbackRequestNotification(receiver, schedule);
+        inAppNotificationRepository.save(notification);
+        eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
+    }
+
+    @Transactional
+    public void createNotification(FeedbackLikedEvent event) {
+        Long feedbackId = event.feedbackId();
+
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        InAppNotification notification = new HeartReactionNotification(feedback);
+        inAppNotificationRepository.save(notification);
+        eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
+    }
+
+    @Transactional
+    public void createNotification(FrequentFeedbackCreatedEvent event) {
+        Long feedbackId = event.feedbackId();
+
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        InAppNotification notification = new FeedbackReceiveNotification(feedback);
+        inAppNotificationRepository.save(notification);
+        eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
+    }
+
+    @Transactional
+    public void createNotification(RegularFeedbackCreatedEvent event) {
+        Long feedbackId = event.feedbackId();
+
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        InAppNotification notification = new FeedbackReceiveNotification(feedback);
+        inAppNotificationRepository.save(notification);
+        eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
+    }
+
+    @Transactional
+    public void createNotification(FeedbackReportCreatedEvent event) {
+        Long receiverId = event.receiverId();
+        Long endedTeamId = event.endedTeamId();
+
+        Member receiver = memberRepository.findById(receiverId)
+                .orElseThrow(EntityNotFoundException::new);
+        Team team = null;
+        if (endedTeamId != null)
+            team = teamRepository.findById(endedTeamId)
+                    .orElseThrow(EntityNotFoundException::new);
+
+        InAppNotification notification = new FeedbackReportCreateNotification(receiver, team);
+        inAppNotificationRepository.save(notification);
+        eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
+    }
+
+    @Transactional
+    public void createNotification(TeamLeaderChangedEvent event) {
+        Long teamId = event.teamId();
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(EntityNotFoundException::new);
+
+
+        InAppNotification notification = new TeamLeaderChangeNotification(team);
+        inAppNotificationRepository.save(notification);
+        eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
+    }
+
+    @Transactional
+    public void createNotification(ScheduleCreatedEvent event) {
+        Long scheduleId = event.scheduleId();
+
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        List<TeamMember> teamMembers = teamMemberRepository.findByTeam(schedule.getTeam());
+        for (TeamMember teamMember : teamMembers) {
+            Member receiver = teamMember.getMember();
+            InAppNotification notification = new ScheduleCreateNotification(receiver, schedule);
+            inAppNotificationRepository.save(notification);
+            eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
+        }
+    }
 }
