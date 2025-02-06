@@ -41,13 +41,13 @@ public class ScheduleController {
                                                @PathVariable Long scheduleId
                                                ) {
         ScheduleNestedDto schedule = scheduleService.getSchedule(memberId, teamId, scheduleId);
-        return new ResponseEntity<>(schedule, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(schedule, HttpStatus.OK);
     }
 
     @GetMapping("/schedules")
     public ResponseEntity<List<ScheduleNestedDto>> getScheduleBetweenDurations(
             @Login Long memberId,
-            @Valid @RequestBody ScheduleBetweenDurationRequest scheduleBetweenDurationRequest
+            @Valid @ModelAttribute ScheduleBetweenDurationRequest scheduleBetweenDurationRequest
     ){
         List<ScheduleNestedDto> scheduleDurations = scheduleService.getScheduleDurations(
                 memberId,
