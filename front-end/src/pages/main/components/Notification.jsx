@@ -83,7 +83,7 @@ export default function Notification({ type, onClick, onClose, name, count }) {
       <button className='absolute top-4 right-4' onClick={onClose}>
         <Icon name='delete' color='var(--color-gray-500)' />
       </button>
-      <div className='absolute right-[50px] bottom-2 h-[30px] w-[88px] rounded-tl-[7px] rounded-tr-[7px] bg-gradient-to-b from-[#2a2a2a] from-60% to-transparent'>
+      <div className='absolute right-[14.6%] bottom-2 h-[30px] w-[24%] rounded-tl-[7px] rounded-tr-[7px] bg-gradient-to-b from-[#2a2a2a] from-60% to-transparent'>
         <p className='mt-1 text-center text-[10px] font-thin text-gray-100'>
           NEW
         </p>
