@@ -7,8 +7,7 @@ import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import LargeButton from '../../components/buttons/LargeButton';
 import Icon from '../../components/Icon';
 import { checkIsFinished, timeInPeriod } from '../../utility/time';
-import ScheduleAdd, { ScheduleActionType } from './components/ScheduleAction';
-import ScheduleEdit from './components/ScheduleEdit';
+import { ScheduleActionType } from './components/ScheduleAction';
 import ScheduleAction from './components/ScheduleAction';
 
 export default function Calendar() {
