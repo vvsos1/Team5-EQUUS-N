@@ -1,6 +1,7 @@
 import NavBar from './components/NavBar';
 import CustomInput from '../../components/CustomInput';
 import LargeButton from '../../components/buttons/LargeButton';
+import logo from '../../assets/images/logo.png';
 import Icon from '../../components/Icon';
 import Certification from '../../components/Certification';
 import { CertState } from '../../components/Certification';
@@ -11,6 +12,7 @@ import {
   isValidLength,
   isWithin10Bytes,
   checkSignUpInfos,
+  isValidPassword,
 } from '../../utility/inputChecker';
 import { showToast } from '../../utility/handleToast';
 
@@ -34,7 +36,14 @@ export default function SignUp() {
 
   return (
     <div className='relative flex h-screen w-full flex-col justify-start'>
-      <NavBar title='계정 만들기' />
+      <NavBar
+        title={
+          <p className='flex items-center justify-between'>
+            계정 만들기
+            <img src={logo} className='w-8' />
+          </p>
+        }
+      />
       <div className='h-2' />
       {/* 이메일 입력 */}
       <CustomInput
@@ -113,12 +122,23 @@ export default function SignUp() {
           text='다음'
           isOutlined={false}
           disabled={
-            checkSignUpInfos(certState, password, passwordConfirm, nickName) ===
-            false
+            certState !== CertState.AFTER_CHECK_CODE ||
+            !isValidPassword(password) ||
+            passwordConfirm !== password ||
+            nickName.length === 0
           }
           onClick={() => {
-            // TODO: 회원가입 요청 절차
-            showToast('회원가입 요청 완료');
+            if (
+              checkSignUpInfos(
+                certState,
+                password,
+                passwordConfirm,
+                nickName,
+              ) === true
+            ) {
+              // TODO: 회원가입 요청 절차
+              showToast('회원가입 요청 완료');
+            }
           }}
         />
       </div>
