@@ -35,6 +35,15 @@ public class ScheduleController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/team/{teamId}/schedule/{scheduleId}")
+    public ResponseEntity<ScheduleNestedDto> getSchedule(@Login Long memberId,
+                                               @PathVariable Long teamId,
+                                               @PathVariable Long scheduleId
+                                               ) {
+        ScheduleNestedDto schedule = scheduleService.getSchedule(memberId, teamId, scheduleId);
+        return new ResponseEntity<>(schedule, HttpStatus.NO_CONTENT);
+    }
+
     @GetMapping("/schedules")
     public ResponseEntity<List<ScheduleNestedDto>> getScheduleBetweenDurations(
             @Login Long memberId,
