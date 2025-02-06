@@ -100,7 +100,7 @@ export default function Calendar() {
         <li className='mb-5'>
           <LargeButton
             text={
-              <p className='flex items-center gap-2'>
+              <p className='button-1 flex items-center gap-2 text-gray-300'>
                 <Icon name='plusS' />
                 새로운 일정 추가
               </p>

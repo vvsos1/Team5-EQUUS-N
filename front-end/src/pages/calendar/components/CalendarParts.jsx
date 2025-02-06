@@ -48,7 +48,7 @@ function CalenderDay({ dayIndex }) {
  * @returns {JSX.Element} - 날짜 컴포넌트
  */
 function CalendarDate({ date, isSelected, haveSchedule }) {
-  const today = new Date();
+  const today = new Date(new Date().setHours(0, 0, 0, 0));
   const isToday =
     today.toISOString().split('T')[0] === date.toISOString().split('T')[0];
   return (
@@ -85,7 +85,6 @@ export function CalendarWeek({
   scheduleSet,
 }) {
   const dateList = getDateList(curSunday);
-  console.log(scheduleSet);
   return (
     <div className='min-w-full'>
       <div className='grid w-full grid-cols-7 gap-4'>
@@ -95,7 +94,7 @@ export function CalendarWeek({
               key={index}
               className='flex flex-col gap-1'
               onClick={() => {
-                setSelectedDate(new Date(new Date(date).setHours(0, 0, 0, 0)));
+                setSelectedDate(new Date(date));
               }}
             >
               <CalenderDay dayIndex={index} />

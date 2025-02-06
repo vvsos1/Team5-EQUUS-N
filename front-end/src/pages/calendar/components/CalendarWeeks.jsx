@@ -20,6 +20,7 @@ export default function CalendarWeeks({
   const startX = useRef(0);
   const scrollLeft = useRef(0);
   const containerRef = useRef(null);
+  const dragSensitivity = 1.7;
 
   // 현재 주를 가운데에 배치
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function CalendarWeeks({
     if (!isDragging) return;
     const x =
       (e.clientX || e.touches[0].clientX) - containerRef.current.offsetLeft;
-    const walk = (x - startX.current) * 2;
+    const walk = (x - startX.current) * dragSensitivity;
     containerRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
