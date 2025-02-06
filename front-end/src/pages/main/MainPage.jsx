@@ -27,16 +27,15 @@ export default function MainPage() {
   const settings = {
     dots: true,
     arrows: false,
-    infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     centerMode: true,
-    centerPadding: '30px',
+    centerPadding: '14px',
   };
   return (
     <div className='flex w-full flex-col'>
-      <StickyWrapper>
+      <StickyWrapper className='px-5'>
         {teamsData && (
           <Accordion
             isMainPage={false}
@@ -47,20 +46,20 @@ export default function MainPage() {
         )}
       </StickyWrapper>
       {notificationsData && (
-        <div className='flex w-screen -translate-x-5 py-4'>
-          <Slider {...settings} className='w-screen'>
-            {notificationsData.map((notification, index) => (
-              <div className='w-screen px-5'>
-                <Notification type='NEW' key={index} />
-              </div>
-            ))}
-          </Slider>
-        </div>
+        <Slider {...settings} className='my-4'>
+          {notificationsData.map((_, index) => (
+            <div className='px-[6px]'>
+              <Notification type='NEW' key={index} />
+            </div>
+          ))}
+        </Slider>
       )}
       <div className='h-4' />
-      {recentScheduleData && <MainCard recentSchedule={recentScheduleData} />}
+      {recentScheduleData && (
+        <MainCard recentSchedule={recentScheduleData} className='' />
+      )}
       <div className='h-8' />
-      {matesData && <MainCard2 teamMates={matesData} />}
+      {matesData && <MainCard2 teamMates={matesData} className='' />}
     </div>
   );
 }

@@ -120,7 +120,7 @@ export default function MainCard({
 
 function MainCardFrame({ children }) {
   return (
-    <div className='rounded-400 relative flex flex-col bg-gray-800 p-4'>
+    <div className={`rounded-400 relative mx-5 flex flex-col bg-gray-800 p-4`}>
       {children}
     </div>
   );
