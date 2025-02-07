@@ -46,6 +46,9 @@ public class AuthControllerAdvice {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    /**
+     * 회원가입 토큰 검증이 실패한 경우
+     */
     @ExceptionHandler(SignupTokenNotValidException.class)
     public ResponseEntity<Map<String, String>> signupTokenNotValid(SignupTokenNotValidException e) {
         Map<String, String> errorResponse = new HashMap<>();
@@ -53,6 +56,9 @@ public class AuthControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * 회원가입 토큰 인증을 하지 않고 회원가입을 시도한 경우
+     */
     @ExceptionHandler(SignupTokenVerifyRequiredException.class)
     public ResponseEntity<Map<String, String>> signupTokenNotValid(SignupTokenVerifyRequiredException e) {
         Map<String, String> errorResponse = new HashMap<>();
@@ -60,6 +66,9 @@ public class AuthControllerAdvice {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    /**
+     * 비밀번호 초기화 토큰 검증에 실패한 경우
+     */
     @ExceptionHandler(PasswordResetTokenNotValidException.class)
     public ResponseEntity<Map<String, String>> passwordTokenNotValid(PasswordResetTokenNotValidException e) {
         Map<String, String> errorResponse = new HashMap<>();
@@ -67,6 +76,9 @@ public class AuthControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * 비밀번호 초기화 토큰 인증을 하지 않고 비밀번호 초기화를 시도한 경우
+     */
     @ExceptionHandler(PasswordResetTokenVerifyRequiredException.class)
     public ResponseEntity<Map<String, String>> passwordTokenNotValid(PasswordResetTokenVerifyRequiredException e) {
         Map<String, String> errorResponse = new HashMap<>();
