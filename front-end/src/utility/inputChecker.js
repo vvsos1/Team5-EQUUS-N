@@ -118,6 +118,7 @@ export const checkSignInInfos = (email, password) => {
     showToast('이메일 형식이 올바르지 않습니다');
     return false;
   } else if (!isValidPassword(password)) {
+    showToast('비밀번호가 틀렸습니다');
     return false;
   }
   return true;
