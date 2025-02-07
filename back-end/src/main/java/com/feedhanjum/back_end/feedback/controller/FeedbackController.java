@@ -12,6 +12,7 @@ import com.feedhanjum.back_end.feedback.service.FeedbackService;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -139,7 +140,7 @@ public class FeedbackController {
     @Operation(summary = "보낸 피드백 조회하기", description = "받은 피드백을 조회힙니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "보낸 피드백 조회 성공", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우")
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우", content = @Content)
     })
     @GetMapping("/feedbacks/sender/{senderId}")
     public ResponseEntity<Paged<SentFeedbackDto>> getSentFeedbacks(@Login Long loginId,
@@ -155,7 +156,7 @@ public class FeedbackController {
     @Operation(summary = "받은 피드백 조회하기", description = "받은 피드백을 조회힙니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "보낸 피드백 조회 성공", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우")
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우",content = @Content)
     })
     @GetMapping("/feedbacks/receiver/{receiverId}")
     public ResponseEntity<Paged<ReceivedFeedbackDto>> getReceivedFeedbacks(@Login Long loginId,
