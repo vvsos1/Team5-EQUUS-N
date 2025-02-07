@@ -15,9 +15,6 @@ public class AuthControllerAdvice {
 
     /**
      * 이메일이 존재하는 경우
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> emailAlreadyExists(EmailAlreadyExistsException e) {
@@ -29,9 +26,6 @@ public class AuthControllerAdvice {
 
     /**
      * 아이디 혹은 비밀번호가 일치하지 않아, 자격 증명에 실패했을 경우
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<Map<String, String>> invalidCredentials(InvalidCredentialsException e) {
@@ -43,9 +37,6 @@ public class AuthControllerAdvice {
 
     /**
      * 사용자가 로그인 상태가 아닐 경우
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(LoginStateRequiredException.class)
     public ResponseEntity<Map<String, String>> loginStateRequired(LoginStateRequiredException e) {
@@ -74,5 +65,12 @@ public class AuthControllerAdvice {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "PASSWORD_RESET_TOKEN_NOT_VALID");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(PasswordResetTokenVerifyRequiredException.class)
+    public ResponseEntity<Map<String, String>> passwordTokenNotValid(PasswordResetTokenVerifyRequiredException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "PASSWORD_RESET_TOKEN_VERIFY_REQUIRED");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 }
