@@ -23,7 +23,8 @@ export default function MainPage() {
   const { data: teamsData } = useMyTeams();
   const { data: recentScheduleData } = useMainCard(selectedTeamId);
   const { data: matesData } = useMainCard2(selectedTeamId);
-  const { data: notificationsData, markAsRead } = useNotification();
+  const { data: notificationsData, markAsRead } =
+    useNotification(selectedTeamId);
 
   // TODO: 로딩 중 혹은 에러 발생 시 처리
 

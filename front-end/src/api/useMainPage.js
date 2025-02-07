@@ -17,7 +17,7 @@ export const useMyTeams = () => {
  */
 export const useMainCard = (teamId) => {
   return useQuery({
-    queryKey: ['mainCard'],
+    queryKey: ['mainCard', teamId],
     queryFn: () => api.get(`/recentSchedule/${teamId}`), // 임시
   });
 };
@@ -36,11 +36,11 @@ export const useMainCard2 = (teamId) => {
 /**
  * 사용자의 알람 데이터를 가져오고, 알람을 읽음으로 표시하는 훅
  */
-export const useNotification = () => {
+export const useNotification = (teamId) => {
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['notification'],
+    queryKey: ['notification', teamId],
     queryFn: () => api.get('/api/notification'),
   });
 
