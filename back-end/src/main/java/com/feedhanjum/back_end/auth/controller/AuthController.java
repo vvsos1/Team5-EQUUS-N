@@ -136,8 +136,8 @@ public class AuthController {
 
     @Operation(summary = "비밀번호 초기화 이메일 토큰 인증")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "비밀번호 초기화 토큰 발송 성공. 세션에 해당 내역 저장"),
-            @ApiResponse(responseCode = "400", description = "비밀번호 초기화 토큰 발송 실패")
+            @ApiResponse(responseCode = "204", description = "비밀번호 초기화 토큰 인증 성공. 세션에 해당 내역 저장"),
+            @ApiResponse(responseCode = "400", description = "비밀번호 초기화 토큰 인증 실패")
     })
     @PostMapping("/verify-password-reset-token")
     public ResponseEntity<Void> verifyPasswordResetToken(HttpSession session, @Valid @RequestBody PasswordResetEmailVerifyRequest request) {
