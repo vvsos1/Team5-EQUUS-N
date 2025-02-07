@@ -12,7 +12,7 @@ import { ProfileImageWithText } from './ProfileImage';
  */
 export default function MainCard2({ teamMates }) {
   return (
-    <div className='rounded-400 h-fit w-full bg-gray-800 p-4'>
+    <div className={'rounded-400 mx-5 h-fit bg-gray-800 p-4'}>
       <p className='pl-1 text-gray-100'>피드백 주고받기</p>
       <div className='mx-2 my-5 grid grid-cols-4 gap-x-4 gap-y-4'>
         {teamMates.map((mate, index) => {
@@ -34,26 +34,3 @@ export default function MainCard2({ teamMates }) {
     </div>
   );
 }
-
-// const teamMates = [
-//   {
-//     name: '한준호',
-//     iconName: 'Panda',
-//     color: '#90C18A',
-//   },
-//   {
-//     name: '박명규',
-//     iconName: 'Penguin',
-//     color: '#AFD1DC',
-//   },
-//   {
-//     name: '백현식',
-//     iconName: 'Whale',
-//     color: '#F28796',
-//   },
-//   {
-//     name: '임세준',
-//     iconName: 'Rooster',
-//     color: '#62BFCA',
-//   },
-// ];
