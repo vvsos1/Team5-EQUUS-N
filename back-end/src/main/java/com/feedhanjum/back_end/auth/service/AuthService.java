@@ -1,9 +1,12 @@
 package com.feedhanjum.back_end.auth.service;
 
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
+import com.feedhanjum.back_end.auth.domain.PasswordResetToken;
 import com.feedhanjum.back_end.auth.domain.SignupToken;
 import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
 import com.feedhanjum.back_end.auth.exception.InvalidCredentialsException;
+import com.feedhanjum.back_end.auth.exception.PasswordResetTokenNotValidException;
+import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
 import com.feedhanjum.back_end.auth.passwordencoder.PasswordEncoder;
 import com.feedhanjum.back_end.auth.repository.MemberDetailsRepository;
 import com.feedhanjum.back_end.member.domain.Member;
@@ -80,8 +83,31 @@ public class AuthService {
         return token;
     }
 
-
+    /**
+     * @throws SignupTokenNotValidException 토큰 검증 실패
+     */
     public void validateSignupToken(SignupToken existToken, String email, String token) {
+        existToken.validateToken(email, token);
+    }
+
+
+    public PasswordResetToken sendPasswordResetEmail(String email) {
+        PasswordResetToken token = PasswordResetToken.generateNewToken(email);
+        emailService.sendMail(
+                email,
+                "피드한줌 비밀번호 초기화 이메일",
+                "비밀번호 초기화를 위한 이메일입니다. 아래의 코드를 비밀번호 초기화 창에 입력해주세요 " +
+                token.getCode() +
+                " 유효기간은 " + PasswordResetToken.EXPIRE_MINUTE + "분입니다"
+        );
+        return token;
+    }
+
+
+    /**
+     * @throws PasswordResetTokenNotValidException 토큰 검증 실패
+     */
+    public void validatePasswordResetToken(PasswordResetToken existToken, String email, String token) {
         existToken.validateToken(email, token);
     }
 

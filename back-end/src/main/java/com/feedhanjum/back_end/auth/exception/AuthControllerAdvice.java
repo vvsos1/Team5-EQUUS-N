@@ -68,4 +68,11 @@ public class AuthControllerAdvice {
         errorResponse.put("error", "SIGNUP_TOKEN_VERIFY_REQUIRED");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
+
+    @ExceptionHandler(PasswordResetTokenNotValidException.class)
+    public ResponseEntity<Map<String, String>> passwordTokenNotValid(PasswordResetTokenNotValidException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "PASSWORD_RESET_TOKEN_NOT_VALID");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 }
