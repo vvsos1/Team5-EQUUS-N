@@ -1,6 +1,5 @@
 package com.feedhanjum.back_end.auth.exception;
 
-import com.feedhanjum.back_end.auth.controller.AuthController;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Order(1)
-@RestControllerAdvice(basePackageClasses = AuthController.class)
+@RestControllerAdvice
 public class AuthControllerAdvice {
 
     /**
