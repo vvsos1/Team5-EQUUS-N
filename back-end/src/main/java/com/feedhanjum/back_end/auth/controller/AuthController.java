@@ -3,7 +3,9 @@ package com.feedhanjum.back_end.auth.controller;
 import com.feedhanjum.back_end.auth.controller.dto.*;
 import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
+import com.feedhanjum.back_end.auth.domain.PasswordResetToken;
 import com.feedhanjum.back_end.auth.domain.SignupToken;
+import com.feedhanjum.back_end.auth.exception.PasswordResetTokenNotValidException;
 import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
 import com.feedhanjum.back_end.auth.exception.SignupTokenVerifyRequiredException;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
@@ -55,6 +57,7 @@ public class AuthController {
 
         MemberDetails savedMember = authService.registerMember(member, name, profileImage);
 
+        session.removeAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL);
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -111,27 +114,40 @@ public class AuthController {
         }
         authService.validateSignupToken(signupToken, request.email(), request.code());
         session.setAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL, signupToken.getEmail());
+        session.removeAttribute(SessionConst.SIGNUP_TOKEN);
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "비밀번호 초가화 이메일 토큰 발송")
+    @Operation(summary = "비밀번호 초기화 이메일 토큰 발송")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "비밀번호 초기화 토큰 발송 성공. 이메일이 존재하지 않아도 보안상 발송 성공처리"),
+            @ApiResponse(responseCode = "200", description = "비밀번호 초기화 토큰 발송 성공. 이메일이 존재하지 않아도 보안상 발송 성공처리"),
             @ApiResponse(responseCode = "429", description = "이메일 발송 지연으로 인해 실패", content = @Content)
 
     })
     @PostMapping(value = "/send-password-reset-email", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PasswordResetEmailSendResponse> sendPasswordResetEmail(@Valid @RequestBody PasswordResetEmailSendRequest request) {
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<PasswordResetEmailSendResponse> sendPasswordResetEmail(
+            HttpSession session,
+            @Valid @RequestBody PasswordResetEmailSendRequest request) {
+        PasswordResetToken passwordResetToken = authService.sendPasswordResetEmail(request.email());
+        session.setAttribute(SessionConst.PASSWORD_RESET_TOKEN, passwordResetToken);
+        PasswordResetEmailSendResponse passwordResetEmailSendResponse = new PasswordResetEmailSendResponse(passwordResetToken.getExpireDate());
+        return ResponseEntity.ok(passwordResetEmailSendResponse);
     }
 
-    @Operation(summary = "비밀번호 초가화 이메일 토큰 인증")
+    @Operation(summary = "비밀번호 초기화 이메일 토큰 인증")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "비밀번호 초기화 토큰 발송 성공. 세션에 해당 내역 저장"),
             @ApiResponse(responseCode = "400", description = "비밀번호 초기화 토큰 발송 실패")
     })
     @PostMapping("/verify-password-reset-token")
-    public ResponseEntity<Void> verifyPasswordResetToken(@Valid @RequestBody PasswordResetEmailVerifyRequest request) {
+    public ResponseEntity<Void> verifyPasswordResetToken(HttpSession session, @Valid @RequestBody PasswordResetEmailVerifyRequest request) {
+        Object token = session.getAttribute(SessionConst.PASSWORD_RESET_TOKEN);
+        if (!(token instanceof PasswordResetToken passwordResetToken)) {
+            throw new PasswordResetTokenNotValidException();
+        }
+        authService.validatePasswordResetToken(passwordResetToken, request.email(), request.code());
+        session.setAttribute(SessionConst.PASSWORD_RESET_TOKEN_VERIFIED_EMAIL, passwordResetToken.getEmail());
+        session.removeAttribute(SessionConst.PASSWORD_RESET_TOKEN);
         return ResponseEntity.noContent().build();
     }
 
