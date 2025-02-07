@@ -186,6 +186,10 @@ public class InAppNotificationService {
         if (!(feedbackReceiveNotification instanceof FeedbackReceiveNotification)) {
             throw new RuntimeException("피드백 도착 알림이 아닙니다.");
         }
+        // TODO: FeedbackReceiveNotificationUnreadEvent를 생성시키는 배치 작업에서는 receiver별로 안읽은지 24시간이 지난 feedbackReceive 알림이 여러개 있다면 가장 최신의 것만 이벤트로 발행해야 함
+        // 기존에 존재하던 24시간 지난 '피드백 도착' 알림은 삭제
+        inAppNotificationRepository.removeAllByReceiverIdAndTypeAndIdLessThanEqual(feedbackReceiveNotification.getReceiverId(),
+                NotificationType.FEEDBACK_RECEIVE, feedbackReceiveNotification.getId());
 
         InAppNotification notification = new UnreadFeedbackExistNotification((FeedbackReceiveNotification) feedbackReceiveNotification);
         inAppNotificationRepository.save(notification);
