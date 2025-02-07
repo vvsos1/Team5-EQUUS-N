@@ -6,6 +6,7 @@ import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
+import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final MemberQueryRepository memberQueryRepository;
+    private final TeamRepository teamRepository;
 
     /**
      * @throws EntityNotFoundException 찾으려는 해당 사용자가 없는 경우
@@ -31,16 +33,10 @@ public class MemberService {
     }
 
     @Transactional
-    public Member changeName(Long memberId, String name) {
+    public Member changeProfile(Long memberId, String name, ProfileImage profileImage) {
         // 이거 이럴 일이 없겠지만, 동시성 문제 발생할지 모르니 혹시 몰라서 남겨둡니다.
         Member loginMember = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("DB 오류"));
         loginMember.changeName(name);
-        return loginMember;
-    }
-
-    @Transactional
-    public Member changeProfileImage(Long memberId, ProfileImage profileImage) {
-        Member loginMember = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("DB 오류"));
         loginMember.changeProfile(profileImage);
         return loginMember;
     }
@@ -50,6 +46,8 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public List<Member> getMembersByTeam(Long memberId, Long teamId) {
+        memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
+        teamRepository.findById(teamId).orElseThrow(()-> new EntityNotFoundException("해당 팀을 찾을 수 없습니다."));
         if (teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId).isEmpty())
             throw new TeamMembershipNotFoundException("속해있는 팀에 대한 정보만 접근 가능합니다.");
         return memberQueryRepository.findMembersByTeamId(teamId);
