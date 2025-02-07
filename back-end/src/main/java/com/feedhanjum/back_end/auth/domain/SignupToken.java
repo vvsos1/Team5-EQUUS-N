@@ -10,7 +10,7 @@ import java.util.Random;
 @Getter
 public class SignupToken {
     public static final int TOKEN_LENGTH = 4;
-    public static final int EXPIRE_MINUTE = 10;
+    public static final int EXPIRE_MINUTE = 5;
     private final String email;
     private final String code;
     private final LocalDateTime expireDate;
