@@ -11,6 +11,9 @@ import com.feedhanjum.back_end.schedule.exception.ScheduleMembershipNotFoundExce
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleQueryRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
+import com.feedhanjum.back_end.schedule.repository.dto.ScheduleProjectionDto;
+import com.feedhanjum.back_end.schedule.service.dto.ScheduleMemberNestedDto;
+import com.feedhanjum.back_end.schedule.service.dto.ScheduleNestedDto;
 import com.feedhanjum.back_end.schedule.service.dto.ScheduleRequestDto;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
@@ -23,7 +26,13 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -91,8 +100,81 @@ public class ScheduleService {
         scheduleMember.setTodos(requestDto.todos());
     }
 
+    @Transactional(readOnly = true)
+    public ScheduleNestedDto getSchedule(Long memberId, Long teamId, Long scheduleId) {
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
+        memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
+        teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId).orElseThrow(() -> new TeamMembershipNotFoundException("해당 팀에 속해있지 않습니다."));
+
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("해당 일정을 찾을 수 없습니다."));
+        if (!schedule.getTeam().equals(team)) {
+            throw new TeamMembershipNotFoundException("해당 팀에 속해있지 않습니다.");
+        }
+        List<ScheduleProjectionDto> scheduleTodoList = scheduleQueryRepository.findScheduleTodoList(scheduleId, null);
+
+        return getScheduleNestedDtos(scheduleTodoList).stream().findFirst().orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScheduleNestedDto> getScheduleDurations(Long memberId, Long teamId, LocalDate startDay, LocalDate endDay) {
+        memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
+        if (teamId != null) {
+            memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
+            teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId).orElseThrow(() -> new TeamMembershipNotFoundException("해당 팀에 속해있지 않습니다."));
+        }
+        if(startDay.isAfter(endDay)){
+            throw new IllegalArgumentException("시작 날짜는 종료 날짜 이전이어야 합니다.");
+        }
+        LocalDateTime startTime = startDay.atStartOfDay();
+        LocalDateTime endTime = endDay.atTime(LocalTime.MAX);
+        List<ScheduleProjectionDto> schedulesByTeamIdAndDuration = scheduleQueryRepository.findSchedulesByTeamIdAndDuration(memberId, teamId, startTime, endTime);
+
+        return getScheduleNestedDtos(schedulesByTeamIdAndDuration);
+    }
+
+    @Transactional(readOnly = true)
+    public ScheduleNestedDto getNearestSchedule(Long memberId, Long teamId) {
+        validateTeamMember(memberId, teamId);
+
+        LocalDateTime now = LocalDateTime.now(clock);
+
+        ScheduleNestedDto nextSchedule = getScheduleNestedDtos(scheduleQueryRepository.findScheduleByClosestNextStartTime(teamId, now))
+                .stream().findFirst().orElse(null);
+        ScheduleNestedDto previousSchedule = getScheduleNestedDtos(scheduleQueryRepository.findScheduleByClosestPreviousEndTime(teamId, now))
+                .stream().findFirst().orElse(null);
+        if (nextSchedule != null && nextSchedule.getStartTime().isBefore(now.plusDays(1)))
+            return nextSchedule;
+        if (previousSchedule != null && previousSchedule.getEndTime().isAfter(now.minusDays(1))) {
+            return previousSchedule;
+        }
+        return nextSchedule;
+    }
+
+    private List<ScheduleNestedDto> getScheduleNestedDtos(List<ScheduleProjectionDto> schedules) {
+        Map<Long, ScheduleNestedDto> scheduleNestedDtoMap = new HashMap<>();
+        Map<Long, ScheduleMemberNestedDto> scheduleMemberNestedDtoMap = new HashMap<>();
+
+        for (ScheduleProjectionDto dto : schedules) {
+            Long scheduleId = dto.getScheduleId();
+            Long scheduleMemberId = dto.getScheduleMemberId();
+
+            ScheduleNestedDto scheduleNestedDto = scheduleNestedDtoMap.computeIfAbsent(scheduleId, id -> new ScheduleNestedDto(dto));
+            ScheduleMemberNestedDto scheduleMemberNestedDto = scheduleMemberNestedDtoMap.computeIfAbsent(scheduleMemberId, id -> new ScheduleMemberNestedDto(dto));
+
+            scheduleNestedDto.addScheduleMemberNestedDto(scheduleMemberNestedDto);
+            scheduleMemberNestedDto.addTodo(dto.getTodo());
+        }
+        return new ArrayList<>(scheduleNestedDtoMap.values());
+    }
+
+    private void validateTeamMember(Long memberId, Long teamId) {
+        teamRepository.findById(teamId).orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
+        memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
+        teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId).orElseThrow(() -> new TeamMembershipNotFoundException("해당 팀에 속해있지 않습니다."));
+    }
+
     private void validateIsEnded(Schedule schedule) {
-        if (schedule.getEndTime().isBefore(LocalDateTime.now(clock))){
+        if (schedule.getEndTime().isBefore(LocalDateTime.now(clock))) {
             throw new ScheduleIsAlreadyEndException("해당 일정은 이미 종료되었습니다.");
         }
     }
@@ -123,20 +205,17 @@ public class ScheduleService {
 
 
     private void validateEndTimeIsAfterNow(LocalDateTime endTime) {
-        if (LocalDateTime.now(clock).isAfter(endTime)){
+        if (LocalDateTime.now(clock).isAfter(endTime)) {
             throw new IllegalArgumentException("일정의 종료 시점은 현재보다 미래여야 합니다.");
         }
     }
 
     private void validateScheduleTimeIntoTeamTime(ScheduleRequestDto requestDto, Team team) {
-        if (team.getStartDate().isAfter(requestDto.startTime().toLocalDate())
-                || team.getEndDate().isEqual(requestDto.endTime().toLocalDate())
-        ) {
+        if (team.getStartDate().isAfter(requestDto.startTime().toLocalDate())) {
             throw new IllegalArgumentException("일정 시작 시간이 팀의 시작 시간 이후여야 합니다.");
         }
-        if (team.getEndDate() != null
-                && (team.getEndDate().isBefore(requestDto.endTime().toLocalDate())
-                || team.getEndDate().isEqual(requestDto.endTime().toLocalDate()))) {
+        if (team.getEndDate() != null &&
+                team.getEndDate().isBefore(requestDto.endTime().toLocalDate())) {
             throw new IllegalArgumentException("일정 종료 시간이 팀의 종료 시간 이전이어야 합니다.");
         }
     }

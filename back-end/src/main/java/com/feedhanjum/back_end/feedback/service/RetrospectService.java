@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.feedback.service;
 
 import com.feedhanjum.back_end.feedback.domain.Retrospect;
+import com.feedhanjum.back_end.feedback.repository.RetrospectQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.RetrospectRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -8,40 +9,31 @@ import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
+@RequiredArgsConstructor
 @Service
 public class RetrospectService {
     private static final int PAGE_SIZE = 10;
-    private static final String SORT_PROPERTY = "id";
     private final RetrospectRepository retrospectRepository;
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
-
-    public RetrospectService(RetrospectRepository retrospectRepository, MemberRepository memberRepository, TeamRepository teamRepository) {
-        this.retrospectRepository = retrospectRepository;
-        this.memberRepository = memberRepository;
-        this.teamRepository = teamRepository;
-    }
+    private final RetrospectQueryRepository retrospectQueryRepository;
 
     /**
      * @throws EntityNotFoundException writerId에 해당하는 Member가 없거나 teamId에 해당하는 Team이 없을 때
      */
     @Transactional
-    public Retrospect writeRetrospect(String content, Long writerId, Long teamId) {
-        Optional<Member> writer = memberRepository.findById(writerId);
-        Optional<Team> team = teamRepository.findById(teamId);
+    public Retrospect writeRetrospect(String title, String content, Long writerId, Long teamId) {
+        Member writer = memberRepository.findById(writerId).orElseThrow(() -> new EntityNotFoundException("writerId에 해당하는 Member가 없습니다."));
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new EntityNotFoundException("teamId에 해당하는 Team이 없습니다."));
 
-        writer.orElseThrow(() -> new EntityNotFoundException("writerId에 해당하는 Member가 없습니다."));
-        team.orElseThrow(() -> new EntityNotFoundException("teamId에 해당하는 Team이 없습니다."));
-
-        Retrospect retrospect = new Retrospect(content, writer.get(), team.get());
+        Retrospect retrospect = new Retrospect(title, content, writer, team);
         retrospectRepository.save(retrospect);
         return retrospect;
     }
@@ -56,15 +48,8 @@ public class RetrospectService {
             throw new IllegalArgumentException("page는 0 이상의 값을 가져야 합니다.");
         }
 
-        Member writer = memberRepository.findById(writerId)
-                .orElseThrow(() -> new EntityNotFoundException("writerId에 해당하는 Member가 없습니다."));
+        PageRequest pageRequest = PageRequest.of(page, PAGE_SIZE);
 
-        PageRequest pageRequest = PageRequest.of(page, PAGE_SIZE, Sort.by(sortOrder, SORT_PROPERTY));
-        if (teamId == null) {
-            return retrospectRepository.findByWriter(writer, pageRequest);
-        }
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new EntityNotFoundException("teamId에 해당하는 Team이 없습니다."));
-        return retrospectRepository.findByWriterAndTeam(writer, team, pageRequest);
+        return retrospectQueryRepository.findRetrospects(writerId, teamId, pageRequest, sortOrder);
     }
 }
