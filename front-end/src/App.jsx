@@ -13,6 +13,7 @@ import TeamSpaceMake from './pages/teamspace/TeamSpaceMake';
 import TeamSpaceMakeSuccess from './pages/teamspace/TeamSpaceMakeSuccess';
 import Calendar from './pages/calendar/Calendar';
 import MainPage from './pages/main/MainPage';
+import FeedbackReceived from './pages/feedback/FeedbackReceived';
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ export default function App() {
             <Route path='/' element={<Splash />} />
             <Route path='feedback'>
               <Route path='request' element={<FeedbackRequest />} />
+              <Route path='received' element={<FeedbackReceived />} />
             </Route>
             <Route path='signin' element={<SignIn />} />
             <Route path='signup' element={<SignUp />} />
