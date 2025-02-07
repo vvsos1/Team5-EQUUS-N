@@ -34,8 +34,6 @@ export default function MainPage() {
     }
   }, [notificationsData]);
 
-  useEffect(() => {}, [banners]);
-
   return (
     <div className='flex w-full flex-col'>
       <StickyWrapper className='px-5'>
