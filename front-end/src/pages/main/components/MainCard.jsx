@@ -131,8 +131,6 @@ function getScheduleTimeDiff(recentSchedule) {
   const startTime = new Date(recentSchedule.startTime);
   const endTime = new Date(recentSchedule.endTime);
 
-  console.log(todayTime, startTime, endTime);
-
   if (Math.abs(startTime - todayTime) < Math.abs(endTime - todayTime)) {
     // 미래 일정인 경우, today를 자정으로 설정하여 계산
     todayTime.setHours(0, 0, 0, 0);

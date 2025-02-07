@@ -34,23 +34,27 @@ export const useMainCard2 = (teamId) => {
 };
 
 /**
- * 사용자의 알람데이터를 가져오는 훅
+ * 사용자의 알람 데이터를 가져오고, 알람을 읽음으로 표시하는 훅
  */
 export const useNotification = () => {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['notification'],
     queryFn: () => api.get('/api/notification'),
   });
-};
 
-/**
- * post 예시. invalidateQueries로 myTeams 쿼리를 다시 불러옴
- */
-export const usePostExample = () => {
-  const queryClient = useQueryClient();
-  return useMutation((data) => api.post('/api/post', data), {
+  const markAsReadMutation = useMutation({
+    mutationFn: (data) => api.post('/api/notification/mark-as-read', data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myTeams'] });
+      queryClient.invalidateQueries({ queryKey: ['notification'] });
     },
   });
+
+  return {
+    data,
+    isLoading,
+    isError,
+    markAsRead: markAsReadMutation.mutate,
+  };
 };

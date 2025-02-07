@@ -23,4 +23,14 @@ export const handlers = [
   http.get(`${BASE_URL}/api/notification`, () => {
     return HttpResponse.json(notifications);
   }),
+
+  // 알람 읽음 처리
+  http.post(
+    `${BASE_URL}/api/notification/mark-as-read`,
+    async ({ request }) => {
+      const responseData = await request.json();
+      console.log('서버가 잘 받았따리: ', responseData);
+      return HttpResponse.json(responseData, { status: 201 });
+    },
+  ),
 ];

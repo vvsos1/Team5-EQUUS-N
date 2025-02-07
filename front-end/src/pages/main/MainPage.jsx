@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   useMainCard,
   useMainCard2,
@@ -13,35 +13,50 @@ import Notification from './components/Notification';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import './components/slider.css';
+import '../../slider.css';
+import { filterNotifications } from '../../utility/handleNotification';
 
 export default function MainPage() {
   const [selectedTeamId, setSelectedTeamId] = useState(1);
+  const [banners, setBanners] = useState();
 
   const { data: teamsData } = useMyTeams();
   const { data: recentScheduleData } = useMainCard(selectedTeamId);
   const { data: matesData } = useMainCard2(selectedTeamId);
-  const { data: notificationsData } = useNotification();
+  const { data: notificationsData, markAsRead } = useNotification();
 
   // TODO: 로딩 중 혹은 에러 발생 시 처리
+
+  useEffect(() => {
+    if (notificationsData) {
+      setBanners(filterNotifications(notificationsData));
+    }
+  }, [notificationsData]);
+
+  useEffect(() => {}, [banners]);
 
   return (
     <div className='flex w-full flex-col'>
       <StickyWrapper className='px-5'>
         {teamsData && (
           <Accordion
-            isMainPage={false}
+            isMainPage={true}
             selectedTeamId={selectedTeamId}
             teamList={teamsData}
             onTeamClick={setSelectedTeamId}
           />
         )}
       </StickyWrapper>
-      {notificationsData && (
+      {banners && (
         <Slider {...sliderSettings} className='my-4'>
-          {notificationsData.map((_, index) => (
+          {banners.notifications.map((banner, index) => (
             <div className='px-[6px]' key={index}>
-              <Notification type='NEW' />
+              <Notification
+                notification={banner}
+                feedbackRequestNotiIds={banners.feedbackRequestNotiIds}
+                onClick={() => console.log('노티 클릭')}
+                onClose={markAsRead}
+              />
             </div>
           ))}
         </Slider>
