@@ -36,7 +36,7 @@ public class MemberController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "변경된 회원 정보를 반환한다. " +
                     "세션을 통해 받은 회원의 정보를 수정하기 때문에, 다른 회원의 정보를 수정할 수 없다."),
-            @ApiResponse(responseCode = "400", description = "변경할 회원 정보 폼이 잘못됐을 경우, 주로 이름이 제한 범위 밖인 경우")
+            @ApiResponse(responseCode = "400", description = "변경할 회원 정보 폼이 잘못됐을 경우, 주로 이름이 제한 범위 밖인 경우", content = @Content)
     })
     @PostMapping("/member")
     public ResponseEntity<MemberDto> changeProfile(@Login Long memberId, @Valid @RequestBody ProfileChangeRequest profileChageRequest) {

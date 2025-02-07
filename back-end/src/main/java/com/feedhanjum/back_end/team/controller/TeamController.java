@@ -66,7 +66,7 @@ public class TeamController {
     @Operation(summary = "팀 상세 정보 조회", description = "특정 팀의 상세 정보를 조회한다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "해당 팀의 정보 조회에 성공한 경우"),
-            @ApiResponse(responseCode = "404", description = "해당 팀을 조회할 권한이 없는 경우 - 팀 정보 숨김")
+            @ApiResponse(responseCode = "404", description = "해당 팀을 조회할 권한이 없는 경우 - 팀 정보 숨김", content = @Content)
     })
     @GetMapping("/{teamId}")
     public ResponseEntity<TeamDetailResponse> getTeamDetail(@Login Long memberId, @PathVariable Long teamId) {
@@ -82,7 +82,7 @@ public class TeamController {
     @Operation(summary = "팀원 조횐", description = "특정 팀에 존재하는 모든 사용자의 정보를 조회한다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공."),
-            @ApiResponse(responseCode = "404", description = "해당 팀에 대한 조회 권한이 없을 경우 - 정보 숨김")
+            @ApiResponse(responseCode = "404", description = "해당 팀에 대한 조회 권한이 없을 경우 - 정보 숨김", content = @Content)
     })
     @GetMapping("/{teamId}/members")
     public ResponseEntity<List<MemberDto>> getTeamMembers(@Login Long memberId, @PathVariable Long teamId) {
@@ -106,8 +106,8 @@ public class TeamController {
     @Operation(summary = "팀 정보 수정", description = "특정 팀의 정보를 수정한다. 탐장만이 사용 가능하다.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "해당 팀원을 팀에서 제거하는데 성공"),
-            @ApiResponse(responseCode = "404", description = "해당 팀 또는 팀원을 찾을 수 없는 경우"),
-            @ApiResponse(responseCode = "403", description = "로그인한 사용자가 팀장이 아닌 경우")
+            @ApiResponse(responseCode = "404", description = "해당 팀 또는 팀원을 찾을 수 없는 경우", content = @Content),
+            @ApiResponse(responseCode = "403", description = "로그인한 사용자가 팀장이 아닌 경우", content = @Content)
     })
     @PostMapping("/{teamId}")
     public ResponseEntity<TeamResponse> updateTeamInfo(@Login Long memberId, @PathVariable Long teamId, @Valid @RequestBody TeamUpdateRequest request){
