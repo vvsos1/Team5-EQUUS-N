@@ -18,6 +18,7 @@ export default function Accordion({
   onTeamClick,
   isAlarmRead = false,
   canClose = true,
+  onClickLastButton,
 }) {
   const detailsRef = useRef(null);
 
@@ -58,7 +59,7 @@ export default function Accordion({
             ))}
             <TextButton
               type={isMainPage ? TextButtonType.PLUS : TextButtonType.DEFAULT}
-              onClick={() => {}}
+              onClick={() => onClickLastButton()}
             >
               {isMainPage ? '새로운 팀 스페이스 만들기' : '전체 일정 보기'}
             </TextButton>
