@@ -5,6 +5,7 @@ import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.domain.SignupToken;
 import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
+import com.feedhanjum.back_end.auth.exception.SignupTokenVerifyRequiredException;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.auth.service.AuthService;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
@@ -45,7 +46,7 @@ public class AuthController {
             @Valid @RequestBody MemberSignupRequest request) {
         Object emailObject = session.getAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL);
         if (!(emailObject instanceof String email) || !email.equals(request.email())) {
-            throw new SignupTokenNotValidException();
+            throw new SignupTokenVerifyRequiredException();
         }
 
         MemberDetails member = memberMapper.toEntity(request);
@@ -93,7 +94,8 @@ public class AuthController {
     public ResponseEntity<SignupEmailSendResponse> sendSignupVerificationEmail(HttpSession session, @Valid @RequestBody SignupEmailSendRequest request) {
         SignupToken signupToken = authService.sendSignupVerificationEmail(request.email());
         session.setAttribute(SessionConst.SIGNUP_TOKEN, signupToken);
-        return ResponseEntity.noContent().build();
+        SignupEmailSendResponse signupEmailSendResponse = new SignupEmailSendResponse(signupToken.getExpireDate());
+        return ResponseEntity.ok(signupEmailSendResponse);
     }
 
     @Operation(summary = "회원가입 이메일 토큰 인증")
