@@ -16,7 +16,7 @@ import classNames from 'classnames';
 export default function ScheduleCard({
   teamName,
   schedule,
-  roles,
+  todos,
   onClickEdit,
   isFinished = false,
 }) {
@@ -32,7 +32,7 @@ export default function ScheduleCard({
   }, [isOpen]);
 
   // 나의 역할 찾기
-  const myRole = roles.find((role) => role.memberId === 1)?.task;
+  const myRole = todos.find((todo) => todo.memberId === 1)?.task;
   return (
     <div
       className={classNames(
@@ -84,14 +84,14 @@ export default function ScheduleCard({
         className={`flex flex-col gap-6 overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'mb-0' : 'mb-[-24px]'}`}
         style={contentRef.current ? { height: `${height}px` } : { height: 0 }}
       >
-        {roles.map((memberRole, index) => {
-          if (memberRole.memberId === 1) return null;
+        {todos.map((todo, index) => {
+          if (todo.memberId === 1) return null;
           return (
             <div key={index} className='flex flex-col gap-3'>
-              <Tag type={TagType.MEMBER_ROLE}>{memberRole.name}</Tag>
-              {memberRole.task.length > 0 ?
+              <Tag type={TagType.MEMBER_ROLE}>{todo.name}</Tag>
+              {todo.task.length > 0 ?
                 <div className='flex flex-col gap-1'>
-                  {memberRole.task.map((task, index) => (
+                  {todo.task.map((task, index) => (
                     <Role key={index}>{task}</Role>
                   ))}
                 </div>

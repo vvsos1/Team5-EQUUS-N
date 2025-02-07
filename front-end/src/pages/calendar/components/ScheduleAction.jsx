@@ -34,18 +34,46 @@ export default function ScheduleAction({
   onClose,
   onSubmit,
   selectedDateFromParent,
+  selectedSchedule,
 }) {
   // 달력 선택 날짜를 기존 날짜로 초기화
   const [selectedDate, setSelectedDate] = useState(selectedDateFromParent);
-  const [scheduleName, setScheduleName] = useState('');
-  const [startTime, setStartTime] = useState('12:00');
-  const [endTime, setEndTime] = useState('12:00');
-  const [todos, setTodo] = useState([]);
+  const [scheduleName, setScheduleName] = useState(
+    selectedSchedule?.scheduleInfo?.scheduleName ?? '',
+  );
+  const [startTime, setStartTime] = useState(
+    selectedSchedule?.scheduleInfo?.startTime.split('T')[1].slice(0, 5) ??
+      '12:00',
+  );
+  const [endTime, setEndTime] = useState(
+    selectedSchedule?.scheduleInfo?.endTime.split('T')[1].slice(0, 5) ??
+      '12:00',
+  );
+  const [todos, setTodo] = useState(
+    selectedSchedule?.todos?.filter((todo) => {
+      return todo.memberId === 1;
+    }).task ?? [],
+  );
   const scrollRef = useRef(null);
 
   useEffect(() => {
     setSelectedDate(selectedDateFromParent);
-  }, [selectedDateFromParent]);
+
+    setScheduleName(selectedSchedule?.scheduleInfo?.scheduleName ?? '');
+    setStartTime(
+      selectedSchedule?.scheduleInfo?.startTime.split('T')[1].slice(0, 5) ??
+        '12:00',
+    );
+    setEndTime(
+      selectedSchedule?.scheduleInfo?.endTime.split('T')[1].slice(0, 5) ??
+        '12:00',
+    );
+    const newTodos =
+      selectedSchedule?.todos?.find((todo) => {
+        return todo.memberId === 1;
+      })?.task ?? [];
+    setTodo(newTodos);
+  }, [selectedDateFromParent, selectedSchedule]);
 
   function clearData() {
     setScheduleName('');

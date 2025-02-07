@@ -26,13 +26,13 @@ export default function Calendar() {
     setScheduleSet(
       new Set(
         exampleSchedules
-          .filter((data) => {
+          ?.filter((data) => {
             return data.teamId === selectedTeamId;
           })
-          .map(
+          ?.map(
             (data) =>
-              new Date(data.schedule.startTime).toISOString().split('T')[0],
-          ),
+              new Date(data.scheduleInfo.startTime).toISOString().split('T')[0],
+          ) ?? [],
       ),
     );
   }, [exampleSchedules, selectedTeamId]);
@@ -41,7 +41,7 @@ export default function Calendar() {
     setScheduleOnDate(
       exampleSchedules.filter((data) => {
         return timeInPeriod(
-          new Date(data.schedule.startTime),
+          new Date(data.scheduleInfo.startTime),
           selectedDate,
           new Date(selectedDate.getTime() + 86400000),
         );
@@ -80,6 +80,9 @@ export default function Calendar() {
           teamList={exampleTeamList}
           onTeamClick={setSelectedTeamId}
           canClose={!isDisplaying}
+          onClickLastButton={() => {
+            setSelectedTeamId(-1);
+          }}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
       </StickyWrapper>
@@ -95,9 +98,9 @@ export default function Calendar() {
             <li key={index} className='last:mb-5'>
               <ScheduleCard
                 teamName={schedule.teamName}
-                schedule={schedule.schedule}
-                roles={schedule.roles}
-                isFinished={checkIsFinished(schedule.schedule.endTime)}
+                schedule={schedule.scheduleInfo}
+                todos={schedule.todos}
+                isFinished={checkIsFinished(schedule.scheduleInfo.endTime)}
                 onClickEdit={() => {
                   setActionType(ScheduleActionType.EDIT);
                   setIsDisplaying(true);
@@ -127,6 +130,9 @@ export default function Calendar() {
         type={actionType}
         isOpen={isDisplaying}
         selectedDateFromParent={selectedDate}
+        selectedSchedule={scheduleOnDate.find(
+          (schedule) => schedule.teamId === selectedTeamId,
+        )}
         onClose={() => setIsDisplaying(false)}
         onSubmit={(postSuccess) => {
           setIsDisplaying(false);
@@ -162,12 +168,12 @@ const exampleSchedules = [
   {
     teamId: 1,
     teamName: '소프티어 5조',
-    schedule: {
+    scheduleInfo: {
       startTime: '2025-02-05T17:00:00.000Z',
       endTime: '2025-02-05T18:00:00.000Z',
-      scheduleName: '스케줄 내용',
+      scheduleName: '스케줄 내용1',
     },
-    roles: [
+    todos: [
       // {
       //   memberId: 1,
       //   name: '임세준',
@@ -193,12 +199,12 @@ const exampleSchedules = [
   {
     teamId: 2,
     teamName: '에쿠스 N',
-    schedule: {
+    scheduleInfo: {
       startTime: '2025-02-04T17:00:00.000Z',
       endTime: '2025-02-04T18:00:00.000Z',
-      scheduleName: '스케줄 내용',
+      scheduleName: '스케줄 내용2',
     },
-    roles: [
+    todos: [
       {
         memberId: 1,
         name: '임세준',
@@ -224,12 +230,12 @@ const exampleSchedules = [
   {
     teamId: 3,
     teamName: '협곡의 전사들',
-    schedule: {
+    scheduleInfo: {
       startTime: '2025-02-07T17:00:00.000Z',
       endTime: '2025-02-08T18:00:00.000Z',
-      scheduleName: '스케줄 내용',
+      scheduleName: '스케줄 내용3',
     },
-    roles: [
+    todos: [
       {
         memberId: 1,
         name: '임세준',
@@ -255,12 +261,12 @@ const exampleSchedules = [
   {
     teamId: 4,
     teamName: '한박백임',
-    schedule: {
+    scheduleInfo: {
       startTime: '2025-02-06T17:00:00.000Z',
       endTime: '2025-02-06T19:00:00.000Z',
-      scheduleName: '스케줄 내용',
+      scheduleName: '스케줄 내용4',
     },
-    roles: [
+    todos: [
       {
         memberId: 1,
         name: '임세준',
