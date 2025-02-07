@@ -9,7 +9,10 @@ import {
   verifySignupResponse,
   signupResponse,
   loginResponse,
-  teams,
+  teams2,
+  createScheduleResponse,
+  updateScheduleResponse,
+  schedules2,
 } from './mockData2';
 
 const BASE_URL = 'https://api.com';
@@ -45,13 +48,13 @@ export const handlers2 = [
   }),
 
   // 팀 목록 조회
-  http.get(`${BASE_URL}/api/team/my-teams`, () => {
-    return HttpResponse.json(teams);
+  http.get(`${BASE_URL}/api/team/my-teams2`, () => {
+    return HttpResponse.json(teams2);
   }),
 
   // 일정 조회
   http.get(`${BASE_URL}/api/schedules`, () => {
-    return HttpResponse.json(schedules);
+    return HttpResponse.json(schedules2);
   }),
 
   // 팀 일정 조회

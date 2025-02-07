@@ -9,23 +9,36 @@ import Icon from '../../components/Icon';
 import { checkIsFinished, timeInPeriod } from '../../utility/time';
 import { ScheduleActionType } from './components/ScheduleAction';
 import ScheduleAction from './components/ScheduleAction';
+import { useGetSchedules } from '../../api/useCalendar';
+import { useGetTeams } from '../../api/useAuth';
 
 export default function Calendar() {
+  const [allSchedules, setAllSchedules] = useState(null);
   const [selectedDate, setSelectedDate] = useState(
     new Date(new Date().setHours(0, 0, 0, 0)),
   );
   const [isScrolling, setIsScrolling] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState(1);
   const scrollRef = useRef(null);
-  const [scheduleOnDate, setScheduleOnDate] = useState(exampleSchedules);
+  const [scheduleOnDate, setScheduleOnDate] = useState(null);
   const [scheduleSet, setScheduleSet] = useState(new Set());
   const [isDisplaying, setIsDisplaying] = useState(false);
   const [actionType, setActionType] = useState(ScheduleActionType.ADD);
+  const [teamList, setTeamList] = useState([]);
+
+  const { data: schedules, isLoading: isSchedulesLoading } = useGetSchedules();
+  const { data: teams, isLoading: isTeamsLoading } = useGetTeams();
+
+  useEffect(() => {
+    if (isSchedulesLoading || isTeamsLoading) return;
+    setAllSchedules(schedules);
+    setTeamList(teams);
+  }, [schedules, teams, isSchedulesLoading, isTeamsLoading]);
 
   useEffect(() => {
     setScheduleSet(
       new Set(
-        exampleSchedules
+        allSchedules
           ?.filter((data) => {
             return data.teamId === selectedTeamId;
           })
@@ -35,11 +48,12 @@ export default function Calendar() {
           ) ?? [],
       ),
     );
-  }, [exampleSchedules, selectedTeamId]);
+  }, [allSchedules, selectedTeamId]);
 
   useEffect(() => {
+    if (!allSchedules) return;
     setScheduleOnDate(
-      exampleSchedules.filter((data) => {
+      allSchedules.filter((data) => {
         return timeInPeriod(
           new Date(data.scheduleInfo.startTime),
           selectedDate,
@@ -50,6 +64,7 @@ export default function Calendar() {
   }, [selectedDate]);
 
   useEffect(() => {
+    if (!scrollRef.current) return;
     const container = scrollRef.current;
 
     const handleScroll = () => {
@@ -68,6 +83,9 @@ export default function Calendar() {
     };
   }, []);
 
+  if (isSchedulesLoading || isTeamsLoading) return <div>Loading...</div>;
+  console.log(schedules, teams);
+
   return (
     <div
       ref={scrollRef}
@@ -77,7 +95,7 @@ export default function Calendar() {
         <Accordion
           isMainPage={false}
           selectedTeamId={selectedTeamId}
-          teamList={exampleTeamList}
+          teamList={teamList}
           onTeamClick={setSelectedTeamId}
           canClose={!isDisplaying}
           onClickLastButton={() => {
@@ -92,23 +110,24 @@ export default function Calendar() {
         scheduleSet={scheduleSet}
       />
       <ul className='flex flex-col gap-6'>
-        {scheduleOnDate.map((schedule, index) => {
-          if (schedule.teamId !== selectedTeamId) return null;
-          return (
-            <li key={index} className='last:mb-5'>
-              <ScheduleCard
-                teamName={schedule.teamName}
-                schedule={schedule.scheduleInfo}
-                todos={schedule.todos}
-                isFinished={checkIsFinished(schedule.scheduleInfo.endTime)}
-                onClickEdit={() => {
-                  setActionType(ScheduleActionType.EDIT);
-                  setIsDisplaying(true);
-                }}
-              />
-            </li>
-          );
-        })}
+        {scheduleOnDate &&
+          scheduleOnDate.map((schedule, index) => {
+            if (schedule.teamId !== selectedTeamId) return null;
+            return (
+              <li key={index} className='last:mb-5'>
+                <ScheduleCard
+                  teamName={schedule.teamName}
+                  schedule={schedule.scheduleInfo}
+                  todos={schedule.todos}
+                  isFinished={checkIsFinished(schedule.scheduleInfo.endTime)}
+                  onClickEdit={() => {
+                    setActionType(ScheduleActionType.EDIT);
+                    setIsDisplaying(true);
+                  }}
+                />
+              </li>
+            );
+          })}
         <li className='mb-5'>
           <LargeButton
             text={
@@ -126,21 +145,23 @@ export default function Calendar() {
           />
         </li>
       </ul>
-      <ScheduleAction
-        type={actionType}
-        isOpen={isDisplaying}
-        selectedDateFromParent={selectedDate}
-        selectedSchedule={scheduleOnDate.find(
-          (schedule) => schedule.teamId === selectedTeamId,
-        )}
-        onClose={() => setIsDisplaying(false)}
-        onSubmit={(postSuccess) => {
-          setIsDisplaying(false);
-          if (postSuccess) {
-            // TODO: 일정 재조회
-          }
-        }}
-      />
+      {scheduleOnDate && (
+        <ScheduleAction
+          type={actionType}
+          isOpen={isDisplaying}
+          selectedDateFromParent={selectedDate}
+          selectedSchedule={scheduleOnDate.find(
+            (schedule) => schedule.teamId === selectedTeamId,
+          )}
+          onClose={() => setIsDisplaying(false)}
+          onSubmit={(postSuccess) => {
+            setIsDisplaying(false);
+            if (postSuccess) {
+              // TODO: 일정 재조회
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -14,7 +14,7 @@ export const loginResponse = {
   email: 'string',
 };
 
-export const teams = [
+export const teams2 = [
   {
     id: 1,
     name: '소프티어 5조',
@@ -33,7 +33,7 @@ export const teams = [
   },
 ];
 
-export const schedules = [
+export const schedules2 = [
   {
     teamId: 1,
     teamName: '소프티어 5조',
@@ -159,3 +159,11 @@ export const schedules = [
     ],
   },
 ];
+
+export const createScheduleResponse = {
+  message: 'string',
+};
+
+export const updateScheduleResponse = {
+  message: 'string',
+};
