@@ -7,12 +7,15 @@ import LargeButton from '../../components/buttons/LargeButton';
 import { useNavigate } from 'react-router-dom';
 import { DropdownLarge } from '../../components/Dropdown';
 import DatePicker from 'react-datepicker';
-import CustomDatePicker from './components/CustomDatePicker';
+
 import { showToast } from '../../utility/handleToast';
 import {
   checkTeamSpaceMakingInfo,
   isValidTeamName,
 } from '../../utility/inputChecker';
+import CustomDatePicker, {
+  DatePickerDropdown,
+} from '../../components/CustomDatePicker';
 
 /**
  * @param {object} props
@@ -24,6 +27,8 @@ export default function TeamSpaceMake({ isFirst = false }) {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isDatePickerOpen1, setIsDatePickerOpen1] = useState(false);
+  const [isDatePickerOpen2, setIsDatePickerOpen2] = useState(false);
   const navigate = useNavigate();
 
   const onClickNext = () => {
@@ -70,12 +75,28 @@ export default function TeamSpaceMake({ isFirst = false }) {
         {<p className='subtitle-2 text-gray-0'>프로젝트 기간</p>}
         {/* 인풋 */}
         <div className='flex'>
-          <CustomDatePicker date={startDate} setDate={setStartDate} />
+          <CustomDatePicker
+            date={startDate}
+            setDate={setStartDate}
+            customInput={
+              <DatePickerDropdown
+                isStartTime={true}
+                isPickerOpen={isDatePickerOpen1}
+              />
+            }
+            setIsPickerOpen={setIsDatePickerOpen1}
+          />
           <div className='w-3 shrink-0' />
           <CustomDatePicker
             date={endDate}
             setDate={setEndDate}
-            isStartTime={false}
+            customInput={
+              <DatePickerDropdown
+                isStartTime={false}
+                isPickerOpen={isDatePickerOpen2}
+              />
+            }
+            setIsPickerOpen={setIsDatePickerOpen2}
           />
         </div>
       </div>

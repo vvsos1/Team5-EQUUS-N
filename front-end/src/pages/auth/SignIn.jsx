@@ -4,8 +4,7 @@ import LargeButton from '../../components/buttons/LargeButton';
 import logo from '../../assets/images/logo.png';
 import Icon from '../../components/Icon';
 import { useState } from 'react';
-import { checkSignInInfos } from '../../utility/inputChecker';
-import { showToast } from '../../utility/handleToast';
+import { useLogin } from '../../api/useAuth';
 
 /**
  * 로그인 페이지
@@ -15,6 +14,7 @@ export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const { mutate: login, isLoading } = useLogin();
 
   return (
     <div className='relative flex h-dvh w-full flex-col justify-start'>
@@ -61,12 +61,8 @@ export default function SignIn() {
         <LargeButton
           text='로그인하기'
           isOutlined={false}
-          onClick={() => {
-            if (checkSignInInfos(email, password)) {
-              // TODO: 로그인 요청 절차
-              showToast('로그인 요청 완료');
-            }
-          }}
+          onClick={() => login({ email: email, password: password })}
+          disabled={isLoading} // 로딩 중일 때 버튼 비활성화
         />
       </div>
     </div>

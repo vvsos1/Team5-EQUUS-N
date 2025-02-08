@@ -20,7 +20,7 @@ export default function LargeButton({
     <button
       // disabled={disabled}
       className={classNames(
-        'rounded-300 flex h-[56px] w-full items-center justify-center px-4 py-2 text-gray-300',
+        'button-1 rounded-300 flex h-[56px] w-full items-center justify-center px-4 py-2 text-gray-300',
         isOutlined ?
           disabled ? 'border border-gray-500 text-gray-500'
           : 'cursor-pointer border border-lime-500 text-lime-500'
