@@ -33,7 +33,7 @@ export default function FeedBack({ feedbackType, data }) {
 
   return (
     <div className='flex flex-col gap-5 border-b-8 border-gray-800 bg-gray-900 py-5'>
-      <div className='flex items-end gap-3'>
+      <div className='flex gap-3'>
         {/* 회고 아닌 경우에만 프로필 이미지 표시 */}
         {FeedBackType[feedbackType] !== FeedBackType.SELF && (
           <div className='aspect-square h-11'>
@@ -63,10 +63,18 @@ export default function FeedBack({ feedbackType, data }) {
             : data.scheduleName}
           </p>
         </div>
-        {/* 회고인 경우 날짜 상단에 표시 */}
-        {FeedBackType[feedbackType] === FeedBackType.SELF && (
-          <p className='caption-1 text-gray-300'>{date}</p>
-        )}
+        <div className='flex flex-col justify-between'>
+          {(
+            FeedBackType[feedbackType] === FeedBackType.SEND && data.isAnonymous
+          ) ?
+            <Tag type='MEMBER_ROLE'>익명으로 보냄</Tag>
+          : <div></div>}
+          {/* 회고인 경우 날짜 상단에 표시 */}
+          {FeedBackType[feedbackType] === FeedBackType.SELF ?
+            <p className='caption-1 text-gray-300'>{date}</p>
+          : <div></div>}
+          {/* 익명으로 보낸 경우 익명태그 표시 */}
+        </div>
       </div>
       <p className='body-1 text-gray-0'>{data.subjectiveFeedback}</p>
       {/* 회고 아닌 경우 키워드, 날짜, 하트 표시 */}

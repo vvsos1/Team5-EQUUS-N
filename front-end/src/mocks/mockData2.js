@@ -251,16 +251,62 @@ export const feedbackSentResponse = {
   hasNext: true,
   content: [
     {
-      feedbackId: 9007199254740991,
+      feedbackId: 1341234,
+      isAnonymous: false,
+      receiver: {
+        name: '백현식',
+        backgroundColor: '#F6D480',
+        image: 'lion',
+      },
+      objectiveFeedbacks: ['명확하게 적기', '친절한 설명'],
+      subjectiveFeedback:
+        '매번 핵심이 되는 포인트를 잘 잡아주시고 논리적으로 설득을 잘 하시는 것 같아요. ',
+      teamName: '협곡의전사들',
+      liked: true,
+      createdAt: '2025-02-07T15:07:05.819Z',
+    },
+    {
+      feedbackId: 256243,
       isAnonymous: true,
       receiver: {
-        name: 'string',
-        backgroundColor: 'string',
-        image: 'dogFace',
+        name: '백현식',
+        backgroundColor: '#F6D480',
+        image: 'lion',
       },
-      objectiveFeedbacks: ['string'],
-      subjectiveFeedback: 'string',
-      teamName: 'string',
+      objectiveFeedbacks: ['명확하게 적기', '친절한 설명'],
+      subjectiveFeedback:
+        '매번 핵심이 되는 포인트를 잘 잡아주시고 논리적으로 설득을 잘 하시는 것 같아요. ',
+      teamName: '협곡의전사들',
+      liked: true,
+      createdAt: '2025-02-07T15:07:05.819Z',
+    },
+    {
+      feedbackId: 12341324,
+      isAnonymous: true,
+      receiver: {
+        name: '백현식',
+        backgroundColor: '#F6D480',
+        image: 'lion',
+      },
+      objectiveFeedbacks: ['명확하게 적기', '친절한 설명'],
+      subjectiveFeedback:
+        '매번 핵심이 되는 포인트를 잘 잡아주시고 논리적으로 설득을 잘 하시는 것 같아요. ',
+      teamName: '협곡의전사들',
+      liked: true,
+      createdAt: '2025-02-07T15:07:05.819Z',
+    },
+    {
+      feedbackId: 23452,
+      isAnonymous: false,
+      receiver: {
+        name: '백현식',
+        backgroundColor: '#F6D480',
+        image: 'lion',
+      },
+      objectiveFeedbacks: ['명확하게 적기', '친절한 설명'],
+      subjectiveFeedback:
+        '매번 핵심이 되는 포인트를 잘 잡아주시고 논리적으로 설득을 잘 하시는 것 같아요. ',
+      teamName: '협곡의전사들',
       liked: true,
       createdAt: '2025-02-07T15:07:05.819Z',
     },
