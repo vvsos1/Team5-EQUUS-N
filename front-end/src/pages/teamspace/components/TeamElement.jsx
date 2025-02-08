@@ -16,7 +16,7 @@ export default function TeamElement({
   teamName,
   startDate,
   endDate,
-  teamMembers,
+  teamMembers = [],
   isDeleted,
 }) {
   const imageGap = 20;
