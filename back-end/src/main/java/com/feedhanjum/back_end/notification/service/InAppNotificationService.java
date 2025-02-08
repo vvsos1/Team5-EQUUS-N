@@ -166,7 +166,7 @@ public class InAppNotificationService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        List<TeamMember> teamMembers = teamMemberRepository.findByTeam(schedule.getTeam());
+        List<TeamMember> teamMembers = schedule.getTeam().getTeamMembers();
         for (TeamMember teamMember : teamMembers) {
             Member receiver = teamMember.getMember();
             InAppNotification notification = new ScheduleCreateNotification(receiver, schedule);
