@@ -29,7 +29,6 @@ import com.feedhanjum.back_end.team.repository.FrequentFeedbackRequestRepository
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,6 +43,7 @@ import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -73,22 +73,17 @@ class FeedbackServiceTest {
 
     private final Clock clock = Clock.fixed(Instant.parse("2025-01-10T12:00:00Z"), ZoneId.systemDefault());
 
-    private Long nextId;
-
-    @BeforeEach
-    void setUp() {
-        nextId = 1L;
-    }
+    private final AtomicLong nextId = new AtomicLong(1L);
 
     private Member createMember(String name) {
         Member member = new Member(name, name + "@test.com", new ProfileImage("bg-" + name, "profile-" + name));
-        ReflectionTestUtils.setField(member, "id", nextId++);
+        ReflectionTestUtils.setField(member, "id", nextId.getAndIncrement());
         return member;
     }
 
     private Team createTeam(String name, Member leader) {
         Team team = new Team(name, leader, LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS);
-        ReflectionTestUtils.setField(team, "id", nextId++);
+        ReflectionTestUtils.setField(team, "id", nextId.getAndIncrement());
         return team;
     }
 
@@ -102,7 +97,7 @@ class FeedbackServiceTest {
             end = LocalDateTime.now(clock).plusHours(1);
         }
         Schedule schedule = new Schedule(name, start, end, team, leader);
-        ReflectionTestUtils.setField(schedule, "id", nextId++);
+        ReflectionTestUtils.setField(schedule, "id", nextId.getAndIncrement());
         return schedule;
     }
 
@@ -116,7 +111,7 @@ class FeedbackServiceTest {
                 .objectiveFeedbacks(FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 2))
                 .subjectiveFeedback("좋아요")
                 .build();
-        ReflectionTestUtils.setField(feedback, "id", nextId++);
+        ReflectionTestUtils.setField(feedback, "id", nextId.getAndIncrement());
         return feedback;
     }
 
@@ -835,9 +830,9 @@ class FeedbackServiceTest {
             ArgumentCaptor<RegularFeedbackRequestCreatedEvent> eventCaptor = ArgumentCaptor.captor();
             verify(eventPublisher, times(3)).publishEvent(eventCaptor.capture());
             List<RegularFeedbackRequestCreatedEvent> events = eventCaptor.getAllValues();
-            assertThat(events).extracting(RegularFeedbackRequestCreatedEvent::getReceiverId)
+            assertThat(events).extracting(RegularFeedbackRequestCreatedEvent::receiverId)
                     .containsExactlyInAnyOrder(member1.getId(), member2.getId(), member3.getId());
-            assertThat(events).extracting(RegularFeedbackRequestCreatedEvent::getScheduleId)
+            assertThat(events).extracting(RegularFeedbackRequestCreatedEvent::scheduleId)
                     .containsOnly(schedule.getId());
         }
 

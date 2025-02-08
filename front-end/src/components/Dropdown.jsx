@@ -1,4 +1,4 @@
-import { useRef, useState, forwardRef } from 'react';
+import { useRef, useState, forwardRef, useEffect } from 'react';
 import Icon from './Icon';
 
 export function DropdownSmall({ triggerText, setTriggerText, items }) {
@@ -45,6 +45,31 @@ export function DropdownLarge({
   items,
 }) {
   const detailsRef = useRef(null);
+  const selectedItemRef = useRef(null);
+
+  useEffect(() => {
+    if (selectedItemRef.current) {
+      const dropdown = detailsRef.current;
+      const selectedItem = selectedItemRef.current;
+
+      const dropdownHeight = dropdown.getBoundingClientRect().height;
+      const itemHeight = selectedItem.getBoundingClientRect().height;
+
+      const scrollTo =
+        selectedItem.offsetTop - dropdownHeight / 2 + itemHeight / 2;
+      dropdown.animate({ scrollTop: scrollTo }, { duration: 300 });
+    }
+  }, []);
+
+  // 선택된 항목이 바뀌면 해당 항목이 보이도록 스크롤 이동
+  useEffect(() => {
+    if (detailsRef.current.open && selectedItemRef.current) {
+      selectedItemRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  }, [triggerText]);
 
   return (
     <details ref={detailsRef} className='group flex-1'>
@@ -62,17 +87,18 @@ export function DropdownLarge({
       <div className='absolute z-20 mt-2'>
         {itemsComponent ?
           itemsComponent
-        : <ul className='rounded-200 flex size-fit max-h-56 flex-col gap-1 overflow-y-auto bg-gray-700 p-2'>
+        : <ul className='rounded-200 flex max-h-56 w-[120px] flex-col gap-1 overflow-y-auto bg-gray-700 p-2'>
             {
               //TODO: 시간대 배열
               items.map((item, index) => (
                 <li
                   key={index}
+                  ref={item === triggerText ? selectedItemRef : null}
                   onClick={() => {
                     detailsRef.current.open = false;
                     setTriggerText(item);
                   }}
-                  className={`body-1 cursor-pointer list-none px-2.5 py-1 ${item === triggerText ? 'text-gray-200' : 'text-gray-400'}`}
+                  className={`body-1 cursor-pointer list-none px-2.5 py-2 text-center ${item === triggerText ? 'text-lime-500' : 'text-gray-0'}`}
                 >
                   {item}
                 </li>

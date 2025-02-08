@@ -17,6 +17,8 @@ export default function Accordion({
   teamList = [],
   onTeamClick,
   isAlarmRead = false,
+  canClose = true,
+  onClickLastButton,
 }) {
   const detailsRef = useRef(null);
 
@@ -57,7 +59,7 @@ export default function Accordion({
             ))}
             <TextButton
               type={isMainPage ? TextButtonType.PLUS : TextButtonType.DEFAULT}
-              onClick={() => {}}
+              onClick={() => onClickLastButton()}
             >
               {isMainPage ? '새로운 팀 스페이스 만들기' : '전체 일정 보기'}
             </TextButton>
@@ -84,10 +86,11 @@ export default function Accordion({
             <Icon name='hamburger' />
           </button>
         </div>
-      : <button onClick={() => console.log('뒤로가기')}>
+      : canClose ?
+        <button onClick={() => console.log('뒤로가기')}>
           <Icon name='delete' color='var(--color-gray-100)' />
         </button>
-      }
+      : null}
     </header>
   );
 }

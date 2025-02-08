@@ -1,5 +1,7 @@
 package com.feedhanjum.back_end.auth.controller.dto;
 
+import com.feedhanjum.back_end.auth.domain.MemberDetails;
+import com.feedhanjum.back_end.core.constraints.ByteLength;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -14,12 +16,12 @@ public record MemberSignupRequest(
 
         @Schema(description = "계정 등록에 사용할 비밀번호 정보")
         @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
-        @Size(min = 4, max = 20, message = "비밀번호는 최소 4자 이상, 20자 이하여야 합니다.")
+        @Size(min = MemberDetails.MIN_PASSWORD_LENGTH, max = MemberDetails.MAX_PASSWORD_LENGTH, message = "비밀번호는 최소 {min}자 이상, {max}자 이하여야 합니다.")
         String password,
 
         @Schema(description = "사용자가 이용할 활동명")
         @NotBlank(message = "활동명을 입력해주세요.")
-        @Size(min = 1, max = 20, message = "활동명은 1자 이상, 20자 이하여야 합니다.")
+        @ByteLength(min = MemberDetails.MIN_NAME_BYTE, max = MemberDetails.MAX_NAME_BYTE, message = "활동명은 {min}자 이상, {max}자 이하여야 합니다.")
         String name,
 
         @Schema(description = "사용자가 사용할 프로필 이미지")
