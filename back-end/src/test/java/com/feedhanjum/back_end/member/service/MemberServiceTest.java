@@ -4,9 +4,11 @@ import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
+import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
+import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +31,9 @@ class MemberServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private TeamRepository teamRepository;
 
     @Mock
     private TeamMemberRepository teamMemberRepository;
@@ -74,32 +79,18 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("회원 이름 변경에 성공한다")
-    void changeName_이름변경() {
+    @DisplayName("회원 정보 변경에 성공한다")
+    void changeProfile() {
         // given
         Long memberId = 1L;
         Member member = new Member("haha", "hoho", new ProfileImage("huhu", "hehe"));
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         String newName = "hoho";
-        // when
-        Member result = memberService.changeName(memberId, newName);
-        // then
-        assertThat(result.getName()).isEqualTo(newName);
-    }
-
-    @Test
-    @DisplayName("회원 프로필 이미지 변경에 성공한다")
-    void changeProfileImage_프로필변경() {
-        // given
-        Long memberId = 1L;
-        Member member = new Member("haha", "hoho", new ProfileImage("huhu", "hehe"));
-        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         ProfileImage newProfileImage = new ProfileImage("hehe", "haha");
         // when
-        Member result = memberService.changeProfileImage(memberId, newProfileImage);
+        Member result = memberService.changeProfile(memberId, newName, newProfileImage);
         // then
-        assertThat(result.getProfileImage().getBackgroundColor()).isEqualTo("hehe");
-        assertThat(result.getProfileImage().getImage()).isEqualTo("haha");
+        assertThat(result.getName()).isEqualTo(newName);
     }
 
     @Test
@@ -113,6 +104,9 @@ class MemberServiceTest {
                 .thenReturn(Optional.of(teamMember));
         Member member = mock(Member.class);
         List<Member> expectedMembers = List.of(member);
+        Team team = mock(Team.class);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(memberQueryRepository.findMembersByTeamId(teamId))
                 .thenReturn(expectedMembers);
 
@@ -127,8 +121,12 @@ class MemberServiceTest {
     @DisplayName("가입되지 않은 팀 조회 시 예외 발생")
     void getMembersByTeam_팀미가입예외() {
         //given
-        Long memberId = 2L;
-        Long teamId = 2L;
+        Long memberId = 1L;
+        Long teamId = 1L;
+        Member member = mock(Member.class);
+        Team team = mock(Team.class);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId))
                 .thenReturn(Optional.empty());
 
