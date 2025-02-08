@@ -199,3 +199,38 @@ export const createScheduleResponse = {
 export const updateScheduleResponse = {
   message: 'string',
 };
+
+export const members2 = [
+  {
+    id: 5145125,
+    name: '임세준',
+    email: 'limsejun@gmail.com',
+    profileImage: {
+      backgroundColor: '#62BFCA',
+      image: 'penguin',
+    },
+  },
+  {
+    id: 5145126,
+    name: '백현식',
+    email: 'baekhyeonsik@gmail.com',
+    profileImage: {
+      backgroundColor: '#62BFCA',
+      image: 'penguin',
+    },
+  },
+  {
+    id: 5145127,
+    name: '한준호',
+    email: 'hanjunho@gmail.com',
+    profileImage: {
+      backgroundColor: '#62BFCA',
+      image: 'penguin',
+    },
+  },
+  {
+    id: 5145128,
+    name: '박명규',
+    email: 'parkmyeonggu@gmail.com',
+  },
+];

@@ -13,6 +13,7 @@ import {
   createScheduleResponse,
   updateScheduleResponse,
   schedules2,
+  members2,
 } from './mockData2';
 
 const BASE_URL = 'https://api.com';
@@ -76,4 +77,9 @@ export const handlers2 = [
   // http.delete(`${BASE_URL}/api/team/:teamId/schedule/:scheduleId`, () => {
   //   return HttpResponse.json(deleteScheduleResponse);
   // }),
+
+  // 팀 멤버 조회
+  http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
+    return HttpResponse.json(members2);
+  }),
 ];
