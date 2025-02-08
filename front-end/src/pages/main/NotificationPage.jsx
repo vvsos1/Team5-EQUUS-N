@@ -3,12 +3,13 @@ import { useNotification } from '../../api/useMainPage';
 import NavBar2 from '../../components/NavBar2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import Alarm from './components/Alarm';
-
+import { useNavigate } from 'react-router-dom';
 export default function NotificationPage() {
   const [selectedTeamId, setSelectedTeamId] = useState(1);
   const { data: notificationsData, markAsRead } =
     useNotification(selectedTeamId);
   const [notifications, setNotifications] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (notificationsData) {
@@ -24,7 +25,9 @@ export default function NotificationPage() {
           isCloseLeft={true}
           canClose={true}
           title='알림함'
-          onClickClose={() => {}}
+          onClickClose={() => {
+            navigate('/main');
+          }}
         />
         <div className='border-b border-gray-700'></div>
       </StickyWrapper>
