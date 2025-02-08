@@ -59,7 +59,7 @@ export const handlers2 = [
 
   // 팀 일정 조회
   http.get(`${BASE_URL}/api/team/:teamId/schedules`, () => {
-    return HttpResponse.json(schedules);
+    return HttpResponse.json(schedules2);
   }),
 
   // 일정 생성

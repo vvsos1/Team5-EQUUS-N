@@ -32,9 +32,9 @@ export const useLogin = () => {
   });
 };
 
-export const useGetTeams = () => {
+export const useMyTeams = () => {
   return useQuery({
-    queryKey: ['teams'],
+    queryKey: ['myTeams'],
     queryFn: () => api.get('/api/team/my-teams2'),
   });
 };
