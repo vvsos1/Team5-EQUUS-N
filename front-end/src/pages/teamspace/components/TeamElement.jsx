@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { useMembers } from '../../../api/useTeamspace';
 import ProfileImage from '../../../components/ProfileImage';
 
 /**
@@ -13,12 +15,21 @@ import ProfileImage from '../../../components/ProfileImage';
  * @returns {JSX.Element} - 팀 요소 컴포넌트
  */
 export default function TeamElement({
+  teamId,
   teamName,
   startDate,
   endDate,
-  teamMembers = [],
   isEnded,
 }) {
+  const { data: members } = useMembers(teamId);
+  const [teamMembers, setTeamMembers] = useState([]);
+
+  useEffect(() => {
+    if (members) {
+      setTeamMembers(members);
+    }
+  }, [members]);
+
   const imageGap = 20;
   const zIndexGap = 10;
   const maxShow = 6;

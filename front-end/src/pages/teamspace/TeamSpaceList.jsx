@@ -45,14 +45,15 @@ export default function TeamSpaceList() {
               return !checkIsFinished(team.endDate);
             })
             .map((team) => (
-              <li key={team.id}>
-                <TeamElement
-                  teamName={team.name}
-                  startDate={team.startDate}
-                  endDate={team.endDate}
-                  teamMembers={team.teamMembers}
-                />
-              </li>
+              <TeamElement
+                key={team.id}
+                teamId={team.id}
+                teamName={team.name}
+                startDate={team.startDate}
+                endDate={team.endDate}
+                teamMembers={team.teamMembers}
+                isEnded={showEndedTeams}
+              />
             ))}
       </ul>
     </div>
