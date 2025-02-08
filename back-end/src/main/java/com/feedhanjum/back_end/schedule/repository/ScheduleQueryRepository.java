@@ -82,6 +82,7 @@ public class ScheduleQueryRepository {
                         ScheduleProjectionDto.class,
                         team.id,
                         team.name,
+                        team.leader.id,
                         schedule.id,
                         schedule.name,
                         schedule.startTime,

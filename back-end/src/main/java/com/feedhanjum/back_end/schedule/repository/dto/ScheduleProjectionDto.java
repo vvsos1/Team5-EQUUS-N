@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class ScheduleProjectionDto {
     private Long teamId;
     private String teamName;
+    private Long leaderId;
     private Long scheduleId;
     private String scheduleName;
     private LocalDateTime startTime;
