@@ -29,21 +29,21 @@ export default function Alarm({ type, data }) {
     case alarmType.FEEDBACK_RECEIVED:
       title = '새로운 피드백이 도착했어요';
       content = `${data.senderName}님(${data.teamName})이 피드백을 보냈어요.`;
-      image = 'src/assets/images/mail-received.png';
+      image = '/src/assets/images/mail-received.png';
       imageAlt = 'mail';
       break;
     // data.receiver, data.teamName
     case alarmType.HEART_RECEIVED:
       title = '내가 보낸 피드백이 도움됐어요';
       content = `${data.senderName}님(${data.teamName})이 내가 보낸 피드백에 공감을 눌렀어요.`;
-      image = 'src/assets/images/heart-green.png';
+      image = '/src/assets/images/heart-green.png';
       imageAlt = 'heart';
       break;
     // data.schedule
     case alarmType.REGULAR_FEEDBACK_REQUESTED:
       title = '피드백을 작성해주세요';
       content = `${data.scheduleName} 피드백을 작성해주세요.`;
-      image = 'src/assets/images/pencil.png';
+      image = '/src/assets/images/pencil.png';
       imageAlt = 'write';
       break;
     // data.teamName, data.receiver
@@ -51,14 +51,14 @@ export default function Alarm({ type, data }) {
       title = '피드백 리포트가 도착했어요';
       content = `${data.teamName} 프로젝트 잘 마무리 하셨나요?
       ${data.receiverName} 님이 받은 피드백을 정리했어요.`;
-      image = 'src/assets/images/folder.png';
+      image = '/src/assets/images/folder.png';
       imageAlt = 'folder';
       break;
     // data.sender, data.teamName
     case alarmType.NEED_CHECK_FEEDBACK:
       title = '확인하지 않은 피드백이 있어요';
       content = `${data.senderName}님(${data.teamName})이 보낸 피드백을 확인해 주세요.`;
-      image = 'src/assets/images/check-bg-black.png';
+      image = '/src/assets/images/check-bg-black.png';
       imageAlt = 'check';
       break;
     // data.teamName
@@ -66,20 +66,20 @@ export default function Alarm({ type, data }) {
       title = `${data.teamName}의 팀장 권한을 받았어요`;
       content = `${data.teamName}의 새로운 팀장이 되었습니다!
       팀을 이끌 준비가 되셨나요?`;
-      image = 'src/assets/images/crown.png';
+      image = '/src/assets/images/crown.png';
       imageAlt = 'crown';
       break;
     // data.teamName
     case alarmType.SCHEDULE_ADDED:
       title = `${data.teamName}의 새로운 일정이 추가됐어요`;
       content = `추가된 일정을 확인하고 나의 역할을 추가해 주세요.`;
-      image = 'src/assets/images/calendar.png';
+      image = '/src/assets/images/calendar.png';
       imageAlt = 'calendar';
       break;
     case alarmType.FREQUENT_FEEDBACK_REQUESTED:
       title = `${data.senderName} 님이 피드백을 요청했어요`;
       content = `요청받은 내용을 확인하고 피드백을 보내주세요.`;
-      image = 'src/assets/images/pray.png';
+      image = '/src/assets/images/pray.png';
       imageAlt = 'pray';
       break;
     default:
@@ -87,7 +87,7 @@ export default function Alarm({ type, data }) {
   }
 
   return (
-    <div className='w-full px-4'>
+    <div className='w-full'>
       <div className='flex w-full gap-5 border-b border-b-gray-800 py-4'>
         <div className='flex aspect-square h-10 w-10 items-center justify-center rounded-full bg-gray-800 p-2'>
           <img src={image} alt={imageAlt} width={28} height={28} />
@@ -103,49 +103,3 @@ export default function Alarm({ type, data }) {
     </div>
   );
 }
-
-// const data = [
-//   {
-//     type: alarmType.FEEDBACK_RECEIVED,
-//     sender: '김철수',
-//     teamName: '팀 이름',
-//     createdAt: Date.now() - 1000 * 60 * 60 * 24 * 3,
-//   },
-//   {
-//     type: alarmType.HEART_RECEIVED,
-//     receiver: '김철수',
-//     teamName: '팀 이름',
-//     createdAt: Date.now() - 1000 * 60 * 60 * 24 * 2,
-//   },
-//   {
-//     type: alarmType.FEEDBACK_REQUESTED,
-//     schedule: '4주차 리서치 과제',
-//     createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
-//   },
-//   {
-//     type: alarmType.REPORT_RECEIVED,
-//     teamName: '소프티어 5조',
-//     receiver: '김철수',
-//     createdAt: Date.now() - 1000 * 60 * 60 * 24 * 0,
-//   },
-//   {
-//     type: alarmType.NEED_CHECK_FEEDBACK,
-//     sender: '김철수',
-//     teamName: '소프티어 5조',
-//     createdAt: Date.now() - 1000 * 60 * 60 * 24 * 0,
-//   },
-//   {
-//     type: alarmType.CHANGE_TEAM_LEADER,
-//     teamName: '소프티어 5조',
-//     createdAt: Date.now() - 1000 * 60 * 60 * 24 * 0,
-//   },
-//   {
-//     type: alarmType.SCHEDULE_ADDED,
-//     teamName: '소프티어 5조',
-//     createdAt: Date.now() - 1000 * 60 * 60 * 24 * 0,
-//   },
-// ];
-
-// {data.map((item, index) => (
-//   <Alarm key={index} type={item.type} data={item} />
-// ))}
