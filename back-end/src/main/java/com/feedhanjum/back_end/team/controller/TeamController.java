@@ -63,7 +63,7 @@ public class TeamController {
      *
      * @return 팀 정보 + 속한 회원 정보를 반환
      */
-    @Operation(summary = "팀 상세 정보 조회", description = "특정 팀의 상세 정보를 조회한다.")
+    @Operation(summary = "팀 상세 정보 조회", description = "특정 팀의 상세 정보를 조회한다. 해당 팀에 존재하는 팀원의 정보도 함께 응답한다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "해당 팀의 정보 조회에 성공한 경우"),
             @ApiResponse(responseCode = "404", description = "해당 팀을 조회할 권한이 없는 경우 - 팀 정보 숨김", content = @Content)
