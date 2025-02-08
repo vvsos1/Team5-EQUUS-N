@@ -27,13 +27,13 @@ import java.time.LocalDateTime;
 @Getter
 public abstract class InAppNotificationDto {
     @Schema(description = "알림 ID")
-    protected Long notificationId;
+    protected final Long notificationId;
     @Schema(description = "받는 사람 ID")
-    protected Long receiverId;
+    protected final Long receiverId;
     @Schema(description = "알림 생성 시간")
-    protected LocalDateTime createdAt;
+    protected final LocalDateTime createdAt;
     @Schema(description = "읽음 여부")
-    private boolean isRead;
+    protected final boolean isRead;
 
     protected InAppNotificationDto(Long notificationId, Long receiverId, LocalDateTime createdAt, boolean isRead) {
         this.notificationId = notificationId;

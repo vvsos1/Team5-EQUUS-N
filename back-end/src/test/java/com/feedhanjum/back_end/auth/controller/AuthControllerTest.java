@@ -7,6 +7,7 @@ import com.feedhanjum.back_end.auth.controller.dto.MemberSignupResponse;
 import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
+import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.auth.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -50,6 +52,12 @@ class AuthControllerTest {
                 .build();
     }
 
+    private MockHttpSession withSignupVerification(String email) {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL, email);
+        return session;
+    }
+
     @Nested
     @DisplayName("POST /api/auth/signup 테스트")
     class SignupTests {
@@ -69,6 +77,7 @@ class AuthControllerTest {
             when(memberMapper.toResponse(savedMember)).thenReturn(response);
 
             mockMvc.perform(post("/api/auth/signup")
+                            .session(withSignupVerification(request.email()))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated())
@@ -89,6 +98,7 @@ class AuthControllerTest {
                     .when(authService).registerMember(entity, request.name(), null);
 
             mockMvc.perform(post("/api/auth/signup")
+                            .session(withSignupVerification(request.email()))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isConflict())

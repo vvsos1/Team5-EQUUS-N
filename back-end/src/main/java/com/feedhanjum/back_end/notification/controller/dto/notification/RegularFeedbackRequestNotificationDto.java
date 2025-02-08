@@ -15,11 +15,11 @@ public class RegularFeedbackRequestNotificationDto extends InAppNotificationDto 
     @Schema(description = "알림 타입", allowableValues = NotificationType.REGULAR_FEEDBACK_REQUEST)
     private final String type = NotificationType.REGULAR_FEEDBACK_REQUEST;
     @Schema(description = "연관된 일정 이름")
-    private String scheduleName;
+    private final String scheduleName;
     @Schema(description = "연관된 일정 ID")
-    private Long scheduleId;
+    private final Long scheduleId;
     @Schema(description = "연관된 일정이 속한 팀 ID")
-    private Long teamId;
+    private final Long teamId;
 
     @Builder
     public RegularFeedbackRequestNotificationDto(Long notificationId, Long receiverId, LocalDateTime createdAt, boolean isRead, String scheduleName, Long scheduleId, Long teamId) {

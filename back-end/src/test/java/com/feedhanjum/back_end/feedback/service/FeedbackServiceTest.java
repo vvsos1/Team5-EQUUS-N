@@ -830,9 +830,9 @@ class FeedbackServiceTest {
             ArgumentCaptor<RegularFeedbackRequestCreatedEvent> eventCaptor = ArgumentCaptor.captor();
             verify(eventPublisher, times(3)).publishEvent(eventCaptor.capture());
             List<RegularFeedbackRequestCreatedEvent> events = eventCaptor.getAllValues();
-            assertThat(events).extracting(RegularFeedbackRequestCreatedEvent::getReceiverId)
+            assertThat(events).extracting(RegularFeedbackRequestCreatedEvent::receiverId)
                     .containsExactlyInAnyOrder(member1.getId(), member2.getId(), member3.getId());
-            assertThat(events).extracting(RegularFeedbackRequestCreatedEvent::getScheduleId)
+            assertThat(events).extracting(RegularFeedbackRequestCreatedEvent::scheduleId)
                     .containsOnly(schedule.getId());
         }
 

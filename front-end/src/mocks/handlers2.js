@@ -78,7 +78,7 @@ export const handlers2 = [
   // http.delete(`${BASE_URL}/api/team/:teamId/schedule/:scheduleId`, () => {
   //   return HttpResponse.json(deleteScheduleResponse);
   // }),
-
+  
   // 피드백 받은 내역 조회
   http.get(`${BASE_URL}/api/feedbacks/receiver/:memberId`, () => {
     return HttpResponse.json(feedbackReceivedResponse);

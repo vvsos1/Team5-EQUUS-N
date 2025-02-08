@@ -43,8 +43,17 @@ export function isValidComplexity(content) {
  * @param {string} content - 문자열
  * @returns {boolean} - 8글자 이상인지 여부
  */
-export function isValidLength(content) {
+export function isEnoughLength(content) {
   return content.length >= 8;
+}
+
+/**
+ * 빈 문자열인지 확인
+ * @param {string} content - 문자열
+ * @returns {boolean} - 빈 문자열인지 여부
+ */
+export function isEmpty(content) {
+  return content === null || content.length === 0 || content === '';
 }
 
 /**
@@ -53,7 +62,7 @@ export function isValidLength(content) {
  * @returns {boolean} - 복잡도 검사 및 8글자 이상인지 여부
  */
 export function isValidPassword(content) {
-  return isValidComplexity(content) && isValidLength(content);
+  return isValidComplexity(content) && isEnoughLength(content);
 }
 
 /**
@@ -88,7 +97,7 @@ export const checkSignUpInfos = (
   } else if (password !== passwordConfirm) {
     showToast('비밀번호가 일치하지 않아요');
     return false;
-  } else if (nickName.length === 0) {
+  } else if (isEmpty(nickName)) {
     showToast('활동 이름을 입력해주세요');
     return false;
   } else if (!isWithin10Bytes(nickName)) {
@@ -109,6 +118,7 @@ export const checkSignInInfos = (email, password) => {
     showToast('이메일 형식이 올바르지 않습니다');
     return false;
   } else if (!isValidPassword(password)) {
+    showToast('비밀번호가 틀렸습니다');
     return false;
   }
   return true;
@@ -120,7 +130,7 @@ export const checkSignInInfos = (email, password) => {
  * @returns {boolean} - 팀 공간 이름 검사 결과
  */
 export const isValidTeamName = (teamSpaceName) => {
-  if (teamSpaceName.length === 0) {
+  if (isEmpty(teamSpaceName)) {
     showToast('팀 이름을 입력해주세요');
     return false;
   }
@@ -148,6 +158,20 @@ export const isValidEndDate = (startDate, endDate) => {
 };
 
 /**
+ * 종료시간 검사
+ * @param {string} startTime - 시작시간
+ * @param {string} endTime - 종료시간
+ * @returns {boolean} - 종료시간 검사 결과
+ */
+export const isValidEndTime = (startTime, endTime) => {
+  if (startTime >= endTime) {
+    showToast('종료시간은 시작시간 후여야 합니다');
+    return false;
+  }
+  return true;
+};
+
+/**
  * 팀 공간 만들기 정보 검사
  * @param {string} teamName - 팀 이름
  * @param {Date} startDate - 시작일
@@ -158,6 +182,23 @@ export const checkTeamSpaceMakingInfo = (teamName, startDate, endDate) => {
   if (!isValidTeamName(teamName)) {
     return false;
   } else if (!isValidEndDate(startDate, endDate)) {
+    return false;
+  }
+  return true;
+};
+
+/**
+ * 새로운 일정 검사
+ * @param {string} scheduleName - 일정 이름
+ * @param {Date} startDate - 시작일
+ * @param {Date} endDate - 종료일
+ * @returns {boolean} - 새로운 일정 검사 결과
+ */
+export const checkNewSchedule = (scheduleName, startDate, endDate) => {
+  if (isEmpty(scheduleName)) {
+    showToast('일정 이름을 입력해주세요');
+    return false;
+  } else if (!isValidEndTime(startDate, endDate)) {
     return false;
   }
   return true;

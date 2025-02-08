@@ -20,7 +20,7 @@ public class ScheduleCreateNotification extends InAppNotification {
     private Long teamId;
 
     public ScheduleCreateNotification(Member receiver, Schedule schedule) {
-        super(receiver);
+        super(receiver.getId());
         this.teamName = schedule.getTeam().getName();
         this.scheduleDate = schedule.getStartTime().toLocalDate().atStartOfDay();
         this.teamId = schedule.getTeam().getId();
