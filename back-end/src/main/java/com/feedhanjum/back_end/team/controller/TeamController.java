@@ -126,7 +126,7 @@ public class TeamController {
     @PostMapping("/{teamId}/leader")
     public ResponseEntity<Void> delegateTeamLeader(@Login Long memberId,
                                                    @PathVariable Long teamId,
-                                                   @RequestParam Long newLeaderId) {
+                                                   @RequestBody Long newLeaderId) {
         teamService.delegateTeamLeader(memberId, teamId, newLeaderId);
         return ResponseEntity.ok().build();
     }
