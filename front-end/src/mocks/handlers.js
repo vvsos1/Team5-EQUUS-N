@@ -1,11 +1,5 @@
 import { http, HttpResponse } from 'msw';
-
-// export const handlers = [
-//   http.get('/user', () => {
-//     return HttpResponse.json({ name: 'John Maverick' })
-//   }),
-// ]
-import { teams, schedules, members } from './mockData';
+import { teams, schedules, members, notifications } from './mockData';
 
 const BASE_URL = 'https://api.com';
 
@@ -21,7 +15,22 @@ export const handlers = [
   }),
 
   // 팀 멤버 조회
-  http.get(`${BASE_URL}/api/team/:teamId/members`, (req, res, ctx) => {
+  http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
     return HttpResponse.json(members);
   }),
+
+  // 알람 조회
+  http.get(`${BASE_URL}/api/notification`, () => {
+    return HttpResponse.json(notifications);
+  }),
+
+  // 알람 읽음 처리
+  http.post(
+    `${BASE_URL}/api/notification/mark-as-read`,
+    async ({ request }) => {
+      const responseData = await request.json();
+      console.log('서버가 잘 받았따리: ', responseData);
+      return HttpResponse.json(responseData, { status: 201 });
+    },
+  ),
 ];

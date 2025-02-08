@@ -40,6 +40,15 @@ public class AuthController {
      * @param request
      * @return 회원 가입 성공 여부
      */
+    @Operation(
+            summary = "회원가입",
+            description = "회원가입을 처리합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "회원가입을 처리합니다. 동시에 로그인 처리도 수행합니다."),
+            @ApiResponse(responseCode = "401", description = "이메일이 검증되지 않았을 경우", content = @Content),
+            @ApiResponse(responseCode = "409", description = "중복된 이메일이 있을 경우", content = @Content)
+    })
     @PostMapping("/signup")
     public ResponseEntity<MemberSignupResponse> signup(
             HttpSession session,
@@ -48,7 +57,6 @@ public class AuthController {
         if (!(emailObject instanceof String email) || !email.equals(request.email())) {
             throw new SignupTokenVerifyRequiredException();
         }
-
         MemberDetails member = memberMapper.toEntity(request);
         String name = request.name();
         ProfileImage profileImage = request.profileImage();
@@ -56,9 +64,21 @@ public class AuthController {
         MemberDetails savedMember = authService.registerMember(member, name, profileImage);
 
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
+
+        session.setAttribute(SessionConst.MEMBER_ID, member.getId());
+        session.setMaxInactiveInterval(Integer.MAX_VALUE);
+
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "로그인",
+            description = "로그인을 처리합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인을 처리합니다. 세션 ID를 쿠키로 등록합니다."),
+            @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호가 올바르지 않습니다.")
+    })
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
         MemberDetails member = authService.authenticate(request.email(), request.password());
@@ -71,6 +91,13 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+            summary = "로그아웃",
+            description = "로그아웃을 처리합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "로그아웃 처리 성공")
+    })
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response, HttpSession session) {
         session.invalidate();

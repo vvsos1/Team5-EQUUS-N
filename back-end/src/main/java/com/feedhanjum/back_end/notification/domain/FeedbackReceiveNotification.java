@@ -15,10 +15,12 @@ import lombok.NoArgsConstructor;
 public class FeedbackReceiveNotification extends InAppNotification {
     private String senderName;
     private String teamName;
+    private Long teamId;
 
     public FeedbackReceiveNotification(Feedback receivedFeedback) {
-        super(receivedFeedback.getReceiver());
+        super(receivedFeedback.getReceiver().getId());
         this.senderName = receivedFeedback.getSender().getName();
         this.teamName = receivedFeedback.getTeam().getName();
+        this.teamId = receivedFeedback.getTeam().getId();
     }
 }

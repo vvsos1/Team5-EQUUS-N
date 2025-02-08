@@ -14,11 +14,11 @@ public class UnreadFeedbackExistNotificationDto extends InAppNotificationDto {
     @Schema(description = "알림 타입", allowableValues = NotificationType.UNREAD_FEEDBACK_EXIST)
     private final String type = NotificationType.UNREAD_FEEDBACK_EXIST;
     @Schema(description = "미확인 피드백의 발송자 이름")
-    private String senderName;
+    private final String senderName;
     @Schema(description = "미확인 피드백의 팀 이름")
-    private String teamName;
+    private final String teamName;
     @Schema(description = "미확인 피드백의 팀 ID")
-    private Long teamId;
+    private final Long teamId;
 
     @Builder
     public UnreadFeedbackExistNotificationDto(Long notificationId, Long receiverId, LocalDateTime createdAt, boolean isRead, String senderName, String teamName, Long teamId) {

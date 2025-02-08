@@ -1,65 +1,83 @@
+import { useEffect, useState } from 'react';
+import {
+  useMainCard,
+  useMainCard2,
+  useMyTeams,
+  useNotification,
+} from '../../api/useMainPage';
 import Accordion from '../../components/Accordion';
 import MainCard2 from '../../components/MainCard2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import MainCard from './components/MainCard';
+import Notification from './components/Notification';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import '../../slider.css';
+import { filterNotifications } from '../../utility/handleNotification';
 
 export default function MainPage() {
+  const [selectedTeamId, setSelectedTeamId] = useState(1);
+  const [banners, setBanners] = useState();
+
+  const { data: teamsData } = useMyTeams();
+  const { data: recentScheduleData } = useMainCard(selectedTeamId);
+  const { data: matesData } = useMainCard2(selectedTeamId);
+  const { data: notificationsData, markAsRead } =
+    useNotification(selectedTeamId);
+
+  // TODO: 로딩 중 혹은 에러 발생 시 처리
+
+  useEffect(() => {
+    if (notificationsData) {
+      setBanners(filterNotifications(notificationsData));
+    }
+  }, [notificationsData]);
+
   return (
-    <div className='flex size-full flex-col'>
-      <StickyWrapper>
-        <Accordion
-          isMainPage={false}
-          selectedTeamId={1}
-          teamList={[]}
-          onTeamClick={() => {}}
-        />
+    <div className='flex w-full flex-col'>
+      <StickyWrapper className='px-5'>
+        {teamsData && (
+          <Accordion
+            isMainPage={true}
+            selectedTeamId={selectedTeamId}
+            teamList={teamsData}
+            onTeamClick={setSelectedTeamId}
+          />
+        )}
       </StickyWrapper>
-      <div className='h-4' />
-      <MainCard
-        recentSchedule={{
-          name: '동해물과',
-          start: '2022-02-05T00:00:00',
-          end: '2025-02-05T00:23:00',
-          roles: [
-            {
-              memberId: 1,
-              task: ['똥싸기', '씻기', '화장실 가기'],
-              name: '백현식',
-            },
-            {
-              memberId: 2,
-              task: ['밥먹기', '숨쉬기', '공부하기'],
-              name: '양준호',
-            },
-            { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
-          ],
-        }}
-      />
+      {banners && (
+        <Slider {...sliderSettings} className='my-4'>
+          {banners.notifications.map((banner, index) => (
+            <div className='px-[6px]' key={index}>
+              <Notification
+                notification={banner}
+                feedbackRequestNotiIds={banners.feedbackRequestNotiIds}
+                onClick={() => console.log('노티 클릭')}
+                onClose={markAsRead}
+              />
+            </div>
+          ))}
+        </Slider>
+      )}
+      <div className='h-2' />
+      {recentScheduleData && (
+        <MainCard recentSchedule={recentScheduleData} className='' />
+      )}
       <div className='h-8' />
-      <MainCard2
-        teamMates={[
-          {
-            name: '한준호',
-            iconName: 'panda',
-            color: '#90C18A',
-          },
-          {
-            name: '박명규',
-            iconName: 'penguin',
-            color: '#AFD1DC',
-          },
-          {
-            name: '백현식',
-            iconName: 'whale',
-            color: '#F28796',
-          },
-          {
-            name: '임세준',
-            iconName: 'rooster',
-            color: '#62BFCA',
-          },
-        ]}
-      />
+      {matesData && <MainCard2 teamMates={matesData} className='' />}
+      <div className='h-8' />
     </div>
   );
 }
+
+const sliderSettings = {
+  dots: true,
+  arrows: false,
+  infinite: false,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  centerMode: true,
+  centerPadding: '14px',
+};

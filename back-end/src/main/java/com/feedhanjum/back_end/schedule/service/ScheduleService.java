@@ -90,13 +90,11 @@ public class ScheduleService {
         Team team = teamRepository.findById(teamId).orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new EntityNotFoundException("해당 일정을 찾을 수 없습니다."));
-
         validateIsEnded(schedule);
-        changeScheduleInfo(requestDto, schedule, member, team);
-
         ScheduleMember scheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, scheduleId)
-                .orElseThrow(() -> new ScheduleMembershipNotFoundException("해당 사용자와 관련이 없는 일정입니다."));
+                .orElseThrow(() -> new ScheduleMembershipNotFoundException("해당 일정을 찾을 수 없습니다."));
 
+        changeScheduleInfo(requestDto, schedule, member, team);
         scheduleMember.setTodos(requestDto.todos());
     }
 

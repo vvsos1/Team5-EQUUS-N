@@ -14,9 +14,9 @@ public class HeartReactionNotificationDto extends InAppNotificationDto {
     @Schema(description = "알림 타입", allowableValues = NotificationType.HEART_REACTION)
     private final String type = NotificationType.HEART_REACTION;
     @Schema(description = "보낸 사람 이름")
-    private String senderName;
+    private final String senderName;
     @Schema(description = "팀 이름")
-    private String teamName;
+    private final String teamName;
 
     @Builder
     public HeartReactionNotificationDto(Long notificationId, Long receiverId, LocalDateTime createdAt, boolean isRead, String senderName, String teamName) {
