@@ -105,9 +105,10 @@ public class TeamController {
 
     @Operation(summary = "팀 정보 수정", description = "특정 팀의 정보를 수정한다. 탐장만이 사용 가능하다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "해당 팀원을 팀에서 제거하는데 성공"),
+            @ApiResponse(responseCode = "200", description = "팀 정보를 수정하는데 성공"),
             @ApiResponse(responseCode = "404", description = "해당 팀 또는 팀원을 찾을 수 없는 경우", content = @Content),
-            @ApiResponse(responseCode = "403", description = "로그인한 사용자가 팀장이 아닌 경우", content = @Content)
+            @ApiResponse(responseCode = "403", description = "로그인한 사용자가 팀장이 아닌 경우", content = @Content),
+            @ApiResponse(responseCode = "400", description = "요청한 입력값이 잘못되어있을 경우", content = @Content)
     })
     @PostMapping("/{teamId}")
     public ResponseEntity<TeamResponse> updateTeamInfo(@Login Long memberId, @PathVariable Long teamId, @Valid @RequestBody TeamUpdateRequest request){
