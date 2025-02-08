@@ -13,6 +13,7 @@ import TeamSpaceMake from './pages/teamspace/TeamSpaceMake';
 import TeamSpaceMakeSuccess from './pages/teamspace/TeamSpaceMakeSuccess';
 import Calendar from './pages/calendar/Calendar';
 import MainPage from './pages/main/MainPage';
+import TeamSpaceList from './pages/teamspace/TeamSpaceList';
 
 const queryClient = new QueryClient();
 
@@ -28,15 +29,16 @@ export default function App() {
             </Route>
             <Route path='signin' element={<SignIn />} />
             <Route path='signup' element={<SignUp />} />
-            <Route path='teamspace/make' element={<TeamSpaceMake />} />
-            <Route
-              path='teamspace/make/first'
-              element={<TeamSpaceMake isFirst={true} />}
-            />
-            <Route
-              path='teamspace/make/success'
-              element={<TeamSpaceMakeSuccess />}
-            />
+            <Route path='teamspace'>
+              <Route path='make' element={<TeamSpaceMake />}>
+                <Route
+                  path='first'
+                  element={<TeamSpaceMake isFirst={true} />}
+                />
+                <Route path='success' element={<TeamSpaceMakeSuccess />} />
+              </Route>
+              <Route path='list' element={<TeamSpaceList />} />
+            </Route>
             <Route path='calendar' element={<Calendar />} />
             <Route path='main'>
               <Route index element={<MainPage />} />
