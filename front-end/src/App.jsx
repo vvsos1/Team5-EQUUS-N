@@ -13,6 +13,7 @@ import TeamSpaceMake from './pages/teamspace/TeamSpaceMake';
 import TeamSpaceMakeSuccess from './pages/teamspace/TeamSpaceMakeSuccess';
 import Calendar from './pages/calendar/Calendar';
 import MainPage from './pages/main/MainPage';
+import NotificationPage from './pages/main/NotificationPage';
 import FeedbackReceived from './pages/feedback/FeedbackReceived';
 import FeedbackSent from './pages/feedback/FeedbackSent';
 
@@ -44,7 +45,7 @@ export default function App() {
             <Route path='calendar' element={<Calendar />} />
             <Route path='main'>
               <Route index element={<MainPage />} />
-              <Route path='notification' element={<div></div>} />
+              <Route path='notification' element={<NotificationPage />} />
             </Route>
           </Route>
         </Routes>
