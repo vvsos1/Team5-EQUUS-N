@@ -113,7 +113,7 @@ export default function FeedBack({ feedbackType, data }) {
             {FeedBackType[feedbackType] === FeedBackType.SEND && isLiked && (
               //보낸 피드백의 경우 하트 받았는지 여부만 표시
               <div className='caption-1 flex items-center gap-1 text-gray-300'>
-                {teamMate.name}에게 도움이 됐어요!
+                {teamMate.name}님에게 도움이 됐어요!
                 <Icon name='heartFill' className={'scale-75'}></Icon>
               </div>
             )}
