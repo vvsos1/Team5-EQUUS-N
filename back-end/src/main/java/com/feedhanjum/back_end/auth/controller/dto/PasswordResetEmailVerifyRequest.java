@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.auth.controller.dto;
 
+import com.feedhanjum.back_end.auth.domain.PasswordResetToken;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -13,7 +14,7 @@ public record PasswordResetEmailVerifyRequest(
         String email,
 
         @Schema(description = "비밀번호 초기화 토큰")
-        @Size(min = 6, max = 6)
+        @Size(min = PasswordResetToken.TOKEN_LENGTH, max = PasswordResetToken.TOKEN_LENGTH)
         String code
 ) {
 }

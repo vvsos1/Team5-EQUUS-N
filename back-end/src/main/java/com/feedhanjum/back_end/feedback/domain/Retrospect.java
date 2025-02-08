@@ -13,10 +13,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Retrospect {
+    public static final int MAX_TITLE_LENGTH = 50;
+    public static final int MAX_CONTENT_BYTE = 400;
     @Id
     @Column(name = "retrospect_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    private String title;
 
     private String content;
 
@@ -30,11 +34,12 @@ public class Retrospect {
     @JoinColumn(name = "team_id")
     private Team team;
 
-    public Retrospect(String content, Member writer, Team team) {
-        this.createdAt = LocalDateTime.now();
+    public Retrospect(String title, String content, Member writer, Team team) {
+        this.title = title;
         this.content = content;
         this.team = team;
         this.writer = writer;
+        this.createdAt = LocalDateTime.now();
     }
 
 }

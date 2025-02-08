@@ -21,7 +21,6 @@
 }
 
 .react-datepicker__current-month {
-  color: var(--color-gray-800);
   margin: 5px 0px !important;
 }
 
@@ -37,7 +36,7 @@
   width: calc(100dvw - 40px);
   max-width: 390px;
   min-width: 236px;
-  background-color: var(--color-gray-800);
+  background-color: var(--color-gray-700);
 }
 
 .react-datepicker__month {
@@ -65,7 +64,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-gray-800);
+  background-color: var(--color-gray-700);
   color: var(--color-gray-200);
 }
 
