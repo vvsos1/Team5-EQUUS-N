@@ -3,6 +3,9 @@ package com.feedhanjum.back_end.auth.controller;
 import com.feedhanjum.back_end.auth.controller.dto.*;
 import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
+import com.feedhanjum.back_end.auth.domain.SignupToken;
+import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
+import com.feedhanjum.back_end.auth.exception.SignupTokenVerifyRequiredException;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.auth.service.AuthService;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
@@ -47,7 +50,13 @@ public class AuthController {
             @ApiResponse(responseCode = "409", description = "중복된 이메일이 있을 경우", content = @Content)
     })
     @PostMapping("/signup")
-    public ResponseEntity<MemberSignupResponse> signup(@Valid @RequestBody MemberSignupRequest request, HttpSession session) {
+    public ResponseEntity<MemberSignupResponse> signup(
+            HttpSession session,
+            @Valid @RequestBody MemberSignupRequest request) {
+        Object emailObject = session.getAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL);
+        if (!(emailObject instanceof String email) || !email.equals(request.email())) {
+            throw new SignupTokenVerifyRequiredException();
+        }
         MemberDetails member = memberMapper.toEntity(request);
         String name = request.name();
         ProfileImage profileImage = request.profileImage();
@@ -109,8 +118,11 @@ public class AuthController {
             @ApiResponse(responseCode = "429", description = "이메일 발송 지연으로 인해 실패", content = @Content)
     })
     @PostMapping(value = "/send-signup-verification-email", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SignupEmailSendResponse> sendSignupVerificationEmail(@Valid @RequestBody SignupEmailSendRequest request) {
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<SignupEmailSendResponse> sendSignupVerificationEmail(HttpSession session, @Valid @RequestBody SignupEmailSendRequest request) {
+        SignupToken signupToken = authService.sendSignupVerificationEmail(request.email());
+        session.setAttribute(SessionConst.SIGNUP_TOKEN, signupToken);
+        SignupEmailSendResponse signupEmailSendResponse = new SignupEmailSendResponse(signupToken.getExpireDate());
+        return ResponseEntity.ok(signupEmailSendResponse);
     }
 
     @Operation(summary = "회원가입 이메일 토큰 인증")
@@ -119,7 +131,13 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "이메일 토큰 인증 실패")
     })
     @PostMapping("/verify-signup-email-token")
-    public ResponseEntity<Void> verifySignupEmailToken(@Valid @RequestBody SignupEmailVerifyRequest request) {
+    public ResponseEntity<Void> verifySignupEmailToken(HttpSession session, @Valid @RequestBody SignupEmailVerifyRequest request) {
+        Object token = session.getAttribute(SessionConst.SIGNUP_TOKEN);
+        if (!(token instanceof SignupToken signupToken)) {
+            throw new SignupTokenNotValidException();
+        }
+        authService.validateSignupToken(signupToken, request.email(), request.code());
+        session.setAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL, signupToken.getEmail());
         return ResponseEntity.noContent().build();
     }
 
