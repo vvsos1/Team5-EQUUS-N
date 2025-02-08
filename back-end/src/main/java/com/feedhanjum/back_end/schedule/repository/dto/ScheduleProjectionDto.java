@@ -13,6 +13,7 @@ public class ScheduleProjectionDto {
     private Long leaderId;
     private Long scheduleId;
     private String scheduleName;
+    private Long ownerId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private Long memberId;

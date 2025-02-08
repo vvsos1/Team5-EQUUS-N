@@ -85,6 +85,7 @@ public class ScheduleQueryRepository {
                         team.leader.id,
                         schedule.id,
                         schedule.name,
+                        schedule.owner.id,
                         schedule.startTime,
                         schedule.endTime,
                         member.id,

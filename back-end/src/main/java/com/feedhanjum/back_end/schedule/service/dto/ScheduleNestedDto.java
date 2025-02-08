@@ -24,6 +24,8 @@ public class ScheduleNestedDto{
     private String teamName;
     @Schema(description = "리더 ID")
     private Long leaderId;
+    @Schema(description = "일정 주인 ID")
+    private Long ownerId;
     @Schema(description = "일정에 포함된 팀원 별 할 일 목록")
     private List<ScheduleMemberNestedDto> scheduleMemberNestedDtoList = new ArrayList<>();
 
@@ -35,6 +37,7 @@ public class ScheduleNestedDto{
         teamId = scheduleProjectionDto.getTeamId();
         teamName = scheduleProjectionDto.getTeamName();
         leaderId = scheduleProjectionDto.getLeaderId();
+        ownerId = scheduleProjectionDto.getOwnerId();
     }
 
     public void addScheduleMemberNestedDto(ScheduleMemberNestedDto scheduleMemberNestedDto){
