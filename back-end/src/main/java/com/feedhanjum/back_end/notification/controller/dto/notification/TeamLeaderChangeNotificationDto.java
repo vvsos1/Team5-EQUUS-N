@@ -14,9 +14,9 @@ public class TeamLeaderChangeNotificationDto extends InAppNotificationDto {
     @Schema(description = "알림 타입", allowableValues = NotificationType.TEAM_LEADER_CHANGE)
     private final String type = NotificationType.TEAM_LEADER_CHANGE;
     @Schema(description = "팀장을 맡게 된 팀 이름")
-    private String teamName;
+    private final String teamName;
     @Schema(description = "팀장을 맡게 된 팀 ID")
-    private Long teamId;
+    private final Long teamId;
 
     @Builder
     public TeamLeaderChangeNotificationDto(Long notificationId, Long receiverId, LocalDateTime createdAt, boolean isRead, String teamName, Long teamId) {

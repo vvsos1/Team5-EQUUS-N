@@ -14,9 +14,9 @@ public class FrequentFeedbackRequestNotificationDto extends InAppNotificationDto
     @Schema(description = "알림 타입", allowableValues = NotificationType.FREQUENT_FEEDBACK_REQUEST)
     private final String type = NotificationType.FREQUENT_FEEDBACK_REQUEST;
     @Schema(description = "요청자 이름")
-    private String senderName;
+    private final String senderName;
     @Schema(description = "팀 id")
-    private Long teamId;
+    private final Long teamId;
 
     @Builder
     public FrequentFeedbackRequestNotificationDto(Long notificationId, Long receiverId, LocalDateTime createdAt, boolean isRead, String senderName, Long teamId) {
