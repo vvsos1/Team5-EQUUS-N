@@ -10,7 +10,7 @@ import { checkIsFinished, timeInPeriod } from '../../utility/time';
 import { ScheduleActionType } from './components/ScheduleAction';
 import ScheduleAction from './components/ScheduleAction';
 import { useGetSchedules } from '../../api/useCalendar';
-import { useGetTeams } from '../../api/useAuth';
+import { useMyTeams } from '../../api/useAuth';
 
 export default function Calendar() {
   const [allSchedules, setAllSchedules] = useState(null);
