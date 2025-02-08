@@ -77,19 +77,49 @@ public class Team {
 
     // 팀 탈퇴
     public void leave(Member member) {
-        if (isTeamLeader(member))
+        validateTeamMember(member);
+        if (isTeamLeader(member) && !onlyLeaderLeft())
             throw new TeamLeaderMustExistException("팀 리더는 팀을 나갈 수 없습니다");
-        this.teamMembers.removeIf(teamMember -> member.equals(teamMember.getMember()));
+        else if (!isTeamLeader(member) || onlyLeaderLeft())
+            this.teamMembers.removeIf(teamMember -> member.equals(teamMember.getMember()));
     }
 
     // 팀원 강제 추방
     public void expel(Member leader, Member removeTarget) {
+        validateTeamMember(removeTarget);
         validateTeamLeader(leader);
         this.leave(removeTarget);
     }
 
     public int memberCount() {
         return teamMembers.size();
+    }
+
+    // 수시 피드백 요청
+    public void requestFeedback(Member sender, Member receiver, String requestedContent) {
+        validateTeamMember(sender);
+        validateTeamMember(receiver);
+        this.frequentFeedbackRequests.add(new FrequentFeedbackRequest(requestedContent, sender, this, receiver));
+    }
+
+    // 모든 수시 피드백 요청 거절
+    public void rejectFeedbackRequests(Member receiver) {
+        validateTeamMember(receiver);
+        this.frequentFeedbackRequests.removeIf(request -> receiver.equals(request.getReceiver()));
+    }
+
+    // 특정 수시 피드백 요청 거절
+    public void removeFeedbackRequest(Member sender, Member receiver) {
+        validateTeamMember(sender);
+        validateTeamMember(receiver);
+        this.frequentFeedbackRequests.removeIf(request -> sender.equals(request.getSender()) && receiver.equals(request.getReceiver()));
+    }
+
+    public List<FrequentFeedbackRequest> getFeedbackRequests(Member receiver) {
+        validateTeamMember(receiver);
+        return this.frequentFeedbackRequests.stream()
+                .filter(request -> receiver.equals(request.getReceiver()))
+                .toList();
     }
 
     public List<TeamMember> getTeamMembers() {
@@ -100,18 +130,13 @@ public class Team {
         return Collections.unmodifiableList(frequentFeedbackRequests);
     }
 
-    public void requestFeedback(Member sender, Member receiver, String requestedContent) {
-        if (!(isTeamMember(sender) && isTeamMember(receiver)))
-            throw new TeamMembershipNotFoundException("피드백 요청자와 수신자는 팀에 소속되어야 합니다");
-        this.frequentFeedbackRequests.add(new FrequentFeedbackRequest(requestedContent, sender, this, receiver));
-    }
 
-    private boolean isTeamMember(Member member) {
+    public boolean isTeamMember(Member member) {
         return teamMembers.stream().anyMatch(teamMember -> member.equals(teamMember.getMember()));
     }
 
     private boolean isTeamLeader(Member leader) {
-        return leader.equals(leader);
+        return this.leader.equals(leader);
     }
 
     private void validateTeamLeader(Member leader) {
@@ -119,9 +144,18 @@ public class Team {
             throw new SecurityException("팀장이 아닙니다");
     }
 
+    private void validateTeamMember(Member member) {
+        if (!isTeamMember(member))
+            throw new TeamMembershipNotFoundException("팀원이 아닙니다");
+    }
+
     private void validateDuration(LocalDate startDate, LocalDate endDate) {
         if (endDate != null && !startDate.isBefore(endDate)) {
             throw new IllegalArgumentException("프로젝트 시작 시간이 종료 시간보다 앞서야 합니다.");
         }
+    }
+
+    private boolean onlyLeaderLeft() {
+        return teamMembers.size() == 1;
     }
 }

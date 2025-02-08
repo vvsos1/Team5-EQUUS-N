@@ -2,13 +2,11 @@ package com.feedhanjum.back_end.team.service;
 
 import com.feedhanjum.back_end.event.EventPublisher;
 import com.feedhanjum.back_end.member.domain.Member;
-import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.event.TeamMemberLeftEvent;
 import com.feedhanjum.back_end.team.exception.TeamLeaderMustExistException;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
-import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamQueryRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import com.feedhanjum.back_end.team.service.dto.TeamCreateDto;
@@ -24,10 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TeamService {
     private final TeamRepository teamRepository;
-    private final TeamMemberRepository teamMemberRepository;
     private final MemberRepository memberRepository;
     private final TeamQueryRepository teamQueryRepository;
-    private final MemberQueryRepository memberQueryRepository;
     private final EventPublisher eventPublisher;
 
     /**
@@ -120,13 +116,14 @@ public class TeamService {
 
         team.leave(member);
         if (team.memberCount() == 0) {
-            deleteTeam(teamId);
+            deleteTeam(team);
         }
         eventPublisher.publishEvent(new TeamMemberLeftEvent(teamId, memberId));
     }
 
 
-    private void deleteTeam(Long teamId) {
-        // 팀 삭제 로직 Todo
+    private void deleteTeam(Team team) {
+        // TODO: 팀 삭제 로직 결정
+        teamRepository.delete(team);
     }
 }
