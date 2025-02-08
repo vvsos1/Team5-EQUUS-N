@@ -16,7 +16,7 @@ public class FrequentFeedbackRequestNotification extends InAppNotification {
     private Long teamId;
 
     public FrequentFeedbackRequestNotification(FrequentFeedbackRequest request) {
-        super(request.getTeamMember().getMember());
+        super(request.getTeamMember().getMember().getId());
         this.senderName = request.getRequester().getName();
         this.teamId = request.getTeamMember().getTeam().getId();
     }

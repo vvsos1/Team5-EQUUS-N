@@ -31,9 +31,9 @@ public class InAppNotification {
     @Column(name = "type", nullable = false, updatable = false, insertable = false)
     protected String type;
 
-    protected InAppNotification(Member receiver) {
+    protected InAppNotification(Long receiverId) {
         this.id = null;
-        this.receiverId = receiver.getId();
+        this.receiverId = receiverId;
         this.createdAt = LocalDateTime.now();
         this.isRead = false;
     }
