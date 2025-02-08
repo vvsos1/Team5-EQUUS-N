@@ -88,4 +88,20 @@ export const handlers2 = [
   http.get(`${BASE_URL}/api/feedbacks/sender/:memberId`, () => {
     return HttpResponse.json(feedbackSentResponse);
   }),
+
+  // 피드백 좋아요
+  http.post(
+    `${BASE_URL}/api/member/:memberId/feedbacks/:feedbackId/liked`,
+    () => {
+      return HttpResponse.json({ message: '좋아요를 눌렀습니다' });
+    },
+  ),
+
+  // 피드백 좋아요 취소
+  http.delete(
+    `${BASE_URL}/api/member/:memberId/feedbacks/:feedbackId/liked`,
+    () => {
+      return HttpResponse.json({ message: '좋아요를 취소했습니다' });
+    },
+  ),
 ];

@@ -26,7 +26,7 @@ export default function App() {
             <Route path='/' element={<Splash />} />
             <Route path='feedback'>
               <Route path='request' element={<FeedbackRequest />} />
-              <Route path='received' element={<FeedbackReceived />} />
+              <Route path='received/:userId' element={<FeedbackReceived />} />
             </Route>
             <Route path='signin' element={<SignIn />} />
             <Route path='signup' element={<SignUp />} />

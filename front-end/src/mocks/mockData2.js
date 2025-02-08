@@ -173,14 +173,20 @@ export const feedbackReceivedResponse = {
   hasNext: true,
   content: [
     {
-      feedbackId: 9007199254740991,
+      feedbackId: 134124,
       isAnonymous: true,
       sender: {
         name: '임세준',
         backgroundColor: '#F6D480',
         image: 'dog_face',
       },
-      objectiveFeedbacks: ['명확하게 적기'],
+      objectiveFeedbacks: [
+        '명확하게 적기',
+        '해결점 위주',
+        '항상 긍정적인 태도',
+        '직설적인 말투',
+        '사용자 중심 디자인',
+      ],
       subjectiveFeedback:
         '매번 핵심이 되는 포인트를 잘 잡아주시고 논리적으로 설득을 잘 하시는 것 같아요. ',
       teamName: '협곡의전사들',
@@ -188,14 +194,19 @@ export const feedbackReceivedResponse = {
       createdAt: '2025-02-07T15:06:25.273Z',
     },
     {
-      feedbackId: 9007199254740991,
-      isAnonymous: true,
+      feedbackId: 41234,
+      isAnonymous: false,
       sender: {
         name: '임세준',
         backgroundColor: '#F6D480',
         image: 'dog_face',
       },
-      objectiveFeedbacks: ['명확하게 적기'],
+      objectiveFeedbacks: [
+        '명확하게 적기',
+        '항상 긍정적인 태도',
+        '직설적인 말투',
+        '사용자 중심 디자인',
+      ],
       subjectiveFeedback:
         '매번 핵심이 되는 포인트를 잘 잡아주시고 논리적으로 설득을 잘 하시는 것 같아요. ',
       teamName: '협곡의전사들',
@@ -203,14 +214,14 @@ export const feedbackReceivedResponse = {
       createdAt: '2025-02-07T15:06:25.273Z',
     },
     {
-      feedbackId: 9007199254740991,
-      isAnonymous: true,
+      feedbackId: 2452435,
+      isAnonymous: false,
       sender: {
         name: '임세준',
         backgroundColor: '#F6D480',
         image: 'dog_face',
       },
-      objectiveFeedbacks: ['명확하게 적기'],
+      objectiveFeedbacks: ['명확하게 적기', '친절한 설명'],
       subjectiveFeedback:
         '매번 핵심이 되는 포인트를 잘 잡아주시고 논리적으로 설득을 잘 하시는 것 같아요. ',
       teamName: '협곡의전사들',
@@ -218,7 +229,7 @@ export const feedbackReceivedResponse = {
       createdAt: '2025-02-07T15:06:25.273Z',
     },
     {
-      feedbackId: 9007199254740991,
+      feedbackId: 5461234,
       isAnonymous: true,
       sender: {
         name: '임세준',
