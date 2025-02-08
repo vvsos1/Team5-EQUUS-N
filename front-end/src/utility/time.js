@@ -14,7 +14,8 @@ export const timeOptions = Array.from({ length: 144 }, (_, i) => {
  */
 export function calTimePassed(date) {
   const now = new Date();
-  const diffMs = Math.abs(now - date);
+  const then = new Date(date);
+  const diffMs = Math.abs(now - then);
   const diffSeconds = Math.floor(diffMs / 1000);
   const diffMinutes = Math.floor(diffSeconds / 60);
   const diffHours = Math.floor(diffMinutes / 60);
