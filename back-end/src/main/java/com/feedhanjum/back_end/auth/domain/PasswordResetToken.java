@@ -1,14 +1,13 @@
 package com.feedhanjum.back_end.auth.domain;
 
-
-import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
+import com.feedhanjum.back_end.auth.exception.PasswordResetTokenNotValidException;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Random;
 
 @Getter
-public class SignupToken {
+public class PasswordResetToken {
     public static final int TOKEN_LENGTH = 4;
     public static final int EXPIRE_MINUTE = 10;
     private final String email;
@@ -16,7 +15,7 @@ public class SignupToken {
     private final LocalDateTime expireDate;
 
 
-    private SignupToken(String email, String code) {
+    PasswordResetToken(String email, String code) {
         this.email = email;
         this.code = code;
         expireDate = LocalDateTime.now().plusMinutes(EXPIRE_MINUTE);
@@ -31,18 +30,18 @@ public class SignupToken {
         return token;
     }
 
-    public static SignupToken generateNewToken(String email) {
-        return new SignupToken(email, generateCode());
+    public static PasswordResetToken generateNewToken(String email) {
+        return new PasswordResetToken(email, generateCode());
     }
 
     /**
-     * @throws SignupTokenNotValidException 토큰 검증 실패
+     * @throws PasswordResetTokenNotValidException 토큰 검증 실패
      */
     public void validateToken(String email, String code) {
         if (this.email.equals(email) && this.code.equals(code))
             return;
         if (LocalDateTime.now().isBefore(expireDate))
             return;
-        throw new SignupTokenNotValidException();
+        throw new PasswordResetTokenNotValidException();
     }
 }
