@@ -30,9 +30,9 @@ public class TeamMember {
     @OneToMany(mappedBy = "teamMember")
     private final List<FrequentFeedbackRequest> frequentFeedbackRequests = new ArrayList<>();
 
-    public TeamMember(Team team, Member member) {
+    TeamMember(Team team, Member member) {
         this.team = team;
         this.member = member;
     }
-    
+
 }
