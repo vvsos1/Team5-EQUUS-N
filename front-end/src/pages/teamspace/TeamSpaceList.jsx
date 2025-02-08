@@ -4,6 +4,7 @@ import NavBar2 from '../../components/NavBar2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import { useNavigate } from 'react-router-dom';
 import TeamElement from './components/TeamElement';
+import { checkIsFinished } from '../../utility/time';
 
 export default function TeamSpaceList() {
   const navigate = useNavigate();
@@ -36,17 +37,23 @@ export default function TeamSpaceList() {
       </div>
       <ul className='flex flex-col gap-4'>
         {teams &&
-          teams.map((team) => (
-            <li key={team.id}>
-              <TeamElement
-                teamName={team.name}
-                startDate={team.startDate}
-                endDate={team.endDate}
-                teamMembers={team.teamMembers}
-                isDeleted={team.isDeleted}
-              />
-            </li>
-          ))}
+          teams
+            .filter((team) => {
+              if (showEndedTeams) {
+                return checkIsFinished(team.endDate);
+              }
+              return !checkIsFinished(team.endDate);
+            })
+            .map((team) => (
+              <li key={team.id}>
+                <TeamElement
+                  teamName={team.name}
+                  startDate={team.startDate}
+                  endDate={team.endDate}
+                  teamMembers={team.teamMembers}
+                />
+              </li>
+            ))}
       </ul>
     </div>
   );

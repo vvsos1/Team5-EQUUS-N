@@ -17,7 +17,7 @@ export default function TeamElement({
   startDate,
   endDate,
   teamMembers = [],
-  isDeleted,
+  isEnded,
 }) {
   const imageGap = 20;
   const zIndexGap = 10;
@@ -25,7 +25,7 @@ export default function TeamElement({
   return (
     <li
       className={`rounded-400 flex h-fit w-full flex-col items-center justify-between gap-4 bg-gray-800 p-5 ${
-        isDeleted ? 'opacity-60' : ''
+        isEnded ? 'opacity-60' : ''
       }`}
     >
       <div className='relative flex w-full justify-between'>
@@ -74,47 +74,3 @@ export default function TeamElement({
     </li>
   );
 }
-
-// 미리 짜둔 예시 코드
-/* <TeamElement
-          teamName='팀 이름'
-          startDate='2025-01-01'
-          endDate='2025-01-01'
-          teamMembers={[
-            {
-              name: '한준호',
-              iconName: 'panda',
-              color: '#90C18A',
-            },
-            {
-              name: '박명규',
-              iconName: 'penguin',
-              color: '#AFD1DC',
-            },
-            // {
-            //   name: '임세준',
-            //   iconName: 'rooster',
-            //   color: '#62BFCA',
-            // },
-            // {
-            //   name: '한준호',
-            //   iconName: 'panda',
-            //   color: '#90C18A',
-            // },
-            // {
-            //   name: '박명규',
-            //   iconName: 'penguin',
-            //   color: '#AFD1DC',
-            // },
-            // {
-            //   name: '임세준',
-            //   iconName: 'rooster',
-            //   color: '#62BFCA',
-            // },
-            // {
-            //   name: '한준호',
-            //   iconName: 'panda',
-            //   color: '#90C18A',
-            // },
-          ]}
-        /> */
