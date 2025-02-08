@@ -2,6 +2,10 @@ import { useState } from 'react';
 import Icon from '../../../components/Icon';
 import ProfileImage from '../../../components/ProfileImage';
 import Tag from '../../../components/Tag';
+import {
+  useFeedbackCancelLike,
+  useFeedbackLike,
+} from '../../../api/useFeedback';
 
 export const FeedBackType = Object.freeze({
   SELF: 'SELF',
@@ -20,7 +24,13 @@ export default function FeedBack({ feedbackType, data }) {
   const teamMate = feedbackType === 'RECEIVE' ? data.sender : data.receiver;
   const date = data.createdAt.split('T')[0].replace(/-/g, '.');
 
+  const { mutate: likeFeedback } = useFeedbackLike(1, data.feedbackId);
+  const { mutate: cancelLikeFeedback } = useFeedbackCancelLike(
+    1,
+    data.feedbackId,
+  );
   const [isLiked, setIsLiked] = useState(data.liked);
+
   return (
     <div className='flex flex-col gap-5 border-b-8 border-gray-800 bg-gray-900 py-5'>
       <div className='flex items-end gap-3'>
@@ -76,10 +86,20 @@ export default function FeedBack({ feedbackType, data }) {
             {FeedBackType[feedbackType] === FeedBackType.RECEIVE &&
               // 받은 피드백의 경우 하트 토글 가능
               (isLiked ?
-                <button onClick={() => setIsLiked(false)}>
+                <button
+                  onClick={() => {
+                    setIsLiked(false);
+                    cancelLikeFeedback();
+                  }}
+                >
                   <Icon name='heartFill' />
                 </button>
-              : <button onClick={() => setIsLiked(true)}>
+              : <button
+                  onClick={() => {
+                    setIsLiked(true);
+                    likeFeedback();
+                  }}
+                >
                   <Icon name='heartDefault' />
                 </button>)}
             {FeedBackType[feedbackType] === FeedBackType.SEND && isLiked && (
