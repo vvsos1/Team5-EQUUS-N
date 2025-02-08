@@ -6,6 +6,7 @@ import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.domain.PasswordResetToken;
 import com.feedhanjum.back_end.auth.domain.SignupToken;
 import com.feedhanjum.back_end.auth.exception.PasswordResetTokenNotValidException;
+import com.feedhanjum.back_end.auth.exception.PasswordResetTokenVerifyRequiredException;
 import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
 import com.feedhanjum.back_end.auth.exception.SignupTokenVerifyRequiredException;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
@@ -27,6 +28,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -155,9 +159,15 @@ public class AuthController {
     public ResponseEntity<PasswordResetEmailSendResponse> sendPasswordResetEmail(
             HttpSession session,
             @Valid @RequestBody PasswordResetEmailSendRequest request) {
-        PasswordResetToken passwordResetToken = authService.sendPasswordResetEmail(request.email());
-        session.setAttribute(SessionConst.PASSWORD_RESET_TOKEN, passwordResetToken);
-        PasswordResetEmailSendResponse passwordResetEmailSendResponse = new PasswordResetEmailSendResponse(passwordResetToken.getExpireDate());
+        Optional<PasswordResetToken> passwordResetTokenOptional = authService.sendPasswordResetEmail(request.email());
+        PasswordResetEmailSendResponse passwordResetEmailSendResponse;
+        if (passwordResetTokenOptional.isEmpty()) {
+            passwordResetEmailSendResponse = new PasswordResetEmailSendResponse(LocalDateTime.now().plusMinutes(PasswordResetToken.EXPIRE_MINUTE));
+        } else {
+            PasswordResetToken passwordResetToken = passwordResetTokenOptional.get();
+            session.setAttribute(SessionConst.PASSWORD_RESET_TOKEN, passwordResetToken);
+            passwordResetEmailSendResponse = new PasswordResetEmailSendResponse(passwordResetToken.getExpireDate());
+        }
         return ResponseEntity.ok(passwordResetEmailSendResponse);
     }
 
@@ -175,6 +185,25 @@ public class AuthController {
         authService.validatePasswordResetToken(passwordResetToken, request.email(), request.code());
         session.setAttribute(SessionConst.PASSWORD_RESET_TOKEN_VERIFIED_EMAIL, passwordResetToken.getEmail());
         session.removeAttribute(SessionConst.PASSWORD_RESET_TOKEN);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @Operation(summary = "비밀번호 초기화", description = "비밀번호를 초기화한다. 미리 비밀번호 초기화 이메일 토큰 인증이 완료되었어야 한다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "비밀번호 초기화 성공"),
+            @ApiResponse(responseCode = "401", description = "비밀번호 검증 토큰 인증 필요")
+    })
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(HttpSession session,
+                                              @Valid @RequestBody PasswordResetRequest request
+    ) {
+        Object emailObject = session.getAttribute(SessionConst.PASSWORD_RESET_TOKEN_VERIFIED_EMAIL);
+        if (!(emailObject instanceof String email) || !email.equals(request.email())) {
+            throw new PasswordResetTokenVerifyRequiredException();
+        }
+        authService.resetPassword(request.email(), request.newPassword());
+        session.removeAttribute(SessionConst.PASSWORD_RESET_TOKEN_VERIFIED_EMAIL);
         return ResponseEntity.noContent().build();
     }
 

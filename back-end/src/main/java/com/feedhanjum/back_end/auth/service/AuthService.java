@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -91,7 +93,15 @@ public class AuthService {
     }
 
 
-    public PasswordResetToken sendPasswordResetEmail(String email) {
+    /**
+     * @return 이메일 발송시도를 성공한 경우 발송한 토큰 정보. 회원가입된 이메일이 아니라면 Optional.empty()
+     */
+    public Optional<PasswordResetToken> sendPasswordResetEmail(String email) {
+        Optional<MemberDetails> memberDetails = memberDetailsRepository.findByEmail(email);
+        if (memberDetails.isEmpty()) {
+            return Optional.empty();
+        }
+
         PasswordResetToken token = PasswordResetToken.generateNewToken(email);
         emailService.sendMail(
                 email,
@@ -100,7 +110,7 @@ public class AuthService {
                 token.getCode() +
                 " 유효기간은 " + PasswordResetToken.EXPIRE_MINUTE + "분입니다"
         );
-        return token;
+        return Optional.of(token);
     }
 
 
@@ -112,10 +122,24 @@ public class AuthService {
     }
 
 
+    /**
+     * @throws RuntimeException 이메일로 가입된 사용자가 없을 경우. 앞선 검증 로직 상 발생할 수 없음
+     */
+    @Transactional
+    public void resetPassword(String email, String newPassword) {
+        MemberDetails memberDetails = memberDetailsRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("가입되지 않은 사용자입니다"));
+
+        String newHashedPassword = passwordEncoder.encode(newPassword);
+        memberDetails.changePassword(newHashedPassword);
+    }
+
+
     private void validateEmail(String email) {
         memberDetailsRepository.findByEmail(email)
                 .ifPresent(existingMember -> {
                     throw new EmailAlreadyExistsException("이미 사용 중인 이메일입니다.");
                 });
     }
+
 }

@@ -15,9 +15,6 @@ public class AuthControllerAdvice {
 
     /**
      * 이메일이 존재하는 경우
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> emailAlreadyExists(EmailAlreadyExistsException e) {
@@ -29,9 +26,6 @@ public class AuthControllerAdvice {
 
     /**
      * 아이디 혹은 비밀번호가 일치하지 않아, 자격 증명에 실패했을 경우
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<Map<String, String>> invalidCredentials(InvalidCredentialsException e) {
@@ -43,9 +37,6 @@ public class AuthControllerAdvice {
 
     /**
      * 사용자가 로그인 상태가 아닐 경우
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(LoginStateRequiredException.class)
     public ResponseEntity<Map<String, String>> loginStateRequired(LoginStateRequiredException e) {
@@ -55,6 +46,9 @@ public class AuthControllerAdvice {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    /**
+     * 회원가입 토큰 검증이 실패한 경우
+     */
     @ExceptionHandler(SignupTokenNotValidException.class)
     public ResponseEntity<Map<String, String>> signupTokenNotValid(SignupTokenNotValidException e) {
         Map<String, String> errorResponse = new HashMap<>();
@@ -62,6 +56,9 @@ public class AuthControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * 회원가입 토큰 인증을 하지 않고 회원가입을 시도한 경우
+     */
     @ExceptionHandler(SignupTokenVerifyRequiredException.class)
     public ResponseEntity<Map<String, String>> signupTokenNotValid(SignupTokenVerifyRequiredException e) {
         Map<String, String> errorResponse = new HashMap<>();
@@ -69,10 +66,23 @@ public class AuthControllerAdvice {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    /**
+     * 비밀번호 초기화 토큰 검증에 실패한 경우
+     */
     @ExceptionHandler(PasswordResetTokenNotValidException.class)
     public ResponseEntity<Map<String, String>> passwordTokenNotValid(PasswordResetTokenNotValidException e) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "PASSWORD_RESET_TOKEN_NOT_VALID");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    /**
+     * 비밀번호 초기화 토큰 인증을 하지 않고 비밀번호 초기화를 시도한 경우
+     */
+    @ExceptionHandler(PasswordResetTokenVerifyRequiredException.class)
+    public ResponseEntity<Map<String, String>> passwordTokenNotValid(PasswordResetTokenVerifyRequiredException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "PASSWORD_RESET_TOKEN_VERIFY_REQUIRED");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 }
