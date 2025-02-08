@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.member.controller;
 
 import com.feedhanjum.back_end.member.controller.dto.MemberDto;
+import com.feedhanjum.back_end.member.controller.dto.ProfileChangeRequest;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.service.MemberService;
@@ -48,37 +49,21 @@ class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("회원 이름 변경 컨트롤러 동작 확인")
-    void changeName_이름변경() {
+    @DisplayName("회원 정보 변경 컨트롤러 동작 확인")
+    void changeProfile_프로필변경() {
         // given
         Long memberId = 1L;
         String newName = "hoho";
+        ProfileImage profileImage = new ProfileImage("haha", "hehe");
         Member member = new Member(newName, "hoho", new ProfileImage("huhu", "hehe"));
-        when(memberService.changeName(memberId, newName)).thenReturn(member);
+        when(memberService.changeProfile(memberId, newName, profileImage)).thenReturn(member);
+        ProfileChangeRequest profileChangeRequest = new ProfileChangeRequest(newName, profileImage);
         // when
-        ResponseEntity<MemberDto> response = memberController.changeName(memberId, newName);
+        ResponseEntity<MemberDto> response = memberController.changeProfile(memberId, profileChangeRequest);
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         MemberDto memberDto = response.getBody();
         assertThat(memberDto).isNotNull();
         assertThat(memberDto.name()).isEqualTo(newName);
-    }
-
-    @Test
-    @DisplayName("회원 프로필 이미지 변경 컨트롤러 동작 확인")
-    void changeProfileImage_프로필이미지_변경() {
-        // given
-        Long memberId = 1L;
-        ProfileImage newProfileImage = new ProfileImage("green", "img2.png");
-        Member newMember = new Member("haha", "hoho", newProfileImage);
-        when(memberService.changeProfileImage(memberId, newProfileImage)).thenReturn(newMember);
-        // when
-        ResponseEntity<MemberDto> response = memberController.changeProfileImage(memberId, newProfileImage);
-        // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        MemberDto memberDto = response.getBody();
-        assertThat(memberDto).isNotNull();
-        assertThat(memberDto.profileImage().getBackgroundColor()).isEqualTo("green");
-        assertThat(memberDto.profileImage().getImage()).isEqualTo("img2.png");
     }
 }
