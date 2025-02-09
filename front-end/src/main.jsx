@@ -11,7 +11,9 @@ async function enableMocking() {
 
   // `worker.start()` returns a Promise that resolves
   // once the Service Worker is up and ready to intercept requests.
-  return worker.start();
+  return worker.start({
+    onUnhandledRequest: 'bypass', // handler에 없는 요청은 처리 안함
+  });
 }
 
 enableMocking().then(() => {
