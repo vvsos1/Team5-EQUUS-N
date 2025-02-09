@@ -1,12 +1,16 @@
 package com.feedhanjum.back_end.member.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Schema(description = "피드백 선호 정보",
+        allowableValues = {"완곡한", "솔직한", "가벼운", "신중한", "간단한", "구체적인", "칭찬과 함께", "유머러스한", "현실적인", "이상적인", "논리적인", "핵심적인", "발전적인", "대안을 제시하는", "명확한", "색다른"}
+)
 public enum FeedbackPreference {
     EUPHEMISTIC("완곡한"),
     HONEST("솔직한"),
