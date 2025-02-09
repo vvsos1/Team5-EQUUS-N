@@ -12,11 +12,11 @@ const BASE_URL = 'https://api.com';
  * @template T
  * @param {string} method - HTTP 메서드 (GET, POST, PUT, PATCH, DELETE)
  * @param {string} url - API URL
- * @param {Object} [body] - 요청 바디 (옵션)
  * @param {Object} [params] - URL 파라미터 (옵션)
+ * @param {Object} [body] - 요청 바디 (옵션)
  * @returns {Promise<T>} - JSON 파싱된 응답 데이터
  */
-const request = async (method, url, body, params = {}) => {
+const request = async (method, url, params = {}, body) => {
   /** @type {RequestOptions} */
   const options = {
     method,
@@ -54,49 +54,54 @@ export const api = {
   /**
    * GET 요청
    * @template T
-   * @param {string} url - API URL
-   * @param {Object} [params] - URL 파라미터
+   * @param {object} props
+   * @param {string} props.url - API URL
+   * @param {Object} [props.params] - URL 파라미터
    * @returns {Promise<T>}
    */
-  get: (url, params) => request('GET', url, params),
+  get: ({ url, params }) => request('GET', url, params),
 
   /**
    * POST 요청
    * @template T
-   * @param {string} url - API URL
-   * @param {Object} body - 요청 바디
-   * @param {Object} [params] - URL 파라미터
+   * @param {object} props
+   * @param {string} props.url - API URL
+   * @param {Object} [props.params] - URL 파라미터
+   * @param {Object} props.body - 요청 바디
    * @returns {Promise<T>}
    */
-  post: (url, body, params) => request('POST', url, body, params),
+  post: ({ url, params, body }) => request('POST', url, params, body),
 
   /**
    * PUT 요청
    * @template T
-   * @param {string} url - API URL
-   * @param {Object} body - 요청 바디
-   * @param {Object} [params] - URL 파라미터
+   * @param {object} props
+   * @param {string} props.url - API URL
+   * @param {Object} [props.params] - URL 파라미터
+   * @param {Object} props.body - 요청 바디
    *
    * @returns {Promise<T>}
    */
-  put: (url, body, params) => request('PUT', url, body, params),
+  put: ({ url, body, params }) => request('PUT', url, params, body),
 
   /**
    * PATCH 요청
    * @template T
-   * @param {string} url - API URL
-   * @param {Object} body - 요청 바디
-   * @param {Object} [params] - URL 파라미터
+   * @param {object} props
+   * @param {string} props.url - API URL
+   * @param {Object} [props.params] - URL 파라미터
+   * @param {Object} props.body - 요청 바디
    * @returns {Promise<T>}
    */
-  patch: (url, body, params) => request('PATCH', url, body, params),
+  patch: ({ url, body, params }) => request('PATCH', url, params, body),
 
   /**
    * DELETE 요청
    * @template T
-   * @param {string} url - API URL
-   * @param {Object} [params] - URL 파라미터
+   * @param {object} props
+   * @param {string} props.url - API URL
+   * @param {Object} [props.params] - URL 파라미터
    * @returns {Promise<T>}
    */
-  delete: (url, params) => request('DELETE', url, params),
+  delete: ({ url, params }) => request('DELETE', url, params),
 };
