@@ -22,6 +22,7 @@ export default function NavBar2({
   return (
     <div className='h-navBar flex w-full items-center justify-center'>
       <button
+        className='pr-8'
         onClick={
           canPop ? onClickPop
           : canClose ?
@@ -39,11 +40,11 @@ export default function NavBar2({
       <div className='flex flex-1 items-center justify-center'>
         <p className='subtitle-2 text-gray-100'>{title}</p>
       </div>
-      <div className='m-4 h-6 w-6 cursor-pointer' onClick={onClickClose}>
-        {canClose && !isCloseLeft ?
+      {canClose && !isCloseLeft ?
+        <button className='m-4 h-6 w-6' onClick={onClickClose}>
           <Icon name={'delete'} color={'var(--color-gray-100)'} />
-        : null}
-      </div>
+        </button>
+      : <div className='m-4 h-6 w-6' />}
     </div>
   );
 }
