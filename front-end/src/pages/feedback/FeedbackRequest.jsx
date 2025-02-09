@@ -7,12 +7,11 @@ import { useState } from 'react';
 import { showToast } from '../../utility/handleToast';
 import { useFeedbackRequest } from '../../api/useFeedback2';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { completeType } from './FeedbackComplete';
 
 export default function FeedbackRequest() {
   const [textLength, setTextLength] = useState(0);
   const [textContent, setTextContent] = useState('');
-
-  const mutation = useFeedbackRequest();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -20,6 +19,10 @@ export default function FeedbackRequest() {
   const queryParams = new URLSearchParams(location.search);
   const receiverId = queryParams.get('receiverId');
   const receiverName = queryParams.get('receiverName');
+
+  const mutation = useFeedbackRequest(() =>
+    navigate(`/feedback/complete/?type=${'REQUEST'}`, { replace: true }),
+  );
 
   return (
     <div className='flex size-full flex-col'>
@@ -43,7 +46,7 @@ export default function FeedbackRequest() {
       <FooterWrapper>
         <LargeButton
           isOutlined={false}
-          text='보내기'
+          text={mutation.isPending ? '로딩중' : '보내기'} // 로딩 중일 때 버튼 텍스트 변경... 추후 수정 필요
           disabled={textLength === 0 ? true : false}
           onClick={() => {
             if (textLength === 0) showToast('내용을 입력해주세요');

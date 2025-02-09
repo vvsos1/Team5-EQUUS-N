@@ -41,6 +41,9 @@ export const handlers = [
       const data = await request.json();
       console.log(data);
 
+      // 2초 딜레이 추가
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       return HttpResponse.json(data, { status: 201 });
     },
   ),

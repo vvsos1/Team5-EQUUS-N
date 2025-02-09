@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from './baseApi';
 
-export const useFeedbackRequest = () => {
+export const useFeedbackRequest = (afterSuccess) => {
   // const queryClient = useQueryClient();
   return useMutation({
     /**
@@ -23,6 +23,7 @@ export const useFeedbackRequest = () => {
       }),
     onSuccess: (data) => {
       // queryClient.invalidateQueries({ queryKey: ['feedback-sent'] }); // 추후 고민...
+      afterSuccess();
     },
     onError: (error) => {
       console.error('전송실패', error);
