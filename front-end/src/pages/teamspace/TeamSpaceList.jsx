@@ -45,15 +45,19 @@ export default function TeamSpaceList() {
               return !checkIsFinished(team.endDate);
             })
             .map((team) => (
-              <TeamElement
+              <button
+                onClick={() => navigate(`/teamspace/manage/${team.id}`)}
                 key={team.id}
-                teamId={team.id}
-                teamName={team.name}
-                startDate={team.startDate}
-                endDate={team.endDate}
-                teamMembers={team.teamMembers}
-                isEnded={showEndedTeams}
-              />
+              >
+                <TeamElement
+                  teamId={team.id}
+                  teamName={team.name}
+                  startDate={team.startDate}
+                  endDate={team.endDate}
+                  teamMembers={team.teamMembers}
+                  isEnded={showEndedTeams}
+                />
+              </button>
             ))}
       </ul>
     </div>

@@ -40,7 +40,9 @@ export default function TeamElement({
       }`}
     >
       <div className='relative flex w-full justify-between'>
-        <p className='subtitle-1 relative flex-1 text-gray-100'>{teamName}</p>
+        <p className='subtitle-1 relative flex-1 text-start text-gray-100'>
+          {teamName}
+        </p>
         {teamMembers.map((member, index) => {
           if (index <= maxShow) {
             return (

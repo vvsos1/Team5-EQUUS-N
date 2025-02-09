@@ -17,6 +17,8 @@ import TeamSpaceList from './pages/teamspace/TeamSpaceList';
 import NotificationPage from './pages/main/NotificationPage';
 import FeedbackReceived from './pages/feedback/FeedbackReceived';
 import FeedbackSent from './pages/feedback/FeedbackSent';
+import TeamSpaceManage from './pages/teamspace/TeamSpaceManage';
+import TeamSpaceEdit from './pages/teamspace/TeamSpaceEdit';
 
 const queryClient = new QueryClient();
 
@@ -44,6 +46,10 @@ export default function App() {
                 <Route path='success' element={<TeamSpaceMakeSuccess />} />
               </Route>
               <Route path='list' element={<TeamSpaceList />} />
+              <Route path='manage/:teamId'>
+                <Route index element={<TeamSpaceManage />} />
+                <Route path='edit' element={<TeamSpaceEdit />} />
+              </Route>
             </Route>
             <Route path='calendar' element={<Calendar />} />
             <Route path='main'>

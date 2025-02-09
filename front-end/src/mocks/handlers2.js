@@ -16,6 +16,7 @@ import {
   members2,
   feedbackReceivedResponse,
   feedbackSentResponse,
+  teamResponse,
 } from './mockData2';
 
 const BASE_URL = 'https://api.com';
@@ -80,6 +81,11 @@ export const handlers2 = [
   //   return HttpResponse.json(deleteScheduleResponse);
   // }),
 
+  // 팀 조회
+  http.get(`${BASE_URL}/api/team/:teamId`, () => {
+    return HttpResponse.json(teamResponse);
+  }),
+
   // 팀 멤버 조회
   http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
     return HttpResponse.json(members2);
@@ -110,4 +116,24 @@ export const handlers2 = [
       return HttpResponse.json({ message: '좋아요를 취소했습니다' });
     },
   ),
+
+  // 리더 변경
+  http.post(`${BASE_URL}/api/team/:teamId/leader`, () => {
+    return new HttpResponse({ status: 200 });
+  }),
+
+  // 멤버 삭제
+  http.delete(`${BASE_URL}/api/team/:teamId/member/:memberId`, () => {
+    return new HttpResponse({ status: 204 });
+  }),
+
+  // 팀 수정
+  http.post(`${BASE_URL}/api/team/:teamId`, () => {
+    return HttpResponse.json(teamResponse);
+  }),
+
+  // 팀 삭제
+  http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {
+    return HttpResponse.json(teamResponse);
+  }),
 ];
