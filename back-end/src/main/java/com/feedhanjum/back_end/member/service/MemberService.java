@@ -64,4 +64,12 @@ public class MemberService {
             throw new TeamMembershipNotFoundException("속해있는 팀에 대한 정보만 접근 가능합니다.");
         return memberQueryRepository.findMembersByTeamId(teamId);
     }
+
+    /**
+     * @throws EntityNotFoundException 해당 사용자를 찾을 수 없는 경우
+     */
+    @Transactional(readOnly = true)
+    public Member getMemberFeedbackPreference(Long memberId) {
+        return memberRepository.findMemberAndFeedbackPreferenceById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
+    }
 }
