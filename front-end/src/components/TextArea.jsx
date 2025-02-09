@@ -6,10 +6,13 @@ export default function TextArea({
   isWithGpt = false,
   canToggleAnonymous = false,
   generatedByGpt = false,
+  isAnonymous = false,
+  toggleAnonymous,
+  textLength,
+  setTextLength,
+  setTextContent,
 }) {
-  const [textLength, setTextLength] = useState(0);
   const [overflownIndex, setOverflownIndex] = useState();
-  const [isAnonymous, toggleAnonymous] = useReducer((state) => !state, false);
 
   const onInput = (e) => {
     const { byteCount, overflowedIndex } = transformToBytes(e.target.value);
@@ -24,6 +27,8 @@ export default function TextArea({
     } else {
       if (overflownIndex) setOverflownIndex(null);
     }
+
+    setTextContent(e.target.value);
   };
 
   return (
