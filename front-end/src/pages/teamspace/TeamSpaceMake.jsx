@@ -5,14 +5,9 @@ import NavBar2 from '../../components/NavBar2';
 import Icon from '../../components/Icon';
 import LargeButton from '../../components/buttons/LargeButton';
 import { useNavigate } from 'react-router-dom';
-import { DropdownLarge } from '../../components/Dropdown';
-import DatePicker from 'react-datepicker';
 
 import { showToast } from '../../utility/handleToast';
-import {
-  checkTeamSpaceMakingInfo,
-  isValidTeamName,
-} from '../../utility/inputChecker';
+import { checkTeamSpaceMakingInfo } from '../../utility/inputChecker';
 import CustomDatePicker, {
   DatePickerDropdown,
 } from '../../components/CustomDatePicker';

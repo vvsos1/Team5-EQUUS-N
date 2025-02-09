@@ -126,4 +126,14 @@ export const handlers2 = [
   http.delete(`${BASE_URL}/api/team/:teamId/member/:memberId`, () => {
     return new HttpResponse({ status: 204 });
   }),
+
+  // 팀 수정
+  http.post(`${BASE_URL}/api/team/:teamId`, () => {
+    return HttpResponse.json(teamResponse);
+  }),
+
+  // 팀 삭제
+  http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {
+    return HttpResponse.json(teamResponse);
+  }),
 ];

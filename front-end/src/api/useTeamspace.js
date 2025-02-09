@@ -33,3 +33,20 @@ export const useKickMember = (teamId) => {
     },
   });
 };
+
+export const useEditTeam = (teamId) => {
+  return useMutation({
+    mutationFn: (teamInfo) => {
+      const sendingData = teamInfo;
+      api.post({ url: `/api/team/${teamId}/`, body: sendingData });
+    },
+  });
+};
+
+export const useDeleteTeam = (teamId) => {
+  return useMutation({
+    mutationFn: () => {
+      api.delete({ url: `/api/team/${teamId}/leave` });
+    },
+  });
+};

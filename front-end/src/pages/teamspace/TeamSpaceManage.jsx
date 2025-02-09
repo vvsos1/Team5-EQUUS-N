@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import NavBar2 from '../../components/NavBar2';
 import Tag, { TagType } from '../../components/Tag';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
@@ -12,6 +12,7 @@ export default function TeamSpaceManage() {
   const { teamId } = useParams();
   const [iamLeader, setIamLeader] = useState(false);
   const { data: team } = useTeam(teamId);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (team) {
@@ -28,7 +29,7 @@ export default function TeamSpaceManage() {
         <NavBar2
           canPop={true}
           title='팀 스페이스 관리'
-          onClickClose={() => {
+          onClickPop={() => {
             navigate(-1);
           }}
         />
@@ -37,7 +38,13 @@ export default function TeamSpaceManage() {
         <div className='header-1 flex items-center gap-2 text-gray-100'>
           <h1 className='text-gray-100'>{team?.teamResponse?.name}</h1>
           {iamLeader && (
-            <button>
+            <button
+              onClick={() => {
+                navigate(`/teamspace/manage/${teamId}/edit`, {
+                  state: team,
+                });
+              }}
+            >
               <Icon name='edit' />
             </button>
           )}
