@@ -33,4 +33,15 @@ export const handlers = [
       return HttpResponse.json(responseData, { status: 201 });
     },
   ),
+
+  // 피드백 요청
+  http.post(
+    `${BASE_URL}/api/feedbacks/frequent/request`,
+    async ({ request }) => {
+      const data = await request.json();
+      console.log(data);
+
+      return HttpResponse.json(data, { status: 201 });
+    },
+  ),
 ];
