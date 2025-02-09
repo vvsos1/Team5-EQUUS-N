@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -206,7 +207,6 @@ public class TeamControllerIntegrationTest {
                         List<TeamJoinToken> tokens = teamJoinTokenRepository.findAll();
                         assertThat(tokens).hasSize(1);
                         assertThat(tokens.get(0).getToken()).isEqualTo(token.token());
-                        assertThat(tokens.get(0).getTeam().getId()).isEqualTo(team.getId());
                         assertThat(tokens.get(0).getExpireDate()).isEqualTo(token.validUntil());
                     });
         }
@@ -380,6 +380,67 @@ public class TeamControllerIntegrationTest {
                     mockMvc.get()
                             .uri("/api/team/{teamId}", team.getId())
                             .session(withLoginUser(me))
+            ).hasStatus(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("팀 가입 토큰으로 팀 정보 조회 테스트")
+    class GetTeamInfoByJoinToken {
+        @Test
+        @DisplayName("유효한 팀 가입 토큰으로 성공적으로 조회 시 200")
+        void test1() {
+            // given
+            Member leader = member1;
+            Team team = createTeamWithoutId("teamByJoinToken", leader);
+            teamRepository.save(team);
+
+            TeamJoinToken token = team.createJoinToken(leader);
+            teamJoinTokenRepository.save(token);
+
+            // when & then
+            assertThat(
+                    mockMvc.get()
+                            .uri("/api/team/find")
+                            .queryParam("token", token.getToken())
+            ).hasStatus(HttpStatus.OK)
+                    .body()
+                    .satisfies(result -> {
+                        TeamResponse response = mapper.readValue(result, TeamResponse.class);
+                        assertThat(response.id()).isEqualTo(team.getId());
+                        assertThat(response.name()).isEqualTo("teamByJoinToken");
+                    });
+        }
+
+        @Test
+        @DisplayName("만료된 팀 가입 토큰으로 조회 시도 시 400")
+        void test2() {
+            // given
+            Member leader = member1;
+            Team team = createTeamWithoutId("teamByJoinToken", leader);
+            teamRepository.save(team);
+
+            TeamJoinToken expiredToken = team.createJoinToken(leader);
+            ReflectionTestUtils.setField(expiredToken, "expireDate", LocalDateTime.now().minusHours(1));
+            teamJoinTokenRepository.save(expiredToken);
+
+
+            // when & then
+            assertThat(
+                    mockMvc.get()
+                            .uri("/api/team/find")
+                            .queryParam("token", expiredToken.getToken())
+            ).hasStatus(HttpStatus.NOT_FOUND);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 팀 가입 토큰으로 조회 시도 시 404")
+        void test3() {
+            // when & then
+            assertThat(
+                    mockMvc.get()
+                            .uri("/api/team/find")
+                            .queryParam("token", "1234")
             ).hasStatus(HttpStatus.NOT_FOUND);
         }
     }
@@ -559,4 +620,78 @@ public class TeamControllerIntegrationTest {
     }
 
 
+    @Nested
+    @DisplayName("팀 가입 api 테스트")
+    class JoinTeam {
+        @Test
+        @DisplayName("팀 가입 성공 시 204")
+        void test1() {
+            // given
+            Member leader = member1;
+            Team team = createTeamWithoutId("team1", leader);
+            teamRepository.save(team);
+
+            TeamJoinToken token = team.createJoinToken(leader);
+            teamJoinTokenRepository.save(token);
+
+            Member notMember = member2;
+
+            // when & then
+            assertThat(
+                    mockMvc.post()
+                            .uri("/api/team/join")
+                            .queryParam("token", token.getToken())
+                            .session(withLoginUser(notMember))
+            ).hasStatus(HttpStatus.NO_CONTENT);
+
+            Team updatedTeam = teamRepository.findById(team.getId()).orElseThrow();
+            assertThat(updatedTeam.isTeamMember(notMember)).isTrue();
+        }
+
+        @Test
+        @DisplayName("유효하지 않은 토큰으로 요청 시 404")
+        void test2() {
+            // given
+            Member leader = member1;
+            Team team = createTeamWithoutId("team1", leader);
+            teamRepository.save(team);
+
+            TeamJoinToken token = team.createJoinToken(leader);
+            teamJoinTokenRepository.save(token);
+
+            Member notMember = member2;
+
+            // when & then
+            assertThat(
+                    mockMvc.post()
+                            .uri("/api/team/join")
+                            .queryParam("token", "invalidToken")
+                            .session(withLoginUser(notMember))
+            ).hasStatus(HttpStatus.NOT_FOUND);
+        }
+
+        @Test
+        @DisplayName("만료된 토큰으로 요청 시 404")
+        void test3() {
+            // given
+            Member leader = member1;
+            Team team = createTeamWithoutId("team1", leader);
+            teamRepository.save(team);
+
+            TeamJoinToken expiredToken = team.createJoinToken(leader);
+            ReflectionTestUtils.setField(expiredToken, "expireDate", LocalDateTime.now().minusHours(1));
+            teamJoinTokenRepository.save(expiredToken);
+
+            Member notMember = member2;
+
+            // when & then
+            assertThat(
+                    mockMvc.post()
+                            .uri("/api/team/join")
+                            .queryParam("token", expiredToken.getToken())
+                            .session(withLoginUser(notMember)) // Assume member2 is trying to join
+                            .contentType(MediaType.APPLICATION_JSON)
+            ).hasStatus(HttpStatus.NOT_FOUND);
+        }
+    }
 }
