@@ -9,10 +9,18 @@ import com.feedhanjum.back_end.notification.repository.WebPushSubscriptionReposi
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushAsyncService;
 import nl.martijndwars.webpush.Subscription;
+import org.asynchttpclient.Response;
+import org.jose4j.lang.JoseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,4 +48,28 @@ public class WebPushService {
         return webPushProperty.getVapid().getPublicKey();
     }
 
+
+    @Transactional(readOnly = true)
+    public void sendPushMessage(Long subscriberId, Object message) {
+        Member subscriber = memberRepository.findById(subscriberId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 회원을 찾을 수 없습니다."));
+        List<WebPushSubscription> subscriptions = subscriptionRepository.findAllBySubscriber(subscriber);
+        for (WebPushSubscription subscription : subscriptions) {
+            sendPushMessage(subscription.getSubscription(), message)
+                    .thenAccept(response -> log.info("Push message sent to {}: {}", subscriber.getName(), response))
+                    .exceptionally(e -> {
+                        log.info("Failed to send push message to {}", subscriber.getName(), e);
+                        return null;
+                    });
+        }
+    }
+
+    private CompletableFuture<Response> sendPushMessage(Subscription subscription, Object message) {
+        try {
+            Notification notification = new Notification(subscription, mapper.writeValueAsString(message));
+            return pushService.send(notification);
+        } catch (IOException | JoseException | GeneralSecurityException e) {
+            return CompletableFuture.failedFuture(e);
+        }
+    }
 }
