@@ -97,37 +97,3 @@ export default function TodoAdd({
     </div>
   );
 }
-
-// 메인페이지 import 추가
-// import ScheduleAction, {
-//   ScheduleActionType,
-// } from '../calendar/components/ScheduleAction';
-// import TodoAdd from '../calendar/components/TodoAdd';
-
-// 메인페이지 아래 추가
-/* {recentScheduleData && (
-        <ScheduleAction
-          type={ScheduleActionType.ADD}
-          isOpen={true}
-          onSubmit={() => {
-            // 닫기
-            // TODO: 일정 조회
-          }}
-          onClose={() => {
-            // 닫기
-          }}
-          selectedDateFromParent={new Date()}
-          selectedSchedule={recentScheduleData}
-        />
-      )} */
-/* <TodoAdd
-        isOpen={true}
-        onSubmit={() => {
-          // 닫기
-          // TODO: 할일 조회
-        }}
-        onClose={() => {
-          // 닫기
-        }}
-        selectedSchedule={recentScheduleData}
-      /> */
