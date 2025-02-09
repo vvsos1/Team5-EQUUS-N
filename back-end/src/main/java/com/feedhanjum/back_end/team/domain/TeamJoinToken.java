@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class TeamJoinToken {

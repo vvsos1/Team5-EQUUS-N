@@ -173,5 +173,4 @@ public class TeamController {
         teamService.joinTeam(memberId, token);
         return ResponseEntity.noContent().build();
     }
-
 }

@@ -207,6 +207,7 @@ public class TeamControllerIntegrationTest {
                         List<TeamJoinToken> tokens = teamJoinTokenRepository.findAll();
                         assertThat(tokens).hasSize(1);
                         assertThat(tokens.get(0).getToken()).isEqualTo(token.token());
+                      
                         assertThat(tokens.get(0).getExpireDate()).isEqualTo(token.validUntil());
                     });
         }
@@ -558,7 +559,7 @@ public class TeamControllerIntegrationTest {
     class DelegateLeader {
         @Test
         @DisplayName("성공 시 200")
-        void test1() {
+        void test1() throws JsonProcessingException {
             // given
             Member leader = member1;
             Member newLeader = member2;
@@ -569,9 +570,10 @@ public class TeamControllerIntegrationTest {
             // when & then
             assertThat(
                     mockMvc.post()
-                            .uri("/api/team/{teamId}/leader?newLeaderId={newLeaderId}", team.getId(), newLeader.getId())
+                            .uri("/api/team/{teamId}/leader", team.getId())
                             .session(withLoginUser(leader))
                             .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsBytes(newLeader.getId()))
             ).hasStatus(HttpStatus.OK);
 
             Team updatedTeam = teamRepository.findById(team.getId()).orElseThrow();
@@ -580,7 +582,7 @@ public class TeamControllerIntegrationTest {
 
         @Test
         @DisplayName("팀장이 아닌 사용자가 요청한 경우 403")
-        void test2() {
+        void test2() throws JsonProcessingException {
             // given
             Member leader = member1;
             Member nonLeader = member2;
@@ -593,9 +595,10 @@ public class TeamControllerIntegrationTest {
             // when & then
             assertThat(
                     mockMvc.post()
-                            .uri("/api/team/{teamId}/leader?newLeaderId={newLeaderId}", team.getId(), newLeader.getId())
+                            .uri("/api/team/{teamId}/leader", team.getId())
                             .session(withLoginUser(nonLeader))
                             .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsBytes(newLeader.getId()))
             ).hasStatus(HttpStatus.FORBIDDEN);
 
             Team unchangedTeam = teamRepository.findById(team.getId()).orElseThrow();
@@ -604,7 +607,7 @@ public class TeamControllerIntegrationTest {
 
         @Test
         @DisplayName("존재하지 않는 팀 또는 팀원에 대한 요청인 경우 404")
-        void test3() {
+        void test3() throws JsonProcessingException {
             // given
             Member leader = member1;
             teamRepository.save(createTeamWithoutId("team1", leader));
@@ -612,9 +615,10 @@ public class TeamControllerIntegrationTest {
             // when & then
             assertThat(
                     mockMvc.post()
-                            .uri("/api/team/{teamId}/leader?newLeaderId={newLeaderId}", Long.MAX_VALUE, Long.MAX_VALUE)
+                            .uri("/api/team/{teamId}/leader", Long.MAX_VALUE)
                             .session(withLoginUser(leader))
                             .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsBytes(Long.MAX_VALUE))
             ).hasStatus(HttpStatus.NOT_FOUND);
         }
     }
