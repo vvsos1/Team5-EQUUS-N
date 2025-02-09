@@ -215,25 +215,35 @@ export const members2 = [
     name: '백현식',
     email: 'baekhyeonsik@gmail.com',
     profileImage: {
-      backgroundColor: '#62BFCA',
-      image: 'penguin',
+      backgroundColor: '#F6BF77',
+      image: 'whale',
     },
   },
   {
-    id: 5145127,
+    id: 52345513,
     name: '한준호',
     email: 'hanjunho@gmail.com',
     profileImage: {
-      backgroundColor: '#62BFCA',
-      image: 'penguin',
+      backgroundColor: '#7EABD9',
+      image: 'panda',
     },
   },
   {
     id: 5145128,
     name: '박명규',
     email: 'parkmyeonggu@gmail.com',
+    profileImage: {
+      backgroundColor: '#F6D480',
+      image: 'parrot',
+    },
   },
 ];
+
+export const teamResponse = {
+  teamResponse: teams2[0],
+  members: members2,
+};
+
 export const feedbackReceivedResponse = {
   page: 1073741824,
   hasNext: true,
