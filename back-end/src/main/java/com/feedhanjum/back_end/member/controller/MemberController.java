@@ -2,6 +2,7 @@ package com.feedhanjum.back_end.member.controller;
 
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.member.controller.dto.MemberDto;
+import com.feedhanjum.back_end.member.controller.dto.MemberFeedbackPreferenceDto;
 import com.feedhanjum.back_end.member.controller.dto.ProfileChangeRequest;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
@@ -50,7 +51,19 @@ public class MemberController {
         return new ResponseEntity<>(memberDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "회원의 피드백 선호 정보를 변경한다.")
+
+    @Operation(summary = "피드백 선호 정보 조회", description = "회원의 피드백 선호 정보를 반환한다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원의 피드백 선호 정보를 반환한다."),
+            @ApiResponse(responseCode = "404", description = "해당 회원이 존재하지 않을 경우", content = @Content)
+    })
+    @GetMapping("/member/feedback-prefer")
+    public ResponseEntity<MemberFeedbackPreferenceDto> getFeedbackPreference(@Login Long memberId) {
+        MemberFeedbackPreferenceDto memberDto = new MemberFeedbackPreferenceDto(memberService.getMemberFeedbackPreference(memberId));
+        return new ResponseEntity<>(memberDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "피드백 선호 정보 변경", description = "회원의 피드백 선호 정보를 변경한다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "변경된 회원 정보를 반환한다. " +
                     "세션을 통해 받은 회원의 정보를 수정하기 때문에, 다른 회원의 정보를 수정할 수 없다."),
@@ -58,8 +71,8 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "해당 회원이 존재하지 않을 경우", content = @Content)
     })
     @PostMapping("/member/feedback-prefer")
-    public ResponseEntity<MemberDto> changeFeedbackPreference(@Login Long memberId, @Valid @RequestBody List<FeedbackPreference> feedbackPreferences) {
-        MemberDto memberDto = new MemberDto(memberService.changeFeedbackPreference(memberId, feedbackPreferences));
+    public ResponseEntity<MemberFeedbackPreferenceDto> changeFeedbackPreference(@Login Long memberId, @Valid @RequestBody List<FeedbackPreference> feedbackPreferences) {
+        MemberFeedbackPreferenceDto memberDto = new MemberFeedbackPreferenceDto(memberService.changeFeedbackPreference(memberId, feedbackPreferences));
         return new ResponseEntity<>(memberDto, HttpStatus.OK);
     }
 }
