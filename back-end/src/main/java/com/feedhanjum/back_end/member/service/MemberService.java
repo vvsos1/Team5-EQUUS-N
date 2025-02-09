@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.member.service;
 
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
@@ -39,6 +40,17 @@ public class MemberService {
         loginMember.changeName(name);
         loginMember.changeProfile(profileImage);
         return loginMember;
+    }
+
+    /**
+     * @throws IllegalArgumentException 피드백 선택이 요구사항을 만족하지 못했을 경우
+     * @throws EntityNotFoundException  해당 사용자를 찾을 수 없는 경우
+     */
+    @Transactional
+    public Member changeFeedbackPreference(Long memberId, List<FeedbackPreference> feedbackPreferences) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
+        member.changeFeedbackPreference(feedbackPreferences);
+        return member;
     }
 
     /**
