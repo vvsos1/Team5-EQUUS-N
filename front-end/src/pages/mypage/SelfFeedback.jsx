@@ -11,7 +11,6 @@ export default function SelfFeedback() {
   const { userId } = useParams();
   const [feedbacks, setFeedbacks] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('전체 보기');
-  const [onlyLiked, setOnlyLiked] = useState(false);
   const [sortBy, setSortBy] = useState('createdAt:desc');
   const [loadedPage, setLoadedPage] = useState(0);
   const scrollRef = useRef(null);
@@ -59,7 +58,7 @@ export default function SelfFeedback() {
     setLoadedPage(0);
     setFeedbacks([]);
     refetch();
-  }, [selectedTeam, onlyLiked, sortBy]);
+  }, [selectedTeam, sortBy]);
 
   console.log(feedbacks);
 
