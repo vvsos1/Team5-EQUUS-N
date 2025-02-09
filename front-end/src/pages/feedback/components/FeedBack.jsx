@@ -3,7 +3,7 @@ import Icon from '../../../components/Icon';
 import ProfileImage from '../../../components/ProfileImage';
 import Tag from '../../../components/Tag';
 import {
-  useFeedbackCancelLike,
+  useFeedbackLikeCancel,
   useFeedbackLike,
 } from '../../../api/useFeedback';
 
@@ -25,7 +25,7 @@ export default function FeedBack({ feedbackType, data }) {
   const date = data.createdAt.split('T')[0].replace(/-/g, '.');
 
   const { mutate: likeFeedback } = useFeedbackLike(1, data.feedbackId);
-  const { mutate: cancelLikeFeedback } = useFeedbackCancelLike(
+  const { mutate: cancelLikeFeedback } = useFeedbackLikeCancel(
     1,
     data.feedbackId,
   );
@@ -123,54 +123,3 @@ export default function FeedBack({ feedbackType, data }) {
     </div>
   );
 }
-
-// const feedbackData = [
-//     {
-//       feedbackType: 'RECEIVE',
-//       teamMate: '홍길동',
-//       teamName: '팀 이름',
-//       profileImage: {
-//         iconName: 'shark',
-//         color: '#62BFCA',
-//       },
-//       recordDate: '2025-01-29',
-//       content:
-//         '주요 내용을 좀 더 구체적으로 표현하면 이해하기 쉬울 것 같아요. 특히, 두 번째 섹션에서 예시를 추가하면 더 설득력이 높아질 것 같습니다!',
-//       keywords: [
-//         '명확하게 적기',
-//         '해결점 위주',
-//         '직설적인 말투',
-//         '항상 긍정적인 태도',
-//         '설득력',
-//       ],
-//       heart: true,
-//     },
-//     {
-//       feedbackType: 'SEND',
-//       teamMate: '홍길동',
-//       teamName: '팀 이름',
-//       profileImage: {
-//         iconName: 'shark',
-//         color: '#62BFCA',
-//       },
-//       recordDate: '2025-01-29',
-//       content:
-//         '주요 내용을 좀 더 구체적으로 표현하면 이해하기 쉬울 것 같아요. 특히, 두 번째 섹션에서 예시를 추가하면 더 설득력이 높아질 것 같습니다!',
-//       keywords: [
-//         '명확하게 적기',
-//         '해결점 위주',
-//         '직설적인 말투',
-//         '항상 긍정적인 태도',
-//         '설득력',
-//       ],
-//       heart: true,
-//     },
-//     {
-//       feedbackType: 'SELF',
-//       teamName: '팀 이름',
-//       scheduleName: '4주차 리서치 과제',
-//       recordDate: '2025.01.29',
-//       content:
-//         '이번 프로젝트를 통해 팀원들과의 소통이 얼마나 중요한지 다시 한번 느낌. 특히 중간 점검 회의에서 나온 피드백이 큰 도움이 되었고, 최종 결과물의 완성도를 높이는 데 기여했다. 다음에는 일정 관리를 더욱 철저히 하고, 사전 준비를 강화해야겠다고 느껴졌음.',
-//     },
-//   ];
