@@ -54,13 +54,13 @@ export default function FeedBack({ feedbackType, data }) {
               ) ?
                 '익명'
               : teamMate.name)
-            : data.teamName}
+            : data.title}
           </p>
           {/* 회고 아닌 경우 팀 이름 표시 || 회고인 경우 일정 표시 */}
           <p className='caption-1 text-gray-300'>
             {FeedBackType[feedbackType] !== FeedBackType.SELF ?
               data.teamName
-            : data.scheduleName}
+            : data.teamName}
           </p>
         </div>
         <div className='flex flex-col justify-between'>
@@ -76,7 +76,11 @@ export default function FeedBack({ feedbackType, data }) {
           {/* 익명으로 보낸 경우 익명태그 표시 */}
         </div>
       </div>
-      <p className='body-1 text-gray-0'>{data.subjectiveFeedback}</p>
+      <p className='body-1 text-gray-0'>
+        {FeedBackType[feedbackType] === FeedBackType.SELF ?
+          data.content
+        : data.subjectiveFeedback}
+      </p>
       {/* 회고 아닌 경우 키워드, 날짜, 하트 표시 */}
       {FeedBackType[feedbackType] !== FeedBackType.SELF && (
         <>
