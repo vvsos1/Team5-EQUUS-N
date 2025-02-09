@@ -15,6 +15,11 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../../slider.css';
 import { filterNotifications } from '../../utility/handleNotification';
+import { useNavigate } from 'react-router-dom';
+import { hideModal, showModal } from '../../utility/handleModal';
+import Modal, { ModalType } from '../../components/modals/Modal';
+import ProfileImage from '../../components/ProfileImage';
+import MediumButton from '../../components/buttons/MediumButton';
 
 export default function MainPage() {
   const [selectedTeamId, setSelectedTeamId] = useState(1);
@@ -25,6 +30,8 @@ export default function MainPage() {
   const { data: matesData } = useMainCard2(selectedTeamId);
   const { data: notificationsData, markAsRead } =
     useNotification(selectedTeamId);
+
+  const navigate = useNavigate();
 
   // TODO: 로딩 중 혹은 에러 발생 시 처리
 
@@ -65,7 +72,48 @@ export default function MainPage() {
         <MainCard recentSchedule={recentScheduleData} className='' />
       )}
       <div className='h-8' />
-      {matesData && <MainCard2 teamMates={matesData} className='' />}
+      {matesData && (
+        <MainCard2
+          teamMates={matesData}
+          onClick={(mate) =>
+            showModal(
+              <Modal
+                type={ModalType.PROFILE}
+                profileImage={
+                  <div className='size-[62px]'>
+                    <ProfileImage
+                      iconName={`@animals/${mate.iconName}`}
+                      color={mate.color}
+                    />
+                  </div>
+                }
+                content={`${mate.name}님에게`}
+                mainButton={
+                  <MediumButton
+                    text='피드백 보내기'
+                    onClick={() => {}}
+                    isOutlined={false}
+                    disabled={false}
+                  />
+                }
+                subButton={
+                  <MediumButton
+                    text='피드백 요청하기'
+                    onClick={() => {
+                      navigate(
+                        `/feedback/request?receiverId=${mate.id}&receiverName=${mate.name}`,
+                      );
+                      hideModal();
+                    }}
+                    isOutlined={true}
+                    disabled={false}
+                  />
+                }
+              />,
+            )
+          }
+        />
+      )}
       <div className='h-8' />
     </div>
   );

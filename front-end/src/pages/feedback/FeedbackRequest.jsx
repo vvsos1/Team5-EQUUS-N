@@ -3,46 +3,59 @@ import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import TextArea from '../../components/TextArea';
 import LargeButton from '../../components/buttons/LargeButton';
 import FooterWrapper from '../../components/wrappers/FooterWrapper';
-import MainCard from '../main/components/MainCard';
+import { useState } from 'react';
+import { showToast } from '../../utility/handleToast';
+import { useFeedbackRequest } from '../../api/useFeedback2';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function FeedbackRequest() {
+  const [textLength, setTextLength] = useState(0);
+  const [textContent, setTextContent] = useState('');
+
+  const mutation = useFeedbackRequest();
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const queryParams = new URLSearchParams(location.search);
+  const receiverId = queryParams.get('receiverId');
+  const receiverName = queryParams.get('receiverName');
+
   return (
     <div className='flex size-full flex-col'>
       <StickyWrapper>
         <NavBar2
           canPop={true}
           onClickPop={() => {
-            console.log('pop click');
+            navigate('/main');
           }}
         />
         <h1 className='header-2 text-gray-0 mt-6 whitespace-pre-line'>
-          {'백현식님에게 요청할\n피드백을 작성해주세요'}
+          {`${receiverName}님에게 요청할\n피드백을 작성해주세요`}
         </h1>
       </StickyWrapper>
-      <MainCard
-        recentSchedule={{
-          name: '동해물과',
-          start: '2022-02-05T00:00:00',
-          end: '2025-02-05T00:23:00',
-          roles: [
-            {
-              memberId: 1,
-              task: ['똥싸기', '씻기', '화장실 가기'],
-              name: '백현식',
-            },
-            {
-              memberId: 2,
-              task: ['밥먹기', '숨쉬기', '공부하기'],
-              name: '양준호',
-            },
-            { memberId: 3, task: ['게임하기', '피드백하기'], name: '김민수' },
-          ],
-        }}
+      <div className='h-6' />
+      <TextArea
+        textLength={textLength}
+        setTextLength={setTextLength}
+        setTextContent={setTextContent}
       />
-      <TextArea />
-      <TextArea />
       <FooterWrapper>
-        <LargeButton isOutlined={false} text='보내기' />
+        <LargeButton
+          isOutlined={false}
+          text='보내기'
+          disabled={textLength === 0 ? true : false}
+          onClick={() => {
+            if (textLength === 0) showToast('내용을 입력해주세요');
+            else if (textLength > 400) showToast('400자 이하로 작성해주세요');
+            else
+              mutation.mutate({
+                receiverId: receiverId,
+                teamId: 1, // 나중에 전역 상태에서 가져오기
+                requestedContent: textContent,
+              });
+          }}
+        />
       </FooterWrapper>
     </div>
   );
