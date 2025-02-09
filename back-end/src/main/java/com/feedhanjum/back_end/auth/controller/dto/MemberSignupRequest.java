@@ -7,6 +7,7 @@ import com.feedhanjum.back_end.member.domain.ProfileImage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public record MemberSignupRequest(
         @Schema(description = "사용자가 사용할 프로필 이미지")
         ProfileImage profileImage,
 
+        @NotNull
         @Schema(description = "사용자의 피드백 선호 정보")
         List<FeedbackPreference> feedbackPreference
 ) {

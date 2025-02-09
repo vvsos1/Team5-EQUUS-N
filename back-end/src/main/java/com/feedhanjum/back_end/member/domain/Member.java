@@ -54,6 +54,9 @@ public class Member {
     }
 
     private void setFeedbackPreference(List<FeedbackPreference> feedbackPreferences) {
+        if (feedbackPreferences == null) {
+            throw new IllegalArgumentException("피드백 선호 정보를 입력해주세요.");
+        }
         int countContentPreference = FeedbackPreference.countContentPreference(feedbackPreferences);
         int countStylePreference = FeedbackPreference.countStylePreference(feedbackPreferences);
         if (countContentPreference < 1 || countContentPreference > 2) {
