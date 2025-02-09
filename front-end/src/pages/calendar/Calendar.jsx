@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SelectedDateInfo } from './components/CalendarParts';
 import CalendarWeeks from './components/CalendarWeeks';
 import Accordion from '../../components/Accordion';
@@ -6,82 +6,48 @@ import ScheduleCard from './components/ScheduleCard';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import LargeButton from '../../components/buttons/LargeButton';
 import Icon from '../../components/Icon';
-import { checkIsFinished, timeInPeriod } from '../../utility/time';
+import { checkIsFinished, getRecentSunday } from '../../utility/time';
 import { ScheduleActionType } from './components/ScheduleAction';
 import ScheduleAction from './components/ScheduleAction';
 import { useGetSchedules } from '../../api/useCalendar';
-import { useMyTeams } from '../../api/useAuth';
+import { useLocation } from 'react-router-dom';
+import useSchedule from './hooks/useSchedule';
+import useScheduleAction from './hooks/useScheduleAction';
+import useCalendarScroll from './hooks/useCalendarScroll';
+import { teams2 } from '../../mocks/mockData2';
 
 export default function Calendar() {
-  const [allSchedules, setAllSchedules] = useState(null);
+  const location = useLocation();
   const [selectedDate, setSelectedDate] = useState(
-    new Date(new Date().setHours(0, 0, 0, 0)),
+    location.state?.initialDate ?? new Date('2025-01-24'),
   );
-  const [isScrolling, setIsScrolling] = useState(false);
-  const [selectedTeamId, setSelectedTeamId] = useState(1);
-  const scrollRef = useRef(null);
-  const [scheduleOnDate, setScheduleOnDate] = useState(null);
-  const [scheduleSet, setScheduleSet] = useState(new Set());
-  const [isDisplaying, setIsDisplaying] = useState(false);
-  const [actionType, setActionType] = useState(ScheduleActionType.ADD);
-  const [teamList, setTeamList] = useState([]);
+  const [searchingDate, setSearchingDate] = useState(
+    getRecentSunday(selectedDate),
+  );
 
-  const { data: schedules, isLoading: isSchedulesLoading } = useGetSchedules();
-  const { data: teams, isLoading: isTeamsLoading } = useMyTeams();
+  const { setAllSchedules, scheduleOnDate, scheduleSet } =
+    useSchedule(selectedDate);
+  const { doingAction, setDoingAction, actionType, setActionType } =
+    useScheduleAction();
+  const { scrollRef, isScrolling } = useCalendarScroll();
+
+  const {
+    data: schedules,
+    isLoading: isSchedulesLoading,
+    refetch,
+  } = useGetSchedules(
+    {
+      teamId: selectedTeamId,
+      startDay: searchingDate.toISOString(),
+      endDay: searchingDate.toISOString(),
+    },
+    setAllSchedules,
+  );
 
   useEffect(() => {
-    if (isSchedulesLoading || isTeamsLoading) return;
+    if (isSchedulesLoading) return;
     setAllSchedules(schedules);
-    setTeamList(teams);
-  }, [schedules, teams, isSchedulesLoading, isTeamsLoading]);
-
-  useEffect(() => {
-    setScheduleSet(
-      new Set(
-        allSchedules
-          ?.filter((data) => {
-            return data.teamId === selectedTeamId;
-          })
-          ?.map(
-            (data) =>
-              new Date(data.scheduleInfo.startTime).toISOString().split('T')[0],
-          ) ?? [],
-      ),
-    );
-  }, [allSchedules, selectedTeamId]);
-
-  useEffect(() => {
-    if (!allSchedules) return;
-    setScheduleOnDate(
-      allSchedules.filter((data) => {
-        return timeInPeriod(
-          new Date(data.scheduleInfo.startTime),
-          selectedDate,
-          new Date(selectedDate.getTime() + 86400000),
-        );
-      }),
-    );
-  }, [selectedDate]);
-
-  useEffect(() => {
-    if (!scrollRef.current) return;
-    const container = scrollRef.current;
-
-    const handleScroll = () => {
-      const scrollPosition = container.scrollTop;
-      if (scrollPosition > 50) {
-        setIsScrolling(true);
-      } else {
-        setIsScrolling(false);
-      }
-    };
-
-    container.addEventListener('scroll', handleScroll);
-
-    return () => {
-      container.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+  }, [schedules, isSchedulesLoading]);
 
   return (
     <div
@@ -91,13 +57,11 @@ export default function Calendar() {
       <StickyWrapper>
         <Accordion
           isMainPage={false}
-          selectedTeamId={selectedTeamId}
-          teamList={teamList}
-          onTeamClick={setSelectedTeamId}
-          canClose={!isDisplaying}
-          onClickLastButton={() => {
-            setSelectedTeamId(-1);
-          }}
+          selectedTeamId={teams2[0].id}
+          teamList={teams2}
+          onTeamClick={() => {}}
+          canClose={!doingAction}
+          onClickLastButton={() => {}}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
       </StickyWrapper>
@@ -119,7 +83,7 @@ export default function Calendar() {
                   isFinished={checkIsFinished(schedule.scheduleInfo.endTime)}
                   onClickEdit={() => {
                     setActionType(ScheduleActionType.EDIT);
-                    setIsDisplaying(true);
+                    setDoingAction(true);
                   }}
                 />
               </li>
@@ -135,7 +99,7 @@ export default function Calendar() {
             }
             onClick={() => {
               setActionType(ScheduleActionType.ADD);
-              setIsDisplaying(true);
+              setDoingAction(true);
             }}
             isOutlined={true}
             disabled={true}
@@ -145,14 +109,14 @@ export default function Calendar() {
       {scheduleOnDate && (
         <ScheduleAction
           type={actionType}
-          isOpen={isDisplaying}
+          isOpen={doingAction}
           selectedDateFromParent={selectedDate}
           selectedSchedule={scheduleOnDate.find(
             (schedule) => schedule.teamId === selectedTeamId,
           )}
-          onClose={() => setIsDisplaying(false)}
+          onClose={() => setDoingAction(false)}
           onSubmit={(postSuccess) => {
-            setIsDisplaying(false);
+            setDoingAction(false);
             if (postSuccess) {
               // TODO: 일정 재조회
             }

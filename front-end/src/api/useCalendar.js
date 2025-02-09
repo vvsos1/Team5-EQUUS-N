@@ -1,10 +1,26 @@
 import { api } from './baseApi';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const useGetSchedules = () => {
+/**
+ *
+ * @param {Object} params
+ * @param {String} params.teamId
+ * @param {Date} params.startDay
+ * @param {Date} params.endDay
+ * @returns
+ */
+export const useGetSchedules = (params) => {
   return useQuery({
-    queryKey: ['schedules'],
-    queryFn: () => api.get({ url: '/api/schedules' }),
+    queryKey: ['schedules', params],
+    queryFn: () => {
+      const sendingData = {
+        teamId: params.teamId,
+        startDay: params.startDay,
+        endDay: params.endDay,
+      };
+      const response = api.get({ url: '/api/schedules', params: sendingData });
+      return response;
+    },
   });
 };
 
