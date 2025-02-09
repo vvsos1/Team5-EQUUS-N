@@ -151,4 +151,27 @@ public class TeamController {
         TeamJoinToken joinToken = teamService.createJoinToken(memberId, teamId);
         return ResponseEntity.ok(TeamJoinTokenResponse.from(joinToken));
     }
+
+    @Operation(summary = "팀 가입 토큰으로 팀 정보 조회", description = "주어진 팀 가입 토큰을 이용해 기본 팀 정보를 조회한다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "팀 정보 조회에 성공한 경우"),
+            @ApiResponse(responseCode = "404", description = "유효하지 않은 토큰으로 요청하거나, 만료된 경우", content = @Content)
+    })
+    @GetMapping("/find")
+    public ResponseEntity<TeamResponse> getTeamByJoinToken(@RequestParam String token) {
+        Team team = teamService.getTeamByJoinToken(token);
+        return ResponseEntity.ok(new TeamResponse(team));
+    }
+
+    @Operation(summary = "팀 가입", description = "주어진 팀 가입 토큰을 이용해 팀에 가입한다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "팀 가입에 성공한 경우"),
+            @ApiResponse(responseCode = "404", description = "유효하지 않은 토큰으로 요청하거나, 만료된 경우")
+    })
+    @PostMapping("/join")
+    public ResponseEntity<Void> joinTeam(@Login Long memberId, @RequestParam String token) {
+        teamService.joinTeam(memberId, token);
+        return ResponseEntity.noContent().build();
+    }
+
 }
