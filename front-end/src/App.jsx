@@ -35,7 +35,8 @@ export default function App() {
             <Route path='signin' element={<SignIn />} />
             <Route path='signup' element={<SignUp />} />
             <Route path='teamspace'>
-              <Route path='make' element={<TeamSpaceMake />}>
+              <Route path='make'>
+                <Route index element={<TeamSpaceMake />} />
                 <Route
                   path='first'
                   element={<TeamSpaceMake isFirst={true} />}

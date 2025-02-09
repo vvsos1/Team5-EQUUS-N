@@ -27,7 +27,7 @@ export default function Calendar() {
   const [teamList, setTeamList] = useState([]);
 
   const { data: schedules, isLoading: isSchedulesLoading } = useGetSchedules();
-  const { data: teams, isLoading: isTeamsLoading } = useGetTeams();
+  const { data: teams, isLoading: isTeamsLoading } = useMyTeams();
 
   useEffect(() => {
     if (isSchedulesLoading || isTeamsLoading) return;
@@ -82,9 +82,6 @@ export default function Calendar() {
       container.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
-  if (isSchedulesLoading || isTeamsLoading) return <div>Loading...</div>;
-  console.log(schedules, teams);
 
   return (
     <div
