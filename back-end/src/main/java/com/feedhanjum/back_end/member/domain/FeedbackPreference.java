@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.member.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public enum FeedbackPreference {
         }
     }
 
-    private String description;
+    private final String description;
 
     FeedbackPreference(String description) {
         this.description = description;
@@ -69,6 +70,11 @@ public enum FeedbackPreference {
             }
         }
         return count;
+    }
+
+    @JsonValue
+    public String getDescription(){
+        return description;
     }
 
     @JsonCreator
