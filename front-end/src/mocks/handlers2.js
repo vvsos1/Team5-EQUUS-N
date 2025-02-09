@@ -13,6 +13,7 @@ import {
   createScheduleResponse,
   updateScheduleResponse,
   schedules2,
+  members2,
   feedbackReceivedResponse,
   feedbackSentResponse,
 } from './mockData2';
@@ -61,7 +62,7 @@ export const handlers2 = [
 
   // 팀 일정 조회
   http.get(`${BASE_URL}/api/team/:teamId/schedules`, () => {
-    return HttpResponse.json(schedules);
+    return HttpResponse.json(schedules2);
   }),
 
   // 일정 생성
@@ -78,7 +79,12 @@ export const handlers2 = [
   // http.delete(`${BASE_URL}/api/team/:teamId/schedule/:scheduleId`, () => {
   //   return HttpResponse.json(deleteScheduleResponse);
   // }),
-  
+
+  // 팀 멤버 조회
+  http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
+    return HttpResponse.json(members2);
+  }),
+
   // 피드백 받은 내역 조회
   http.get(`${BASE_URL}/api/feedbacks/receiver/:memberId`, () => {
     return HttpResponse.json(feedbackReceivedResponse);

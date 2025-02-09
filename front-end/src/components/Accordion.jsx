@@ -34,7 +34,8 @@ export default function Accordion({
         <Icon name='logo' />
       : <details ref={detailsRef} className='group z-0'>
           <summary className='header-3 flex cursor-pointer list-none items-center gap-0.5 text-white'>
-            {teamList.find((team) => team.id === selectedTeamId).name}
+            {teamList.find((team) => team.id === selectedTeamId)?.name ??
+              '선택 안됨'}
             <Icon
               name='unfoldMore'
               className='transition group-open:rotate-180'
