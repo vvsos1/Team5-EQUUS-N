@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 export const useMyTeams = () => {
   return useQuery({
     queryKey: ['myTeams'],
-    queryFn: () => api.get('/api/team/my-teams'),
+    queryFn: () => api.get({ url: '/api/team/my-teams' }),
   });
 };
 
@@ -18,7 +18,7 @@ export const useMyTeams = () => {
 export const useMainCard = (teamId) => {
   return useQuery({
     queryKey: ['mainCard', teamId],
-    queryFn: () => api.get(`/recentSchedule/${teamId}`), // 임시
+    queryFn: () => api.get({ url: `/recentSchedule/${teamId}` }), // 임시
   });
 };
 
@@ -29,7 +29,7 @@ export const useMainCard = (teamId) => {
 export const useMainCard2 = (teamId) => {
   return useQuery({
     queryKey: ['mainCard2', teamId],
-    queryFn: () => api.get(`/api/team/${teamId}/members`),
+    queryFn: () => api.get({ url: `/api/team/${teamId}/members` }),
   });
 };
 
@@ -41,11 +41,12 @@ export const useNotification = (teamId) => {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['notification', teamId],
-    queryFn: () => api.get('/api/notification'),
+    queryFn: () => api.get({ url: '/api/notification' }),
   });
 
   const markAsReadMutation = useMutation({
-    mutationFn: (data) => api.post('/api/notification/mark-as-read', data),
+    mutationFn: (data) =>
+      api.post({ url: '/api/notification/mark-as-read', body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notification'] });
     },
