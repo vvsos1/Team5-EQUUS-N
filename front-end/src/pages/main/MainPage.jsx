@@ -87,27 +87,37 @@ export default function MainPage() {
                     />
                   </div>
                 }
-                content={`${mate.name}님에게`}
+                content={
+                  mate.id === 1 ? `${mate.name}(나)` : `${mate.name}님에게`
+                }
                 mainButton={
                   <MediumButton
-                    text='피드백 보내기'
-                    onClick={() => {}}
+                    text={mate.id === 1 ? '회고 작성하기' : '피드백 보내기'}
+                    onClick={() => {
+                      mate.id === 1 ?
+                        navigate(`/feedback/self`)
+                      : navigate(`/feedback/send`);
+                      hideModal();
+                    }}
                     isOutlined={false}
                     disabled={false}
                   />
                 }
                 subButton={
-                  <MediumButton
-                    text='피드백 요청하기'
-                    onClick={() => {
-                      navigate(
-                        `/feedback/request?receiverId=${mate.id}&receiverName=${mate.name}`,
-                      );
-                      hideModal();
-                    }}
-                    isOutlined={true}
-                    disabled={false}
-                  />
+                  mate.id === 1 ?
+                    null
+                  : <MediumButton
+                      text='피드백 요청하기'
+                      onClick={() => {
+                        navigate(
+                          `/feedback/request?receiverId=${mate.id}&receiverName=${mate.name}`,
+                        );
+
+                        hideModal();
+                      }}
+                      isOutlined={true}
+                      disabled={false}
+                    />
                 }
               />,
             )

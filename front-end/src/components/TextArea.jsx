@@ -42,7 +42,7 @@ export default function TextArea({
           generatedByGpt ? undefined
           : isWithGpt ?
             '자유롭게 적고 AI를 통해 다듬어 보세요.(선택사항)'
-          : '여기에 적어주세요'
+          : '내용을 입력해주세요'
         }
         disabled={generatedByGpt}
       />

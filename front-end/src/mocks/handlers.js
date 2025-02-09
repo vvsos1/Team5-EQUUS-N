@@ -47,4 +47,15 @@ export const handlers = [
       return HttpResponse.json(data, { status: 201 });
     },
   ),
+
+  // 회고
+  http.post(`${BASE_URL}/api/retrospect`, async ({ request }) => {
+    const data = await request.json();
+    console.log(data);
+
+    // 2초 딜레이 추가
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    return HttpResponse.json(data, { status: 201 });
+  }),
 ];
