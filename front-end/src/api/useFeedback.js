@@ -7,18 +7,13 @@ export const useFeedbackReceived = (userId, params) => {
   return useQuery({
     queryKey: ['feedback-received', userId, params],
     queryFn: () => {
-      const queryParams = new URLSearchParams();
-      if (params.teamId) queryParams.set('teamId', params.teamId);
-      if (params.onlyLiked) queryParams.set('filterHelpful', params.onlyLiked);
-      if (params.sortBy)
-        queryParams.set(
-          'sortOrder',
-          params.sortBy === 'createdAt:desc' ? 'DESC' : 'ASC',
-        );
-      if (params.page) queryParams.set('page', params.page);
-      return api.get(
-        `/api/feedbacks/receiver/${userId}?${queryParams.toString()}`,
-      );
+      const sendingParams = {
+        teamId: params.teamId,
+        filterHelpful: params.onlyLiked,
+        sortOrder: params.sortBy === 'createdAt:desc' ? 'DESC' : 'ASC',
+        page: params.page,
+      };
+      return api.get(`/api/feedbacks/receiver/${userId}`, sendingParams);
     },
   });
 };
@@ -27,18 +22,13 @@ export const useFeedbackSent = (userId, params) => {
   return useQuery({
     queryKey: ['feedback-sent', userId, params],
     queryFn: () => {
-      const queryParams = new URLSearchParams();
-      if (params.teamId) queryParams.set('teamId', params.teamId);
-      if (params.onlyLiked) queryParams.set('filterHelpful', params.onlyLiked);
-      if (params.sortBy)
-        queryParams.set(
-          'sortOrder',
-          params.sortBy === 'createdAt:desc' ? 'DESC' : 'ASC',
-        );
-      if (params.page) queryParams.set('page', params.page);
-      return api.get(
-        `/api/feedbacks/sender/${userId}?${queryParams.toString()}`,
-      );
+      const sendingParams = {
+        teamId: params.teamId,
+        filterHelpful: params.onlyLiked,
+        sortOrder: params.sortBy === 'createdAt:desc' ? 'DESC' : 'ASC',
+        page: params.page,
+      };
+      return api.get(`/api/feedbacks/sender/${userId}`, sendingParams);
     },
   });
 };
