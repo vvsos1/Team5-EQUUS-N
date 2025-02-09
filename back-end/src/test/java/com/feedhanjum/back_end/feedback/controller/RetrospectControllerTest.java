@@ -10,6 +10,7 @@ import com.feedhanjum.back_end.feedback.controller.dto.response.RetrospectRespon
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.Retrospect;
 import com.feedhanjum.back_end.feedback.repository.RetrospectRepository;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -65,7 +66,8 @@ class RetrospectControllerTest {
 
 
     private Member createMember(String name) {
-        return new Member(name, name + "@test.com", new ProfileImage("bg-" + name, "profile-" + name));
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        return new Member(name, name + "@test.com", new ProfileImage("bg-" + name, "profile-" + name), feedbackPreferences);
     }
 
     private Team createTeam(String name, Member leader) {

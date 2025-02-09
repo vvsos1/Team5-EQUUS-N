@@ -2,11 +2,15 @@ package com.feedhanjum.back_end.auth.controller.dto;
 
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.core.constraints.ByteLength;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.util.List;
 
 public record MemberSignupRequest(
         @Schema(description = "계정 등록에 사용할 이메일 정보. 유일해야 한다.")
@@ -25,6 +29,10 @@ public record MemberSignupRequest(
         String name,
 
         @Schema(description = "사용자가 사용할 프로필 이미지")
-        ProfileImage profileImage
+        ProfileImage profileImage,
+
+        @NotNull
+        @Schema(description = "사용자의 피드백 선호 정보")
+        List<FeedbackPreference> feedbackPreference
 ) {
 }

@@ -3,6 +3,8 @@ package com.feedhanjum.back_end.member.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MemberTest {
@@ -12,9 +14,10 @@ class MemberTest {
     void memberConstructor_회원생성() {
         // given
         ProfileImage profileImage = new ProfileImage("blue", "default.png");
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
 
         // when
-        Member member = new Member("haha", "haha@example.com", profileImage);
+        Member member = new Member("haha", "haha@example.com", profileImage, feedbackPreferences);
 
         // then
         assertThat(member.getName()).isEqualTo("haha");
@@ -29,7 +32,8 @@ class MemberTest {
         // given
         ProfileImage oldProfile = new ProfileImage("blue", "default.png");
         ProfileImage newProfile = new ProfileImage("red", "new.png");
-        Member member = new Member("haha", "haha@example.com", oldProfile);
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member member = new Member("haha", "haha@example.com", oldProfile, feedbackPreferences);
 
         // when
         member.changeProfile(newProfile);
@@ -44,7 +48,8 @@ class MemberTest {
     void changeName_이름변경() {
         // given
         ProfileImage profileImage = new ProfileImage("blue", "default.png");
-        Member member = new Member("haha", "haha@example.com", profileImage);
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member member = new Member("haha", "haha@example.com", profileImage, feedbackPreferences);
 
         // when
         member.changeName("hoho");
