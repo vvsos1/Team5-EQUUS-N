@@ -8,16 +8,16 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "webpush")
+@ConfigurationProperties(prefix = "webpush", ignoreUnknownFields = true, ignoreInvalidFields = true)
 public class WebPushProperty {
     private Vapid vapid;
 
-    private String subject;
+    private String subject = "";
 
     @Getter
     @Setter
     public static class Vapid {
-        private String publicKey;
-        private String privateKey;
+        private String publicKey = "";
+        private String privateKey = "";
     }
 }

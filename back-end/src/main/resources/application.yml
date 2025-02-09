@@ -6,6 +6,18 @@ spring.application.name: back-end
 spring:
   profiles:
     default: dev
+  mail:
+    host: ${mail.host}
+    port: 587
+    username: ${mail.username}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true #
+          timeout: 5000
+          starttls:
+            enable: true
 
 springdoc:
   swagger-ui:
@@ -19,3 +31,10 @@ server:
     session:
       cookie:
         max-age: 2147483647
+
+
+webpush:
+  subject: "${webpush.subject}"
+  vapid:
+    public-key: "${webpush.vapid.public-key}"
+    private-key: "${webpush.vapid.private-key}"

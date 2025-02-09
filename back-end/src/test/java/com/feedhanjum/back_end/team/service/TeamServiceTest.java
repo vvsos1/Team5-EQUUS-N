@@ -27,8 +27,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.feedhanjum.back_end.util.DomainTestUtils.createMemberWithId;
-import static com.feedhanjum.back_end.util.DomainTestUtils.createTeamWithId;
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.createMemberWithId;
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.createTeamWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;

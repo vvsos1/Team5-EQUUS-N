@@ -2,18 +2,6 @@ spring:
   config:
     activate:
       on-profile: dev # dev 프로파일이 활성화 되어있을 때만 사용 가능
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${mail.username}
-    password: ${mail.password}
-    properties:
-      mail:
-        smtp:
-          auth: true #
-          timeout: 5000
-          starttls:
-            enable: true
 
   datasource:
     driver-class-name: org.h2.Driver
@@ -25,9 +13,5 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
-webpush:
-  subject: "${webpush.subject}"
-  vapid:
-    public-key: "${webpush.vapid.public-key}"
-    private-key: "${webpush.vapid.private-key}"
-
+  mail:
+    host:

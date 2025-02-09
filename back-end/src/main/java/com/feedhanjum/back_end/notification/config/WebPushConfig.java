@@ -5,11 +5,13 @@ import nl.martijndwars.webpush.PushAsyncService;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.security.GeneralSecurityException;
 import java.security.Security;
 
 @Slf4j
+@Profile("!test")
 @Configuration
 public class WebPushConfig {
 

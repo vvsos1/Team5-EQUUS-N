@@ -32,9 +32,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static com.feedhanjum.back_end.util.DomainTestUtils.createMemberWithoutId;
-import static com.feedhanjum.back_end.util.DomainTestUtils.createTeamWithoutId;
-import static com.feedhanjum.back_end.util.SessionTestUtil.withLoginUser;
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.createMemberWithoutId;
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.createTeamWithoutId;
+import static com.feedhanjum.back_end.test.util.SessionTestUtil.withLoginUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
