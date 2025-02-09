@@ -12,29 +12,27 @@ export default function TextArea({
   const [isAnonymous, toggleAnonymous] = useReducer((state) => !state, false);
 
   const onInput = (e) => {
-    e.target.style.height = 'auto';
-    e.target.style.height = `${e.target.scrollHeight}px`;
-
     const { byteCount, overflowedIndex } = transformToBytes(e.target.value);
     setTextLength(byteCount);
 
-    if (byteCount >= 400) {
+    if (byteCount >= 399) {
       if (!overflownIndex) {
-        console.log('wefwef');
         setOverflownIndex(overflowedIndex);
       }
-      console.log(byteCount, overflownIndex, e.target.value.length);
-      e.target.value = e.target.value.slice(0, overflownIndex);
+      if (overflownIndex)
+        e.target.value = e.target.value.slice(0, overflownIndex);
     } else {
       if (overflownIndex) setOverflownIndex(null);
     }
   };
 
   return (
-    <div className='relative'>
+    <div
+      className={`rounded-300 flex h-fit w-full flex-col border-white p-5 ring-gray-500 has-focus:ring-gray-300 ${generatedByGpt ? 'bg-gray-800' : 'ring'}`}
+    >
       <textarea
         onInput={onInput}
-        className={`text-gray-0 placeholder:body-1 rounded-300 relative min-h-44 w-full resize-none p-5 pb-14 ring-gray-500 outline-none focus:ring-gray-300 ${generatedByGpt ? 'bg-gray-800' : 'ring'}`}
+        className={`text-gray-0 placeholder:body-1 scrollbar-hidden relative max-h-56 min-h-44 w-full resize-none outline-none`}
         placeholder={
           generatedByGpt ? undefined
           : isWithGpt ?
@@ -43,18 +41,17 @@ export default function TextArea({
         }
         disabled={generatedByGpt}
       />
-      <p className='caption-1 absolute right-5 bottom-5 text-gray-300'>{`${textLength}/400 byte`}</p>
-      {canToggleAnonymous && (
-        <button
-          className='absolute bottom-5 left-5 flex items-center'
-          onClick={toggleAnonymous}
-        >
-          <p className='body-1 mr-1.5 text-white'>익명</p>
-          {isAnonymous ?
-            <Icon name='checkBoxClick' />
-          : <Icon name='checkBoxNone' />}
-        </button>
-      )}
+      <div className='mt-2 flex w-full justify-between'>
+        {canToggleAnonymous ?
+          <button className='flex items-center' onClick={toggleAnonymous}>
+            <p className='body-1 mr-1.5 text-white'>익명</p>
+            {isAnonymous ?
+              <Icon name='checkBoxClick' />
+            : <Icon name='checkBoxNone' />}
+          </button>
+        : <div />}
+        <p className='caption-1 text-gray-300'>{`${textLength}/400 byte`}</p>
+      </div>
     </div>
   );
 }
