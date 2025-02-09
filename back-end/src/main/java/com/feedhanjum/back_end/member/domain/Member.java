@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.HashSet;
 import java.util.List;
@@ -24,10 +25,11 @@ public class Member {
     @Embedded
     private ProfileImage profileImage;
 
-    @ElementCollection(targetClass = FeedbackPreference.class)
+    @ElementCollection(targetClass = FeedbackPreference.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "feedback_preference", joinColumns = @JoinColumn(name = "member_id"))
     @Column(name = "feedback_preference")
+    @BatchSize(size = 16)
     private Set<FeedbackPreference> feedbackPreferences = new HashSet<>();
 
     public Member(String name, String email, ProfileImage profileImage, List<FeedbackPreference> feedbackPreferences) {
