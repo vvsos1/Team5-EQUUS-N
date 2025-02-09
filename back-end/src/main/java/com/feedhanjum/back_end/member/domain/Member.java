@@ -45,6 +45,10 @@ public class Member {
         this.name = name;
     }
 
+    public void changeFeedbackPreference(List<FeedbackPreference> feedbackPreferences) {
+        setFeedbackPreference(feedbackPreferences);
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
