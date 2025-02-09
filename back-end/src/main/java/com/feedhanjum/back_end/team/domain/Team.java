@@ -135,6 +135,11 @@ public class Team {
         return teamMembers.stream().anyMatch(teamMember -> member.equals(teamMember.getMember()));
     }
 
+    public TeamJoinToken createJoinToken(Member member) {
+        validateTeamMember(member);
+        return TeamJoinToken.createToken(this);
+    }
+
     private boolean isTeamLeader(Member leader) {
         return this.leader.equals(leader);
     }

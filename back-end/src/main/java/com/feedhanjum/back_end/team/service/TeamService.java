@@ -4,9 +4,11 @@ import com.feedhanjum.back_end.event.EventPublisher;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.domain.Team;
+import com.feedhanjum.back_end.team.domain.TeamJoinToken;
 import com.feedhanjum.back_end.team.event.TeamMemberLeftEvent;
 import com.feedhanjum.back_end.team.exception.TeamLeaderMustExistException;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
+import com.feedhanjum.back_end.team.repository.TeamJoinTokenRepository;
 import com.feedhanjum.back_end.team.repository.TeamQueryRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import com.feedhanjum.back_end.team.service.dto.TeamCreateDto;
@@ -25,6 +27,7 @@ public class TeamService {
     private final MemberRepository memberRepository;
     private final TeamQueryRepository teamQueryRepository;
     private final EventPublisher eventPublisher;
+    private final TeamJoinTokenRepository teamJoinTokenRepository;
 
     /**
      * @throws IllegalArgumentException 프로젝트 기간의 시작일이 종료일보다 앞서지 않을 경우
@@ -119,6 +122,17 @@ public class TeamService {
             deleteTeam(team);
         }
         eventPublisher.publishEvent(new TeamMemberLeftEvent(teamId, memberId));
+    }
+
+    @Transactional
+    public TeamJoinToken createJoinToken(Long memberId, Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
+        Member member = memberRepository
+                .findById(memberId).orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다"));
+        TeamJoinToken joinToken = team.createJoinToken(member);
+        teamJoinTokenRepository.save(joinToken);
+        return joinToken;
     }
 
 
