@@ -16,20 +16,52 @@ export const loginResponse = {
 
 export const teams2 = [
   {
-    id: 1,
+    id: 1234151,
     name: '소프티어 5조',
+    startDate: '2025-01-02',
+    endDate: '2025-02-28',
+    feedbackType: 'ANONYMOUS',
+    leader: {
+      id: 52345513,
+      name: '한준호',
+      email: 'hanjunho@gmail.com',
+      profileImage: {
+        backgroundColor: '#62BFCA',
+        image: 'panda',
+      },
+    },
   },
   {
-    id: 2,
-    name: '에쿠스 N',
-  },
-  {
-    id: 3,
+    id: 4321,
     name: '협곡의 전사들',
+    startDate: '2024-10-02',
+    endDate: '2025-02-01',
+    feedbackType: 'ANONYMOUS',
+    leader: {
+      id: 52345513,
+      name: '백현식',
+      email: 'baekhyeonsik@gmail.com',
+      profileImage: {
+        backgroundColor: '#62BFCA',
+        image: 'penguin',
+      },
+    },
   },
   {
-    id: 4,
-    name: '한박백임',
+    id: 356456,
+    name: '맘스터치 4조',
+    startDate: '2024-12-02',
+    endDate: '2025-05-01',
+    feedbackType: 'ANONYMOUS',
+    leader: {
+      id: 52345513,
+      name: '임세준',
+      email: 'limsejun@gmail.com',
+      profileImage: {
+        backgroundColor: '#62BFCA',
+        image: 'dolphin',
+      },
+    },
   },
 ];
 
@@ -166,6 +198,50 @@ export const createScheduleResponse = {
 
 export const updateScheduleResponse = {
   message: 'string',
+};
+
+export const members2 = [
+  {
+    id: 5145125,
+    name: '임세준',
+    email: 'limsejun@gmail.com',
+    profileImage: {
+      backgroundColor: '#62BFCA',
+      image: 'penguin',
+    },
+  },
+  {
+    id: 5145126,
+    name: '백현식',
+    email: 'baekhyeonsik@gmail.com',
+    profileImage: {
+      backgroundColor: '#F6BF77',
+      image: 'whale',
+    },
+  },
+  {
+    id: 52345513,
+    name: '한준호',
+    email: 'hanjunho@gmail.com',
+    profileImage: {
+      backgroundColor: '#7EABD9',
+      image: 'panda',
+    },
+  },
+  {
+    id: 5145128,
+    name: '박명규',
+    email: 'parkmyeonggu@gmail.com',
+    profileImage: {
+      backgroundColor: '#F6D480',
+      image: 'parrot',
+    },
+  },
+];
+
+export const teamResponse = {
+  teamResponse: teams2[0],
+  members: members2,
 };
 
 export const feedbackReceivedResponse = {
