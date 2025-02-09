@@ -116,4 +116,14 @@ export const handlers2 = [
       return HttpResponse.json({ message: '좋아요를 취소했습니다' });
     },
   ),
+
+  // 리더 변경
+  http.post(`${BASE_URL}/api/team/:teamId/leader`, () => {
+    return new HttpResponse({ status: 200 });
+  }),
+
+  // 멤버 삭제
+  http.delete(`${BASE_URL}/api/team/:teamId/member/:memberId`, () => {
+    return new HttpResponse({ status: 204 });
+  }),
 ];

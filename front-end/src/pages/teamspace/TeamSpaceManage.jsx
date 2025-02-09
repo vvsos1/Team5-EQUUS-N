@@ -15,6 +15,7 @@ export default function TeamSpaceManage() {
 
   useEffect(() => {
     if (team) {
+      // TODO: id를 본인 것과 비교
       if (team?.teamResponse?.leader?.id === 52345513) {
         setIamLeader(true);
       }
@@ -56,6 +57,7 @@ export default function TeamSpaceManage() {
         {team?.members.map((member) => (
           <MemberElement
             key={member.id}
+            teamId={team.teamResponse.id}
             member={member}
             leaderId={team?.teamResponse?.leader?.id}
             iamLeader={iamLeader}
