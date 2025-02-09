@@ -45,7 +45,7 @@ export default function TeamSpaceEdit({ isFirst = false }) {
           text='삭제'
           isOutlined={false}
           onClick={() => {
-            deleteTeam(team.id);
+            deleteTeam();
             hideModal();
             navigate('/teamspace/list');
           }}
@@ -68,7 +68,7 @@ export default function TeamSpaceEdit({ isFirst = false }) {
     if (!checkTeamSpaceMakingInfo(team.name, team.startDate, team.endDate)) {
       return;
     } else {
-      editTeam(teamId);
+      editTeam(team);
     }
     navigate(-1);
   };
