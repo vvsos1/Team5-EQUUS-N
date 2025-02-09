@@ -67,7 +67,7 @@ public class AuthController {
         String name = request.name();
         ProfileImage profileImage = request.profileImage();
 
-        MemberDetails savedMember = authService.registerMember(member, name, profileImage);
+        MemberDetails savedMember = authService.registerMember(member, name, profileImage, request.feedbackPreference());
 
         session.removeAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL);
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
