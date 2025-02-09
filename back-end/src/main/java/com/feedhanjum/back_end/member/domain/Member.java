@@ -65,5 +65,4 @@ public class Member {
         this.feedbackPreferences.clear();
         this.feedbackPreferences.addAll(feedbackPreferences);
     }
-
 }

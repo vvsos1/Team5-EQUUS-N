@@ -2,6 +2,7 @@ package com.feedhanjum.back_end.team.controller;
 
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.member.controller.dto.MemberDto;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.service.MemberService;
 import com.feedhanjum.back_end.team.controller.dto.TeamCreateRequest;
@@ -47,13 +48,14 @@ class TeamControllerTest {
         Long memberId = 1L;
         LocalDate startDate = LocalDate.now().plusDays(1);
         LocalDate endDate = LocalDate.now().plusDays(10);
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
         TeamCreateRequest request = new TeamCreateRequest("haha", startDate,
                 endDate, FeedbackType.ANONYMOUS);
         TeamCreateDto teamCreateDto = new TeamCreateDto(request);
         TeamResponse teamResponse = new TeamResponse(null, "haha", startDate,
-                endDate, FeedbackType.ANONYMOUS, new MemberDto(new Member("haha", "haha@hoho", null)));
+                endDate, FeedbackType.ANONYMOUS, new MemberDto(new Member("haha", "haha@hoho", null, feedbackPreferences)));
         when(teamService.createTeam(memberId, teamCreateDto))
-                .thenReturn(new Team("haha", new Member("haha", "haha@hoho", null),
+                .thenReturn(new Team("haha", new Member("haha", "haha@hoho", null, feedbackPreferences),
                         request.startDate(), request.endDate(), request.feedbackType()));
 
         //when
@@ -70,7 +72,8 @@ class TeamControllerTest {
     void getMyTeams_팀조회_컨트롤러() {
         //given
         Long memberId = 1L;
-        Team team = new Team("haha", new Member("haha", "haha@hoho", null), LocalDate.now().plusDays(1),
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Team team = new Team("haha", new Member("haha", "haha@hoho", null, feedbackPreferences), LocalDate.now().plusDays(1),
                 LocalDate.now().plusDays(10), FeedbackType.ANONYMOUS);
         TeamResponse teamResponse = new TeamResponse(team);
         when(teamService.getMyTeams(memberId)).thenReturn(List.of(team));
@@ -92,10 +95,11 @@ class TeamControllerTest {
         Long memberId = 2L;
         LocalDate now = LocalDate.now();
 
-        Member leader = new Member("haha", "haha", null);
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member leader = new Member("haha", "haha", null, feedbackPreferences);
         Team dummyTeam = new Team("haha", leader, now, now.plusDays(1), FeedbackType.IDENTIFIED);
 
-        Member dummyMember = new Member("hoho", "huhu", null);
+        Member dummyMember = new Member("hoho", "huhu", null, feedbackPreferences);
         List<Member> memberList = List.of(dummyMember);
 
         when(teamService.getTeam(teamId)).thenReturn(dummyTeam);
@@ -133,7 +137,8 @@ class TeamControllerTest {
         Long teamId = 3L;
         Long memberId = 4L;
 
-        Member dummyMember = new Member("hehe", "hoho", null);
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member dummyMember = new Member("hehe", "hoho", null, feedbackPreferences);
         List<Member> memberList = List.of(dummyMember);
 
         when(memberService.getMembersByTeam(memberId, teamId)).thenReturn(memberList);
