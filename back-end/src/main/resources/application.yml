@@ -7,10 +7,7 @@ spring:
   profiles:
     default: dev
   mail:
-    host: ${mail.host}
     port: 587
-    username: ${mail.username}
-    password: ${mail.password}
     properties:
       mail:
         smtp:
@@ -31,10 +28,3 @@ server:
     session:
       cookie:
         max-age: 2147483647
-
-
-webpush:
-  subject: "${webpush.subject}"
-  vapid:
-    public-key: "${webpush.vapid.public-key}"
-    private-key: "${webpush.vapid.private-key}"

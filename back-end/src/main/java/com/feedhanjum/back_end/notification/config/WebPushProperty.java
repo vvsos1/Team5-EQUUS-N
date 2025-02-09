@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "webpush", ignoreUnknownFields = true, ignoreInvalidFields = true)
+@ConfigurationProperties(prefix = "webpush", ignoreInvalidFields = true)
 public class WebPushProperty {
     private Vapid vapid;
 
