@@ -21,7 +21,7 @@ export const useSetLeader = (teamId) => {
       const sendingData = {
         newLeaderId: leaderId,
       };
-      api.post({ url: `/api/team/${teamId}/leader`, body: sendingData });
+      return api.post({ url: `/api/team/${teamId}/leader`, body: sendingData });
     },
   });
 };
@@ -29,7 +29,7 @@ export const useSetLeader = (teamId) => {
 export const useKickMember = (teamId) => {
   return useMutation({
     mutationFn: (memberId) => {
-      api.delete({ url: `/api/team/${teamId}/member/${memberId}` });
+      return api.delete({ url: `/api/team/${teamId}/member/${memberId}` });
     },
   });
 };
@@ -38,7 +38,7 @@ export const useEditTeam = (teamId) => {
   return useMutation({
     mutationFn: (teamInfo) => {
       const sendingData = teamInfo;
-      api.post({ url: `/api/team/${teamId}/`, body: sendingData });
+      return api.post({ url: `/api/team/${teamId}/`, body: sendingData });
     },
   });
 };
@@ -46,7 +46,7 @@ export const useEditTeam = (teamId) => {
 export const useDeleteTeam = (teamId) => {
   return useMutation({
     mutationFn: () => {
-      api.delete({ url: `/api/team/${teamId}/leave` });
+      return api.delete({ url: `/api/team/${teamId}/leave` });
     },
   });
 };
