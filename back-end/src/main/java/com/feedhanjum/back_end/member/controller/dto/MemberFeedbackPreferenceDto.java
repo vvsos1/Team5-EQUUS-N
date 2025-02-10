@@ -1,10 +1,13 @@
 package com.feedhanjum.back_end.member.controller.dto;
 
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record MemberDto(
+import java.util.List;
+
+public record MemberFeedbackPreferenceDto(
         @Schema(description = "회원의 ID")
         Long id,
 
@@ -15,9 +18,12 @@ public record MemberDto(
         String email,
 
         @Schema(description = "회원의 프로필 이미지")
-        ProfileImage profileImage
+        ProfileImage profileImage,
+
+        @Schema(description = "회원의 피드백 선호 정보")
+        List<FeedbackPreference> feedbackPreferences
 ) {
-    public MemberDto(Member member) {
-        this(member.getId(), member.getName(), member.getEmail(), member.getProfileImage());
+    public MemberFeedbackPreferenceDto(Member member) {
+        this(member.getId(), member.getName(), member.getEmail(), member.getProfileImage(), member.getFeedbackPreferences().stream().toList());
     }
 }
