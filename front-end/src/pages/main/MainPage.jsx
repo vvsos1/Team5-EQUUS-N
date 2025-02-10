@@ -21,9 +21,9 @@ import ScheduleAction, {
 import TodoAdd from '../calendar/components/TodoAdd';
 import { getScheduleTimeDiff } from '../../utility/time';
 import { useNavigate } from 'react-router-dom';
+import { useTeam } from '../../useTeam';
 
 export default function MainPage() {
-  const [selectedTeamId, setSelectedTeamId] = useState(1);
   const [banners, setBanners] = useState();
   const [mainCardType, setMainCardType] = useState(cardType.ADD_TEAM);
   const [timeDiff, setTimeDiff] = useState();
@@ -31,14 +31,23 @@ export default function MainPage() {
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
   const { data: teamsData } = useMyTeams();
-  const { data: recentScheduleData } = useMainCard(selectedTeamId);
-  const { data: matesData } = useMainCard2(selectedTeamId);
-  const { data: notificationsData, markAsRead } =
-    useNotification(selectedTeamId);
+  const { teams, selectedTeam, selectTeam, setTeams } = useTeam();
+  const { data: recentScheduleData } = useMainCard(selectedTeam);
+  const { data: matesData } = useMainCard2(selectedTeam);
+  const { data: notificationsData, markAsRead } = useNotification(selectedTeam);
 
   const navigate = useNavigate();
 
   // TODO: 로딩 중 혹은 에러 발생 시 처리
+
+  useEffect(() => {
+    if (teamsData) {
+      setTeams(teamsData);
+      if (teamsData && teamsData.length === 0) {
+        setMainCardType(cardType.ADD_TEAM);
+      }
+    }
+  }, [teamsData]);
 
   useEffect(() => {
     if (notificationsData) {
@@ -48,17 +57,13 @@ export default function MainPage() {
 
   useEffect(() => {
     if (recentScheduleData) {
-      if (recentScheduleData.length === 0) {
-        setMainCardType(cardType.ADD_SCHEDULE);
+      const scheduleDifferece = getScheduleTimeDiff(recentScheduleData);
+      if (scheduleDifferece <= 0) {
+        setMainCardType(cardType.END_SCHEDULE);
       } else {
-        const scheduleDifferece = getScheduleTimeDiff(recentScheduleData);
-        if (scheduleDifferece <= 0) {
-          setMainCardType(cardType.END_SCHEDULE);
-        } else {
-          setMainCardType(cardType.DEFUALT);
-        }
-        setTimeDiff(scheduleDifferece);
+        setMainCardType(cardType.DEFUALT);
       }
+      setTimeDiff(scheduleDifferece);
     } else {
       setMainCardType(cardType.ADD_TEAM);
     }
@@ -68,7 +73,7 @@ export default function MainPage() {
   const getOnMainButtonClick = useCallback((type) => {
     switch (type) {
       case cardType.ADD_TEAM:
-        return () => console.log('팀 스페이스 추가하기 화면으로 이동');
+        return () => navigate('/teamspace/make');
       case cardType.ADD_SCHEDULE:
         return () => setIsScheduleOpen(!isScheduleOpen);
       case cardType.END_SCHEDULE:
@@ -78,15 +83,21 @@ export default function MainPage() {
     }
   }, []);
 
+  useEffect(() => {
+    console.log('selectedTeamId: ', selectedTeam);
+    console.log('type: ', mainCardType);
+  });
+
   return (
     <div className='flex w-full flex-col'>
       <StickyWrapper className='px-5'>
-        {teamsData && (
+        {teams && (
           <Accordion
             isMainPage={true}
-            selectedTeamId={selectedTeamId}
-            teamList={teamsData}
-            onTeamClick={setSelectedTeamId}
+            selectedTeamId={selectedTeam}
+            teamList={teams}
+            onTeamClick={selectTeam}
+            onClickLastButton={() => navigate('/teamspace/make')}
           />
         )}
       </StickyWrapper>
@@ -105,16 +116,14 @@ export default function MainPage() {
         </Slider>
       )}
       <div className='h-2' />
-      {recentScheduleData && (
-        <MainCard
-          type={mainCardType}
-          recentSchedule={recentScheduleData}
-          scheduleDifferece={timeDiff}
-          onClickMainButton={getOnMainButtonClick(mainCardType)}
-          onClickSubButton={() => setIsScheduleOpen(!isScheduleOpen)}
-          onClickChevronButton={() => navigate('/calendar')}
-        />
-      )}
+      <MainCard
+        type={mainCardType}
+        recentSchedule={recentScheduleData}
+        scheduleDifferece={timeDiff}
+        onClickMainButton={getOnMainButtonClick(mainCardType)}
+        onClickSubButton={() => setIsScheduleOpen(!isScheduleOpen)}
+        onClickChevronButton={() => navigate('/calendar')}
+      />
       <div className='h-8' />
       {matesData && <MainCard2 teamMates={matesData} />}
       <div className='h-8' />

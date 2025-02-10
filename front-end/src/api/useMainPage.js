@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 export const useMyTeams = () => {
   return useQuery({
     queryKey: ['myTeams'],
-    queryFn: () => api.get({ url: '/api/team/my-teams' }),
+    queryFn: () => api.get({ url: '/api/team/my-teams2' }),
   });
 };
 
