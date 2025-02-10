@@ -15,7 +15,7 @@ import java.util.List;
 public class ScheduleMember {
     @Id
     @Column(name = "schedule_member_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
