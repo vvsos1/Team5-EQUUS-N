@@ -18,4 +18,9 @@ public class TeamMemberControllerAdvice {
     public ResponseEntity<String> teamLeaderMustExistException(TeamLeaderMustExistException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(TeamJoinTokenNotValidException.class)
+    public ResponseEntity<String> teamJoinTokenNotValidException(TeamJoinTokenNotValidException e) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }

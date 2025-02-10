@@ -135,6 +135,20 @@ public class TeamService {
         return joinToken;
     }
 
+    public Team getTeamByJoinToken(String token) {
+        TeamJoinToken teamJoinToken = teamJoinTokenRepository.findById(token)
+                .orElseThrow(() -> new EntityNotFoundException("토큰이 유효하지 않습니다."));
+        return teamJoinToken.getTeamInfo();
+    }
+
+    public void joinTeam(Long memberId, String token) {
+        TeamJoinToken teamJoinToken = teamJoinTokenRepository.findById(token)
+                .orElseThrow(() -> new EntityNotFoundException("토큰이 유효하지 않습니다."));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다"));
+        teamJoinToken.joinTeam(member);
+    }
+
 
     private void deleteTeam(Team team) {
         // TODO: 팀 삭제 로직 결정
