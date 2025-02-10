@@ -4,13 +4,6 @@ import Icon from '../../../components/Icon';
 import MediumButton from '../../../components/buttons/MediumButton';
 import { useEffect, useRef, useState } from 'react';
 
-export const cardType = Object.freeze({
-  ADD_TEAM: 'ADD_TEAM',
-  ADD_SCHEDULE: 'ADD_SCHEDULE',
-  END_SCHEDULE: 'END_SCHEDULE',
-  DEFUALT: 'DEFAULT',
-});
-
 /**
  * 메인 카드 컴포넌트
  * @param {object} props
