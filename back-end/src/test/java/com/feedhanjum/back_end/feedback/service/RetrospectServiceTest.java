@@ -4,6 +4,7 @@ import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.Retrospect;
 import com.feedhanjum.back_end.feedback.repository.RetrospectQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.RetrospectRepository;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -46,7 +47,8 @@ class RetrospectServiceTest {
     private final AtomicLong nextId = new AtomicLong(1L);
 
     private Member createMember(String name) {
-        Member member = new Member(name, name + "@email.com", new ProfileImage("bg " + name, "image " + name));
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member member = new Member(name, name + "@email.com", new ProfileImage("bg " + name, "image " + name), feedbackPreferences);
         ReflectionTestUtils.setField(member, "id", nextId.getAndIncrement());
         return member;
     }

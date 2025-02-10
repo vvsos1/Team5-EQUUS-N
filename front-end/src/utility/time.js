@@ -134,3 +134,27 @@ export function timePickerToDate(date, time) {
 export function toKST(date) {
   return new Date(new Date(date).setHours(9, 0, 0, 0));
 }
+
+/**
+ * D-day 계산하는 함수
+ * @param {object} recentSchedule
+ * @returns
+ */
+export function getScheduleTimeDiff(recentSchedule) {
+  const todayTime = new Date();
+  const startTime = new Date(recentSchedule.startTime);
+  const endTime = new Date(recentSchedule.endTime);
+
+  if (Math.abs(startTime - todayTime) < Math.abs(endTime - todayTime)) {
+    // 미래 일정인 경우, today를 자정으로 설정하여 계산
+    todayTime.setHours(0, 0, 0, 0);
+
+    const diffDay = Math.floor((startTime - todayTime) / (1000 * 60 * 60 * 24));
+
+    if (diffDay === 0) return 'DAY';
+    return diffDay;
+  } else {
+    // 과거 일정인 경우
+    return Math.ceil((endTime - todayTime) / (1000 * 60 * 60 * 24));
+  }
+}
