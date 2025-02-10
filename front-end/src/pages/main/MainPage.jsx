@@ -7,7 +7,7 @@ import {
 import Accordion from '../../components/Accordion';
 import MainCard2 from '../../components/MainCard2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
-import MainCard, { cardType } from './components/MainCard';
+import MainCard from './components/MainCard';
 import Notification from './components/Notification';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
