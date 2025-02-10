@@ -52,33 +52,33 @@ export default function App() {
                   />
                   <Route path='success' element={<TeamSpaceMakeSuccess />} />
                 </Route>
-                <Route path='signin' element={<SignIn />} />
-                <Route path='signup' element={<SignUp />} />
-                <Route path='teamspace'>
-                  <Route path='make'>
-                    <Route index element={<TeamSpaceMake />} />
-                    <Route
-                      path='first'
-                      element={<TeamSpaceMake isFirst={true} />}
-                    />
-                    <Route path='success' element={<TeamSpaceMakeSuccess />} />
-                  </Route>
-                  <Route path='list' element={<TeamSpaceList />} />
-                  <Route path='manage/:teamId'>
-                    <Route index element={<TeamSpaceManage />} />
-                    <Route path='edit' element={<TeamSpaceEdit />} />
-                  </Route>
+              </Route>
+              <Route path='signin' element={<SignIn />} />
+              <Route path='signup' element={<SignUp />} />
+              <Route path='teamspace'>
+                <Route path='make'>
+                  <Route index element={<TeamSpaceMake />} />
+                  <Route
+                    path='first'
+                    element={<TeamSpaceMake isFirst={true} />}
+                  />
+                  <Route path='success' element={<TeamSpaceMakeSuccess />} />
                 </Route>
-                <Route path='calendar' element={<Calendar />} />
-                <Route path='main'>
-                  <Route index element={<MainPage />} />
-                  <Route path='notification' element={<NotificationPage />} />
+                <Route path='list' element={<TeamSpaceList />} />
+                <Route path='manage/:teamId'>
+                  <Route index element={<TeamSpaceManage />} />
+                  <Route path='edit' element={<TeamSpaceEdit />} />
                 </Route>
-                <Route path='mypage'>
-                  <Route index element={<div></div>} />
-                  <Route path='self/:userId' element={<SelfFeedback />} />
-                  <Route path='report' element={<div></div>} />
-                </Route>
+              </Route>
+              <Route path='calendar' element={<Calendar />} />
+              <Route path='main'>
+                <Route index element={<MainPage />} />
+                <Route path='notification' element={<NotificationPage />} />
+              </Route>
+              <Route path='mypage'>
+                <Route index element={<div></div>} />
+                <Route path='self/:userId' element={<SelfFeedback />} />
+                <Route path='report' element={<div></div>} />
               </Route>
             </Route>
           </Routes>
