@@ -7,7 +7,7 @@ import {
 import Accordion from '../../components/Accordion';
 import MainCard2 from '../../components/MainCard2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
-import MainCard, { cardType } from './components/MainCard';
+import MainCard from './components/MainCard';
 import Notification from './components/Notification';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -24,7 +24,6 @@ import ScheduleAction, {
 } from '../calendar/components/ScheduleAction';
 import TodoAdd from '../calendar/components/TodoAdd';
 import { getScheduleTimeDiff } from '../../utility/time';
-import { useNavigate } from 'react-router-dom';
 import { useTeam } from '../../useTeam';
 
 export default function MainPage() {
