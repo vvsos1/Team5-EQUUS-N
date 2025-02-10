@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   useMainCard,
   useMainCard2,
@@ -8,7 +8,7 @@ import {
 import Accordion from '../../components/Accordion';
 import MainCard2 from '../../components/MainCard2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
-import MainCard from './components/MainCard';
+import MainCard, { cardType } from './components/MainCard';
 import Notification from './components/Notification';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -19,10 +19,14 @@ import ScheduleAction, {
   ScheduleActionType,
 } from '../calendar/components/ScheduleAction';
 import TodoAdd from '../calendar/components/TodoAdd';
+import { getScheduleTimeDiff } from '../../utility/time';
+import { useNavigate } from 'react-router-dom';
 
 export default function MainPage() {
   const [selectedTeamId, setSelectedTeamId] = useState(1);
   const [banners, setBanners] = useState();
+  const [mainCardType, setMainCardType] = useState(cardType.ADD_TEAM);
+  const [timeDiff, setTimeDiff] = useState();
   const [isTodoAddOpen, setIsTodoAddOpen] = useState(false);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
@@ -32,6 +36,8 @@ export default function MainPage() {
   const { data: notificationsData, markAsRead } =
     useNotification(selectedTeamId);
 
+  const navigate = useNavigate();
+
   // TODO: 로딩 중 혹은 에러 발생 시 처리
 
   useEffect(() => {
@@ -39,6 +45,38 @@ export default function MainPage() {
       setBanners(filterNotifications(notificationsData));
     }
   }, [notificationsData]);
+
+  useEffect(() => {
+    if (recentScheduleData) {
+      if (recentScheduleData.length === 0) {
+        setMainCardType(cardType.ADD_SCHEDULE);
+      } else {
+        const scheduleDifferece = getScheduleTimeDiff(recentScheduleData);
+        if (scheduleDifferece <= 0) {
+          setMainCardType(cardType.END_SCHEDULE);
+        } else {
+          setMainCardType(cardType.DEFUALT);
+        }
+        setTimeDiff(scheduleDifferece);
+      }
+    } else {
+      setMainCardType(cardType.ADD_TEAM);
+    }
+  }, [recentScheduleData]);
+
+  // 렌더링때마다 새로운 함수 생성 방지
+  const getOnMainButtonClick = useCallback((type) => {
+    switch (type) {
+      case cardType.ADD_TEAM:
+        return () => console.log('팀 스페이스 추가하기 화면으로 이동');
+      case cardType.ADD_SCHEDULE:
+        return () => setIsScheduleOpen(!isScheduleOpen);
+      case cardType.END_SCHEDULE:
+        return () => console.log('피드백 작성하기 화면으로 이동');
+      default:
+        return () => setIsTodoAddOpen(!isTodoAddOpen);
+    }
+  }, []);
 
   return (
     <div className='flex w-full flex-col'>
@@ -68,10 +106,17 @@ export default function MainPage() {
       )}
       <div className='h-2' />
       {recentScheduleData && (
-        <MainCard recentSchedule={recentScheduleData} className='' />
+        <MainCard
+          type={mainCardType}
+          recentSchedule={recentScheduleData}
+          scheduleDifferece={timeDiff}
+          onClickMainButton={getOnMainButtonClick(mainCardType)}
+          onClickSubButton={() => setIsScheduleOpen(!isScheduleOpen)}
+          onClickChevronButton={() => navigate('/calendar')}
+        />
       )}
       <div className='h-8' />
-      {matesData && <MainCard2 teamMates={matesData} className='' />}
+      {matesData && <MainCard2 teamMates={matesData} />}
       <div className='h-8' />
       {recentScheduleData && (
         <ScheduleAction

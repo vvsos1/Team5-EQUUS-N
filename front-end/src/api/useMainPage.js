@@ -19,6 +19,7 @@ export const useMainCard = (teamId) => {
   return useQuery({
     queryKey: ['mainCard', teamId],
     queryFn: () => api.get({ url: `/recentSchedule/${teamId}` }), // 임시
+    enabled: !!teamId,
   });
 };
 
@@ -30,6 +31,7 @@ export const useMainCard2 = (teamId) => {
   return useQuery({
     queryKey: ['mainCard2', teamId],
     queryFn: () => api.get({ url: `/api/team/${teamId}/members` }),
+    enabled: !!teamId,
   });
 };
 
@@ -42,6 +44,7 @@ export const useNotification = (teamId) => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['notification', teamId],
     queryFn: () => api.get({ url: '/api/notification' }),
+    enabled: !!teamId,
   });
 
   const markAsReadMutation = useMutation({
