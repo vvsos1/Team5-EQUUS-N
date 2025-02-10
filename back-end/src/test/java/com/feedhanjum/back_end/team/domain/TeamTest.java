@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.team.domain;
 
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,7 +21,8 @@ class TeamTest {
     private final AtomicLong nextId = new AtomicLong(1L);
 
     private Member createMember(String name) {
-        Member member = new Member(name, name + "@email.com", new ProfileImage("blue", "default.png"));
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member member = new Member(name, name + "@email.com", new ProfileImage("blue", "default.png"), feedbackPreferences);
         ReflectionTestUtils.setField(member, "id", nextId.getAndIncrement());
         return member;
     }

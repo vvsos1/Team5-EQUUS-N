@@ -16,20 +16,52 @@ export const loginResponse = {
 
 export const teams2 = [
   {
-    id: 1,
+    id: 1234151,
     name: '소프티어 5조',
+    startDate: '2025-01-02',
+    endDate: '2025-02-28',
+    feedbackType: 'ANONYMOUS',
+    leader: {
+      id: 52345513,
+      name: '한준호',
+      email: 'hanjunho@gmail.com',
+      profileImage: {
+        backgroundColor: '#62BFCA',
+        image: 'panda',
+      },
+    },
   },
   {
-    id: 2,
-    name: '에쿠스 N',
-  },
-  {
-    id: 3,
+    id: 4321,
     name: '협곡의 전사들',
+    startDate: '2024-10-02',
+    endDate: '2025-02-01',
+    feedbackType: 'ANONYMOUS',
+    leader: {
+      id: 52345513,
+      name: '백현식',
+      email: 'baekhyeonsik@gmail.com',
+      profileImage: {
+        backgroundColor: '#62BFCA',
+        image: 'penguin',
+      },
+    },
   },
   {
-    id: 4,
-    name: '한박백임',
+    id: 356456,
+    name: '맘스터치 4조',
+    startDate: '2024-12-02',
+    endDate: '2025-05-01',
+    feedbackType: 'ANONYMOUS',
+    leader: {
+      id: 52345513,
+      name: '임세준',
+      email: 'limsejun@gmail.com',
+      profileImage: {
+        backgroundColor: '#62BFCA',
+        image: 'dolphin',
+      },
+    },
   },
 ];
 
@@ -166,6 +198,50 @@ export const createScheduleResponse = {
 
 export const updateScheduleResponse = {
   message: 'string',
+};
+
+export const members2 = [
+  {
+    id: 5145125,
+    name: '임세준',
+    email: 'limsejun@gmail.com',
+    profileImage: {
+      backgroundColor: '#62BFCA',
+      image: 'penguin',
+    },
+  },
+  {
+    id: 5145126,
+    name: '백현식',
+    email: 'baekhyeonsik@gmail.com',
+    profileImage: {
+      backgroundColor: '#F6BF77',
+      image: 'whale',
+    },
+  },
+  {
+    id: 52345513,
+    name: '한준호',
+    email: 'hanjunho@gmail.com',
+    profileImage: {
+      backgroundColor: '#7EABD9',
+      image: 'panda',
+    },
+  },
+  {
+    id: 5145128,
+    name: '박명규',
+    email: 'parkmyeonggu@gmail.com',
+    profileImage: {
+      backgroundColor: '#F6D480',
+      image: 'parrot',
+    },
+  },
+];
+
+export const teamResponse = {
+  teamResponse: teams2[0],
+  members: members2,
 };
 
 export const feedbackReceivedResponse = {
@@ -309,6 +385,41 @@ export const feedbackSentResponse = {
       teamName: '협곡의전사들',
       liked: true,
       createdAt: '2025-02-07T15:07:05.819Z',
+    },
+  ],
+};
+
+export const retrospectResponse = {
+  page: 1073741824,
+  hasNext: true,
+  content: [
+    {
+      title: '1주차 회의 회고',
+      teamName: '소프티어 5조',
+      content:
+        '팀원들과 친해지는 기간이었다. 다함께 힘을 모아서 잘 마무리 되었으면 좋겠다.',
+      createdAt: '2025-02-09T11:15:45.827Z',
+    },
+    {
+      title: '2주차 회의 회고',
+      teamName: '소프티어 5조',
+      content:
+        '이번 프로젝트를 통해 팀원들과의 소통이 얼마나 중요한지 다시 한번 느낌. 특히 중간 점검 회의에서 나온 피드백이 큰 도움이 되었고, 최종 결과물의 완성도를 높이는 데 기여했다. 다음에는 일정 관리를 더욱 철저히 하고, 사전 준비를 강화해야겠다고 느껴졌음.',
+      createdAt: '2025-02-09T11:15:45.827Z',
+    },
+    {
+      title: '3주차 회의 회고',
+      teamName: '소프티어 5조',
+      content:
+        '이번 프로젝트를 통해 팀원들과의 소통이 얼마나 중요한지 다시 한번 느낌. 특히 중간 점검 회의에서 나온 피드백이 큰 도움이 되었고, 최종 결과물의 완성도를 높이는 데 기여했다. 다음에는 일정 관리를 더욱 철저히 하고, 사전 준비를 강화해야겠다고 느껴졌음.',
+      createdAt: '2025-02-09T11:15:45.827Z',
+    },
+    {
+      title: '4주차 회의 회고',
+      teamName: '소프티어 5조',
+      content:
+        '나의 의견을 제대로 피력하지 못해 좀 아쉬웠다. 다음부턴 명확하게 전달할 수 있도록 노력해야겠다.',
+      createdAt: '2025-02-09T11:15:45.827Z',
     },
   ],
 };

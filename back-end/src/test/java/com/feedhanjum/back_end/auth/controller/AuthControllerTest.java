@@ -9,6 +9,7 @@ import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.auth.service.AuthService;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,6 +22,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -65,13 +68,14 @@ class AuthControllerTest {
         @Test
         @DisplayName("회원가입 성공 시 201(CREATED) 상태코드와 응답 반환")
         void signup_success() throws Exception {
-            MemberSignupRequest request = new MemberSignupRequest("test@example.com", "abcd1234", "홍길동", null);
+            List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+            MemberSignupRequest request = new MemberSignupRequest("test@example.com", "abcd1234", "홍길동", null, feedbackPreferences);
 
             MemberDetails entity = new MemberDetails(null, request.email(), request.password());
             when(memberMapper.toEntity(any(MemberSignupRequest.class))).thenReturn(entity);
 
             MemberDetails savedMember = new MemberDetails(1L, "test@example.com", "abcd1234");
-            when(authService.registerMember(entity, request.name(), null)).thenReturn(savedMember);
+            when(authService.registerMember(entity, request.name(), null, feedbackPreferences)).thenReturn(savedMember);
 
             MemberSignupResponse response = new MemberSignupResponse(1L, "test@example.com", "회원가입이 완료되었습니다.");
             when(memberMapper.toResponse(savedMember)).thenReturn(response);
@@ -89,13 +93,14 @@ class AuthControllerTest {
         @Test
         @DisplayName("이메일 중복 시 409(CONFLICT) 상태코드와 에러 메시지 반환")
         void signup_emailAlreadyExists() throws Exception {
-            MemberSignupRequest request = new MemberSignupRequest("duplicate@example.com", "abcd1234", "홍길동", null);
+            List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+            MemberSignupRequest request = new MemberSignupRequest("duplicate@example.com", "abcd1234", "홍길동", null, feedbackPreferences);
 
             MemberDetails entity = new MemberDetails(null, request.email(), request.password());
             when(memberMapper.toEntity(any(MemberSignupRequest.class))).thenReturn(entity);
 
             doThrow(new EmailAlreadyExistsException("이미 사용 중인 이메일입니다."))
-                    .when(authService).registerMember(entity, request.name(), null);
+                    .when(authService).registerMember(entity, request.name(), null, feedbackPreferences);
 
             mockMvc.perform(post("/api/auth/signup")
                             .session(withSignupVerification(request.email()))
@@ -109,7 +114,8 @@ class AuthControllerTest {
         @Test
         @DisplayName("유효하지 않은 입력값일 경우 400(BAD_REQUEST) 상태코드 반환")
         void signup_invalidInput() throws Exception {
-            MemberSignupRequest request = new MemberSignupRequest("", "12", "", null);
+            List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+            MemberSignupRequest request = new MemberSignupRequest("", "12", "", null, feedbackPreferences);
 
             mockMvc.perform(post("/api/auth/signup")
                             .contentType(MediaType.APPLICATION_JSON)

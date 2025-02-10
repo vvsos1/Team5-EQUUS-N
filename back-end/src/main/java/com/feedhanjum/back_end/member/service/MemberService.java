@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.member.service;
 
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
@@ -42,6 +43,17 @@ public class MemberService {
     }
 
     /**
+     * @throws IllegalArgumentException 피드백 선택이 요구사항을 만족하지 못했을 경우
+     * @throws EntityNotFoundException  해당 사용자를 찾을 수 없는 경우
+     */
+    @Transactional
+    public Member changeFeedbackPreference(Long memberId, List<FeedbackPreference> feedbackPreferences) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
+        member.changeFeedbackPreference(feedbackPreferences);
+        return member;
+    }
+
+    /**
      * @throws TeamMembershipNotFoundException 해당 팀에 속해있지 않은 사용자가 팀원 정보를 획득하려고 할 시
      */
     @Transactional(readOnly = true)
@@ -51,5 +63,13 @@ public class MemberService {
         if (teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId).isEmpty())
             throw new TeamMembershipNotFoundException("속해있는 팀에 대한 정보만 접근 가능합니다.");
         return memberQueryRepository.findMembersByTeamId(teamId);
+    }
+
+    /**
+     * @throws EntityNotFoundException 해당 사용자를 찾을 수 없는 경우
+     */
+    @Transactional(readOnly = true)
+    public Member getMemberFeedbackPreference(Long memberId) {
+        return memberRepository.findMemberAndFeedbackPreferenceById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
     }
 }

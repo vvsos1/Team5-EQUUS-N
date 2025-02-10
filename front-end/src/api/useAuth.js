@@ -7,20 +7,20 @@ import { showToast } from '../utility/handleToast';
 export const useVerify = () => {
   return useMutation({
     mutationFn: (data) =>
-      api.post('/api/auth/send-signup-verification-email', data),
+      api.post({ url: '/api/auth/send-signup-verification-email', body: data }),
   });
 };
 
 export const useSignUp = () => {
   return useMutation({
-    mutationFn: (data) => api.post('/api/auth/signup', data),
+    mutationFn: (data) => api.post({ url: '/api/auth/signup', body: data }),
   });
 };
 
 export const useLogin = () => {
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (data) => api.post('/api/auth/login', data),
+    mutationFn: (data) => api.post({ url: '/api/auth/login', body: data }),
     onSuccess: (data) => {
       const { email, message, userId } = data;
       console.log(email, message, userId);
@@ -29,12 +29,5 @@ export const useLogin = () => {
     onError: (error) => {
       showToast(`로그인 실패: ${error.message}`);
     },
-  });
-};
-
-export const useGetTeams = () => {
-  return useQuery({
-    queryKey: ['teams'],
-    queryFn: () => api.get('/api/team/my-teams2'),
   });
 };

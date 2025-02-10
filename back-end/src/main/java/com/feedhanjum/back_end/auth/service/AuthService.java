@@ -9,6 +9,7 @@ import com.feedhanjum.back_end.auth.exception.PasswordResetTokenNotValidExceptio
 import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
 import com.feedhanjum.back_end.auth.passwordencoder.PasswordEncoder;
 import com.feedhanjum.back_end.auth.repository.MemberDetailsRepository;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -33,16 +35,17 @@ public class AuthService {
      * 회원가입을 처리하는 서비스
      * Member 테이블에서 ID값을 받아와 저장하고, 암호를 해싱한 뒤 반환한다.
      *
-     * @param memberDetails 사용자의 인증을 담당하는 정보
-     * @param name          사용자가 설정한 활동 이름
+     * @param memberDetails       사용자의 인증을 담당하는 정보
+     * @param name                사용자가 설정한 활동 이름
+     * @param feedbackPreferences
      * @return id값이 할당된 인증 정보 반환
      * @throws EmailAlreadyExistsException 이미 이메일이 존재하는 경우
      */
     @Transactional
-    public MemberDetails registerMember(MemberDetails memberDetails, String name, ProfileImage profileImage) {
+    public MemberDetails registerMember(MemberDetails memberDetails, String name, ProfileImage profileImage, List<FeedbackPreference> feedbackPreferences) {
 
         validateEmail(memberDetails.getEmail());
-        Member member = new Member(name, memberDetails.getEmail(), profileImage);
+        Member member = new Member(name, memberDetails.getEmail(), profileImage, feedbackPreferences);
         Member savedMember = memberRepository.save(member);
         String hashedPassword = passwordEncoder.encode(memberDetails.getPassword());
         MemberDetails savedMemberDetails = new MemberDetails(savedMember.getId(), memberDetails.getEmail(), hashedPassword);
