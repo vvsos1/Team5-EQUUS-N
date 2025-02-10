@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { timeInPeriod, toKST } from '../../../utility/time';
-import { teams2 } from '../../../mocks/mockData2';
 
 export default function useSchedule(teamId, selectedDate) {
   const [allSchedules, setAllSchedules] = useState([]);
