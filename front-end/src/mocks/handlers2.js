@@ -17,6 +17,7 @@ import {
   feedbackReceivedResponse,
   feedbackSentResponse,
   teamResponse,
+  retrospectResponse,
 } from './mockData2';
 
 const BASE_URL = 'https://api.com';
@@ -135,5 +136,9 @@ export const handlers2 = [
   // 팀 삭제
   http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {
     return HttpResponse.json(teamResponse);
+  }),
+
+  http.get(`${BASE_URL}/api/retrospect/:writerId`, () => {
+    return HttpResponse.json(retrospectResponse);
   }),
 ];

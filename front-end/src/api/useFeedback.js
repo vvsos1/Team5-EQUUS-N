@@ -54,7 +54,7 @@ export const useFeedbackLike = (userId, feedbackId) => {
   });
 };
 
-export const useFeedbackCancelLike = (userId, feedbackId) => {
+export const useFeedbackLikeCancel = (userId, feedbackId) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () =>
