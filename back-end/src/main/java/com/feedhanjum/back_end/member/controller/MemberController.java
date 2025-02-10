@@ -58,8 +58,8 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "해당 회원이 존재하지 않을 경우", content = @Content)
     })
     @GetMapping("/member/feedback-prefer")
-    public ResponseEntity<MemberFeedbackPreferenceDto> getFeedbackPreference(@Login Long memberId) {
-        MemberFeedbackPreferenceDto memberDto = new MemberFeedbackPreferenceDto(memberService.getMemberFeedbackPreference(memberId));
+    public ResponseEntity<MemberFeedbackPreferenceDto> getFeedbackPreference(Long findMemberId) {
+        MemberFeedbackPreferenceDto memberDto = new MemberFeedbackPreferenceDto(memberService.getMemberFeedbackPreference(findMemberId));
         return new ResponseEntity<>(memberDto, HttpStatus.OK);
     }
 
