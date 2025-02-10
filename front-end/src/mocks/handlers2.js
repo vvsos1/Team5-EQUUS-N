@@ -20,7 +20,7 @@ import {
   retrospectResponse,
 } from './mockData2';
 
-const BASE_URL = 'https://api.com';
+const BASE_URL = 'https://api.feedhanjum.com';
 
 export const handlers2 = [
   // 인증
@@ -31,25 +31,6 @@ export const handlers2 = [
   // 회원가입
   http.post(`${BASE_URL}/api/auth/signup`, () => {
     return HttpResponse.json(signupResponse);
-  }),
-
-  // 로그인
-  http.post(`${BASE_URL}/api/auth/login`, async ({ request }) => {
-    const { email, password } = await request.json();
-    console.log(email, password);
-
-    // 로그인 성공 시 응답 형식 지정
-    if (email === '1@n.com' && password === 'qpqp1010!') {
-      return HttpResponse.json(loginResponse, { status: 201 });
-    }
-
-    // 로그인 실패 시 응답 형식 지정
-    return HttpResponse.json(
-      {
-        message: '로그인 실패: 잘못된 자격 증명',
-      },
-      { status: 401 },
-    );
   }),
 
   // 팀 목록 조회

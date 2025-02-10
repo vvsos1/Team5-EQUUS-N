@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import { teams, schedules, members, notifications } from './mockData';
 
-const BASE_URL = 'https://api.com';
+const BASE_URL = 'https://api.feedhanjum.com';
 
 export const handlers = [
   // 팀 목록 조회
