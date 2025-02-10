@@ -11,7 +11,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
  */
 export const useGetSchedules = (params) => {
   return useQuery({
-    queryKey: ['schedules', params],
+    queryKey: ['schedules', params.teamId, params.startDay],
     queryFn: () => {
       const sendingData = {
         teamId: params.teamId,

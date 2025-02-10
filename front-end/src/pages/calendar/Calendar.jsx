@@ -6,7 +6,7 @@ import ScheduleCard from './components/ScheduleCard';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import LargeButton from '../../components/buttons/LargeButton';
 import Icon from '../../components/Icon';
-import { checkIsFinished, getRecentSunday } from '../../utility/time';
+import { checkIsFinished } from '../../utility/time';
 import { ScheduleActionType } from './components/ScheduleAction';
 import ScheduleAction from './components/ScheduleAction';
 import { useGetSchedules } from '../../api/useCalendar';
@@ -20,73 +20,30 @@ import { useTeam } from '../../useTeam';
 
 export default function Calendar() {
   const location = useLocation();
-  const [selectedDate, setSelectedDate] = useState(
-    location.state?.initialDate ?? new Date('2025-01-24'),
-  );
-  const [searchingDate, setSearchingDate] = useState(
-    getRecentSunday(selectedDate),
-  );
-
-  const { allSchedules, setAllSchedules, scheduleOnDate, scheduleSet } =
-    useSchedule(selectedDate);
-  const { doingAction, setDoingAction, actionType, setActionType } =
-    useScheduleAction();
-  const { scrollRef, isScrolling } = useCalendarScroll();
-
+  // 팀 불러오기
   const { teams, selectedTeam, selectTeam, setTeams } = useTeam();
   const { data: teamsData } = useMyTeams();
 
+  // 날짜 지정
+  const [selectedDate, setSelectedDate] = useState(
+    location.state?.initialDate ?? new Date('2025-01-24'),
+  );
+
+  // 일정 조회, 저장 관련
+  const { setAllSchedules, scheduleOnDate, scheduleSet } =
+    useSchedule(selectedDate);
+  // 일정 수정, 삭제 관련
+  const { doingAction, setDoingAction, actionType, setActionType } =
+    useScheduleAction();
+  // 일정 화면 스크롤 관련
+  const { scrollRef, isScrolling } = useCalendarScroll();
+
+  // 팀 정보 갱신
   useEffect(() => {
     if (teamsData) {
       setTeams(teamsData);
     }
   }, [teamsData]);
-  const {
-    data: schedules,
-    isLoading: isSchedulesLoading,
-    refetch,
-  } = useGetSchedules(
-    {
-      teamId: teams2[0].id,
-      startDay: searchingDate.toISOString(),
-      endDay: searchingDate.toISOString(),
-    },
-    setAllSchedules,
-  );
-
-  useEffect(() => {
-    if (isSchedulesLoading) return;
-    if (isSchedulesLoading) return;
-    setAllSchedules(schedules);
-  }, [schedules, isSchedulesLoading]);
-
-  useEffect(() => {
-    setScheduleSet(
-      new Set(
-        allSchedules
-          ?.filter((data) => {
-            return data.teamId === selectedTeam;
-          })
-          ?.map(
-            (data) =>
-              new Date(data.scheduleInfo.startTime).toISOString().split('T')[0],
-          ) ?? [],
-      ),
-    );
-  }, [allSchedules, selectedTeam]);
-
-  useEffect(() => {
-    if (!allSchedules) return;
-    setScheduleOnDate(
-      allSchedules.filter((data) => {
-        return timeInPeriod(
-          new Date(data.scheduleInfo.startTime),
-          selectedDate,
-          new Date(selectedDate.getTime() + 86400000),
-        );
-      }),
-    );
-  }, [selectedDate]);
 
   return (
     <div
@@ -99,7 +56,7 @@ export default function Calendar() {
           selectedTeamId={selectedTeam}
           teamList={teams}
           onTeamClick={selectTeam}
-          canClose={!isDisplaying}
+          canClose={!doingAction}
           onClickLastButton={() => {
             selectTeam(-1);
           }}
@@ -110,6 +67,7 @@ export default function Calendar() {
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
         scheduleSet={scheduleSet}
+        setAllSchedules={setAllSchedules}
       />
       <ul className='flex flex-col gap-6'>
         {scheduleOnDate &&

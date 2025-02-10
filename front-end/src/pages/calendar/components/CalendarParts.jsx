@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import { useGetSchedules } from '../../../api/useCalendar';
+import { useTeam } from '../../../useTeam';
 import { getDateInfo } from '../../../utility/time';
 import classNames from 'classnames';
 
@@ -83,7 +86,27 @@ export function CalendarWeek({
   selectedDate,
   setSelectedDate,
   scheduleSet,
+  setAllSchedules,
 }) {
+  curSunday = new Date(curSunday).setHours(9, 0, 0, 0);
+  const { teams, selectedTeam } = useTeam();
+  const {
+    data: schedules,
+    isLoading: isSchedulesLoading,
+    refetch,
+  } = useGetSchedules({
+    teamId: selectedTeam,
+    startDay: new Date(curSunday).toISOString().split('T')[0],
+    endDay: new Date(new Date().setDate(new Date(curSunday).getDate() + 7))
+      .toISOString()
+      .split('T')[0],
+  });
+
+  useEffect(() => {
+    if (isSchedulesLoading) return;
+    setAllSchedules((prev) => [...prev, schedules]);
+  }, [schedules, isSchedulesLoading]);
+
   const dateList = getDateList(curSunday);
   return (
     <div className='min-w-full'>
