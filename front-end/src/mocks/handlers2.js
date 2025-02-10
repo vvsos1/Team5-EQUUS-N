@@ -13,8 +13,11 @@ import {
   createScheduleResponse,
   updateScheduleResponse,
   schedules2,
+  members2,
   feedbackReceivedResponse,
   feedbackSentResponse,
+  teamResponse,
+  retrospectResponse,
 } from './mockData2';
 
 const BASE_URL = 'https://api.com';
@@ -61,7 +64,7 @@ export const handlers2 = [
 
   // 팀 일정 조회
   http.get(`${BASE_URL}/api/team/:teamId/schedules`, () => {
-    return HttpResponse.json(schedules);
+    return HttpResponse.json(schedules2);
   }),
 
   // 일정 생성
@@ -78,7 +81,17 @@ export const handlers2 = [
   // http.delete(`${BASE_URL}/api/team/:teamId/schedule/:scheduleId`, () => {
   //   return HttpResponse.json(deleteScheduleResponse);
   // }),
-  
+
+  // 팀 조회
+  http.get(`${BASE_URL}/api/team/:teamId`, () => {
+    return HttpResponse.json(teamResponse);
+  }),
+
+  // 팀 멤버 조회
+  http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
+    return HttpResponse.json(members2);
+  }),
+
   // 피드백 받은 내역 조회
   http.get(`${BASE_URL}/api/feedbacks/receiver/:memberId`, () => {
     return HttpResponse.json(feedbackReceivedResponse);
@@ -104,4 +117,28 @@ export const handlers2 = [
       return HttpResponse.json({ message: '좋아요를 취소했습니다' });
     },
   ),
+
+  // 리더 변경
+  http.post(`${BASE_URL}/api/team/:teamId/leader`, () => {
+    return new HttpResponse({ status: 200 });
+  }),
+
+  // 멤버 삭제
+  http.delete(`${BASE_URL}/api/team/:teamId/member/:memberId`, () => {
+    return new HttpResponse({ status: 204 });
+  }),
+
+  // 팀 수정
+  http.post(`${BASE_URL}/api/team/:teamId`, () => {
+    return HttpResponse.json(teamResponse);
+  }),
+
+  // 팀 삭제
+  http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {
+    return HttpResponse.json(teamResponse);
+  }),
+
+  http.get(`${BASE_URL}/api/retrospect/:writerId`, () => {
+    return HttpResponse.json(retrospectResponse);
+  }),
 ];

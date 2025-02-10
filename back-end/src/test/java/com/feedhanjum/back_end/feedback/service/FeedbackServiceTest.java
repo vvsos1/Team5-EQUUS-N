@@ -10,6 +10,7 @@ import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -75,7 +76,8 @@ class FeedbackServiceTest {
     private final AtomicLong nextId = new AtomicLong(1L);
 
     private Member createMember(String name) {
-        Member member = new Member(name, name + "@test.com", new ProfileImage("bg-" + name, "profile-" + name));
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member member = new Member(name, name + "@test.com", new ProfileImage("bg-" + name, "profile-" + name), feedbackPreferences);
         ReflectionTestUtils.setField(member, "id", nextId.getAndIncrement());
         return member;
     }

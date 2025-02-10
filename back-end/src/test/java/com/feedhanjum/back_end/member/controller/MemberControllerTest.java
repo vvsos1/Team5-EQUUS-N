@@ -2,6 +2,7 @@ package com.feedhanjum.back_end.member.controller;
 
 import com.feedhanjum.back_end.member.controller.dto.MemberDto;
 import com.feedhanjum.back_end.member.controller.dto.ProfileChangeRequest;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.service.MemberService;
@@ -14,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -32,7 +35,8 @@ class MemberControllerTest {
     void getMemberById_정상조회() {
         //given
         Long memberId = 1L;
-        Member member = new Member("홍길동", "hong@example.com", new ProfileImage("blue", "img.png"));
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member member = new Member("홍길동", "hong@example.com", new ProfileImage("blue", "img.png"), feedbackPreferences);
         ReflectionTestUtils.setField(member, "id", memberId);
         when(memberService.getMemberById(memberId)).thenReturn(member);
 
@@ -55,7 +59,8 @@ class MemberControllerTest {
         Long memberId = 1L;
         String newName = "hoho";
         ProfileImage profileImage = new ProfileImage("haha", "hehe");
-        Member member = new Member(newName, "hoho", new ProfileImage("huhu", "hehe"));
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member member = new Member(newName, "hoho", new ProfileImage("huhu", "hehe"), feedbackPreferences);
         when(memberService.changeProfile(memberId, newName, profileImage)).thenReturn(member);
         ProfileChangeRequest profileChangeRequest = new ProfileChangeRequest(newName, profileImage);
         // when

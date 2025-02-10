@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.member.service;
 
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
@@ -49,7 +50,8 @@ class MemberServiceTest {
     void getMemberById_정상조회() {
         //given
         Long memberId = 1L;
-        Member member = new Member("홍길동", "hong@example.com", new ProfileImage("blue", "img.png"));
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member member = new Member("홍길동", "hong@example.com", new ProfileImage("blue", "img.png"), feedbackPreferences);
         ReflectionTestUtils.setField(member, "id", memberId);
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
 
@@ -83,7 +85,8 @@ class MemberServiceTest {
     void changeProfile() {
         // given
         Long memberId = 1L;
-        Member member = new Member("haha", "hoho", new ProfileImage("huhu", "hehe"));
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member member = new Member("haha", "hoho", new ProfileImage("huhu", "hehe"), feedbackPreferences);
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         String newName = "hoho";
         ProfileImage newProfileImage = new ProfileImage("hehe", "haha");

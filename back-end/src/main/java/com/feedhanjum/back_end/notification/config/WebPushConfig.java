@@ -11,7 +11,7 @@ import java.security.GeneralSecurityException;
 import java.security.Security;
 
 @Slf4j
-@Profile("!test")
+@Profile({"dev", "prod"})
 @Configuration
 public class WebPushConfig {
 
