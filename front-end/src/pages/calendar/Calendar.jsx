@@ -15,6 +15,8 @@ import useSchedule from './hooks/useSchedule';
 import useScheduleAction from './hooks/useScheduleAction';
 import useCalendarScroll from './hooks/useCalendarScroll';
 import { teams2 } from '../../mocks/mockData2';
+import { useMyTeams } from '../../api/useAuth';
+import { useTeam } from '../../useTeam';
 
 export default function Calendar() {
   const location = useLocation();
@@ -25,12 +27,20 @@ export default function Calendar() {
     getRecentSunday(selectedDate),
   );
 
-  const { setAllSchedules, scheduleOnDate, scheduleSet } =
+  const { allSchedules, setAllSchedules, scheduleOnDate, scheduleSet } =
     useSchedule(selectedDate);
   const { doingAction, setDoingAction, actionType, setActionType } =
     useScheduleAction();
   const { scrollRef, isScrolling } = useCalendarScroll();
 
+  const { teams, selectedTeam, selectTeam, setTeams } = useTeam();
+  const { data: teamsData } = useMyTeams();
+
+  useEffect(() => {
+    if (teamsData) {
+      setTeams(teamsData);
+    }
+  }, [teamsData]);
   const {
     data: schedules,
     isLoading: isSchedulesLoading,
@@ -46,8 +56,37 @@ export default function Calendar() {
 
   useEffect(() => {
     if (isSchedulesLoading) return;
+    if (isSchedulesLoading) return;
     setAllSchedules(schedules);
   }, [schedules, isSchedulesLoading]);
+
+  useEffect(() => {
+    setScheduleSet(
+      new Set(
+        allSchedules
+          ?.filter((data) => {
+            return data.teamId === selectedTeam;
+          })
+          ?.map(
+            (data) =>
+              new Date(data.scheduleInfo.startTime).toISOString().split('T')[0],
+          ) ?? [],
+      ),
+    );
+  }, [allSchedules, selectedTeam]);
+
+  useEffect(() => {
+    if (!allSchedules) return;
+    setScheduleOnDate(
+      allSchedules.filter((data) => {
+        return timeInPeriod(
+          new Date(data.scheduleInfo.startTime),
+          selectedDate,
+          new Date(selectedDate.getTime() + 86400000),
+        );
+      }),
+    );
+  }, [selectedDate]);
 
   return (
     <div
@@ -57,11 +96,13 @@ export default function Calendar() {
       <StickyWrapper>
         <Accordion
           isMainPage={false}
-          selectedTeamId={teams2[0].id}
-          teamList={teams2}
-          onTeamClick={() => {}}
-          canClose={!doingAction}
-          onClickLastButton={() => {}}
+          selectedTeamId={selectedTeam}
+          teamList={teams}
+          onTeamClick={selectTeam}
+          canClose={!isDisplaying}
+          onClickLastButton={() => {
+            selectTeam(-1);
+          }}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
       </StickyWrapper>
@@ -73,7 +114,7 @@ export default function Calendar() {
       <ul className='flex flex-col gap-6'>
         {scheduleOnDate &&
           scheduleOnDate.map((schedule, index) => {
-            if (schedule.teamId !== selectedTeamId) return null;
+            if (schedule.teamId !== selectedTeam) return null;
             return (
               <li key={index} className='last:mb-5'>
                 <ScheduleCard
@@ -112,7 +153,7 @@ export default function Calendar() {
           isOpen={doingAction}
           selectedDateFromParent={selectedDate}
           selectedSchedule={scheduleOnDate.find(
-            (schedule) => schedule.teamId === selectedTeamId,
+            (schedule) => schedule.teamId === selectedTeam,
           )}
           onClose={() => setDoingAction(false)}
           onSubmit={(postSuccess) => {
