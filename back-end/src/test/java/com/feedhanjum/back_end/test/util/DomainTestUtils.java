@@ -1,19 +1,22 @@
-package com.feedhanjum.back_end.util;
+package com.feedhanjum.back_end.test.util;
 
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.team.domain.Team;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class DomainTestUtils {
     private static final AtomicLong nextId = new AtomicLong(1);
 
     public static Member createMemberWithoutId(String name) {
-        return new Member(name, name + "email@com", new ProfileImage("red", "default.png"));
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        return new Member(name, name + "email@com", new ProfileImage("red", "default.png"), feedbackPreferences);
     }
 
     public static Member createMemberWithId(String name) {

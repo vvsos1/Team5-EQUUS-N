@@ -4,6 +4,7 @@ import com.feedhanjum.back_end.core.config.QuerydslConfig;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -90,8 +91,9 @@ class FeedbackQueryRepositoryTest {
 
         @BeforeEach
         void setUp() {
-            member1 = new Member("member1", "email1@email.com", new ProfileImage("bg1", "profile1"));
-            member2 = new Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"));
+            List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+            member1 = new Member("member1", "email1@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
+            member2 = new Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
             memberRepository.saveAll(List.of(member1, member2));
 
             team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS);
@@ -285,8 +287,9 @@ class FeedbackQueryRepositoryTest {
 
         @BeforeEach
         void setUp() {
-            member1 = new Member("member1", "email1@email.com", new ProfileImage("bg1", "profile1"));
-            member2 = new Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"));
+            List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+            member1 = new Member("member1", "email1@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
+            member2 = new Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
             memberRepository.saveAll(List.of(member1, member2));
 
             team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS);

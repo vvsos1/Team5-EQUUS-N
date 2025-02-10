@@ -2,6 +2,7 @@ package com.feedhanjum.back_end.team.service;
 
 import com.feedhanjum.back_end.event.EventPublisher;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -27,8 +28,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.feedhanjum.back_end.util.DomainTestUtils.createMemberWithId;
-import static com.feedhanjum.back_end.util.DomainTestUtils.createTeamWithId;
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.createMemberWithId;
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.createTeamWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
@@ -63,7 +64,8 @@ class TeamServiceTest {
         Long userId = 1L;
         when(clock.instant()).thenReturn(LocalDate.of(2023, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
         when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
-        Member leader = new Member("haha", "haha@hoho", new ProfileImage("blue", "image1"));
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        Member leader = new Member("haha", "haha@hoho", new ProfileImage("blue", "image1"), feedbackPreferences);
         Team team = new Team("haha", leader, LocalDate.now(clock).plusDays(1), LocalDate.now(clock).plusDays(10), FeedbackType.ANONYMOUS);
         when(teamQueryRepository.findTeamByMemberId(userId)).thenReturn(List.of(team));
 

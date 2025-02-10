@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMyTeams } from '../../api/useAuth';
+import { useMyTeams } from '../../api/useMainPage';
 import NavBar2 from '../../components/NavBar2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import { useNavigate } from 'react-router-dom';
