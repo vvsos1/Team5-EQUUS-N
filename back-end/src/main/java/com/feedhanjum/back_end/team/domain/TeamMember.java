@@ -13,7 +13,7 @@ public class TeamMember {
 
     @Id
     @Column(name = "team_member_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

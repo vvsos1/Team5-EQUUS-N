@@ -17,7 +17,7 @@ import java.util.Set;
 public class Member {
     @Id
     @Column(name = "member_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
