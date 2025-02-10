@@ -10,7 +10,7 @@ import com.feedhanjum.back_end.schedule.event.ScheduleEndedEvent;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
-import com.feedhanjum.back_end.util.DomainTestUtils;
+import com.feedhanjum.back_end.test.util.DomainTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Clock;
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
+@ActiveProfiles("test")
 class ScheduleServiceIntegrationTest {
     @Autowired
     private MemberRepository memberRepository;
