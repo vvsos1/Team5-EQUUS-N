@@ -19,8 +19,8 @@ import FeedbackReceived from './pages/feedback/FeedbackReceived';
 import FeedbackSent from './pages/feedback/FeedbackSent';
 import TeamSpaceManage from './pages/teamspace/TeamSpaceManage';
 import TeamSpaceEdit from './pages/teamspace/TeamSpaceEdit';
-import { TeamProvider } from './TeamContext';
 import SelfFeedback from './pages/mypage/SelfFeedback';
+import { TeamProvider } from './TeamContext';
 
 const queryClient = new QueryClient();
 
