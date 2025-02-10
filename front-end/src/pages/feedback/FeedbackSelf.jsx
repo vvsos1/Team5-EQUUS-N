@@ -37,6 +37,7 @@ export default function FeedbackSelf() {
       <CustomInput
         content={titleContent}
         setContent={setTitleContent}
+        isForRetrospect={true}
         hint='제목을 입력해주세요'
       />
       <div className='h-6' />
