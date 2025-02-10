@@ -414,7 +414,7 @@ public class TeamControllerIntegrationTest {
         }
 
         @Test
-        @DisplayName("만료된 팀 가입 토큰으로 조회 시도 시 400")
+        @DisplayName("만료된 팀 가입 토큰으로 조회 시도 시 404")
         void test2() {
             // given
             Member leader = member1;
