@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SelectedDateInfo } from './components/CalendarParts';
 import CalendarWeeks from './components/CalendarWeeks';
 import Accordion from '../../components/Accordion';
@@ -9,12 +9,10 @@ import Icon from '../../components/Icon';
 import { checkIsFinished } from '../../utility/time';
 import { ScheduleActionType } from './components/ScheduleAction';
 import ScheduleAction from './components/ScheduleAction';
-import { useGetSchedules } from '../../api/useCalendar';
 import { useLocation } from 'react-router-dom';
 import useSchedule from './hooks/useSchedule';
 import useScheduleAction from './hooks/useScheduleAction';
 import useCalendarScroll from './hooks/useCalendarScroll';
-import { teams2 } from '../../mocks/mockData2';
 import { useMyTeams } from '../../api/useAuth';
 import { useTeam } from '../../useTeam';
 
@@ -26,15 +24,18 @@ export default function Calendar() {
 
   // 날짜 지정
   const [selectedDate, setSelectedDate] = useState(
-    location.state?.initialDate ?? new Date('2025-01-24'),
+    location.state?.initialDate ?? new Date(new Date().setHours(0, 0, 0, 0)),
   );
 
   // 일정 조회, 저장 관련
-  const { setAllSchedules, scheduleOnDate, scheduleSet } =
-    useSchedule(selectedDate);
+  const { setAllSchedules, scheduleOnDate, scheduleSet } = useSchedule(
+    selectedTeam,
+    selectedDate,
+  );
   // 일정 수정, 삭제 관련
   const { doingAction, setDoingAction, actionType, setActionType } =
     useScheduleAction();
+
   // 일정 화면 스크롤 관련
   const { scrollRef, isScrolling } = useCalendarScroll();
 
@@ -44,6 +45,8 @@ export default function Calendar() {
       setTeams(teamsData);
     }
   }, [teamsData]);
+
+  // console.log(scheduleOnDate);
 
   return (
     <div
@@ -55,7 +58,10 @@ export default function Calendar() {
           isMainPage={false}
           selectedTeamId={selectedTeam}
           teamList={teams}
-          onTeamClick={selectTeam}
+          onTeamClick={(teamId) => {
+            setAllSchedules([]);
+            selectTeam(teamId);
+          }}
           canClose={!doingAction}
           onClickLastButton={() => {
             selectTeam(-1);
@@ -76,10 +82,9 @@ export default function Calendar() {
             return (
               <li key={index} className='last:mb-5'>
                 <ScheduleCard
-                  teamName={schedule.teamName}
-                  schedule={schedule.scheduleInfo}
-                  todos={schedule.todos}
-                  isFinished={checkIsFinished(schedule.scheduleInfo.endTime)}
+                  schedule={schedule}
+                  todos={schedule.scheduleMemberNestedDtoList}
+                  isFinished={checkIsFinished(schedule.endTime)}
                   onClickEdit={() => {
                     setActionType(ScheduleActionType.EDIT);
                     setDoingAction(true);

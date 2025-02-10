@@ -14,7 +14,6 @@ import classNames from 'classnames';
  * @returns
  */
 export default function ScheduleCard({
-  teamName,
   schedule,
   todos,
   onClickEdit,
@@ -37,12 +36,14 @@ export default function ScheduleCard({
     <div
       className={classNames(
         'rounded-400 flex h-fit w-full flex-col gap-6 overflow-hidden bg-gray-800 transition-all duration-300',
-        teamName ? 'p-4' : 'px-4 py-5',
+        schedule.teamName ? 'p-4' : 'px-4 py-5',
       )}
     >
       <div className='flex'>
         <div className='flex flex-1 flex-col gap-3'>
-          {teamName && <Tag type={TagType.TEAM_NAME}>{teamName}</Tag>}
+          {schedule.teamName && (
+            <Tag type={TagType.TEAM_NAME}>{schedule.teamName}</Tag>
+          )}
           <div className='flex items-center gap-2'>
             <div className='subtitle-2 text-lime-500'>
               {schedule.startTime.split('T')[1].substring(0, 5)}
@@ -56,7 +57,7 @@ export default function ScheduleCard({
           <button onClick={onClickEdit}>
             <Icon
               name='edit'
-              className={classNames('h-max w-max', teamName && 'pt-1')}
+              className={classNames('h-max w-max', schedule.teamName && 'pt-1')}
             />
           </button>
         )}
@@ -85,13 +86,14 @@ export default function ScheduleCard({
         style={contentRef.current ? { height: `${height}px` } : { height: 0 }}
       >
         {todos.map((todo, index) => {
+          //TODO: 내 멤버 id와 비교
           if (todo.memberId === 1) return null;
           return (
             <div key={index} className='flex flex-col gap-3'>
-              <Tag type={TagType.MEMBER_ROLE}>{todo.name}</Tag>
-              {todo.task.length > 0 ?
+              <Tag type={TagType.MEMBER_ROLE}>{todo.memberName}</Tag>
+              {todo.todoList.length > 0 ?
                 <div className='flex flex-col gap-1'>
-                  {todo.task.map((task, index) => (
+                  {todo.todoList.map((task, index) => (
                     <Role key={index}>{task}</Role>
                   ))}
                 </div>

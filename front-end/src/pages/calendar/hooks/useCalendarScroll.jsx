@@ -17,12 +17,12 @@ export default function useCalendarScroll() {
       }
     };
 
-    container.addEventListener('scroll', handleScroll());
+    container.addEventListener('scroll', handleScroll);
 
     return () => {
-      container.removeEventListener('scroll', handleScroll());
+      container.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  return { scrollRef, isScrolling, setIsScrolling };
+  return { scrollRef, isScrolling };
 }
