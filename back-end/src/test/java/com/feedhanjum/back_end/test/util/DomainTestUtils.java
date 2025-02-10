@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.util;
+package com.feedhanjum.back_end.test.util;
 
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;

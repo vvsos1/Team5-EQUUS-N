@@ -23,8 +23,6 @@ import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamMember;
 import com.feedhanjum.back_end.team.event.FrequentFeedbackRequestedEvent;
 import com.feedhanjum.back_end.team.event.TeamLeaderChangedEvent;
-import com.feedhanjum.back_end.team.repository.FrequentFeedbackRequestRepository;
-import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +39,9 @@ public class InAppNotificationService {
     private final MemberRepository memberRepository;
     private final ScheduleRepository scheduleRepository;
     private final EventPublisher eventPublisher;
-    private final FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
     private final FeedbackRepository feedbackRepository;
     private final TeamRepository teamRepository;
-    private final TeamMemberRepository teamMemberRepository;
+    private final WebPushService webPushService;
 
 
     @Transactional(readOnly = true)
@@ -194,5 +191,13 @@ public class InAppNotificationService {
         InAppNotification notification = new UnreadFeedbackExistNotification((FeedbackReceiveNotification) feedbackReceiveNotification);
         inAppNotificationRepository.save(notification);
         eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
+    }
+
+    @Transactional(readOnly = true)
+    public void sendPushNotification(Long notificationId) {
+        InAppNotification notification = inAppNotificationRepository.findById(notificationId)
+                .orElseThrow(EntityNotFoundException::new);
+        Long receiverId = notification.getReceiverId();
+        webPushService.sendPushMessage(receiverId, notification);
     }
 }
