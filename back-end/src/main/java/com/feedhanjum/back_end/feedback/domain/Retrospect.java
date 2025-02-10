@@ -17,7 +17,7 @@ public class Retrospect {
     public static final int MAX_CONTENT_BYTE = 400;
     @Id
     @Column(name = "retrospect_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;

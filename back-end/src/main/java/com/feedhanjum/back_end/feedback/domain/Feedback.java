@@ -24,7 +24,7 @@ public class Feedback {
 
     @Id
     @Column(name = "feedback_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)

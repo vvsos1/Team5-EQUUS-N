@@ -40,5 +40,12 @@ out/
 application-prod.properties
 application-prod.yml
 
+### 개발 환경 설정 파일 ###
+application-dev.properties
+application-dev.yml
+
 ### 개발 환경 데이터베이스 ###
 *.db
+
+### HTTPS 인증서 ###
+*.p12

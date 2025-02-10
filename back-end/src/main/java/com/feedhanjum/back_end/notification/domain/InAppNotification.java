@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class InAppNotification {
     @Id
     @Column(name = "notification_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
     @Column(nullable = false)
