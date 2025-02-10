@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useMyTeams } from './api/useMainPage';
 import { useTeamContext } from './TeamContext';
 
 // 팀 관련 로직을 처리하는 커스텀 훅
@@ -15,6 +17,15 @@ export const useTeam = () => {
       dispatch({ type: 'SELECT_TEAM', payload: teamId });
     }
   };
+
+  // useTeam 호출하면 팀 목록을 가져옴
+  const { data: teamsData } = useMyTeams();
+
+  useEffect(() => {
+    if (teamsData) {
+      setTeams(teamsData);
+    }
+  }, [teamsData]);
 
   return {
     teams: state.teams,

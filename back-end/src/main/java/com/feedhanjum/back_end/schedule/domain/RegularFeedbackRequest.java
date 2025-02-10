@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class RegularFeedbackRequest {
     @Id
     @Column(name = "regular_feedback_request_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime createdAt;

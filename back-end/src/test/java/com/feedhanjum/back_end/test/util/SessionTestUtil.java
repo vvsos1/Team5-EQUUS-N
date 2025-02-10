@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.util;
+package com.feedhanjum.back_end.test.util;
 
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.member.domain.Member;
