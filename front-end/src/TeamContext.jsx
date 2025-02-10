@@ -32,7 +32,7 @@ const TeamContext = createContext(null);
 
 // Provider 컴포넌트
 export const TeamProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(teamReducer, loadStateFromStorage);
+  const [state, dispatch] = useReducer(teamReducer, loadStateFromStorage());
 
   return (
     <TeamContext.Provider value={{ state, dispatch }}>
