@@ -154,9 +154,16 @@ public class ScheduleService {
         return nextSchedule;
     }
 
+
+    private LocalDateTime truncateToNearestTenMinutes(LocalDateTime dateTime) {
+        int minute = dateTime.getMinute();
+        int truncatedMinute = (minute / 10) * 10;
+        return dateTime.withMinute(truncatedMinute).withSecond(0).withNano(0);
+    }
+
     @Transactional
     public void endSchedules() {
-        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime now = truncateToNearestTenMinutes(LocalDateTime.now(clock));
         JobRecord jobRecord = jobRecordRepository.findById(JobRecord.JobName.SCHEDULE)
                 .orElseGet(() -> new JobRecord(JobRecord.JobName.SCHEDULE));
 
