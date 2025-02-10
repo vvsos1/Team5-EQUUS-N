@@ -66,9 +66,9 @@ function CalendarDate({ date, isSelected, haveSchedule }) {
       >
         {date.getDate()}
       </div>
-      {haveSchedule && (
+      {haveSchedule ?
         <div className='h-1 w-full rounded-full bg-lime-500'></div>
-      )}
+      : <div className='h-1 w-full'> </div>}
     </div>
   );
 }
