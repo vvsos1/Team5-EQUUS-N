@@ -13,14 +13,12 @@ import { useLocation } from 'react-router-dom';
 import useSchedule from './hooks/useSchedule';
 import useScheduleAction from './hooks/useScheduleAction';
 import useCalendarScroll from './hooks/useCalendarScroll';
-import { useMyTeams } from '../../api/useAuth';
 import { useTeam } from '../../useTeam';
 
 export default function Calendar() {
   const location = useLocation();
   // 팀 불러오기
-  const { teams, selectedTeam, selectTeam, setTeams } = useTeam();
-  const { data: teamsData } = useMyTeams();
+  const { teams, selectedTeam, selectTeam } = useTeam();
 
   // 날짜 지정
   const [selectedDate, setSelectedDate] = useState(
@@ -38,13 +36,6 @@ export default function Calendar() {
 
   // 일정 화면 스크롤 관련
   const { scrollRef, isScrolling } = useCalendarScroll();
-
-  // 팀 정보 갱신
-  useEffect(() => {
-    if (teamsData) {
-      setTeams(teamsData);
-    }
-  }, [teamsData]);
 
   // console.log(scheduleOnDate);
 
@@ -116,15 +107,12 @@ export default function Calendar() {
         <ScheduleAction
           type={actionType}
           isOpen={doingAction}
-          isOpen={doingAction}
           selectedDateFromParent={selectedDate}
           selectedSchedule={scheduleOnDate.find(
             (schedule) => schedule.teamId === selectedTeam,
           )}
           onClose={() => setDoingAction(false)}
-          onClose={() => setDoingAction(false)}
           onSubmit={(postSuccess) => {
-            setDoingAction(false);
             setDoingAction(false);
             if (postSuccess) {
               // TODO: 일정 재조회
