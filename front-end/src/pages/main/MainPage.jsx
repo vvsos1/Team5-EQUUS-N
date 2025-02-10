@@ -14,12 +14,16 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../../slider.css';
 import { filterNotifications } from '../../utility/handleNotification';
+import { useNavigate } from 'react-router-dom';
+import { hideModal, showModal } from '../../utility/handleModal';
+import Modal, { ModalType } from '../../components/modals/Modal';
+import ProfileImage from '../../components/ProfileImage';
+import MediumButton from '../../components/buttons/MediumButton';
 import ScheduleAction, {
   ScheduleActionType,
 } from '../calendar/components/ScheduleAction';
 import TodoAdd from '../calendar/components/TodoAdd';
 import { getScheduleTimeDiff } from '../../utility/time';
-import { useNavigate } from 'react-router-dom';
 import { useTeam } from '../../useTeam';
 
 export default function MainPage() {
@@ -103,7 +107,58 @@ export default function MainPage() {
         />
       )}
       <div className='h-8' />
-      {matesData && <MainCard2 teamMates={matesData} />}
+      {matesData && (
+        <MainCard2
+          teamMates={matesData}
+          onClick={(mate) =>
+            showModal(
+              <Modal
+                type={ModalType.PROFILE}
+                profileImage={
+                  <div className='size-[62px]'>
+                    <ProfileImage
+                      iconName={`@animals/${mate.iconName}`}
+                      color={mate.color}
+                    />
+                  </div>
+                }
+                content={
+                  mate.id === 1 ? `${mate.name}(나)` : `${mate.name}님에게`
+                }
+                mainButton={
+                  <MediumButton
+                    text={mate.id === 1 ? '회고 작성하기' : '피드백 보내기'}
+                    onClick={() => {
+                      mate.id === 1 ?
+                        navigate(`/feedback/self`)
+                      : navigate(`/feedback/send`);
+                      hideModal();
+                    }}
+                    isOutlined={false}
+                    disabled={false}
+                  />
+                }
+                subButton={
+                  mate.id === 1 ?
+                    null
+                  : <MediumButton
+                      text='피드백 요청하기'
+                      onClick={() => {
+                        navigate(
+                          `/feedback/request?receiverId=${mate.id}&receiverName=${mate.name}`,
+                        );
+
+                        hideModal();
+                      }}
+                      isOutlined={true}
+                      disabled={false}
+                    />
+                }
+              />,
+            )
+          }
+        />
+      )}
       <div className='h-8' />
       {recentScheduleData && (
         <ScheduleAction
