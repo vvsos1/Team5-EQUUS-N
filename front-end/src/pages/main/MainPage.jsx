@@ -63,7 +63,7 @@ export default function MainPage() {
       return () => toggleSchedule();
     }
     if (timeDiff <= 0) {
-      return () => console.log('피드백 작성하기 화면으로 이동');
+      return () => navigate('/feedback/send');
     }
     return () => toggleTodoAdd();
   };
