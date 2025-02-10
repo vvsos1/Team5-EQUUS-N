@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function useCalendarScroll() {
   const [isScrolling, setIsScrolling] = useState(false);

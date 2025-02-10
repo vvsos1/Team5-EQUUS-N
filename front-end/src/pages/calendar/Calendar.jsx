@@ -37,7 +37,7 @@ export default function Calendar() {
     refetch,
   } = useGetSchedules(
     {
-      teamId: selectedTeamId,
+      teamId: teams2[0].id,
       startDay: searchingDate.toISOString(),
       endDay: searchingDate.toISOString(),
     },

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { timeInPeriod } from '../../../utility/time';
+import { teams2 } from '../../../mocks/mockData2';
 
 export default function useSchedule({ selectedDate }) {
   const [allSchedules, setAllSchedules] = useState([]);
@@ -26,7 +27,7 @@ export default function useSchedule({ selectedDate }) {
       new Set(
         allSchedules
           ?.filter((data) => {
-            return data.teamId === selectedTeamId;
+            return data.teamId === teams2[0].id;
           })
           ?.map(
             (data) =>
@@ -34,7 +35,7 @@ export default function useSchedule({ selectedDate }) {
           ) ?? [],
       ),
     );
-  }, [allSchedules, selectedTeamId]);
+  }, [allSchedules]);
 
   return {
     allSchedules,
