@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class ScheduleEndScheduler {
     private final ScheduleService scheduleService;
 
-    @Scheduled(cron = "* */10 * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     public void endSchedule() {
         scheduleService.endSchedules();
     }
