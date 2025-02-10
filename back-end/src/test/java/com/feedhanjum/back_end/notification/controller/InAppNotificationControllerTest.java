@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -65,7 +66,8 @@ class InAppNotificationControllerTest {
 
 
     private Member createMember(String name) {
-        return new Member(name, name + "@test.com", new ProfileImage("bg-" + name, "profile-" + name));
+        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+        return new Member(name, name + "@test.com", new ProfileImage("bg-" + name, "profile-" + name), feedbackPreferences);
     }
 
     private Team createTeam(String name, Member leader) {

@@ -5,6 +5,7 @@ import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
 import com.feedhanjum.back_end.auth.exception.InvalidCredentialsException;
 import com.feedhanjum.back_end.auth.passwordencoder.PasswordEncoder;
 import com.feedhanjum.back_end.auth.repository.MemberDetailsRepository;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,17 +48,18 @@ class AuthServiceTest {
         void registerMember_success() {
             MemberDetails inputMember = new MemberDetails(null, "test@example.com", "pass1234");
             String name = "홍길동";
+            List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
 
             when(memberDetailsRepository.findByEmail("test@example.com"))
                     .thenReturn(Optional.empty());
 
-            Member savedMember = new Member(name, "test@example.com", null);
+            Member savedMember = new Member(name, "test@example.com", null, feedbackPreferences);
             when(memberRepository.save(any(Member.class))).thenReturn(savedMember);
 
             MemberDetails resultMemberDetails = new MemberDetails(1L, "test@example.com", "pass1234");
             when(memberDetailsRepository.save(any(MemberDetails.class))).thenReturn(resultMemberDetails);
 
-            MemberDetails saved = authService.registerMember(inputMember, name, null);
+            MemberDetails saved = authService.registerMember(inputMember, name, null, feedbackPreferences);
 
             assertThat(saved).isNotNull();
             assertThat(saved.getId()).isEqualTo(1L);
@@ -76,12 +79,13 @@ class AuthServiceTest {
         @DisplayName("이메일 중복 시 EmailAlreadyExistsException 발생")
         void registerMember_fail_emailAlreadyExists() {
             MemberDetails inputMember = new MemberDetails(null, "test@example.com", "pass1234");
+            List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
             String name = "홍길동";
 
             when(memberDetailsRepository.findByEmail("test@example.com"))
                     .thenReturn(Optional.of(new MemberDetails(999L, "test@example.com", "any")));
 
-            assertThatThrownBy(() -> authService.registerMember(inputMember, name, null))
+            assertThatThrownBy(() -> authService.registerMember(inputMember, name, null, feedbackPreferences))
                     .isInstanceOf(EmailAlreadyExistsException.class)
                     .hasMessage("이미 사용 중인 이메일입니다.");
 
