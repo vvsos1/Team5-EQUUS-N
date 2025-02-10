@@ -10,7 +10,7 @@ export const handlers = [
   }),
 
   // 메인 카드 조회
-  http.get(`${BASE_URL}/recentSchedule/:teamId`, () => {
+  http.get(`${BASE_URL}/api/team/:teamId/schedule`, () => {
     return HttpResponse.json(schedules[0]);
   }),
 
