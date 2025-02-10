@@ -130,3 +130,7 @@ export function timePickerToDate(date, time) {
     minute,
   );
 }
+
+export function toKST(date) {
+  return new Date(new Date(date).setHours(9, 0, 0, 0));
+}

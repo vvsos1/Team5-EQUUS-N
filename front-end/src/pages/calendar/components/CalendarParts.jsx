@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useGetSchedules } from '../../../api/useCalendar';
 import { useTeam } from '../../../useTeam';
-import { getDateInfo } from '../../../utility/time';
+import { getDateInfo, toKST } from '../../../utility/time';
 import classNames from 'classnames';
 
 /**
@@ -88,13 +88,8 @@ export function CalendarWeek({
   scheduleSet,
   setAllSchedules,
 }) {
-  curSunday = new Date(curSunday).setHours(9, 0, 0, 0);
-  const { teams, selectedTeam } = useTeam();
-  const {
-    data: schedules,
-    isLoading: isSchedulesLoading,
-    refetch,
-  } = useGetSchedules({
+  const { selectedTeam } = useTeam();
+  const { data: schedules, isLoading: isSchedulesLoading } = useGetSchedules({
     teamId: selectedTeam,
     startDay: new Date(curSunday).toISOString().split('T')[0],
     endDay: new Date(new Date().setDate(new Date(curSunday).getDate() + 7))
@@ -103,8 +98,8 @@ export function CalendarWeek({
   });
 
   useEffect(() => {
-    if (isSchedulesLoading) return;
-    setAllSchedules((prev) => [...prev, schedules]);
+    if (!schedules || isSchedulesLoading) return;
+    setAllSchedules((prev) => removeDuplicate([...prev, ...schedules]));
   }, [schedules, isSchedulesLoading]);
 
   const dateList = getDateList(curSunday);
@@ -125,7 +120,7 @@ export function CalendarWeek({
                 date={new Date(date)}
                 isSelected={date === selectedDate.valueOf()}
                 haveSchedule={scheduleSet.has(
-                  new Date(date).toISOString().split('T')[0],
+                  new Date(toKST(date)).toISOString().split('T')[0],
                 )}
                 setSelectedDate={setSelectedDate}
               />
@@ -171,4 +166,10 @@ function getDateList(curSunday) {
     );
   }
   return dateList;
+}
+
+function removeDuplicate(schedules) {
+  return [
+    ...new Map(schedules.map((item) => [item.scheduleId, item])).values(),
+  ];
 }
