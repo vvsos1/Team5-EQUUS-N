@@ -14,7 +14,7 @@ export const cardType = Object.freeze({
 /**
  * 메인 카드 컴포넌트
  * @param {object} props
- * @param {keyof cardType} props.type - 메인 카드 타입
+ * @param {boolean} props.isInTeam - 팀에 속해있는지 여부
  * @param {object} props.recentSchedule - 최신 스케줄
  * @param {number} props.scheduleDifferece - D-day
  * @param {function} props.onClickMainButton - 메인 버튼 클릭 이벤트
@@ -23,9 +23,9 @@ export const cardType = Object.freeze({
  * @returns {ReactElement}
  */
 export default function MainCard({
-  type = cardType.DEFUALT,
+  isInTeam,
   recentSchedule,
-  scheduleDifferece = 0,
+  scheduleDifferece,
   onClickMainButton,
   onClickSubButton,
   onClickChevronButton,
@@ -41,7 +41,7 @@ export default function MainCard({
     }
   }, [isOpen]);
 
-  if (type === cardType.ADD_TEAM) {
+  if (!isInTeam) {
     // 팀에 속하지 않은 경우 무조건 팀 만들어야 함
     return (
       <MainCardFrame>
@@ -58,7 +58,7 @@ export default function MainCard({
   }
 
   // 마지막 일정이 끝난지 24시간이 넘은 경우 -> response 자체가 없음
-  if (type === cardType.ADD_SCHEDULE) {
+  if (!scheduleDifferece) {
     return (
       <MainCardFrame>
         <p className='body-1 mt-11 mb-10 text-center text-gray-300'>
@@ -77,7 +77,7 @@ export default function MainCard({
   }
 
   // 마지막 일정이 끝난 후 24시간이 안된 경우: response 있음 && timeDiff가 0보다 작거나 같음
-  if (type === cardType.END_SCHEDULE) {
+  if (scheduleDifferece <= 0) {
     return (
       <MainCardFrame>
         <div className='flex flex-col items-center justify-center'>

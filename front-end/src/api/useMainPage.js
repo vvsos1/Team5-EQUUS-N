@@ -18,7 +18,7 @@ export const useMyTeams = () => {
 export const useMainCard = (teamId) => {
   return useQuery({
     queryKey: ['mainCard', teamId],
-    queryFn: () => api.get({ url: `/recentSchedule/${teamId}` }), // 임시
+    queryFn: () => api.get({ url: `/api/team/${teamId}/schedule` }), // 임시
     enabled: !!teamId,
   });
 };

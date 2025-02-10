@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import {
   useMainCard,
   useMainCard2,
-  useMyTeams,
   useNotification,
 } from '../../api/useMainPage';
 import Accordion from '../../components/Accordion';
@@ -25,13 +24,11 @@ import { useTeam } from '../../useTeam';
 
 export default function MainPage() {
   const [banners, setBanners] = useState();
-  const [mainCardType, setMainCardType] = useState(cardType.ADD_TEAM);
   const [timeDiff, setTimeDiff] = useState();
-  const [isTodoAddOpen, setIsTodoAddOpen] = useState(false);
-  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [isTodoAddOpen, toggleTodoAdd] = useReducer((prev) => !prev, false);
+  const [isScheduleOpen, toggleSchedule] = useReducer((prev) => !prev, false);
 
-  const { data: teamsData } = useMyTeams();
-  const { teams, selectedTeam, selectTeam, setTeams } = useTeam();
+  const { teams, selectedTeam, selectTeam } = useTeam();
   const { data: recentScheduleData } = useMainCard(selectedTeam);
   const { data: matesData } = useMainCard2(selectedTeam);
   const { data: notificationsData, markAsRead } = useNotification(selectedTeam);
@@ -41,15 +38,6 @@ export default function MainPage() {
   // TODO: 로딩 중 혹은 에러 발생 시 처리
 
   useEffect(() => {
-    if (teamsData) {
-      setTeams(teamsData);
-      if (teamsData && teamsData.length === 0) {
-        setMainCardType(cardType.ADD_TEAM);
-      }
-    }
-  }, [teamsData]);
-
-  useEffect(() => {
     if (notificationsData) {
       setBanners(filterNotifications(notificationsData));
     }
@@ -57,36 +45,24 @@ export default function MainPage() {
 
   useEffect(() => {
     if (recentScheduleData) {
-      const scheduleDifferece = getScheduleTimeDiff(recentScheduleData);
-      if (scheduleDifferece <= 0) {
-        setMainCardType(cardType.END_SCHEDULE);
-      } else {
-        setMainCardType(cardType.DEFUALT);
-      }
-      setTimeDiff(scheduleDifferece);
+      setTimeDiff(getScheduleTimeDiff(recentScheduleData));
     } else {
-      setMainCardType(cardType.ADD_TEAM);
+      setTimeDiff(null);
     }
   }, [recentScheduleData]);
 
-  // 렌더링때마다 새로운 함수 생성 방지
-  const getOnMainButtonClick = useCallback((type) => {
-    switch (type) {
-      case cardType.ADD_TEAM:
-        return () => navigate('/teamspace/make');
-      case cardType.ADD_SCHEDULE:
-        return () => setIsScheduleOpen(!isScheduleOpen);
-      case cardType.END_SCHEDULE:
-        return () => console.log('피드백 작성하기 화면으로 이동');
-      default:
-        return () => setIsTodoAddOpen(!isTodoAddOpen);
+  const getOnMainButtonClick = () => {
+    if (teams.length === 0) {
+      return () => navigate('/teamspace/make');
     }
-  }, []);
-
-  useEffect(() => {
-    console.log('selectedTeamId: ', selectedTeam);
-    console.log('type: ', mainCardType);
-  });
+    if (!recentScheduleData) {
+      return () => toggleSchedule();
+    }
+    if (timeDiff <= 0) {
+      return () => console.log('피드백 작성하기 화면으로 이동');
+    }
+    return () => toggleTodoAdd();
+  };
 
   return (
     <div className='flex w-full flex-col'>
@@ -116,14 +92,16 @@ export default function MainPage() {
         </Slider>
       )}
       <div className='h-2' />
-      <MainCard
-        type={mainCardType}
-        recentSchedule={recentScheduleData}
-        scheduleDifferece={timeDiff}
-        onClickMainButton={getOnMainButtonClick(mainCardType)}
-        onClickSubButton={() => setIsScheduleOpen(!isScheduleOpen)}
-        onClickChevronButton={() => navigate('/calendar')}
-      />
+      {(teams.length === 0 || recentScheduleData) && (
+        <MainCard
+          isInTeam={teams.length > 0}
+          recentSchedule={recentScheduleData}
+          scheduleDifferece={timeDiff}
+          onClickMainButton={getOnMainButtonClick()}
+          onClickSubButton={() => toggleSchedule()}
+          onClickChevronButton={() => navigate('/calendar')}
+        />
+      )}
       <div className='h-8' />
       {matesData && <MainCard2 teamMates={matesData} />}
       <div className='h-8' />
@@ -132,11 +110,11 @@ export default function MainPage() {
           type={ScheduleActionType.ADD}
           isOpen={isScheduleOpen}
           onSubmit={() => {
-            setIsScheduleOpen(!isScheduleOpen);
+            toggleSchedule();
             // TODO: 일정 조회
           }}
           onClose={() => {
-            setIsScheduleOpen(!isScheduleOpen);
+            toggleSchedule();
           }}
           selectedDateFromParent={new Date()}
           selectedSchedule={recentScheduleData}
@@ -146,11 +124,11 @@ export default function MainPage() {
         <TodoAdd
           isOpen={isTodoAddOpen}
           onSubmit={() => {
-            setIsTodoAddOpen(!isTodoAddOpen);
+            toggleTodoAdd();
             // TODO: 할일 조회
           }}
           onClose={() => {
-            setIsTodoAddOpen(!isTodoAddOpen);
+            toggleTodoAdd();
           }}
           selectedSchedule={recentScheduleData}
         />
