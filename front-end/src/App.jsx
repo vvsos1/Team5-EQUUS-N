@@ -19,6 +19,8 @@ import FeedbackReceived from './pages/feedback/FeedbackReceived';
 import FeedbackSent from './pages/feedback/FeedbackSent';
 import TeamSpaceManage from './pages/teamspace/TeamSpaceManage';
 import TeamSpaceEdit from './pages/teamspace/TeamSpaceEdit';
+import FeedbackComplete from './pages/feedback/FeedbackComplete';
+import FeedbackSelf from './pages/feedback/FeedbackSelf';
 import SelfFeedback from './pages/mypage/SelfFeedback';
 import { TeamProvider } from './TeamContext';
 
@@ -34,6 +36,8 @@ export default function App() {
               <Route path='/' element={<Splash />} />
               <Route path='feedback'>
                 <Route path='request' element={<FeedbackRequest />} />
+                <Route path='self' element={<FeedbackSelf />} />
+                <Route path='complete' element={<FeedbackComplete />} />
                 <Route path='received/:userId' element={<FeedbackReceived />} />
                 <Route path='sent/:userId' element={<FeedbackSent />} />
               </Route>

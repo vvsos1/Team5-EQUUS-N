@@ -15,6 +15,7 @@ export function transformToBytes(str) {
     } else {
       byteCount += 1;
     }
+    overflowedIndex++;
   }
 
   return { byteCount: byteCount, overflowedIndex: overflowedIndex };
