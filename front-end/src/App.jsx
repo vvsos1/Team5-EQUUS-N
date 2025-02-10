@@ -21,6 +21,7 @@ import TeamSpaceManage from './pages/teamspace/TeamSpaceManage';
 import TeamSpaceEdit from './pages/teamspace/TeamSpaceEdit';
 import SelfFeedback from './pages/mypage/SelfFeedback';
 import { TeamProvider } from './TeamContext';
+import FeedbackSend from './pages/feedback/FeedbackSend';
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ export default function App() {
               <Route path='/' element={<Splash />} />
               <Route path='feedback'>
                 <Route path='request' element={<FeedbackRequest />} />
+                <Route path='send' element={<FeedbackSend />} />
                 <Route path='received/:userId' element={<FeedbackReceived />} />
                 <Route path='sent/:userId' element={<FeedbackSent />} />
               </Route>
