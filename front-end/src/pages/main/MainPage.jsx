@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import {
   useMainCard,
   useMainCard2,
-  useMyTeams,
   useNotification,
 } from '../../api/useMainPage';
 import Accordion from '../../components/Accordion';
 import MainCard2 from '../../components/MainCard2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
-import MainCard from './components/MainCard';
+import MainCard, { cardType } from './components/MainCard';
 import Notification from './components/Notification';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -19,18 +18,22 @@ import ScheduleAction, {
   ScheduleActionType,
 } from '../calendar/components/ScheduleAction';
 import TodoAdd from '../calendar/components/TodoAdd';
+import { getScheduleTimeDiff } from '../../utility/time';
+import { useNavigate } from 'react-router-dom';
+import { useTeam } from '../../useTeam';
 
 export default function MainPage() {
-  const [selectedTeamId, setSelectedTeamId] = useState(1);
   const [banners, setBanners] = useState();
-  const [isTodoAddOpen, setIsTodoAddOpen] = useState(false);
-  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [timeDiff, setTimeDiff] = useState();
+  const [isTodoAddOpen, toggleTodoAdd] = useReducer((prev) => !prev, false);
+  const [isScheduleOpen, toggleSchedule] = useReducer((prev) => !prev, false);
 
-  const { data: teamsData } = useMyTeams();
-  const { data: recentScheduleData } = useMainCard(selectedTeamId);
-  const { data: matesData } = useMainCard2(selectedTeamId);
-  const { data: notificationsData, markAsRead } =
-    useNotification(selectedTeamId);
+  const { teams, selectedTeam, selectTeam } = useTeam();
+  const { data: recentScheduleData } = useMainCard(selectedTeam);
+  const { data: matesData } = useMainCard2(selectedTeam);
+  const { data: notificationsData, markAsRead } = useNotification(selectedTeam);
+
+  const navigate = useNavigate();
 
   // TODO: 로딩 중 혹은 에러 발생 시 처리
 
@@ -40,15 +43,37 @@ export default function MainPage() {
     }
   }, [notificationsData]);
 
+  useEffect(() => {
+    if (recentScheduleData) {
+      setTimeDiff(getScheduleTimeDiff(recentScheduleData));
+    } else {
+      setTimeDiff(null);
+    }
+  }, [recentScheduleData]);
+
+  const getOnMainButtonClick = () => {
+    if (teams.length === 0) {
+      return () => navigate('/teamspace/make');
+    }
+    if (!recentScheduleData) {
+      return () => toggleSchedule();
+    }
+    if (timeDiff <= 0) {
+      return () => console.log('피드백 작성하기 화면으로 이동');
+    }
+    return () => toggleTodoAdd();
+  };
+
   return (
     <div className='flex w-full flex-col'>
       <StickyWrapper className='px-5'>
-        {teamsData && (
+        {teams && (
           <Accordion
             isMainPage={true}
-            selectedTeamId={selectedTeamId}
-            teamList={teamsData}
-            onTeamClick={setSelectedTeamId}
+            selectedTeamId={selectedTeam}
+            teamList={teams}
+            onTeamClick={selectTeam}
+            onClickLastButton={() => navigate('/teamspace/make')}
           />
         )}
       </StickyWrapper>
@@ -67,22 +92,29 @@ export default function MainPage() {
         </Slider>
       )}
       <div className='h-2' />
-      {recentScheduleData && (
-        <MainCard recentSchedule={recentScheduleData} className='' />
+      {(teams.length === 0 || recentScheduleData) && (
+        <MainCard
+          isInTeam={teams.length > 0}
+          recentSchedule={recentScheduleData}
+          scheduleDifferece={timeDiff}
+          onClickMainButton={getOnMainButtonClick()}
+          onClickSubButton={() => toggleSchedule()}
+          onClickChevronButton={() => navigate('/calendar')}
+        />
       )}
       <div className='h-8' />
-      {matesData && <MainCard2 teamMates={matesData} className='' />}
+      {matesData && <MainCard2 teamMates={matesData} />}
       <div className='h-8' />
       {recentScheduleData && (
         <ScheduleAction
           type={ScheduleActionType.ADD}
           isOpen={isScheduleOpen}
           onSubmit={() => {
-            setIsScheduleOpen(!isScheduleOpen);
+            toggleSchedule();
             // TODO: 일정 조회
           }}
           onClose={() => {
-            setIsScheduleOpen(!isScheduleOpen);
+            toggleSchedule();
           }}
           selectedDateFromParent={new Date()}
           selectedSchedule={recentScheduleData}
@@ -92,11 +124,11 @@ export default function MainPage() {
         <TodoAdd
           isOpen={isTodoAddOpen}
           onSubmit={() => {
-            setIsTodoAddOpen(!isTodoAddOpen);
+            toggleTodoAdd();
             // TODO: 할일 조회
           }}
           onClose={() => {
-            setIsTodoAddOpen(!isTodoAddOpen);
+            toggleTodoAdd();
           }}
           selectedSchedule={recentScheduleData}
         />

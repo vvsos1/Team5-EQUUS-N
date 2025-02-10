@@ -9,14 +9,16 @@ import { useEffect, useRef, useState } from 'react';
  * @param {object} props
  * @param {boolean} props.isInTeam - 팀에 속해있는지 여부
  * @param {object} props.recentSchedule - 최신 스케줄
+ * @param {number} props.scheduleDifferece - D-day
  * @param {function} props.onClickMainButton - 메인 버튼 클릭 이벤트
  * @param {function} props.onClickSubButton - 서브 버튼 클릭 이벤트
  * @param {function} props.onClickChevronButton - 체크론 버튼 클릭 이벤트
  * @returns {ReactElement}
  */
 export default function MainCard({
-  isInTeam = true,
+  isInTeam,
   recentSchedule,
+  scheduleDifferece,
   onClickMainButton,
   onClickSubButton,
   onClickChevronButton,
@@ -49,7 +51,7 @@ export default function MainCard({
   }
 
   // 마지막 일정이 끝난지 24시간이 넘은 경우 -> response 자체가 없음
-  if (!recentSchedule) {
+  if (!scheduleDifferece) {
     return (
       <MainCardFrame>
         <p className='body-1 mt-11 mb-10 text-center text-gray-300'>
@@ -66,8 +68,6 @@ export default function MainCard({
       </MainCardFrame>
     );
   }
-
-  const scheduleDifferece = getScheduleTimeDiff(recentSchedule);
 
   // 마지막 일정이 끝난 후 24시간이 안된 경우: response 있음 && timeDiff가 0보다 작거나 같음
   if (scheduleDifferece <= 0) {
@@ -97,7 +97,7 @@ export default function MainCard({
       <MainCardFrame>
         {renderTitle(recentSchedule, scheduleDifferece)}
         <hr className='my-6 w-full border-gray-500' />
-        {renderMyRole(recentSchedule)}
+        {renderMyRole(recentSchedule, onClickMainButton)}
         {renderTeamRole(recentSchedule, contentRef, height)}
         <MediumButton
           text={
@@ -126,25 +126,6 @@ function MainCardFrame({ children }) {
   );
 }
 
-function getScheduleTimeDiff(recentSchedule) {
-  const todayTime = new Date();
-  const startTime = new Date(recentSchedule.startTime);
-  const endTime = new Date(recentSchedule.endTime);
-
-  if (Math.abs(startTime - todayTime) < Math.abs(endTime - todayTime)) {
-    // 미래 일정인 경우, today를 자정으로 설정하여 계산
-    todayTime.setHours(0, 0, 0, 0);
-
-    const diffDay = Math.floor((startTime - todayTime) / (1000 * 60 * 60 * 24));
-
-    if (diffDay === 0) return 'DAY';
-    return diffDay;
-  } else {
-    // 과거 일정인 경우
-    return Math.ceil((endTime - todayTime) / (1000 * 60 * 60 * 24));
-  }
-}
-
 function renderTitle(recentSchedule, scheduleDifferece) {
   return (
     <div className='flex flex-col items-center justify-center pt-6'>
@@ -161,7 +142,7 @@ function renderTitle(recentSchedule, scheduleDifferece) {
   );
 }
 
-function renderMyRole(recentSchedule) {
+function renderMyRole(recentSchedule, onButtonClick) {
   return recentSchedule.roles.find((role) => role.memberId === 1) ?
       <div className='flex flex-col gap-3'>
         <Tag type={TagType.MY_ROLE} />
@@ -179,7 +160,11 @@ function renderMyRole(recentSchedule) {
         <p className='body-1 text-center text-gray-400'>
           나의 역할이 비어있어요
         </p>
-        <MediumButton text={'나의 역할 추가하기'} isOutlined={false} />
+        <MediumButton
+          text={'나의 역할 추가하기'}
+          isOutlined={false}
+          onClick={onButtonClick}
+        />
       </div>;
 }
 
