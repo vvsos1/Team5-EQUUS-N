@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function useCalendarScroll() {
   const [isScrolling, setIsScrolling] = useState(false);
@@ -17,12 +17,12 @@ export default function useCalendarScroll() {
       }
     };
 
-    container.addEventListener('scroll', handleScroll());
+    container.addEventListener('scroll', handleScroll);
 
     return () => {
-      container.removeEventListener('scroll', handleScroll());
+      container.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  return { scrollRef, isScrolling, setIsScrolling };
+  return { scrollRef, isScrolling };
 }

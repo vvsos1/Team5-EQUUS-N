@@ -14,6 +14,7 @@ export default function CalendarWeeks({
   selectedDate,
   setSelectedDate,
   scheduleSet,
+  setAllSchedules,
 }) {
   const [curSunday, setCurSunday] = useState(getRecentSunday(selectedDate));
   const [isDragging, setIsDragging] = useState(false);
@@ -133,6 +134,7 @@ export default function CalendarWeeks({
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           scheduleSet={scheduleSet}
+          setAllSchedules={setAllSchedules}
         />
       </div>
       {/* 이번주 */}
@@ -142,6 +144,7 @@ export default function CalendarWeeks({
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           scheduleSet={scheduleSet}
+          setAllSchedules={setAllSchedules}
         />
       </div>
       {/* 다음주 */}
@@ -151,6 +154,7 @@ export default function CalendarWeeks({
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           scheduleSet={scheduleSet}
+          setAllSchedules={setAllSchedules}
         />
       </div>
     </div>

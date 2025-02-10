@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { timeInPeriod } from '../../../utility/time';
+import { useEffect, useState } from 'react';
+import { timeInPeriod, toKST } from '../../../utility/time';
+import { teams2 } from '../../../mocks/mockData2';
 
-export default function useSchedule({ selectedDate }) {
+export default function useSchedule(teamId, selectedDate) {
   const [allSchedules, setAllSchedules] = useState([]);
   const [scheduleOnDate, setScheduleOnDate] = useState(null);
   const [scheduleSet, setScheduleSet] = useState(new Set());
@@ -12,13 +13,13 @@ export default function useSchedule({ selectedDate }) {
     setScheduleOnDate(
       allSchedules.filter((data) => {
         return timeInPeriod(
-          new Date(data.scheduleInfo.startTime),
+          new Date(data.startTime),
           selectedDate,
-          new Date(selectedDate.getTime() + 86400000),
+          new Date(new Date(selectedDate).getTime() + 86400000),
         );
       }),
     );
-  }, [selectedDate]);
+  }, [allSchedules, selectedDate]);
 
   // 특정 팀 관련 일정들의 날짜 모두 종합
   useEffect(() => {
@@ -26,15 +27,15 @@ export default function useSchedule({ selectedDate }) {
       new Set(
         allSchedules
           ?.filter((data) => {
-            return data.teamId === selectedTeamId;
+            return data.teamId === teamId;
           })
           ?.map(
             (data) =>
-              new Date(data.scheduleInfo.startTime).toISOString().split('T')[0],
+              new Date(toKST(data.startTime)).toISOString().split('T')[0],
           ) ?? [],
       ),
     );
-  }, [allSchedules, selectedTeamId]);
+  }, [allSchedules]);
 
   return {
     allSchedules,

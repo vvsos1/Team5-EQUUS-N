@@ -19,6 +19,8 @@ import FeedbackReceived from './pages/feedback/FeedbackReceived';
 import FeedbackSent from './pages/feedback/FeedbackSent';
 import TeamSpaceManage from './pages/teamspace/TeamSpaceManage';
 import TeamSpaceEdit from './pages/teamspace/TeamSpaceEdit';
+import SelfFeedback from './pages/mypage/SelfFeedback';
+import { TeamProvider } from './TeamContext';
 
 const queryClient = new QueryClient();
 
@@ -26,38 +28,45 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path='/' element={<Splash />} />
-            <Route path='feedback'>
-              <Route path='request' element={<FeedbackRequest />} />
-              <Route path='received/:userId' element={<FeedbackReceived />} />
-              <Route path='sent/:userId' element={<FeedbackSent />} />
-            </Route>
-            <Route path='signin' element={<SignIn />} />
-            <Route path='signup' element={<SignUp />} />
-            <Route path='teamspace'>
-              <Route path='make'>
-                <Route index element={<TeamSpaceMake />} />
-                <Route
-                  path='first'
-                  element={<TeamSpaceMake isFirst={true} />}
-                />
-                <Route path='success' element={<TeamSpaceMakeSuccess />} />
+        <TeamProvider>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path='/' element={<Splash />} />
+              <Route path='feedback'>
+                <Route path='request' element={<FeedbackRequest />} />
+                <Route path='received/:userId' element={<FeedbackReceived />} />
+                <Route path='sent/:userId' element={<FeedbackSent />} />
               </Route>
-              <Route path='list' element={<TeamSpaceList />} />
-              <Route path='manage/:teamId'>
-                <Route index element={<TeamSpaceManage />} />
-                <Route path='edit' element={<TeamSpaceEdit />} />
+              <Route path='signin' element={<SignIn />} />
+              <Route path='signup' element={<SignUp />} />
+              <Route path='teamspace'>
+                <Route path='make'>
+                  <Route index element={<TeamSpaceMake />} />
+                  <Route
+                    path='first'
+                    element={<TeamSpaceMake isFirst={true} />}
+                  />
+                  <Route path='success' element={<TeamSpaceMakeSuccess />} />
+                </Route>
+                <Route path='list' element={<TeamSpaceList />} />
+                <Route path='manage/:teamId'>
+                  <Route index element={<TeamSpaceManage />} />
+                  <Route path='edit' element={<TeamSpaceEdit />} />
+                </Route>
+              </Route>
+              <Route path='calendar' element={<Calendar />} />
+              <Route path='main'>
+                <Route index element={<MainPage />} />
+                <Route path='notification' element={<NotificationPage />} />
+              </Route>
+              <Route path='mypage'>
+                <Route index element={<div></div>} />
+                <Route path='self/:userId' element={<SelfFeedback />} />
+                <Route path='report' element={<div></div>} />
               </Route>
             </Route>
-            <Route path='calendar' element={<Calendar />} />
-            <Route path='main'>
-              <Route index element={<MainPage />} />
-              <Route path='notification' element={<NotificationPage />} />
-            </Route>
-          </Route>
-        </Routes>
+          </Routes>
+        </TeamProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );

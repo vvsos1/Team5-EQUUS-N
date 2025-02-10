@@ -6,48 +6,47 @@ import ScheduleCard from './components/ScheduleCard';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import LargeButton from '../../components/buttons/LargeButton';
 import Icon from '../../components/Icon';
-import { checkIsFinished, getRecentSunday } from '../../utility/time';
+import { checkIsFinished } from '../../utility/time';
 import { ScheduleActionType } from './components/ScheduleAction';
 import ScheduleAction from './components/ScheduleAction';
-import { useGetSchedules } from '../../api/useCalendar';
 import { useLocation } from 'react-router-dom';
 import useSchedule from './hooks/useSchedule';
 import useScheduleAction from './hooks/useScheduleAction';
 import useCalendarScroll from './hooks/useCalendarScroll';
-import { teams2 } from '../../mocks/mockData2';
+import { useMyTeams } from '../../api/useAuth';
+import { useTeam } from '../../useTeam';
 
 export default function Calendar() {
   const location = useLocation();
+  // 팀 불러오기
+  const { teams, selectedTeam, selectTeam, setTeams } = useTeam();
+  const { data: teamsData } = useMyTeams();
+
+  // 날짜 지정
   const [selectedDate, setSelectedDate] = useState(
-    location.state?.initialDate ?? new Date('2025-01-24'),
-  );
-  const [searchingDate, setSearchingDate] = useState(
-    getRecentSunday(selectedDate),
+    location.state?.initialDate ?? new Date(new Date().setHours(0, 0, 0, 0)),
   );
 
-  const { setAllSchedules, scheduleOnDate, scheduleSet } =
-    useSchedule(selectedDate);
+  // 일정 조회, 저장 관련
+  const { setAllSchedules, scheduleOnDate, scheduleSet } = useSchedule(
+    selectedTeam,
+    selectedDate,
+  );
+  // 일정 수정, 삭제 관련
   const { doingAction, setDoingAction, actionType, setActionType } =
     useScheduleAction();
+
+  // 일정 화면 스크롤 관련
   const { scrollRef, isScrolling } = useCalendarScroll();
 
-  const {
-    data: schedules,
-    isLoading: isSchedulesLoading,
-    refetch,
-  } = useGetSchedules(
-    {
-      teamId: selectedTeamId,
-      startDay: searchingDate.toISOString(),
-      endDay: searchingDate.toISOString(),
-    },
-    setAllSchedules,
-  );
-
+  // 팀 정보 갱신
   useEffect(() => {
-    if (isSchedulesLoading) return;
-    setAllSchedules(schedules);
-  }, [schedules, isSchedulesLoading]);
+    if (teamsData) {
+      setTeams(teamsData);
+    }
+  }, [teamsData]);
+
+  // console.log(scheduleOnDate);
 
   return (
     <div
@@ -57,11 +56,16 @@ export default function Calendar() {
       <StickyWrapper>
         <Accordion
           isMainPage={false}
-          selectedTeamId={teams2[0].id}
-          teamList={teams2}
-          onTeamClick={() => {}}
+          selectedTeamId={selectedTeam}
+          teamList={teams}
+          onTeamClick={(teamId) => {
+            setAllSchedules([]);
+            selectTeam(teamId);
+          }}
           canClose={!doingAction}
-          onClickLastButton={() => {}}
+          onClickLastButton={() => {
+            selectTeam(-1);
+          }}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
       </StickyWrapper>
@@ -69,20 +73,21 @@ export default function Calendar() {
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
         scheduleSet={scheduleSet}
+        setAllSchedules={setAllSchedules}
       />
       <ul className='flex flex-col gap-6'>
         {scheduleOnDate &&
           scheduleOnDate.map((schedule, index) => {
-            if (schedule.teamId !== selectedTeamId) return null;
+            if (schedule.teamId !== selectedTeam) return null;
             return (
               <li key={index} className='last:mb-5'>
                 <ScheduleCard
-                  teamName={schedule.teamName}
-                  schedule={schedule.scheduleInfo}
-                  todos={schedule.todos}
-                  isFinished={checkIsFinished(schedule.scheduleInfo.endTime)}
+                  schedule={schedule}
+                  todos={schedule.scheduleMemberNestedDtoList}
+                  isFinished={checkIsFinished(schedule.endTime)}
                   onClickEdit={() => {
                     setActionType(ScheduleActionType.EDIT);
+                    setDoingAction(true);
                     setDoingAction(true);
                   }}
                 />
@@ -100,6 +105,7 @@ export default function Calendar() {
             onClick={() => {
               setActionType(ScheduleActionType.ADD);
               setDoingAction(true);
+              setDoingAction(true);
             }}
             isOutlined={true}
             disabled={true}
@@ -110,12 +116,15 @@ export default function Calendar() {
         <ScheduleAction
           type={actionType}
           isOpen={doingAction}
+          isOpen={doingAction}
           selectedDateFromParent={selectedDate}
           selectedSchedule={scheduleOnDate.find(
-            (schedule) => schedule.teamId === selectedTeamId,
+            (schedule) => schedule.teamId === selectedTeam,
           )}
           onClose={() => setDoingAction(false)}
+          onClose={() => setDoingAction(false)}
           onSubmit={(postSuccess) => {
+            setDoingAction(false);
             setDoingAction(false);
             if (postSuccess) {
               // TODO: 일정 재조회
