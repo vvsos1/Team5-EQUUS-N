@@ -11,6 +11,7 @@ import { ScheduleActionType } from './components/ScheduleAction';
 import ScheduleAction from './components/ScheduleAction';
 import { useGetSchedules } from '../../api/useCalendar';
 import { useMyTeams } from '../../api/useAuth';
+import { useTeam } from '../../useTeam';
 
 export default function Calendar() {
   const [allSchedules, setAllSchedules] = useState(null);
@@ -18,29 +19,33 @@ export default function Calendar() {
     new Date(new Date().setHours(0, 0, 0, 0)),
   );
   const [isScrolling, setIsScrolling] = useState(false);
-  const [selectedTeamId, setSelectedTeamId] = useState(1);
   const scrollRef = useRef(null);
   const [scheduleOnDate, setScheduleOnDate] = useState(null);
   const [scheduleSet, setScheduleSet] = useState(new Set());
   const [isDisplaying, setIsDisplaying] = useState(false);
   const [actionType, setActionType] = useState(ScheduleActionType.ADD);
-  const [teamList, setTeamList] = useState([]);
 
   const { data: schedules, isLoading: isSchedulesLoading } = useGetSchedules();
-  const { data: teams, isLoading: isTeamsLoading } = useMyTeams();
+  const { teams, selectedTeam, selectTeam, setTeams } = useTeam();
+  const { data: teamsData } = useMyTeams();
 
   useEffect(() => {
-    if (isSchedulesLoading || isTeamsLoading) return;
+    if (teamsData) {
+      setTeams(teamsData);
+    }
+  }, [teamsData]);
+
+  useEffect(() => {
+    if (isSchedulesLoading) return;
     setAllSchedules(schedules);
-    setTeamList(teams);
-  }, [schedules, teams, isSchedulesLoading, isTeamsLoading]);
+  }, [schedules, isSchedulesLoading]);
 
   useEffect(() => {
     setScheduleSet(
       new Set(
         allSchedules
           ?.filter((data) => {
-            return data.teamId === selectedTeamId;
+            return data.teamId === selectedTeam;
           })
           ?.map(
             (data) =>
@@ -48,7 +53,7 @@ export default function Calendar() {
           ) ?? [],
       ),
     );
-  }, [allSchedules, selectedTeamId]);
+  }, [allSchedules, selectedTeam]);
 
   useEffect(() => {
     if (!allSchedules) return;
@@ -91,12 +96,12 @@ export default function Calendar() {
       <StickyWrapper>
         <Accordion
           isMainPage={false}
-          selectedTeamId={selectedTeamId}
-          teamList={teamList}
-          onTeamClick={setSelectedTeamId}
+          selectedTeamId={selectedTeam}
+          teamList={teams}
+          onTeamClick={selectTeam}
           canClose={!isDisplaying}
           onClickLastButton={() => {
-            setSelectedTeamId(-1);
+            selectTeam(-1);
           }}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
@@ -109,7 +114,7 @@ export default function Calendar() {
       <ul className='flex flex-col gap-6'>
         {scheduleOnDate &&
           scheduleOnDate.map((schedule, index) => {
-            if (schedule.teamId !== selectedTeamId) return null;
+            if (schedule.teamId !== selectedTeam) return null;
             return (
               <li key={index} className='last:mb-5'>
                 <ScheduleCard
@@ -148,7 +153,7 @@ export default function Calendar() {
           isOpen={isDisplaying}
           selectedDateFromParent={selectedDate}
           selectedSchedule={scheduleOnDate.find(
-            (schedule) => schedule.teamId === selectedTeamId,
+            (schedule) => schedule.teamId === selectedTeam,
           )}
           onClose={() => setIsDisplaying(false)}
           onSubmit={(postSuccess) => {
