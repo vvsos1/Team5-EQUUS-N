@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    @Query("select m from Member m join fetch m.feedbackPreferences fp")
+    @Query("select m from Member m join fetch m.feedbackPreferences fp where m.id = :id")
     Optional<Member> findMemberAndFeedbackPreferenceById(Long id);
 }
