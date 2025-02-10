@@ -15,10 +15,16 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../../slider.css';
 import { filterNotifications } from '../../utility/handleNotification';
+import ScheduleAction, {
+  ScheduleActionType,
+} from '../calendar/components/ScheduleAction';
+import TodoAdd from '../calendar/components/TodoAdd';
 
 export default function MainPage() {
   const [selectedTeamId, setSelectedTeamId] = useState(1);
   const [banners, setBanners] = useState();
+  const [isTodoAddOpen, setIsTodoAddOpen] = useState(false);
+  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
   const { data: teamsData } = useMyTeams();
   const { data: recentScheduleData } = useMainCard(selectedTeamId);
@@ -67,6 +73,34 @@ export default function MainPage() {
       <div className='h-8' />
       {matesData && <MainCard2 teamMates={matesData} className='' />}
       <div className='h-8' />
+      {recentScheduleData && (
+        <ScheduleAction
+          type={ScheduleActionType.ADD}
+          isOpen={isScheduleOpen}
+          onSubmit={() => {
+            setIsScheduleOpen(!isScheduleOpen);
+            // TODO: 일정 조회
+          }}
+          onClose={() => {
+            setIsScheduleOpen(!isScheduleOpen);
+          }}
+          selectedDateFromParent={new Date()}
+          selectedSchedule={recentScheduleData}
+        />
+      )}
+      {recentScheduleData && (
+        <TodoAdd
+          isOpen={isTodoAddOpen}
+          onSubmit={() => {
+            setIsTodoAddOpen(!isTodoAddOpen);
+            // TODO: 할일 조회
+          }}
+          onClose={() => {
+            setIsTodoAddOpen(!isTodoAddOpen);
+          }}
+          selectedSchedule={recentScheduleData}
+        />
+      )}
     </div>
   );
 }
