@@ -52,18 +52,6 @@ export default function App() {
                   />
                   <Route path='success' element={<TeamSpaceMakeSuccess />} />
                 </Route>
-              </Route>
-              <Route path='signin' element={<SignIn />} />
-              <Route path='signup' element={<SignUp />} />
-              <Route path='teamspace'>
-                <Route path='make'>
-                  <Route index element={<TeamSpaceMake />} />
-                  <Route
-                    path='first'
-                    element={<TeamSpaceMake isFirst={true} />}
-                  />
-                  <Route path='success' element={<TeamSpaceMakeSuccess />} />
-                </Route>
                 <Route path='list' element={<TeamSpaceList />} />
                 <Route path='manage/:teamId'>
                   <Route index element={<TeamSpaceManage />} />

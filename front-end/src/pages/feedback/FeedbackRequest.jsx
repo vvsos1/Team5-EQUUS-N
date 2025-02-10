@@ -7,7 +7,6 @@ import { useState } from 'react';
 import { showToast } from '../../utility/handleToast';
 import { useFeedbackRequest } from '../../api/useFeedback2';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { completeType } from './FeedbackComplete';
 
 export default function FeedbackRequest() {
   const [textLength, setTextLength] = useState(0);
@@ -39,6 +38,7 @@ export default function FeedbackRequest() {
       </StickyWrapper>
       <div className='h-6' />
       <TextArea
+        textContent={textContent}
         textLength={textLength}
         setTextLength={setTextLength}
         setTextContent={setTextContent}
@@ -49,13 +49,15 @@ export default function FeedbackRequest() {
           text={mutation.isPending ? '로딩중' : '보내기'} // 로딩 중일 때 버튼 텍스트 변경... 추후 수정 필요
           disabled={textLength === 0 ? true : false}
           onClick={() => {
-            if (textLength === 0) showToast('내용을 입력해주세요');
+            setTextContent((prev) => prev.trim());
+            if (textContent.trim().length === 0)
+              showToast('내용을 입력해주세요');
             else if (textLength > 400) showToast('400자 이하로 작성해주세요');
             else
               mutation.mutate({
                 receiverId: receiverId,
                 teamId: 1, // 나중에 전역 상태에서 가져오기
-                requestedContent: textContent,
+                requestedContent: textContent.trim(),
               });
           }}
         />

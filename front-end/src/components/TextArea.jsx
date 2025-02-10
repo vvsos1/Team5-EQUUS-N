@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react';
+import { useState } from 'react';
 import Icon from './Icon';
 import { transformToBytes } from '../utility/inputChecker';
 
@@ -7,6 +7,7 @@ export default function TextArea({
   canToggleAnonymous = false,
   generatedByGpt = false,
   isAnonymous = false,
+  textContent,
   toggleAnonymous,
   textLength,
   setTextLength,
@@ -36,6 +37,7 @@ export default function TextArea({
       className={`rounded-300 flex h-fit w-full flex-col border-white p-5 ring-gray-500 has-focus:ring-gray-300 ${generatedByGpt ? 'bg-gray-800' : 'ring'}`}
     >
       <textarea
+        value={textContent}
         onInput={onInput}
         className={`text-gray-0 placeholder:body-1 scrollbar-hidden relative max-h-56 min-h-44 w-full resize-none outline-none placeholder:text-gray-500 focus:placeholder:text-gray-400`}
         placeholder={
