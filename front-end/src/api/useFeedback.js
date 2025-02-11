@@ -89,3 +89,10 @@ export const useEditFavorite = () => {
     },
   });
 };
+
+export const useFeedbackKeyword = () => {
+  return useQuery({
+    queryKey: ['feedback-keyword'],
+    queryFn: () => api.get({ url: '/api/feedback/keyword' }),
+  });
+};

@@ -25,7 +25,9 @@ export default function FeedbackSend1() {
         <LargeButton
           isOutlined={false}
           text='다음'
+          disabled={!feedbackFeeling}
           onClick={() =>
+            feedbackFeeling &&
             navigate('../2', {
               state: { ...state, feedbackFeeling },
             })
