@@ -11,9 +11,12 @@ export const useVerify = () => {
   });
 };
 
-export const useSignUp = () => {
+export const useSignUp = (afterSuccess) => {
   return useMutation({
     mutationFn: (data) => api.post({ url: '/api/auth/signup', body: data }),
+    onSuccess: () => {
+      afterSuccess();
+    },
   });
 };
 
