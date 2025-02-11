@@ -11,6 +11,7 @@ import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
 import com.feedhanjum.back_end.feedback.service.FeedbackService;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,8 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -156,7 +156,7 @@ public class FeedbackController {
     @Operation(summary = "받은 피드백 조회하기", description = "받은 피드백을 조회힙니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "보낸 피드백 조회 성공", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우",content = @Content)
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우", content = @Content)
     })
     @GetMapping("/feedbacks/receiver/{receiverId}")
     public ResponseEntity<Paged<ReceivedFeedbackDto>> getReceivedFeedbacks(@Login Long loginId,
@@ -169,4 +169,15 @@ public class FeedbackController {
         return ResponseEntity.ok(Paged.from(receivedFeedbacks));
     }
 
+    @Operation(summary = "피드백 선호도 선택지 조회", description = "사용자에게 피드백 선호도 선택지를 제공하기 위한 API")
+    @ApiResponse(responseCode = "200", description = "선택 가능한 피드백 선호 정보를 반환한다.")
+    @GetMapping("/feedback/preference")
+    public ResponseEntity<Map<String,List<String>>> getSelectableFeedbackPreference() {
+        Map<String, List<String>> feedbackPreferenceMap = new HashMap<>();
+        for (FeedbackPreference feedbackPreference : FeedbackPreference.values()) {
+            List<String> descriptions = feedbackPreferenceMap.computeIfAbsent(feedbackPreference.getType(), key -> new ArrayList<>());
+            descriptions.add(feedbackPreference.getDescription());
+        }
+        return ResponseEntity.ok(feedbackPreferenceMap);
+    }
 }
