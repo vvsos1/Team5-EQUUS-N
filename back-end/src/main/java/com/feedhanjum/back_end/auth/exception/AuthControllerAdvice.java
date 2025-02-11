@@ -85,4 +85,14 @@ public class AuthControllerAdvice {
         errorResponse.put("error", "PASSWORD_RESET_TOKEN_VERIFY_REQUIRED");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
+
+    /**
+     * 이메일로 가입하지 않은 사용자가 비밀번호 변경을 시도한 경우
+     */
+    @ExceptionHandler(PasswordChangeNotAllowedException.class)
+    public ResponseEntity<Map<String, String>> passwordChangeNotAllowed(PasswordChangeNotAllowedException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "PASSWORD_CHANGE_NOT_ALLOWED");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 }

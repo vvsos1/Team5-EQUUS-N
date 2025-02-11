@@ -2,10 +2,12 @@ package com.feedhanjum.back_end.auth.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.feedhanjum.back_end.auth.config.GoogleAuthProperty;
+import com.feedhanjum.back_end.auth.exception.InvalidCredentialsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -46,6 +48,11 @@ public class GoogleAuthService {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(params)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        (request, response) -> {
+                            throw new InvalidCredentialsException("구글 로그인 정보가 잘못되었습니다");
+                        }
+                )
                 .body(GoogleCodeResponse.class);
 
         String accessToken = codeResponse.accessToken();
@@ -55,6 +62,11 @@ public class GoogleAuthService {
                 .uri(userInfoUrl)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        (request, response) -> {
+                            throw new InvalidCredentialsException("구글 로그인 정보가 잘못되었습니다");
+                        }
+                )
                 .body(GoogleUserInfoResponse.class);
         log.info("Google OAuth result: {}", userInfo);
         return userInfo;
