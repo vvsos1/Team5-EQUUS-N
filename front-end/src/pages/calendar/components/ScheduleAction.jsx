@@ -39,7 +39,6 @@ export default function ScheduleAction({
   type,
   isOpen,
   onClose,
-  onSubmit,
   selectedScheduleFromParent,
   selectedDateFromParent,
 }) {
@@ -176,8 +175,8 @@ export default function ScheduleAction({
             if (checkNewSchedule(scheduleName, startTime, endTime)) {
               const sendingData = {
                 name: scheduleName,
-                startTime: startTime.toTimeString(),
-                endTime: endTime.toTimeString(),
+                startTime: toKST(startTime).toISOString(),
+                endTime: toKST(endTime).toISOString(),
                 todos: todos,
               };
               type === ScheduleActionType.ADD ?
@@ -185,17 +184,17 @@ export default function ScheduleAction({
                   onSuccess: () => {
                     showToast('일정이 추가되었어요');
                     clearData();
-                    onSubmit(true); // 추가 성공여부 파라미터로 받음
                   },
                 })
               : editSchedule(
-                  selectedScheduleFromParent.scheduleId ?? -1,
-                  sendingData,
+                  {
+                    scheduleId: selectedScheduleFromParent.scheduleId ?? -1,
+                    data: sendingData,
+                  },
                   {
                     onSuccess: () => {
                       showToast('일정이 수정되었어요');
                       clearData();
-                      onSubmit(true); // 수정 성공여부 파라미터로 받음
                     },
                   },
                 );

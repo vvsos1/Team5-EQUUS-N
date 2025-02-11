@@ -53,11 +53,12 @@ export const usePostSchedule = (teamId) => {
 export const useEditSchedule = (teamId) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (scheduleId, data) =>
-      api.post({
+    mutationFn: ({ scheduleId, data }) => {
+      return api.post({
         url: `/api/team/${teamId}/schedule/${scheduleId}`,
         body: data,
-      }),
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
     },

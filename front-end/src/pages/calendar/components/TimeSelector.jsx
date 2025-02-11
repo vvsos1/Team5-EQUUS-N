@@ -18,13 +18,15 @@ export default function TimeSelector({
       <div className='flex items-center gap-3'>
         <DropdownLarge
           triggerText={startText}
-          setTriggerText={(text) => setStartTime(timeStringToDate(text))}
+          setTriggerText={(text) =>
+            setStartTime(timeStringToDate(startTime, text))
+          }
           isFromTime={true}
           items={timeOptions}
         />
         <DropdownLarge
           triggerText={endText}
-          setTriggerText={(text) => setEndTime(timeStringToDate(text))}
+          setTriggerText={(text) => setEndTime(timeStringToDate(endTime, text))}
           isFromTime={false}
           items={timeOptions}
         />
@@ -33,9 +35,9 @@ export default function TimeSelector({
   );
 }
 
-function timeStringToDate(timeString) {
+function timeStringToDate(selectedDate, timeString) {
   const [hours, minutes] = timeString.split(':').map(Number); // "02:10" → [2, 10]
-  const date = new Date(); // 현재 날짜
+  const date = new Date(selectedDate); // 현재 날짜
   date.setHours(hours, minutes, 0, 0); // 시, 분, 초, 밀리초 설정
   return date;
 }
