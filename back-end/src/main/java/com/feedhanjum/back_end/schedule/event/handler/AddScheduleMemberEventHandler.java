@@ -16,6 +16,12 @@ public class AddScheduleMemberEventHandler {
     @Async
     @EventListener
     public void addNewScheduleMember(TeamMemberJoinEvent event) {
-        scheduleService.addNewScheduleMembership(event.memberId(), event.teamId());
+        try {
+            scheduleService.addNewScheduleMembership(event.memberId(), event.teamId());
+        } catch (Exception e) {
+            // Log the error and potentially trigger a compensating action
+            log.error("Failed to add schedule membership for member {} in team {}: {}",
+                      event.memberId(), event.teamId(), e.getMessage(), e);
+        }
     }
 }
