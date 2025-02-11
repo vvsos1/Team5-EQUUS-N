@@ -141,7 +141,9 @@ export function timePickerToDate(date, time) {
 }
 
 export function toKST(date) {
-  return new Date(new Date(date).setHours(9, 0, 0, 0));
+  let kst = new Date(date);
+  kst.setTime(new Date(date).getTime() + 1000 * 60 * 60 * 9);
+  return kst;
 }
 
 /**
