@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from './baseApi';
 
-export const useFeedbackRequest = (afterSuccess) => {
+export const useFeedbackRequest = () => {
   // const queryClient = useQueryClient();
   return useMutation({
     /**
@@ -23,7 +23,6 @@ export const useFeedbackRequest = (afterSuccess) => {
       }),
     onSuccess: (data) => {
       // queryClient.invalidateQueries({ queryKey: ['feedback-sent'] }); // 추후 고민...
-      afterSuccess();
     },
     onError: (error) => {
       console.error('전송실패', error);
@@ -31,7 +30,7 @@ export const useFeedbackRequest = (afterSuccess) => {
   });
 };
 
-export const useFeedbackSelf = (afterSuccess) => {
+export const useFeedbackSelf = () => {
   // const queryClient = useQueryClient();
   return useMutation({
     /**
@@ -55,7 +54,6 @@ export const useFeedbackSelf = (afterSuccess) => {
       }),
     onSuccess: (data) => {
       // queryClient.invalidateQueries({ queryKey: ['feedback-sent'] }); // 추후 고민...
-      afterSuccess();
     },
     onError: (error) => {
       console.error('전송실패', error);

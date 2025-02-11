@@ -14,6 +14,9 @@ import ScheduleDeleteModal from './ScheduleDeleteModal';
 import CustomDatePicker, {
   DatePickerButton,
 } from '../../../components/CustomDatePicker';
+import { useUser } from '../../../useUser';
+import { usePostSchedule } from '../../../api/useCalendar';
+import { useTeam } from '../../../useTeam';
 
 export const ScheduleActionType = Object.freeze({
   ADD: 'add',
@@ -36,10 +39,12 @@ export default function ScheduleAction({
   selectedDateFromParent,
   selectedSchedule,
 }) {
+  const { userId } = useUser();
+  const { selectedTeam } = useTeam();
   // 달력 선택 날짜를 기존 날짜로 초기화
   const [selectedDate, setSelectedDate] = useState(selectedDateFromParent);
   const [scheduleName, setScheduleName] = useState(
-    selectedSchedule?.scheduleInfo?.scheduleName ?? '',
+    selectedSchedule?.scheduleName ?? '',
   );
   const [startTime, setStartTime] = useState(
     selectedSchedule?.scheduleInfo?.startTime.split('T')[1].slice(0, 5) ??
@@ -51,23 +56,21 @@ export default function ScheduleAction({
   );
   const [todos, setTodo] = useState(
     selectedSchedule?.todos?.filter((todo) => {
-      return todo.memberId === 1;
+      return todo.memberId === userId;
     }).task ?? [],
   );
   const scrollRef = useRef(null);
 
+  const { mutate: postSchedule, isSuccess } = usePostSchedule(selectedTeam);
+
   useEffect(() => {
     setSelectedDate(selectedDateFromParent);
 
-    setScheduleName(selectedSchedule?.scheduleInfo?.scheduleName ?? '');
+    setScheduleName(selectedSchedule?.scheduleName ?? '');
     setStartTime(
-      selectedSchedule?.scheduleInfo?.startTime.split('T')[1].slice(0, 5) ??
-        '12:00',
+      selectedSchedule?.startTime.split('T')[1].slice(0, 5) ?? '12:00',
     );
-    setEndTime(
-      selectedSchedule?.scheduleInfo?.endTime.split('T')[1].slice(0, 5) ??
-        '12:00',
-    );
+    setEndTime(selectedSchedule?.endTime.split('T')[1].slice(0, 5) ?? '12:00');
     const newTodos =
       selectedSchedule?.todos?.find((todo) => {
         return todo.memberId === 1;
@@ -172,7 +175,13 @@ export default function ScheduleAction({
             const newTodos = todos.filter((todo) => !isEmpty(todo));
             setTodo(newTodos);
             if (checkNewSchedule(scheduleName, startDate, endDate)) {
-              // TODO: 일정 추가
+              type === ScheduleActionType.ADD &&
+                postSchedule({
+                  name: scheduleName,
+                  startTime: startDate.toISOString(),
+                  endTime: endDate.toISOString(),
+                  todos: todos,
+                });
               showToast('일정이 추가되었어요');
               clearData();
               onSubmit(true); // 추가 성공여부 파라미터로 받음

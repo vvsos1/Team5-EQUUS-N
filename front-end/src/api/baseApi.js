@@ -20,6 +20,7 @@ const request = async (method, url, params = {}, body) => {
   /** @type {RequestOptions} */
   const options = {
     method,
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -34,7 +35,6 @@ const request = async (method, url, params = {}, body) => {
   const fullUrl =
     queryString ? `${BASE_URL}${url}?${queryString}` : `${BASE_URL}${url}`;
 
-  console.log(queryString, fullUrl);
   try {
     const response = await fetch(fullUrl, options);
     if (!response.ok) {
