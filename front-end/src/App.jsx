@@ -23,7 +23,6 @@ import FeedbackComplete from './pages/feedback/FeedbackComplete';
 import FeedbackSelf from './pages/feedback/FeedbackSelf';
 import SelfFeedback from './pages/mypage/SelfFeedback';
 import CombinedProvider from './CombinedProvider';
-import { TeamProvider } from './TeamContext';
 import FeedbackFavorite from './pages/feedback/FeedbackFavorite';
 
 const queryClient = new QueryClient();
