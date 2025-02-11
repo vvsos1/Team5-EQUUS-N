@@ -11,14 +11,16 @@ import AiButton from '../../../components/buttons/AiButton';
 import FooterWrapper from '../../../components/wrappers/FooterWrapper';
 import LargeButton from '../../../components/buttons/LargeButton';
 import { transformToBytes } from '../../../utility/inputChecker';
+import { useRegularFeedbackSend } from '../../../api/useFeedback2';
 
 export default function FeedbackSend3() {
   const navigate = useNavigate();
-  const state = useLocation().state;
+  const locationState = useLocation().state;
 
   const { data: favoriteKeywords } = useFeedbackFavoriteByUser();
   const { teams, selectedTeam } = useTeam();
-  const mutation = useFeedbackRefinement();
+  const gptMutation = useFeedbackRefinement();
+  const feedbackMutation = useRegularFeedbackSend();
 
   const [isAnonymous, toggleAnonymous] = useReducer(
     (prev) => !prev,
@@ -33,7 +35,7 @@ export default function FeedbackSend3() {
       <h1 className='header-2 text-gray-0 mt-3 whitespace-pre-line'>
         {'자세한 내용을 작성해 보세요!'}
       </h1>
-      <p className='body-1 mt-8 mb-2 text-gray-300'>{`${state.receiver.name}님이 원하는 피드백 스타일이에요!`}</p>
+      <p className='body-1 mt-8 mb-2 text-gray-300'>{`${locationState.receiver.name}님이 원하는 피드백 스타일이에요!`}</p>
       {favoriteKeywords && (
         <div className='mb-5 flex flex-wrap gap-2'>
           {favoriteKeywords.map((keyword, index) => (
@@ -76,10 +78,10 @@ export default function FeedbackSend3() {
             <AiButton
               isActive={true}
               onClick={() =>
-                mutation.mutate(
+                gptMutation.mutate(
                   {
-                    receiverId: state.receiver.id,
-                    objectiveFeedbacks: state.objectiveFeedback,
+                    receiverId: locationState.receiver.id,
+                    objectiveFeedbacks: locationState.objectiveFeedback,
                     subjectiveFeedback: textContent,
                   },
                   {
@@ -94,10 +96,10 @@ export default function FeedbackSend3() {
         : <AiButton
             isActive={true}
             onClick={() =>
-              mutation.mutate(
+              gptMutation.mutate(
                 {
-                  receiverId: state.receiver.id,
-                  objectiveFeedbacks: state.objectiveFeedback,
+                  receiverId: locationState.receiver.id,
+                  objectiveFeedbacks: locationState.objectiveFeedback,
                   subjectiveFeedback: textContent,
                 },
                 {
@@ -117,8 +119,16 @@ export default function FeedbackSend3() {
           disabled={textContent.length === 0}
           onClick={() => {
             if (textContent.length > 0) {
-              textContent.length > 0 && navigate('../../complete?type=SEND');
-              // 피드백 보내기 뮤테이션
+              const { receiver, ...rest } = locationState;
+              feedbackMutation.mutate(
+                {
+                  ...rest,
+                  receiverId: locationState.receiver.id,
+                  subjectiveFeedback: textContent,
+                  isAnonymous,
+                },
+                { onSuccess: () => navigate('../../complete?type=SEND') },
+              );
             }
           }}
         />

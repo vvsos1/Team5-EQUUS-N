@@ -4,11 +4,11 @@ import KeywordButton from '../../../components/buttons/KeywordButton';
 import { showToast } from '../../../utility/handleToast';
 import FooterWrapper from '../../../components/wrappers/FooterWrapper';
 import LargeButton from '../../../components/buttons/LargeButton';
-import { useLoaderData, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function FeedbackSend2() {
   const navigate = useNavigate();
-  const state = useLocation().state;
+  const locationState = useLocation().state;
 
   const { data: keywords } = useFeedbackKeyword();
 
@@ -50,7 +50,7 @@ export default function FeedbackSend2() {
           onClick={() =>
             selectedKeywords.length > 0 &&
             navigate('../3', {
-              state: { ...state, objectiveFeedbacks: selectedKeywords },
+              state: { ...locationState, objectiveFeedbacks: selectedKeywords },
             })
           }
         />

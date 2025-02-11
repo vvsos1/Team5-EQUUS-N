@@ -20,6 +20,7 @@ export const teams = [
 export const schedules = [
   {
     name: 'schedule 1',
+    scheduleId: 1,
     startTime: '2025-02-06T05:30:39.318Z',
     endTime: '2025-02-06T06:30:39.318Z',
     roles: [
@@ -42,6 +43,7 @@ export const schedules = [
   },
   {
     name: 'schedule 2',
+    scheduleId: 2,
     startTime: '2025-02-06T05:30:39.318Z',
     endTime: '2025-02-06T19:30:39.318Z',
     roles: [
@@ -61,6 +63,7 @@ export const schedules = [
   },
   {
     name: 'schedule 3',
+    scheduleId: 3,
     startTime: '2025-02-06T05:30:39.318Z',
     endTime: '2025-02-06T19:30:39.318Z',
     roles: [
@@ -80,6 +83,7 @@ export const schedules = [
   },
   {
     name: 'schedule 4',
+    scheduleId: 4,
     startTime: '2025-02-06T05:30:39.318Z',
     endTime: '2025-02-06T19:30:39.318Z',
     roles: [

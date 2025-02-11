@@ -4,8 +4,8 @@ import FooterWrapper from '../../components/wrappers/FooterWrapper';
 
 export default function FeedbackSend() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const members = location.state.members;
+  const locationState = useLocation().state;
+  const members = locationState.members;
 
   return (
     <div className='flex size-full flex-col gap-8'>
@@ -21,7 +21,10 @@ export default function FeedbackSend() {
             color={member.color}
             onClick={() =>
               navigate('1', {
-                state: { receiver: { name: member.name, id: member.id } },
+                state: {
+                  receiver: { name: member.name, id: member.id },
+                  scheduleId: locationState.scheduleId,
+                },
               })
             }
           />

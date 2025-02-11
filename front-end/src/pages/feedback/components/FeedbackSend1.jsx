@@ -6,14 +6,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function FeedbackSend1() {
   const navigate = useNavigate();
-  const state = useLocation().state;
+  const locationState = useLocation().state;
 
   const [feedbackFeeling, setFeedbackFeeling] = useState();
 
   return (
     <div className='flex size-full flex-col gap-8'>
       <h1 className='header-2 text-gray-0 mt-3 whitespace-pre-line'>
-        {`${state.receiver.name}님에게\n어떤 피드백을 보낼까요?`}
+        {`${locationState.receiver.name}님에게\n어떤 피드백을 보낼까요?`}
       </h1>
       <div className='flex gap-3'>
         <FeedBackButton
@@ -29,7 +29,7 @@ export default function FeedbackSend1() {
           onClick={() =>
             feedbackFeeling &&
             navigate('../2', {
-              state: { ...state, feedbackFeeling },
+              state: { ...locationState, feedbackFeeling },
             })
           }
         />

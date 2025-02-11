@@ -132,4 +132,14 @@ export const handlers = [
       { status: 201 },
     );
   }),
+
+  // 정규 피드백 보내기
+  http.post(`${BASE_URL}/api/feedbacks/regular`, async ({ request }) => {
+    const data = await request.json();
+
+    // 2초 딜레이 추가
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    return HttpResponse.json('보내기 성공', { status: 201 });
+  }),
 ];
