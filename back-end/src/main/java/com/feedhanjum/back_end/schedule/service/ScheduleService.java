@@ -190,8 +190,18 @@ public class ScheduleService {
         return scheduleQueryRepository.findEarliestStartTimeByTeamId(teamId).orElse(null);
     }
 
+    /**
+     * Retrieves the latest end time among all schedules for a given team.
+     *
+     * @param teamId The ID of the team
+     * @return The latest schedule end time, or null if no schedules exist
+     * @throws IllegalArgumentException if teamId is null
+     */
     @Transactional(readOnly = true)
-    public LocalDateTime getLatestEndTime(Long teamId) {
+    public LocalDateTime getLatestScheduleEndTime(Long teamId) {
+        if (teamId == null) {
+            throw new IllegalArgumentException("Team ID cannot be null");
+        }
         return scheduleQueryRepository.findLatestEndTimeByTeamId(teamId).orElse(null);
     }
 
