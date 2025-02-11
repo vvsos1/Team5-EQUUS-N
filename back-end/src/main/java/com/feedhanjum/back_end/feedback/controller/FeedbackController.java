@@ -131,7 +131,7 @@ public class FeedbackController {
             @ApiResponse(responseCode = "204", description = "건너뛰기 성공", useReturnTypeSchema = true)
     })
     @DeleteMapping("/feedbacks/regular/request")
-    public ResponseEntity<Void> getRegularFeedbackRequests(@Login Long receiverId,
+    public ResponseEntity<Void> skipRegularFeedbackRequest(@Login Long receiverId,
                                                            @ParameterObject @Valid RegularFeedbackRequestQueryRequest request) {
         feedbackService.skipRegularFeedback(request.scheduleId(), receiverId);
         return ResponseEntity.noContent().build();
