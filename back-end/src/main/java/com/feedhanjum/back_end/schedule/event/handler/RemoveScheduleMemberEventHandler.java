@@ -16,6 +16,12 @@ public class RemoveScheduleMemberEventHandler {
     @Async
     @EventListener
     public void removeRemainScheduleMember(TeamMemberLeftEvent event) {
-        scheduleService.removeRemainScheduleMembership(event.memberId(), event.teamId());
+        try {
+            scheduleService.removeRemainScheduleMembership(event.memberId(), event.teamId());
+        } catch (Exception e) {
+            // Log the error and potentially trigger a compensating action
+            log.error("Failed to remove schedule membership for member {} in team {}: {}",
+                event.memberId(), event.teamId(), e.getMessage(), e);
+        }
     }
 }
