@@ -34,9 +34,9 @@ export const handlers2 = [
   }),
 
   // 팀 목록 조회
-  http.get(`${BASE_URL}/api/team/my-teams2`, () => {
-    return HttpResponse.json(teams2);
-  }),
+  // http.get(`${BASE_URL}/api/team/my-teams2`, () => {
+  //   return HttpResponse.json(teams2);
+  // }),
 
   // 일정 조회
   http.get(`${BASE_URL}/api/schedules`, () => {
@@ -59,9 +59,9 @@ export const handlers2 = [
   // }),
 
   // 팀 조회
-  http.get(`${BASE_URL}/api/team/:teamId`, () => {
-    return HttpResponse.json(teamResponse);
-  }),
+  // http.get(`${BASE_URL}/api/team/:teamId`, () => {
+  //   return HttpResponse.json(teamResponse);
+  // }),
 
   // 팀 멤버 조회
   http.get(`${BASE_URL}/api/team/:teamId/members`, () => {

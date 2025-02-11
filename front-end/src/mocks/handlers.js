@@ -5,9 +5,9 @@ const BASE_URL = 'https://api.feedhanjum.com';
 
 export const handlers = [
   // 팀 목록 조회
-  http.get(`${BASE_URL}/api/team/my-teams`, () => {
-    return HttpResponse.json(teams);
-  }),
+  // http.get(`${BASE_URL}/api/team/my-teams`, () => {
+  //   return HttpResponse.json(teams);
+  // }),
 
   // 메인 카드 조회
   http.get(`${BASE_URL}/api/team/:teamId/schedule`, () => {
