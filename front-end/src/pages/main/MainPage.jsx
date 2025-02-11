@@ -63,7 +63,8 @@ export default function MainPage() {
       return () => toggleSchedule();
     }
     if (timeDiff <= 0) {
-      return () => navigate('/feedback/send');
+      return () =>
+        navigate('/feedback/send', { state: { members: matesData } });
     }
     return () => toggleTodoAdd();
   };
@@ -131,7 +132,9 @@ export default function MainPage() {
                     onClick={() => {
                       mate.id === 1 ?
                         navigate(`/feedback/self`)
-                      : navigate(`/feedback/send`);
+                      : navigate(`/feedback/send`, {
+                          state: { members: [mate] },
+                        });
                       hideModal();
                     }}
                     isOutlined={false}
