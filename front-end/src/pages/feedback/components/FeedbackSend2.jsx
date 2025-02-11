@@ -10,7 +10,7 @@ export default function FeedbackSend2() {
   const navigate = useNavigate();
   const state = useLocation().state;
 
-  const { data } = useFeedbackKeyword();
+  const { data: keywords } = useFeedbackKeyword();
 
   const [selectedKeywords, setSelectedKeywords] = useState([]);
 
@@ -29,20 +29,19 @@ export default function FeedbackSend2() {
       <h1 className='header-2 text-gray-0 mt-3 whitespace-pre-line'>
         {'보낼 피드백 키워드를\n선택해 주세요'}
       </h1>
-      <ul className='scrollbar-hidden flex w-full gap-8 overflow-x-auto p-1 whitespace-nowrap'>
-        {data &&
-          data.map((item, index) => {
-            return (
-              <KeywordColumn
-                key={index}
-                title={item.title}
-                keywords={item.keywords}
-                selectedKeywords={selectedKeywords}
-                onClick={onKeywordButtonClick}
-              />
-            );
-          })}
-      </ul>
+      {keywords && (
+        <ul className='scrollbar-hidden flex w-full gap-8 overflow-x-auto p-1 whitespace-nowrap'>
+          {keywords.map((item, index) => (
+            <KeywordColumn
+              key={index}
+              title={item.title}
+              keywords={item.keywords}
+              selectedKeywords={selectedKeywords}
+              onClick={onKeywordButtonClick}
+            />
+          ))}
+        </ul>
+      )}
       <FooterWrapper>
         <LargeButton
           isOutlined={false}
