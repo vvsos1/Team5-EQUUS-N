@@ -92,8 +92,13 @@ public class FeedbackQueryService {
     }
 
 
+    /**
+     * @throws EntityNotFoundException when memberId does not exist
+     */
     @Transactional(readOnly = true)
     public FeedbackReport getFeedbackReport(Long memberId) {
+        memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("memberId에 해당하는 Member가 없습니다."));
         List<Feedback> receivedFeedback = feedbackQueryRepository.findReceivedFeedbacks(memberId);
         return FeedbackReport.fromFeedbacks(receivedFeedback);
     }
