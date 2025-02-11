@@ -8,7 +8,7 @@ export const useMembers = (teamId) => {
   });
 };
 
-export const useTeam = (teamId) => {
+export const useTeamInfo = (teamId) => {
   return useQuery({
     queryKey: ['team', teamId],
     queryFn: () => api.get({ url: `/api/team/${teamId}` }),

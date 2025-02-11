@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import NavBar2 from '../../components/NavBar2';
 import Tag, { TagType } from '../../components/Tag';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
-import { useTeam } from '../../api/useTeamspace';
+import { useTeamInfo } from '../../api/useTeamspace';
 import { useEffect, useState } from 'react';
 import Icon from '../../components/Icon';
 import MemberElement from './components/MemberElement';
@@ -11,7 +11,7 @@ import { showToast } from '../../utility/handleToast';
 export default function TeamSpaceManage() {
   const { teamId } = useParams();
   const [iamLeader, setIamLeader] = useState(false);
-  const { data: team } = useTeam(teamId);
+  const { data: team } = useTeamInfo(teamId);
   const navigate = useNavigate();
 
   useEffect(() => {

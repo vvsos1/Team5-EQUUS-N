@@ -40,25 +40,35 @@ export function getDateInfo(date) {
   // 요일 배열 (일요일부터 시작)
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  // 해당 날짜의 요일 구하기
-  const weekDay = weekDays[date.getDay()];
+  // 선택한 날짜의 요일
+  const dayOfDate = date.getDay();
+  // 그 주의 목요일 날짜
+  const dateOfThurs = new Date(date);
+  dateOfThurs.setDate(dateOfThurs.getDate() + (4 - dayOfDate));
+  console.log(dateOfThurs);
+  // 이번주 목요일과 같은 년도와 월을 가진 달의 1일
+  const firstDayThisMonth = new Date(
+    dateOfThurs.getFullYear(),
+    dateOfThurs.getMonth(),
+    1,
+  );
+  // 1일의 요일 구하기
+  const dayOfFirstDay = firstDayThisMonth.getDay();
 
-  // 해당 월의 1일
-  const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-
-  // 입력된 날짜
-  const targetDate = new Date(date);
-
-  // 1일의 요일 구하기 (0: 일요일, 1: 월요일, ...)
-  const firstDayOfWeek = firstDay.getDay();
-
+  let diff = 0;
   // 날짜 차이 계산
-  const diff = Math.ceil((targetDate.getDate() + firstDayOfWeek) / 7);
+  if (dayOfFirstDay < 5) {
+    // 목요일 전이면 그만큼 더해서 계산
+    diff = Math.ceil((dateOfThurs.getDate() + dayOfFirstDay) / 7);
+  } else {
+    // 목요일 이후면 그만큼 빼서 계산
+    diff = Math.ceil((dateOfThurs.getDate() - (7 - dayOfFirstDay)) / 7);
+  }
 
   return {
-    weekDay, // 요일
-    monthWeek: `${date.getMonth() + 1}월 ${diff}주차`, // 몇 월 몇 주차
-    year: date.getFullYear(), // 년도
+    weekDay: weekDays[dayOfDate], // 요일
+    monthWeek: `${dateOfThurs.getMonth() + 1}월 ${diff}주차`, // 몇 월 몇 주차
+    year: dateOfThurs.getFullYear(), // 년도
   };
 }
 
@@ -129,6 +139,10 @@ export function timePickerToDate(date, time) {
     hour,
     minute,
   );
+}
+
+export function toKST(date) {
+  return new Date(new Date(date).setHours(9, 0, 0, 0));
 }
 
 /**

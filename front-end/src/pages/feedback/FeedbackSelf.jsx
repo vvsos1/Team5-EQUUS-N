@@ -5,22 +5,21 @@ import LargeButton from '../../components/buttons/LargeButton';
 import FooterWrapper from '../../components/wrappers/FooterWrapper';
 import { useState } from 'react';
 import { showToast } from '../../utility/handleToast';
-import { useFeedbackRequest } from '../../api/useFeedback2';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useFeedbackSelf } from '../../api/useFeedback2';
+import { useNavigate } from 'react-router-dom';
+import CustomInput from '../../components/CustomInput';
 
-export default function FeedbackRequest() {
+export default function FeedbackSelf() {
+  const [titleContent, setTitleContent] = useState('');
   const [textLength, setTextLength] = useState(0);
   const [textContent, setTextContent] = useState('');
 
-  const location = useLocation();
   const navigate = useNavigate();
 
-  const queryParams = new URLSearchParams(location.search);
-  const receiverId = queryParams.get('receiverId');
-  const receiverName = queryParams.get('receiverName');
-
-  const mutation = useFeedbackRequest(() =>
-    navigate(`/feedback/complete/?type=${'REQUEST'}`, { replace: true }),
+  const mutation = useFeedbackSelf(() =>
+    navigate(`/feedback/complete/?type=${'RETROSPECT'}`, {
+      replace: true,
+    }),
   );
 
   return (
@@ -28,17 +27,21 @@ export default function FeedbackRequest() {
       <StickyWrapper>
         <NavBar2
           canPop={true}
+          title='회고 작성하기'
           onClickPop={() => {
             navigate('/main');
           }}
         />
-        <h1 className='header-2 text-gray-0 mt-6 whitespace-pre-line'>
-          {`${receiverName}님에게 요청할\n피드백을 작성해주세요`}
-        </h1>
       </StickyWrapper>
       <div className='h-6' />
+      <CustomInput
+        content={titleContent}
+        setContent={setTitleContent}
+        isForRetrospect={true}
+        hint='제목을 입력해주세요'
+      />
+      <div className='h-6' />
       <TextArea
-        textContent={textContent}
         textLength={textLength}
         setTextLength={setTextLength}
         setTextContent={setTextContent}
@@ -46,18 +49,17 @@ export default function FeedbackRequest() {
       <FooterWrapper>
         <LargeButton
           isOutlined={false}
-          text={mutation.isPending ? '로딩중' : '보내기'} // 로딩 중일 때 버튼 텍스트 변경... 추후 수정 필요
+          text={mutation.isPending ? '로딩중' : '완료'} // 로딩 중일 때 버튼 텍스트 변경... 추후 수정 필요
           disabled={textLength === 0 ? true : false}
           onClick={() => {
-            setTextContent((prev) => prev.trim());
-            if (textContent.trim().length === 0)
-              showToast('내용을 입력해주세요');
+            if (textLength === 0) showToast('내용을 입력해주세요');
             else if (textLength > 400) showToast('400자 이하로 작성해주세요');
             else
               mutation.mutate({
-                receiverId: receiverId,
+                writerId: 1, // 나중에 전역 상태에서 가져오기
                 teamId: 1, // 나중에 전역 상태에서 가져오기
-                requestedContent: textContent.trim(),
+                title: titleContent,
+                content: textContent,
               });
           }}
         />
