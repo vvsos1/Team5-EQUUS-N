@@ -175,8 +175,18 @@ public class ScheduleService {
         jobRecordRepository.save(jobRecord);
     }
 
+    /**
+     * Retrieves the earliest start time among all schedules for a given team.
+     *
+     * @param teamId The ID of the team
+     * @return The earliest schedule start time, or null if no schedules exist
+     * @throws IllegalArgumentException if teamId is null
+     */
     @Transactional(readOnly = true)
     public LocalDateTime getEarliestScheduleStartTime(Long teamId) {
+        if (teamId == null) {
+            throw new IllegalArgumentException("Team ID cannot be null");
+        }
         return scheduleQueryRepository.findEarliestStartTimeByTeamId(teamId).orElse(null);
     }
 
