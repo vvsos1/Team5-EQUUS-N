@@ -3,6 +3,7 @@ package com.feedhanjum.back_end.team.service;
 import com.feedhanjum.back_end.event.EventPublisher;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
+import com.feedhanjum.back_end.schedule.repository.ScheduleQueryRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamJoinToken;
 import com.feedhanjum.back_end.team.event.TeamMemberLeftEvent;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,6 +30,7 @@ public class TeamService {
     private final TeamQueryRepository teamQueryRepository;
     private final EventPublisher eventPublisher;
     private final TeamJoinTokenRepository teamJoinTokenRepository;
+    private final ScheduleQueryRepository scheduleQueryRepository;
 
     /**
      * @throws IllegalArgumentException 프로젝트 기간의 시작일이 종료일보다 앞서지 않을 경우
@@ -100,6 +103,19 @@ public class TeamService {
                 .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
         Member leader = memberRepository.findById(leaderId)
                 .orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다"));
+
+        LocalDateTime earliestStartTime = scheduleQueryRepository.findEarliestStartTimeByTeamId(teamId).orElse(null);
+        LocalDateTime latestEndTime = scheduleQueryRepository.findLatestEndTimeByTeamId(teamId).orElse(null);
+
+        if(earliestStartTime != null && teamUpdateDto.startDate().atStartOfDay().isAfter(earliestStartTime)){
+            throw new IllegalArgumentException("팀 시작 날짜는 팀 내 존재하는 일정의 가장 빠른 시작 시점보다 빠를 수 없습니다.");
+        }
+
+        if(latestEndTime != null
+                && teamUpdateDto.endDate() != null
+                && teamUpdateDto.endDate().plusDays(1).atStartOfDay().isBefore(latestEndTime)){
+            throw new IllegalArgumentException("팀 종료 날짜는 팀 내 존재하는 일정의 가장 늦은 종료 시점보다 느릴 수 없습니다.");
+        }
 
         team.updateInfo(leader, teamUpdateDto.teamName(), teamUpdateDto.startDate(), teamUpdateDto.endDate(), teamUpdateDto.feedbackType());
         return team;
