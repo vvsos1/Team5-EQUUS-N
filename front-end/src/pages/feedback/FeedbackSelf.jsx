@@ -16,11 +16,7 @@ export default function FeedbackSelf() {
 
   const navigate = useNavigate();
 
-  const mutation = useFeedbackSelf(() =>
-    navigate(`/feedback/complete/?type=${'RETROSPECT'}`, {
-      replace: true,
-    }),
-  );
+  const mutation = useFeedbackSelf();
 
   return (
     <div className='flex size-full flex-col'>
@@ -55,12 +51,20 @@ export default function FeedbackSelf() {
             if (textLength === 0) showToast('내용을 입력해주세요');
             else if (textLength > 400) showToast('400자 이하로 작성해주세요');
             else
-              mutation.mutate({
-                writerId: 1, // 나중에 전역 상태에서 가져오기
-                teamId: 1, // 나중에 전역 상태에서 가져오기
-                title: titleContent,
-                content: textContent,
-              });
+              mutation.mutate(
+                {
+                  writerId: 1, // 나중에 전역 상태에서 가져오기
+                  teamId: 1, // 나중에 전역 상태에서 가져오기
+                  title: titleContent,
+                  content: textContent,
+                },
+                {
+                  onSuccess: () =>
+                    navigate(`/feedback/complete/?type=${'RETROSPECT'}`, {
+                      replace: true,
+                    }),
+                },
+              );
           }}
         />
       </FooterWrapper>
