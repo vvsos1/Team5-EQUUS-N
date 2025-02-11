@@ -175,6 +175,16 @@ public class ScheduleService {
         jobRecordRepository.save(jobRecord);
     }
 
+    @Transactional(readOnly = true)
+    public LocalDateTime getEarliestScheduleStartTime(Long teamId) {
+        return scheduleQueryRepository.findEarliestStartTimeByTeamId(teamId).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public LocalDateTime getLatestEndTime(Long teamId) {
+        return scheduleQueryRepository.findLatestEndTimeByTeamId(teamId).orElse(null);
+    }
+
     private List<ScheduleNestedDto> getScheduleNestedDtos(List<ScheduleProjectionDto> schedules) {
         Map<Long, ScheduleNestedDto> scheduleNestedDtoMap = new HashMap<>();
         Map<Long, ScheduleMemberNestedDto> scheduleMemberNestedDtoMap = new HashMap<>();
@@ -255,4 +265,5 @@ public class ScheduleService {
         if (scheduleRepository.findByTeamIdAndStartTime(teamId, requestDto.startTime()).isPresent())
             throw new ScheduleAlreadyExistException("이미 같은 시작시간에 일정이 있습니다.");
     }
+
 }
