@@ -1,14 +1,14 @@
-import { useLocation } from 'react-router-dom';
-import NavBar from '../auth/components/NavBar';
-import Tag, { TagType } from '../../components/Tag';
+import { useLocation, useNavigate } from 'react-router-dom';
 import KeywordButton from '../../components/buttons/KeywordButton';
-import { useFeedbackFavorite } from '../../api/useFeedback';
-import { useEffect, useState } from 'react';
+import { useEditFavorite, useFeedbackFavorite } from '../../api/useFeedback';
+import { useState } from 'react';
 import FooterWrapper from '../../components/wrappers/FooterWrapper';
 import LargeButton from '../../components/buttons/LargeButton';
-import { use } from 'react';
+import { useSignUp } from '../../api/useAuth';
+import { showToast } from '../../utility/handleToast';
 
 export default function FeedbackFavorite() {
+  const navigate = useNavigate();
   const location = useLocation();
   const process = new URLSearchParams(location.search).get('process');
 
@@ -17,8 +17,13 @@ export default function FeedbackFavorite() {
 
   const { data } = useFeedbackFavorite();
 
-  // mutate의 onSuccess에 라우팅 메서드 전달
-  // const mutation = use회원가입(navigate('/main'));
+  const mutation =
+    process === 'signup' ?
+      useSignUp(() => navigate('/main'))
+    : useEditFavorite(() => {
+        navigate('/mypage');
+        showToast('수정 완료');
+      });
 
   const onKeywordButtonClick = (isStyle, keyword) => {
     const keywords = isStyle ? selectedStyle : selectedContent;
@@ -26,6 +31,25 @@ export default function FeedbackFavorite() {
     keywords.find((k) => k == keyword) ?
       setKeywords([...keywords.filter((item) => item !== keyword)])
     : keywords.length < 2 && setKeywords([...keywords, keyword]);
+  };
+
+  const onFinish = () => {
+    selectedStyle.length === 0 && selectedContent.length === 0 ?
+      showToast('피드백 유형을 선택해주세요')
+    : process === 'signup' ?
+      mutation.mutate({
+        email: 'email',
+        password: 'password',
+        name: 'name',
+        profileImage: {
+          iconName: 'iconName',
+          color: 'color',
+        },
+        feedbackPreference: [...selectedStyle, ...selectedContent],
+      })
+    : mutation.mutate({
+        feedbackPreference: [...selectedStyle, ...selectedContent],
+      });
   };
 
   return (
@@ -44,7 +68,6 @@ export default function FeedbackFavorite() {
           <div className='flex flex-wrap gap-2'>
             {data[0]['스타일'].map((keyword, index) => (
               <KeywordButton
-                type={TagType.KEYWORD}
                 key={index}
                 isActive={selectedStyle.includes(keyword)}
                 onClick={() => onKeywordButtonClick(true, keyword)}
@@ -58,7 +81,6 @@ export default function FeedbackFavorite() {
           <div className='flex flex-wrap gap-2'>
             {data[1]['내용'].map((keyword, index) => (
               <KeywordButton
-                type={TagType.KEYWORD}
                 key={index}
                 isActive={selectedContent.includes(keyword)}
                 onClick={() => onKeywordButtonClick(false, keyword)}
@@ -72,17 +94,9 @@ export default function FeedbackFavorite() {
       <FooterWrapper>
         <LargeButton
           isOutlined={false}
-          text={'완료'} // 로딩 중일 때 버튼 텍스트 변경... 추후 수정 필요
+          text={mutation.isPending ? '로딩중' : '보내기'} // 로딩 중일 때 버튼 텍스트 변경... 추후 수정 필요
           disabled={selectedStyle.length === 0 && selectedContent.length === 0}
-          onClick={() => {
-            mutation.mutate({
-              email: location.state.email,
-              password: location.state.password,
-              name: location.state,
-              profileImage: location.state.profileImage,
-              feedbackPreference: [...selectedStyle, ...selectedContent],
-            });
-          }}
+          onClick={onFinish}
         />
       </FooterWrapper>
     </div>
