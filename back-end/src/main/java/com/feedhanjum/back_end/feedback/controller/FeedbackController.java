@@ -3,8 +3,10 @@ package com.feedhanjum.back_end.feedback.controller;
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.controller.dto.request.*;
+import com.feedhanjum.back_end.feedback.controller.dto.response.FeedbackReportDto;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
+import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
@@ -168,7 +170,7 @@ public class FeedbackController {
         Page<ReceivedFeedbackDto> receivedFeedbacks = feedbackQueryService.getReceivedFeedbacks(receiverId, request.teamId(), request.filterHelpful(), request.page(), request.sortOrder());
         return ResponseEntity.ok(Paged.from(receivedFeedbacks));
     }
-
+  
     @Operation(summary = "피드백 선호도 선택지 조회", description = "사용자에게 피드백 선호도 선택지를 제공하기 위한 API")
     @ApiResponse(responseCode = "200", description = "선택 가능한 피드백 선호 정보를 반환한다.")
     @GetMapping("/feedback/preference")
@@ -180,4 +182,15 @@ public class FeedbackController {
         }
         return ResponseEntity.ok(feedbackPreferenceMap);
     }
+
+    @Operation(summary = "피드백 리포트 조회", description = "로그인 유저의 피드백 리포트를 조회힙니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "피드백 리포트 조회 성공", useReturnTypeSchema = true)
+    })
+    @GetMapping("/feedbacks/report")
+    public ResponseEntity<FeedbackReportDto> getFeedbackReport(@Login Long receiverId) {
+        FeedbackReport feedbackReport = feedbackQueryService.getFeedbackReport(receiverId);
+        return ResponseEntity.ok(FeedbackReportDto.from(feedbackReport));
+    }
+
 }
