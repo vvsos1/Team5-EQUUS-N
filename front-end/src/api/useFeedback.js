@@ -103,3 +103,10 @@ export const useFeedbackKeyword = () => {
     queryFn: () => api.get({ url: '/api/feedback/keyword' }),
   });
 };
+
+export const useFeedbackRefinement = () => {
+  return useMutation({
+    mutationFn: (data) =>
+      api.post({ url: '/api/feedback-refinement', body: data }),
+  });
+};

@@ -1,5 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useFeedbackFavoriteByUser } from '../../../api/useFeedback';
+import {
+  useFeedbackFavoriteByUser,
+  useFeedbackRefinement,
+} from '../../../api/useFeedback';
 import Tag, { TagType } from '../../../components/Tag';
 import TextArea from '../../../components/TextArea';
 import { useTeam } from '../../../useTeam';
@@ -7,6 +10,7 @@ import { useReducer, useState } from 'react';
 import AiButton from '../../../components/buttons/AiButton';
 import FooterWrapper from '../../../components/wrappers/FooterWrapper';
 import LargeButton from '../../../components/buttons/LargeButton';
+import { transformToBytes } from '../../../utility/inputChecker';
 
 export default function FeedbackSend3() {
   const navigate = useNavigate();
@@ -14,6 +18,7 @@ export default function FeedbackSend3() {
 
   const { data: favoriteKeywords } = useFeedbackFavoriteByUser();
   const { teams, selectedTeam } = useTeam();
+  const mutation = useFeedbackRefinement();
 
   const [isAnonymous, toggleAnonymous] = useReducer(
     (prev) => !prev,
@@ -51,21 +56,56 @@ export default function FeedbackSend3() {
       {gptContent !== null && (
         <>
           <div className='h-5' />
-          <TextArea generatedByGpt={true} />
+          <TextArea
+            generatedByGpt={true}
+            textContent={gptContent}
+            textLength={transformToBytes(gptContent).byteCount}
+          />
         </>
       )}
       <div className='h-5' />
       <div className='flex w-full justify-end'>
         {gptContent ?
-          <div className='flex gap-2'>
-            <AiButton isActive={false} onClick={() => setGptContent(' ')}>
+          <div className='flex items-center gap-2'>
+            <AiButton
+              isActive={false}
+              onClick={() => setTextContent(gptContent)}
+            >
               적용하기
             </AiButton>
-            <AiButton isActive={true} onClick={() => setGptContent(' ')}>
+            <AiButton
+              isActive={true}
+              onClick={() =>
+                mutation.mutate(
+                  {
+                    receiverId: state.receiver.id,
+                    objectiveFeedbacks: state.objectiveFeedback,
+                    subjectiveFeedback: textContent,
+                  },
+                  {
+                    onSuccess: (data) => setGptContent(data.subjectiveFeedback),
+                  },
+                )
+              }
+            >
               재생성하기
             </AiButton>
           </div>
-        : <AiButton isActive={true} onClick={() => setGptContent(' ')}>
+        : <AiButton
+            isActive={true}
+            onClick={() =>
+              mutation.mutate(
+                {
+                  receiverId: state.receiver.id,
+                  objectiveFeedbacks: state.objectiveFeedback,
+                  subjectiveFeedback: textContent,
+                },
+                {
+                  onSuccess: (data) => setGptContent(data.subjectiveFeedback),
+                },
+              )
+            }
+          >
             AI 글 다듬기
           </AiButton>
         }

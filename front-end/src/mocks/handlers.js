@@ -103,4 +103,33 @@ export const handlers = [
   http.get(`${BASE_URL}/api/feedback/keyword`, () => {
     return HttpResponse.json(objectives);
   }),
+
+  // gpt 다듬기
+  http.post(`${BASE_URL}/api/feedback-refinement`, async ({ request }) => {
+    const data = await request.json();
+    console.log('gpt 받은거: ', data);
+    const text = data.subjectiveFeedback;
+
+    // 이후는 그냥 문자열 섞는 데모 코드
+    // ...
+    // ...
+    const textArray = text.split('');
+
+    // 배열의 요소를 무작위로 섞기
+    for (let i = textArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [textArray[i], textArray[j]] = [textArray[j], textArray[i]];
+    }
+
+    // 배열을 다시 문자열로 변환
+    const shuffledText = textArray.join('');
+
+    // 2초 딜레이 추가
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    return HttpResponse.json(
+      { subjectiveFeedback: shuffledText, remainCount: 2012312 },
+      { status: 201 },
+    );
+  }),
 ];
