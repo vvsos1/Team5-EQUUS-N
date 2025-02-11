@@ -1,4 +1,4 @@
-const BASE_URL = 'https://api.com';
+const BASE_URL = 'https://api.feedhanjum.com';
 
 /**
  * @typedef {Object} RequestOptions
