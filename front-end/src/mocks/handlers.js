@@ -58,4 +58,34 @@ export const handlers = [
 
     return HttpResponse.json(data, { status: 201 });
   }),
+
+  // 피드백 키워드 조회
+  http.get(`${BASE_URL}/api/feedbacks/favorite`, () => {
+    return HttpResponse.json([
+      {
+        스타일: [
+          '완곡하게',
+          '솔직하게',
+          '칭찬과 함께',
+          '가볍게',
+          '간단하게',
+          '신중하게',
+          '유머러스한',
+          '구체적인',
+        ],
+      },
+      {
+        내용: [
+          '명확한',
+          '현실적인',
+          '대안을 제시하는',
+          '핵심적인',
+          '발전적인',
+          '이상적인',
+          '색다른',
+          '논리적인',
+        ],
+      },
+    ]);
+  }),
 ];
