@@ -11,6 +11,7 @@ import { checkTeamSpaceMakingInfo } from '../../utility/inputChecker';
 import CustomDatePicker, {
   DatePickerDropdown,
 } from '../../components/CustomDatePicker';
+import { useMakeTeam } from '../../api/useTeamspace';
 
 /**
  * @param {object} props
@@ -25,16 +26,31 @@ export default function TeamSpaceMake({ isFirst = false }) {
   const [isDatePickerOpen1, setIsDatePickerOpen1] = useState(false);
   const [isDatePickerOpen2, setIsDatePickerOpen2] = useState(false);
   const navigate = useNavigate();
+  const { mutate: makeTeam } = useMakeTeam();
 
   const onClickNext = () => {
     if (!checkTeamSpaceMakingInfo(teamSpaceName, startDate, endDate)) {
       return;
     } else {
-      //TODO: 팀 공간 만들기 요청
+      makeTeam(
+        {
+          name: teamSpaceName,
+          startDate: startDate,
+          endDate: endDate,
+          feedbackType: isAnonymous ? 'ANONYMOUS' : 'IDENTIFIED',
+        },
+        {
+          onSuccess: (teamData) => {
+            navigate(`/teamspace/make/success?teamName=${teamSpaceName}`, {
+              state:
+                isFirst ?
+                  { from: '/first', teamId: teamData.id }
+                : { from: '/', teamId: teamData.id },
+            });
+          },
+        },
+      );
     }
-    navigate(`/teamspace/make/success?teamName=${teamSpaceName}`, {
-      state: isFirst ? { from: '/first' } : { from: '/' },
-    });
   };
 
   const onClickPop = () => {
@@ -128,8 +144,9 @@ export default function TeamSpaceMake({ isFirst = false }) {
             className={
               'rounded-300 flex h-[56px] w-full items-center justify-center px-4 py-2 text-gray-300'
             }
+            onClick={() => navigate('/main')}
           >
-            <a>건너뛰기</a>
+            <a>나중에 만들기</a>
           </div>
         )}
       </div>

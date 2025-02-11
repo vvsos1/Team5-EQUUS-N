@@ -1,12 +1,16 @@
 import NavBar from '../auth/components/NavBar';
 import LargeButton from '../../components/buttons/LargeButton';
 import { showToast } from '../../utility/handleToast';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useInviteTeam } from '../../api/useTeamspace';
 
 export default function TeamSpaceMakeSuccess() {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const teamName = searchParams.get('teamName');
+  const navigate = useNavigate();
+
+  const { mutate: inviteTeam } = useInviteTeam();
 
   return (
     <div className='relative flex h-dvh w-full flex-col justify-start'>
@@ -21,8 +25,16 @@ export default function TeamSpaceMakeSuccess() {
           text='초대링크 공유하기 🔗'
           isOutlined={true}
           onClick={() => {
-            //TODO: 초대링크 복사
-            showToast('클립보드에 복사됨');
+            console.log(location.state.teamId);
+            if (location.state.teamId) {
+              inviteTeam(location.state.teamId, {
+                onSuccess: (data) => {
+                  const inviteCode = data.token;
+                  navigator.clipboard.writeText(`feedhanjum.com/${inviteCode}`);
+                  showToast('클립보드에 복사됨');
+                },
+              });
+            }
           }}
         />
         <div className='absolute -bottom-12 left-1/2 flex w-[200px] -translate-x-1/2 animate-pulse items-center justify-center rounded-full bg-gray-700 px-6 py-1 text-gray-200 before:absolute before:-top-4 before:left-1/2 before:-translate-x-1/2 before:border-[8px] before:border-transparent before:border-b-gray-700'>
@@ -34,7 +46,7 @@ export default function TeamSpaceMakeSuccess() {
         <LargeButton
           text={location.state?.from === '/first' ? '시작하기' : '흠으로'}
           isOutlined={false}
-          onClick={location.state?.from === '/first' ? () => {} : () => {}}
+          onClick={() => navigate('/main')}
         />
       </div>
     </div>

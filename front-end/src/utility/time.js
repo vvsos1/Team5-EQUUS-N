@@ -45,7 +45,6 @@ export function getDateInfo(date) {
   // 그 주의 목요일 날짜
   const dateOfThurs = new Date(date);
   dateOfThurs.setDate(dateOfThurs.getDate() + (4 - dayOfDate));
-  console.log(dateOfThurs);
   // 이번주 목요일과 같은 년도와 월을 가진 달의 1일
   const firstDayThisMonth = new Date(
     dateOfThurs.getFullYear(),
