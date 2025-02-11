@@ -92,5 +92,14 @@ public class FeedbackQueryRepository {
         return new PageImpl<>(result, pageable, total);
     }
 
+    public List<Feedback> findReceivedFeedbacks(Long receiverId) {
+        Objects.requireNonNull(receiverId);
+
+        return queryFactory
+                .selectFrom(feedback)
+                .where(feedback.receiver.id.eq(receiverId))
+                .fetch();
+    }
+
 
 }
