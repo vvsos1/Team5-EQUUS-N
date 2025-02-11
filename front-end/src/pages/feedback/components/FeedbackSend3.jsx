@@ -30,8 +30,24 @@ export default function FeedbackSend3() {
   const [textContent, setTextContent] = useState('');
   const [gptContent, setGptContent] = useState('');
 
+  const generateGptContent = () => {
+    if (8 < textLength && textLength <= 400) {
+      setGptContent('');
+      gptMutation.mutate(
+        {
+          receiverId: locationState.receiver.id,
+          objectiveFeedbacks: locationState.objectiveFeedback,
+          subjectiveFeedback: textContent,
+        },
+        {
+          onSuccess: (data) => setGptContent(data.subjectiveFeedback),
+        },
+      );
+    }
+  };
+
   return (
-    <div className='flex size-full flex-col'>
+    <div className='flex size-full flex-col pb-28'>
       <h1 className='header-2 text-gray-0 mt-3 whitespace-pre-line'>
         {'자세한 내용을 작성해 보세요!'}
       </h1>
@@ -76,43 +92,12 @@ export default function FeedbackSend3() {
             >
               적용하기
             </AiButton>
-            <AiButton
-              isActive={true}
-              onClick={() => {
-                setGptContent('');
-                gptMutation.mutate(
-                  {
-                    receiverId: locationState.receiver.id,
-                    objectiveFeedbacks: locationState.objectiveFeedback,
-                    subjectiveFeedback: textContent,
-                  },
-                  {
-                    onSuccess: (data) => setGptContent(data.subjectiveFeedback),
-                  },
-                );
-              }}
-            >
+            <AiButton isActive={true} onClick={() => generateGptContent()}>
               재생성하기
             </AiButton>
           </div>
         : !gptMutation.isPending && (
-            <AiButton
-              isActive={true}
-              onClick={() => {
-                setGptContent('');
-
-                gptMutation.mutate(
-                  {
-                    receiverId: locationState.receiver.id,
-                    objectiveFeedbacks: locationState.objectiveFeedback,
-                    subjectiveFeedback: textContent,
-                  },
-                  {
-                    onSuccess: (data) => setGptContent(data.subjectiveFeedback),
-                  },
-                );
-              }}
-            >
+            <AiButton isActive={true} onClick={() => generateGptContent()}>
               AI 글 다듬기
             </AiButton>
           )
@@ -122,9 +107,9 @@ export default function FeedbackSend3() {
         <LargeButton
           isOutlined={false}
           text={feedbackMutation.isPending ? '로딩중' : '다음'}
-          disabled={textContent.length === 0}
+          disabled={textLength === 0}
           onClick={() => {
-            if (textContent.length > 0) {
+            if (0 < textLength && textLength <= 400) {
               const { receiver, ...rest } = locationState;
               feedbackMutation.mutate(
                 {
