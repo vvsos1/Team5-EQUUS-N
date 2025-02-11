@@ -64,7 +64,9 @@ export default function MainPage() {
     }
     if (timeDiff <= 0) {
       return () =>
-        navigate('/feedback/send', { state: { members: matesData } });
+        navigate('/feedback/send', {
+          state: { members: matesData.filter((member) => member.id !== 1) },
+        });
     }
     return () => toggleTodoAdd();
   };
