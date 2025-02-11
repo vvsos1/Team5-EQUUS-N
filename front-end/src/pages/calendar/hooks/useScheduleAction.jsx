@@ -20,9 +20,9 @@ export default function useScheduleAction(date, selectedSchedule) {
     new Date(selectedSchedule?.endTime ?? new Date(date).setHours(12, 0, 0, 0)),
   );
   const [todos, setTodo] = useState(
-    selectedSchedule?.todos?.filter((todo) => {
-      return todo.memberId === userId;
-    }).task ?? [],
+    selectedSchedule?.scheduleMemberNestedDtoList?.find(
+      (dtoList) => dtoList.memberId == userId,
+    )?.todoList ?? [],
   );
 
   useEffect(() => {
@@ -42,9 +42,10 @@ export default function useScheduleAction(date, selectedSchedule) {
       ),
     );
     const newTodos =
-      selectedSchedule?.todos?.find((todo) => {
-        return todo.memberId === userId;
-      })?.task ?? [];
+      selectedSchedule?.scheduleMemberNestedDtoList?.find(
+        (dtoList) => dtoList.memberId == userId,
+      )?.todoList ?? [];
+    // console.log(newTodos);
     setTodo(newTodos);
   }, [selectedSchedule]);
 
