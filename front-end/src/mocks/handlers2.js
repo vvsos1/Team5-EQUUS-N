@@ -105,9 +105,9 @@ export const handlers2 = [
   }),
 
   // 팀 수정
-  http.post(`${BASE_URL}/api/team/:teamId`, () => {
-    return HttpResponse.json(teamResponse);
-  }),
+  // http.post(`${BASE_URL}/api/team/:teamId`, () => {
+  //   return HttpResponse.json(teamResponse);
+  // }),
 
   // 팀 삭제
   http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {
