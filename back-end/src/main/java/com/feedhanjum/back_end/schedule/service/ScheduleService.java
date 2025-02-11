@@ -208,6 +208,10 @@ public class ScheduleService {
         scheduleMemberRepository.saveAll(scheduleMembers);
     }
 
+    @Transactional
+    public void removeRemainScheduleMembership(Long memberId, Long teamId){
+        scheduleMemberRepository.deleteScheduleMembersByMemberIdAndTeamIdAfterNow(memberId, teamId, LocalDateTime.now(clock));
+    }
 
     private LocalDateTime truncateToNearestTenMinutes(LocalDateTime dateTime) {
         int minute = dateTime.getMinute();
