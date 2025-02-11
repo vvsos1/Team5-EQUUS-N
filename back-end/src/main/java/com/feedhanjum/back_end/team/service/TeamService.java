@@ -135,12 +135,14 @@ public class TeamService {
         return joinToken;
     }
 
+    @Transactional(readOnly = true)
     public Team getTeamByJoinToken(String token) {
         TeamJoinToken teamJoinToken = teamJoinTokenRepository.findById(token)
                 .orElseThrow(() -> new EntityNotFoundException("토큰이 유효하지 않습니다."));
         return teamJoinToken.getTeamInfo();
     }
 
+    @Transactional
     public void joinTeam(Long memberId, String token) {
         TeamJoinToken teamJoinToken = teamJoinTokenRepository.findById(token)
                 .orElseThrow(() -> new EntityNotFoundException("토큰이 유효하지 않습니다."));
