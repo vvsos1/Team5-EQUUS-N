@@ -39,7 +39,7 @@ export default function TextArea({
       <textarea
         value={textContent}
         onInput={onInput}
-        className={`text-gray-0 placeholder:body-1 scrollbar-hidden relative max-h-56 min-h-44 w-full resize-none outline-none placeholder:text-gray-500 focus:placeholder:text-gray-400`}
+        className={`text-gray-0 placeholder:body-1 scrollbar-hidden relative min-h-32 w-full resize-none outline-none placeholder:text-gray-500 focus:placeholder:text-gray-400`}
         placeholder={
           generatedByGpt ? undefined
           : isWithGpt ?

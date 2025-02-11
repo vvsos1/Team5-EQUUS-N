@@ -6,6 +6,7 @@ import {
   notifications,
   objectives,
   prefers,
+  objectivesByUser,
 } from './mockData';
 
 const BASE_URL = 'https://api.feedhanjum.com';
@@ -81,6 +82,10 @@ export const handlers = [
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     return HttpResponse.json(data, { status: 201 });
+  }),
+
+  http.get(`${BASE_URL}/api/member/feedback-prefer`, () => {
+    return HttpResponse.json(objectivesByUser);
   }),
 
   // 피드백 선호 수정

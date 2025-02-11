@@ -281,3 +281,5 @@ export const objectives = [
     ],
   },
 ];
+
+export const objectivesByUser = ['명확한', '현실적인'];

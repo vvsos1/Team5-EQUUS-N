@@ -90,6 +90,13 @@ export const useEditFavorite = () => {
   });
 };
 
+export const useFeedbackFavoriteByUser = () => {
+  return useQuery({
+    queryKey: ['feedback-favorite-by-user'],
+    queryFn: () => api.get({ url: '/api/member/feedback-prefer' }),
+  });
+};
+
 export const useFeedbackKeyword = () => {
   return useQuery({
     queryKey: ['feedback-keyword'],
