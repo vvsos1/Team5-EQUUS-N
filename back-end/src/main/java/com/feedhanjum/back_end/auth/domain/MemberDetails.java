@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.auth.domain;
 
+import com.feedhanjum.back_end.auth.exception.InvalidCredentialsException;
 import com.feedhanjum.back_end.auth.exception.PasswordChangeNotAllowedException;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -58,15 +59,14 @@ public class MemberDetails {
     }
 
     public void validateGoogleAccount() {
-        // TODO: 적절한 도메인 예외 던지기
         if (!isGoogleAccount())
-            throw new IllegalStateException();
+            throw new InvalidCredentialsException("잘못된 요청입니다");
     }
 
     public void validateEmailAccount() {
-        // TODO: 적절한 도메인 예외 던지기
         if (!isEmailAccount())
-            throw new IllegalStateException();
+            throw new InvalidCredentialsException("잘못된 요청입니다");
+
     }
 
     public static MemberDetails createEmailUser(Long id, String email, String password) {
