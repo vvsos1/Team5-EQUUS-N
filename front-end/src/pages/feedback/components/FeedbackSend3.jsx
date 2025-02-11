@@ -28,7 +28,7 @@ export default function FeedbackSend3() {
   );
   const [textLength, setTextLength] = useState(0);
   const [textContent, setTextContent] = useState('');
-  const [gptContent, setGptContent] = useState(null);
+  const [gptContent, setGptContent] = useState('');
 
   return (
     <div className='flex size-full flex-col'>
@@ -55,13 +55,14 @@ export default function FeedbackSend3() {
         toggleAnonymous={toggleAnonymous}
         isAnonymous={isAnonymous}
       />
-      {gptContent !== null && (
+      {!gptMutation.isIdle && (
         <>
           <div className='h-5' />
           <TextArea
             generatedByGpt={true}
             textContent={gptContent}
             textLength={transformToBytes(gptContent).byteCount}
+            isGptLoading={gptMutation.isPending}
           />
         </>
       )}
@@ -77,7 +78,8 @@ export default function FeedbackSend3() {
             </AiButton>
             <AiButton
               isActive={true}
-              onClick={() =>
+              onClick={() => {
+                setGptContent('');
                 gptMutation.mutate(
                   {
                     receiverId: locationState.receiver.id,
@@ -87,35 +89,39 @@ export default function FeedbackSend3() {
                   {
                     onSuccess: (data) => setGptContent(data.subjectiveFeedback),
                   },
-                )
-              }
+                );
+              }}
             >
               재생성하기
             </AiButton>
           </div>
-        : <AiButton
-            isActive={true}
-            onClick={() =>
-              gptMutation.mutate(
-                {
-                  receiverId: locationState.receiver.id,
-                  objectiveFeedbacks: locationState.objectiveFeedback,
-                  subjectiveFeedback: textContent,
-                },
-                {
-                  onSuccess: (data) => setGptContent(data.subjectiveFeedback),
-                },
-              )
-            }
-          >
-            AI 글 다듬기
-          </AiButton>
+        : !gptMutation.isPending && (
+            <AiButton
+              isActive={true}
+              onClick={() => {
+                setGptContent('');
+
+                gptMutation.mutate(
+                  {
+                    receiverId: locationState.receiver.id,
+                    objectiveFeedbacks: locationState.objectiveFeedback,
+                    subjectiveFeedback: textContent,
+                  },
+                  {
+                    onSuccess: (data) => setGptContent(data.subjectiveFeedback),
+                  },
+                );
+              }}
+            >
+              AI 글 다듬기
+            </AiButton>
+          )
         }
       </div>
       <FooterWrapper>
         <LargeButton
           isOutlined={false}
-          text='다음'
+          text={feedbackMutation.isPending ? '로딩중' : '다음'}
           disabled={textContent.length === 0}
           onClick={() => {
             if (textContent.length > 0) {
