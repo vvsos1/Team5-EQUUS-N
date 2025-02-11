@@ -46,7 +46,7 @@ class AuthServiceTest {
         @Test
         @DisplayName("이메일 중복 없으면 정상 저장")
         void registerMember_success() {
-            MemberDetails inputMember = new MemberDetails(null, "test@example.com", "pass1234");
+            MemberDetails inputMember = MemberDetails.createEmailUser(null, "test@example.com", "pass1234");
             String name = "홍길동";
             List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
 
@@ -56,10 +56,10 @@ class AuthServiceTest {
             Member savedMember = new Member(name, "test@example.com", null, feedbackPreferences);
             when(memberRepository.save(any(Member.class))).thenReturn(savedMember);
 
-            MemberDetails resultMemberDetails = new MemberDetails(1L, "test@example.com", "pass1234");
+            MemberDetails resultMemberDetails = MemberDetails.createEmailUser(1L, "test@example.com", "pass1234");
             when(memberDetailsRepository.save(any(MemberDetails.class))).thenReturn(resultMemberDetails);
 
-            MemberDetails saved = authService.registerMember(inputMember, name, null, feedbackPreferences);
+            MemberDetails saved = authService.registerEmail(inputMember, name, null, feedbackPreferences);
 
             assertThat(saved).isNotNull();
             assertThat(saved.getId()).isEqualTo(1L);
@@ -78,14 +78,14 @@ class AuthServiceTest {
         @Test
         @DisplayName("이메일 중복 시 EmailAlreadyExistsException 발생")
         void registerMember_fail_emailAlreadyExists() {
-            MemberDetails inputMember = new MemberDetails(null, "test@example.com", "pass1234");
+            MemberDetails inputMember = MemberDetails.createEmailUser(null, "test@example.com", "pass1234");
             List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
             String name = "홍길동";
 
             when(memberDetailsRepository.findByEmail("test@example.com"))
-                    .thenReturn(Optional.of(new MemberDetails(999L, "test@example.com", "any")));
+                    .thenReturn(Optional.of(MemberDetails.createEmailUser(999L, "test@example.com", "any")));
 
-            assertThatThrownBy(() -> authService.registerMember(inputMember, name, null, feedbackPreferences))
+            assertThatThrownBy(() -> authService.registerEmail(inputMember, name, null, feedbackPreferences))
                     .isInstanceOf(EmailAlreadyExistsException.class)
                     .hasMessage("이미 사용 중인 이메일입니다.");
 
@@ -105,12 +105,12 @@ class AuthServiceTest {
             String password = "password";
             String hashedPassword = "password";
 
-            MemberDetails member = new MemberDetails(1L, email, password);
+            MemberDetails member = MemberDetails.createEmailUser(1L, email, password);
             when(memberDetailsRepository.findByEmail(email)).thenReturn(Optional.of(member));
 
             when(passwordEncoder.matches(password, hashedPassword)).thenReturn(true);
 
-            MemberDetails result = authService.authenticate(email, password);
+            MemberDetails result = authService.authenticateEmail(email, password);
 
             assertThat(result).isNotNull();
             assertThat(result.getId()).isEqualTo(1L);
@@ -128,7 +128,7 @@ class AuthServiceTest {
 
             when(memberDetailsRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> authService.authenticate(email, password))
+            assertThatThrownBy(() -> authService.authenticateEmail(email, password))
                     .isInstanceOf(InvalidCredentialsException.class)
                     .hasMessage("이메일 또는 비밀번호가 올바르지 않습니다.");
 
@@ -142,12 +142,12 @@ class AuthServiceTest {
             String password = "wrongpassword";
             String hashedPassword = "password"; // 예시 해시
 
-            MemberDetails member = new MemberDetails(1L, email, hashedPassword);
+            MemberDetails member = MemberDetails.createEmailUser(1L, email, hashedPassword);
             when(memberDetailsRepository.findByEmail(email)).thenReturn(Optional.of(member));
 
             when(passwordEncoder.matches(password, hashedPassword)).thenReturn(false);
 
-            assertThatThrownBy(() -> authService.authenticate(email, password))
+            assertThatThrownBy(() -> authService.authenticateEmail(email, password))
                     .isInstanceOf(InvalidCredentialsException.class)
                     .hasMessage("이메일 또는 비밀번호가 올바르지 않습니다.");
 
