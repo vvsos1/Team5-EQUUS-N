@@ -1,11 +1,10 @@
 import classNames from 'classnames';
 import Icon from '../../../components/Icon';
 import { useEffect, useRef, useState } from 'react';
-import { changeDayName, timePickerToDate } from '../../../utility/time';
 import LargeButton from '../../../components/buttons/LargeButton';
 import StickyWrapper from '../../../components/wrappers/StickyWrapper';
 import { showToast } from '../../../utility/handleToast';
-import { checkNewSchedule, isEmpty } from '../../../utility/inputChecker';
+import { isEmpty } from '../../../utility/inputChecker';
 import Todo from './Todo';
 
 /**

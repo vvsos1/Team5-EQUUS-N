@@ -30,9 +30,13 @@ export default function Calendar() {
     selectedTeam,
     selectedDate,
   );
+  const [selectedSchedule, setSelectedSchedule] = useState(
+    scheduleOnDate ? scheduleOnDate[0] : null,
+  );
+
   // 일정 수정, 삭제 관련
   const { doingAction, setDoingAction, actionType, setActionType } =
-    useScheduleAction();
+    useScheduleAction(selectedDate, selectedSchedule);
 
   // 일정 화면 스크롤 관련
   const { scrollRef, isScrolling } = useCalendarScroll();
@@ -77,8 +81,9 @@ export default function Calendar() {
                   todos={schedule.scheduleMemberNestedDtoList}
                   isFinished={checkIsFinished(schedule.endTime)}
                   onClickEdit={() => {
+                    console.log(schedule);
+                    setSelectedSchedule(schedule);
                     setActionType(ScheduleActionType.EDIT);
-                    setDoingAction(true);
                     setDoingAction(true);
                   }}
                 />
@@ -96,7 +101,6 @@ export default function Calendar() {
             onClick={() => {
               setActionType(ScheduleActionType.ADD);
               setDoingAction(true);
-              setDoingAction(true);
             }}
             isOutlined={true}
             disabled={true}
@@ -108,9 +112,7 @@ export default function Calendar() {
           type={actionType}
           isOpen={doingAction}
           selectedDateFromParent={selectedDate}
-          selectedSchedule={scheduleOnDate.find(
-            (schedule) => schedule.teamId === selectedTeam,
-          )}
+          selectedScheduleFromParent={selectedSchedule}
           onClose={() => setDoingAction(false)}
           onSubmit={(postSuccess) => {
             setDoingAction(false);

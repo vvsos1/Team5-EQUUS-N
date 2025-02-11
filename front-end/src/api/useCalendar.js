@@ -50,13 +50,26 @@ export const usePostSchedule = (teamId) => {
   });
 };
 
-export const usePutSchedule = (teamId, scheduleId) => {
+export const useEditSchedule = (teamId) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data) =>
-      api.put({
+    mutationFn: (scheduleId, data) =>
+      api.post({
         url: `/api/team/${teamId}/schedule/${scheduleId}`,
         body: data,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['schedules'] });
+    },
+  });
+};
+
+export const useDeleteSchedule = (teamId) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (scheduleId) =>
+      api.delete({
+        url: `/api/team/${teamId}/schedule/${scheduleId}`,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
