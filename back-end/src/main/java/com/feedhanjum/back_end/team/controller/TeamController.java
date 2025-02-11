@@ -3,6 +3,7 @@ package com.feedhanjum.back_end.team.controller;
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.member.controller.dto.MemberDto;
 import com.feedhanjum.back_end.member.service.MemberService;
+import com.feedhanjum.back_end.schedule.service.ScheduleService;
 import com.feedhanjum.back_end.team.controller.dto.*;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamJoinToken;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 public class TeamController {
     private final TeamService teamService;
     private final MemberService memberService;
+    private final ScheduleService scheduleService;
 
     @Operation(summary = "팀 생성", description = "로그인한 사용자를 팀장으로 하는 팀을 생성한다.")
     @ApiResponses({
@@ -71,7 +74,11 @@ public class TeamController {
         Team team = teamService.getTeam(teamId);
         List<MemberDto> membersByTeam = memberService.getMembersByTeam(memberId, teamId)
                 .stream().map(MemberDto::new).toList();
+        LocalDateTime earliestStartTime = scheduleService.getEarliestScheduleStartTime(teamId);
+        LocalDateTime latestEndTime = scheduleService.getLatestEndTime(teamId);
         TeamDetailResponse teamDetailResponse = new TeamDetailResponse();
+        teamDetailResponse.setEarliestScheduleStartTime(earliestStartTime);
+        teamDetailResponse.setLatestScheduleEndTime(latestEndTime);
         teamDetailResponse.setTeamResponse(new TeamResponse(team));
         teamDetailResponse.setMembers(membersByTeam);
         return ResponseEntity.ok(teamDetailResponse);
