@@ -25,7 +25,7 @@ export default function Calendar() {
     location.state?.initialDate ?? new Date(new Date().setHours(0, 0, 0, 0)),
   );
 
-  // 일정 조회, 저장 관련
+  // 일정 조회 관련
   const {
     setAllSchedules,
     scheduleOnDate,
@@ -35,8 +35,14 @@ export default function Calendar() {
   } = useSchedule(selectedTeam, selectedDate);
 
   // 일정 등록, 수정, 삭제 등 액션 관련
-  const { doingAction, setDoingAction, actionType, setActionType } =
-    useScheduleAction(selectedDate, selectedSchedule);
+  const {
+    doingAction,
+    setDoingAction,
+    actionType,
+    setActionType,
+    clearData,
+    refresh,
+  } = useScheduleAction(selectedDate, selectedSchedule);
 
   // 일정 화면 스크롤 관련
   const { scrollRef, isScrolling } = useCalendarScroll();
@@ -99,6 +105,7 @@ export default function Calendar() {
               </p>
             }
             onClick={() => {
+              clearData();
               setActionType(ScheduleActionType.ADD);
               setDoingAction(true);
             }}
@@ -109,6 +116,7 @@ export default function Calendar() {
       </ul>
       {scheduleOnDate && (
         <ScheduleAction
+          key={refresh}
           type={actionType}
           isOpen={doingAction}
           selectedDateFromParent={selectedDate}

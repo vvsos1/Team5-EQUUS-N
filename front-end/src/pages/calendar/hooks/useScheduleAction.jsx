@@ -4,6 +4,7 @@ import { useUser } from '../../../useUser';
 
 export default function useScheduleAction(date, selectedSchedule) {
   const { userId } = useUser();
+  const [refresh, setRefresh] = useState(false);
   const [doingAction, setDoingAction] = useState(false);
   const [actionType, setActionType] = useState(ScheduleActionType.ADD);
 
@@ -16,7 +17,6 @@ export default function useScheduleAction(date, selectedSchedule) {
       selectedSchedule?.startTime ?? new Date(date).setHours(12, 0, 0, 0),
     ),
   );
-  // console.log(startTime);
   const [endTime, setEndTime] = useState(
     new Date(selectedSchedule?.endTime ?? new Date(date).setHours(12, 0, 0, 0)),
   );
@@ -25,6 +25,14 @@ export default function useScheduleAction(date, selectedSchedule) {
       (dtoList) => dtoList.memberId == userId,
     )?.todoList ?? [],
   );
+
+  const clearData = () => {
+    setScheduleName('');
+    setStartTime(new Date(new Date(date).setHours(12, 0, 0, 0)));
+    setEndTime(new Date(new Date(date).setHours(12, 0, 0, 0)));
+    setTodo([]);
+    setRefresh((prev) => !prev); // 강제 리렌더링
+  };
 
   useEffect(() => {
     setSelectedDate(date);
@@ -63,5 +71,7 @@ export default function useScheduleAction(date, selectedSchedule) {
     setEndTime,
     todos,
     setTodo,
+    clearData,
+    refresh,
   };
 }

@@ -55,18 +55,12 @@ export default function ScheduleAction({
     setEndTime,
     todos,
     setTodo,
+    clearData,
   } = useScheduleAction(selectedDateFromParent, selectedScheduleFromParent);
 
   const { mutate: postSchedule } = usePostSchedule(selectedTeam);
   const { mutate: editSchedule } = useEditSchedule(selectedTeam);
   const { mutate: deleteSchedule } = useDeleteSchedule(selectedTeam);
-
-  function clearData() {
-    setScheduleName('');
-    setStartTime(new Date(new Date(selectedDate).setHours(12, 0, 0, 0)));
-    setEndTime(new Date(new Date(selectedDate).setHours(12, 0, 0, 0)));
-    setTodo([]);
-  }
 
   return (
     <div
@@ -182,6 +176,7 @@ export default function ScheduleAction({
               type === ScheduleActionType.ADD ?
                 postSchedule(sendingData, {
                   onSuccess: () => {
+                    onClose();
                     showToast('일정이 추가되었어요');
                     clearData();
                   },
@@ -193,6 +188,7 @@ export default function ScheduleAction({
                   },
                   {
                     onSuccess: () => {
+                      onClose();
                       showToast('일정이 수정되었어요');
                       clearData();
                     },
