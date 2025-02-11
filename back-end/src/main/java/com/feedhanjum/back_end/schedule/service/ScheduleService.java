@@ -175,6 +175,36 @@ public class ScheduleService {
         jobRecordRepository.save(jobRecord);
     }
 
+    /**
+     * Retrieves the earliest start time among all schedules for a given team.
+     *
+     * @param teamId The ID of the team
+     * @return The earliest schedule start time, or null if no schedules exist
+     * @throws IllegalArgumentException if teamId is null
+     */
+    @Transactional(readOnly = true)
+    public LocalDateTime getEarliestScheduleStartTime(Long teamId) {
+        if (teamId == null) {
+            throw new IllegalArgumentException("Team ID cannot be null");
+        }
+        return scheduleQueryRepository.findEarliestStartTimeByTeamId(teamId).orElse(null);
+    }
+
+    /**
+     * Retrieves the latest end time among all schedules for a given team.
+     *
+     * @param teamId The ID of the team
+     * @return The latest schedule end time, or null if no schedules exist
+     * @throws IllegalArgumentException if teamId is null
+     */
+    @Transactional(readOnly = true)
+    public LocalDateTime getLatestScheduleEndTime(Long teamId) {
+        if (teamId == null) {
+            throw new IllegalArgumentException("Team ID cannot be null");
+        }
+        return scheduleQueryRepository.findLatestEndTimeByTeamId(teamId).orElse(null);
+    }
+
     private List<ScheduleNestedDto> getScheduleNestedDtos(List<ScheduleProjectionDto> schedules) {
         Map<Long, ScheduleNestedDto> scheduleNestedDtoMap = new HashMap<>();
         Map<Long, ScheduleMemberNestedDto> scheduleMemberNestedDtoMap = new HashMap<>();
@@ -255,4 +285,5 @@ public class ScheduleService {
         if (scheduleRepository.findByTeamIdAndStartTime(teamId, requestDto.startTime()).isPresent())
             throw new ScheduleAlreadyExistException("이미 같은 시작시간에 일정이 있습니다.");
     }
+
 }

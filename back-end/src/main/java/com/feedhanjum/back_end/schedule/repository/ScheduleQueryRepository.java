@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.feedhanjum.back_end.member.domain.QMember.member;
 import static com.feedhanjum.back_end.schedule.domain.QSchedule.schedule;
@@ -54,7 +55,7 @@ public class ScheduleQueryRepository {
                 .fetch();
     }
 
-    
+
     public List<ScheduleProjectionDto> findSchedulesByTeamIdAndDuration(Long memberId, Long teamId, LocalDateTime startTime, LocalDateTime endTime) {
         JPQLQuery<Long> subQuery = JPAExpressions
                 .select(team.id)
@@ -67,6 +68,21 @@ public class ScheduleQueryRepository {
                 .fetch();
     }
 
+    public Optional<LocalDateTime> findEarliestStartTimeByTeamId(Long teamId) {
+        return Optional.ofNullable(queryFactory.select(schedule.startTime)
+                .from(schedule)
+                .where(teamIdEq(teamId))
+                .orderBy(schedule.startTime.asc())
+                .fetchOne());
+    }
+
+    public Optional<LocalDateTime> findLatestEndTimeByTeamId(Long teamId){
+        return Optional.ofNullable(queryFactory.select(schedule.endTime)
+                .from(schedule)
+                .where(teamIdEq(teamId))
+                .orderBy(schedule.endTime.desc())
+                .fetchOne());
+    }
 
 
     private BooleanExpression memberIdEq(Long memberId) {
@@ -77,7 +93,7 @@ public class ScheduleQueryRepository {
         return teamId == null ? null : team.id.eq(teamId);
     }
 
-    private JPAQuery<ScheduleProjectionDto> queryScheduleProjectionDto(){
+    private JPAQuery<ScheduleProjectionDto> queryScheduleProjectionDto() {
         return queryFactory.select(Projections.constructor(
                         ScheduleProjectionDto.class,
                         team.id,

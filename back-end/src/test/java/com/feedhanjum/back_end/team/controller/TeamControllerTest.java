@@ -5,6 +5,7 @@ import com.feedhanjum.back_end.member.controller.dto.MemberDto;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.service.MemberService;
+import com.feedhanjum.back_end.schedule.service.ScheduleService;
 import com.feedhanjum.back_end.team.controller.dto.TeamCreateRequest;
 import com.feedhanjum.back_end.team.controller.dto.TeamDetailResponse;
 import com.feedhanjum.back_end.team.controller.dto.TeamResponse;
@@ -36,6 +37,9 @@ class TeamControllerTest {
 
     @Mock
     private MemberService memberService;
+
+    @Mock
+    private ScheduleService scheduleService;
 
     @InjectMocks
     private TeamController teamController;

@@ -6,6 +6,7 @@ import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
+import com.feedhanjum.back_end.schedule.repository.ScheduleQueryRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.event.TeamMemberLeftEvent;
 import com.feedhanjum.back_end.team.exception.TeamLeaderMustExistException;
@@ -25,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,6 +52,9 @@ class TeamServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private ScheduleQueryRepository scheduleQueryRepository;
 
     @Mock
     private EventPublisher eventPublisher;
@@ -444,6 +449,46 @@ class TeamServiceTest {
             assertThatThrownBy(() -> teamService.updateTeamInfo(notLeader.getId(), team.getId(), teamUpdateDto))
                     .isInstanceOf(SecurityException.class)
                     .hasMessageContaining("팀장이 아닙니다");
+        }
+
+        @Test
+        @DisplayName("팀의 종료 시점이 일정을 모두 포함하지 못할 경우 예외 발생")
+        void updateTeamInfo_기간초과1(){
+            // given
+            Member leader = createMemberWithId("leader");
+            LocalDate startDate = LocalDate.of(2025, 1, 1);
+            LocalDate endDate = LocalDate.of(2025, 1, 3);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startDate, endDate, FeedbackType.IDENTIFIED);
+            Team team = createTeamWithId("team", leader, startDate, endDate);
+
+            when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
+            when(memberRepository.findById(leader.getId())).thenReturn(Optional.of(leader));
+            when(scheduleQueryRepository.findLatestEndTimeByTeamId(team.getId())).thenReturn(Optional.of(LocalDateTime.of(2025, 1, 4, 0, 10, 0)));
+
+            // when, then
+            assertThatThrownBy(() -> teamService.updateTeamInfo(leader.getId(), team.getId(), teamUpdateDto))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("팀 종료 날짜는 팀 내 존재하는 일정의 가장 늦은 종료 시점보다 느릴 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("팀의 시작 시점이 일정을 모두 포함하지 못할 경우 예외 발생")
+        void updateTeamInfo_기간초과2(){
+            // given
+            Member leader = createMemberWithId("leader");
+            LocalDate startDate = LocalDate.of(2025, 1, 2);
+            LocalDate endDate = LocalDate.of(2025, 1, 3);
+            TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startDate, endDate, FeedbackType.IDENTIFIED);
+            Team team = createTeamWithId("team", leader, startDate, endDate);
+
+            when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
+            when(memberRepository.findById(leader.getId())).thenReturn(Optional.of(leader));
+            when(scheduleQueryRepository.findEarliestStartTimeByTeamId(team.getId())).thenReturn(Optional.of(LocalDateTime.of(2025, 1, 1, 0, 10, 0)));
+
+            // when, then
+            assertThatThrownBy(() -> teamService.updateTeamInfo(leader.getId(), team.getId(), teamUpdateDto))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("팀 시작 날짜는 팀 내 존재하는 일정의 가장 빠른 시작 시점보다 빠를 수 없습니다.");
         }
     }
 }
