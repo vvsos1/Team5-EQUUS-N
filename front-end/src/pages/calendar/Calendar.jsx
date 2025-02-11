@@ -26,15 +26,15 @@ export default function Calendar() {
   );
 
   // 일정 조회, 저장 관련
-  const { setAllSchedules, scheduleOnDate, scheduleSet } = useSchedule(
-    selectedTeam,
-    selectedDate,
-  );
-  const [selectedSchedule, setSelectedSchedule] = useState(
-    scheduleOnDate ? scheduleOnDate[0] : null,
-  );
+  const {
+    setAllSchedules,
+    scheduleOnDate,
+    scheduleSet,
+    selectedSchedule,
+    setSelectedSchedule,
+  } = useSchedule(selectedTeam, selectedDate);
 
-  // 일정 수정, 삭제 관련
+  // 일정 등록, 수정, 삭제 등 액션 관련
   const { doingAction, setDoingAction, actionType, setActionType } =
     useScheduleAction(selectedDate, selectedSchedule);
 
@@ -114,12 +114,6 @@ export default function Calendar() {
           selectedDateFromParent={selectedDate}
           selectedScheduleFromParent={selectedSchedule}
           onClose={() => setDoingAction(false)}
-          onSubmit={(postSuccess) => {
-            setDoingAction(false);
-            if (postSuccess) {
-              // TODO: 일정 재조회
-            }
-          }}
         />
       )}
     </div>
