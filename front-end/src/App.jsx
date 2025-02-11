@@ -22,7 +22,9 @@ import TeamSpaceEdit from './pages/teamspace/TeamSpaceEdit';
 import FeedbackComplete from './pages/feedback/FeedbackComplete';
 import FeedbackSelf from './pages/feedback/FeedbackSelf';
 import SelfFeedback from './pages/mypage/SelfFeedback';
+import CombinedProvider from './CombinedProvider';
 import { TeamProvider } from './TeamContext';
+import FeedbackFavorite from './pages/feedback/FeedbackFavorite';
 
 const queryClient = new QueryClient();
 
@@ -30,7 +32,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <TeamProvider>
+        <CombinedProvider>
           <Routes>
             <Route element={<Layout />}>
               <Route path='/' element={<Splash />} />
@@ -38,6 +40,7 @@ export default function App() {
                 <Route path='request' element={<FeedbackRequest />} />
                 <Route path='self' element={<FeedbackSelf />} />
                 <Route path='complete' element={<FeedbackComplete />} />
+                <Route path='favorite' element={<FeedbackFavorite />} />
                 <Route path='received/:userId' element={<FeedbackReceived />} />
                 <Route path='sent/:userId' element={<FeedbackSent />} />
               </Route>
@@ -70,7 +73,7 @@ export default function App() {
               </Route>
             </Route>
           </Routes>
-        </TeamProvider>
+        </CombinedProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );
