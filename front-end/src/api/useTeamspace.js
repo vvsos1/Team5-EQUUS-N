@@ -8,7 +8,7 @@ export const useMembers = (teamId) => {
   });
 };
 
-export const useTeam = (teamId) => {
+export const useTeamInfo = (teamId) => {
   return useQuery({
     queryKey: ['team', teamId],
     queryFn: () => api.get({ url: `/api/team/${teamId}` }),
@@ -34,6 +34,19 @@ export const useKickMember = (teamId) => {
   });
 };
 
+export const useMakeTeam = () => {
+  return useMutation({
+    mutationFn: (teamInfo) => {
+      const sendingData = teamInfo;
+      return api.post({ url: `/api/team/create`, body: sendingData });
+    },
+    onSuccess: (data) => {
+      console.log(data);
+      return data;
+    },
+  });
+};
+
 export const useEditTeam = (teamId) => {
   return useMutation({
     mutationFn: (teamInfo) => {
@@ -48,5 +61,14 @@ export const useDeleteTeam = (teamId) => {
     mutationFn: () => {
       return api.delete({ url: `/api/team/${teamId}/leave` });
     },
+  });
+};
+
+export const useInviteTeam = () => {
+  return useMutation({
+    mutationFn: (teamId) => {
+      return api.post({ url: `/api/team/${teamId}/join-token` });
+    },
+    onSuccess: (data) => data,
   });
 };

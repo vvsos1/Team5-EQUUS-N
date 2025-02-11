@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import { teams, schedules, members, notifications } from './mockData';
 
-const BASE_URL = 'https://api.com';
+const BASE_URL = 'https://api.feedhanjum.com';
 
 export const handlers = [
   // 팀 목록 조회
@@ -53,6 +53,59 @@ export const handlers = [
     const data = await request.json();
     console.log(data);
 
+    // 2초 딜레이 추가
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    return HttpResponse.json(data, { status: 201 });
+  }),
+
+  // 피드백 키워드 조회
+  http.get(`${BASE_URL}/api/feedbacks/favorite`, () => {
+    return HttpResponse.json([
+      {
+        스타일: [
+          '완곡하게',
+          '솔직하게',
+          '칭찬과 함께',
+          '가볍게',
+          '간단하게',
+          '신중하게',
+          '유머러스한',
+          '구체적인',
+        ],
+      },
+      {
+        내용: [
+          '명확한',
+          '현실적인',
+          '대안을 제시하는',
+          '핵심적인',
+          '발전적인',
+          '이상적인',
+          '색다른',
+          '논리적인',
+        ],
+      },
+    ]);
+  }),
+
+  // 회원가입
+  http.post(`${BASE_URL}/api/auth/signup`, async ({ request }) => {
+    const data = await request.json();
+
+    console.log('서버에 도착한 정보: ', data);
+
+    // 2초 딜레이 추가
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    return HttpResponse.json(data, { status: 201 });
+  }),
+
+  // 피드백 선호 수정
+  http.post(`${BASE_URL}/api/member/feedback-prefer`, async ({ request }) => {
+    const data = await request.json();
+
+    console.log('서버에 도착한 정보: ', data);
     // 2초 딜레이 추가
     await new Promise((resolve) => setTimeout(resolve, 1000));
 

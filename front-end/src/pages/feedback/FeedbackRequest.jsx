@@ -19,9 +19,7 @@ export default function FeedbackRequest() {
   const receiverId = queryParams.get('receiverId');
   const receiverName = queryParams.get('receiverName');
 
-  const mutation = useFeedbackRequest(() =>
-    navigate(`/feedback/complete/?type=${'REQUEST'}`, { replace: true }),
-  );
+  const mutation = useFeedbackRequest();
 
   return (
     <div className='flex size-full flex-col'>
@@ -54,11 +52,19 @@ export default function FeedbackRequest() {
               showToast('내용을 입력해주세요');
             else if (textLength > 400) showToast('400자 이하로 작성해주세요');
             else
-              mutation.mutate({
-                receiverId: receiverId,
-                teamId: 1, // 나중에 전역 상태에서 가져오기
-                requestedContent: textContent.trim(),
-              });
+              mutation.mutate(
+                {
+                  receiverId: receiverId,
+                  teamId: 1, // 나중에 전역 상태에서 가져오기
+                  requestedContent: textContent.trim(),
+                },
+                {
+                  onSuccess: () =>
+                    navigate(`/feedback/complete/?type=${'REQUEST'}`, {
+                      replace: true,
+                    }),
+                },
+              );
           }}
         />
       </FooterWrapper>
