@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { checkSignInInfos } from '../utility/inputChecker';
 import { showToast } from '../utility/handleToast';
+import { useUser } from '../useUser';
 
 export const useVerify = () => {
   return useMutation({
@@ -19,11 +20,13 @@ export const useSignUp = () => {
 
 export const useLogin = () => {
   const navigate = useNavigate();
+  const { setUserId } = useUser();
   return useMutation({
     mutationFn: (data) => api.post({ url: '/api/auth/login', body: data }),
     onSuccess: (data) => {
       const { email, message, userId } = data;
       console.log(email, message, userId);
+      setUserId(userId);
       navigate('/main');
     },
     onError: (error) => {

@@ -5,7 +5,7 @@ const loadStateFromStorage = () => {
   const stortedUserId = localStorage.getItem('userId');
 
   return {
-    stortedUserId,
+    userId: stortedUserId,
   };
 };
 
