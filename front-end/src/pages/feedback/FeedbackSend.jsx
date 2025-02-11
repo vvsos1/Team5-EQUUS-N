@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ProfileImageWithText } from '../../components/ProfileImage';
+import FooterWrapper from '../../components/wrappers/FooterWrapper';
 
 export default function FeedbackSend() {
   const navigate = useNavigate();
@@ -18,10 +19,24 @@ export default function FeedbackSend() {
             text={member.name}
             iconName={`@animals/${member.iconName}`}
             color={member.color}
-            onClick={() => navigate('1', { state: { member } })}
+            onClick={() =>
+              navigate('1', {
+                state: { receiver: { name: member.name, id: member.id } },
+              })
+            }
           />
         ))}
       </div>
+      <FooterWrapper>
+        <div className='mb-4 flex w-full justify-center'>
+          <button
+            className='button-2 text-gray-300 underline underline-offset-4'
+            onClick={() => console.log('낄낄')}
+          >
+            이번 피드백 건너뛰기
+          </button>
+        </div>
+      </FooterWrapper>
     </div>
   );
 }
