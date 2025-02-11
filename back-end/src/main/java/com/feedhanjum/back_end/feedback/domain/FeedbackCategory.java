@@ -1,23 +1,18 @@
 package com.feedhanjum.back_end.feedback.domain;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 @Getter
 public enum FeedbackCategory {
+    EFFORT( "노력"),
+    COMMUNICATION( "협업 능력"),
+    ATTITUDE_AND_POSTURE( "태도와 자세");
 
-    GOOD_HARD_SKILL(FeedbackFeeling.POSITIVE, "하드 스킬"),
-    GOOD_SOFT_SKILL(FeedbackFeeling.POSITIVE, "소프트 스킬"),
-    GOOD_ATTITUDE_AND_POSTURE(FeedbackFeeling.POSITIVE, "태도와 자세"),
-
-    BAD_EFFORT(FeedbackFeeling.CONSTRUCTIVE, "노력"),
-    BAD_COMMUNICATION(FeedbackFeeling.CONSTRUCTIVE, "협업 능력"),
-    BAD_ATTITUDE_AND_POSTURE(FeedbackFeeling.CONSTRUCTIVE, "태도와 자세");
-
-    private final FeedbackFeeling feeling;
+    @Getter(onMethod_ = @JsonValue)
     private final String description;
 
-    FeedbackCategory(FeedbackFeeling feeling, String description) {
-        this.feeling = feeling;
+    FeedbackCategory(String description) {
         this.description = description;
     }
 }
