@@ -6,6 +6,7 @@ import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleQueryRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamJoinToken;
+import com.feedhanjum.back_end.team.event.TeamMemberJoinEvent;
 import com.feedhanjum.back_end.team.event.TeamMemberLeftEvent;
 import com.feedhanjum.back_end.team.exception.TeamLeaderMustExistException;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
@@ -165,6 +166,7 @@ public class TeamService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다"));
         teamJoinToken.joinTeam(member);
+        eventPublisher.publishEvent(new TeamMemberJoinEvent(memberId, teamJoinToken.getTeamInfo().getId()));
     }
 
 
