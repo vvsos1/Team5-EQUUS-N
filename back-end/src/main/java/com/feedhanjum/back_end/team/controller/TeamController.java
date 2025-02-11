@@ -75,7 +75,7 @@ public class TeamController {
         List<MemberDto> membersByTeam = memberService.getMembersByTeam(memberId, teamId)
                 .stream().map(MemberDto::new).toList();
         LocalDateTime earliestStartTime = scheduleService.getEarliestScheduleStartTime(teamId);
-        LocalDateTime latestEndTime = scheduleService.getLatestEndTime(teamId);
+        LocalDateTime latestEndTime = scheduleService.getLatestScheduleEndTime(teamId);
         TeamDetailResponse teamDetailResponse = new TeamDetailResponse();
         teamDetailResponse.setEarliestScheduleStartTime(earliestStartTime);
         teamDetailResponse.setLatestScheduleEndTime(latestEndTime);
