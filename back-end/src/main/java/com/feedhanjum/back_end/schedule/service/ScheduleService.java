@@ -1,10 +1,14 @@
 package com.feedhanjum.back_end.schedule.service;
 
+import com.feedhanjum.back_end.core.domain.JobRecord;
+import com.feedhanjum.back_end.core.repository.JobRecordRepository;
+import com.feedhanjum.back_end.event.EventPublisher;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
+import com.feedhanjum.back_end.schedule.event.ScheduleEndedEvent;
 import com.feedhanjum.back_end.schedule.exception.ScheduleAlreadyExistException;
 import com.feedhanjum.back_end.schedule.exception.ScheduleIsAlreadyEndException;
 import com.feedhanjum.back_end.schedule.exception.ScheduleMembershipNotFoundException;
@@ -46,6 +50,8 @@ public class ScheduleService {
     private final MemberRepository memberRepository;
     private final ScheduleQueryRepository scheduleQueryRepository;
     private final MemberQueryRepository memberQueryRepository;
+    private final JobRecordRepository jobRecordRepository;
+    private final EventPublisher eventPublisher;
 
     /**
      * 일정을 생성하는 메소드
@@ -120,7 +126,7 @@ public class ScheduleService {
             memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
             teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId).orElseThrow(() -> new TeamMembershipNotFoundException("해당 팀에 속해있지 않습니다."));
         }
-        if(startDay.isAfter(endDay)){
+        if (startDay.isAfter(endDay)) {
             throw new IllegalArgumentException("시작 날짜는 종료 날짜 이전이어야 합니다.");
         }
         LocalDateTime startTime = startDay.atStartOfDay();
@@ -146,6 +152,27 @@ public class ScheduleService {
             return previousSchedule;
         }
         return nextSchedule;
+    }
+
+
+    private LocalDateTime truncateToNearestTenMinutes(LocalDateTime dateTime) {
+        int minute = dateTime.getMinute();
+        int truncatedMinute = (minute / 10) * 10;
+        return dateTime.withMinute(truncatedMinute).withSecond(0).withNano(0);
+    }
+
+    @Transactional
+    public void endSchedules() {
+        LocalDateTime now = truncateToNearestTenMinutes(LocalDateTime.now(clock));
+        JobRecord jobRecord = jobRecordRepository.findById(JobRecord.JobName.SCHEDULE)
+                .orElseGet(() -> new JobRecord(JobRecord.JobName.SCHEDULE));
+
+        List<Schedule> schedules = scheduleRepository.findByEndTimeBetween(jobRecord.getPreviousFinishTime().plusSeconds(1), now);
+        for (Schedule schedule : schedules) {
+            eventPublisher.publishEvent(new ScheduleEndedEvent(schedule.getId()));
+        }
+        jobRecord.updatePreviousFinishTime(now);
+        jobRecordRepository.save(jobRecord);
     }
 
     private List<ScheduleNestedDto> getScheduleNestedDtos(List<ScheduleProjectionDto> schedules) {
@@ -213,7 +240,7 @@ public class ScheduleService {
             throw new IllegalArgumentException("일정 시작 시간이 팀의 시작 시간 이후여야 합니다.");
         }
         if (team.getEndDate() != null &&
-                team.getEndDate().isBefore(requestDto.endTime().toLocalDate())) {
+            team.getEndDate().isBefore(requestDto.endTime().toLocalDate())) {
             throw new IllegalArgumentException("일정 종료 시간이 팀의 종료 시간 이전이어야 합니다.");
         }
     }
