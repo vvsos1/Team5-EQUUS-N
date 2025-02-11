@@ -48,11 +48,6 @@ export const handlers2 = [
     return HttpResponse.json(schedules2);
   }),
 
-  // 일정 생성
-  http.post(`${BASE_URL}/api/team/:teamId/schedule/create`, () => {
-    return HttpResponse.json(createScheduleResponse);
-  }),
-
   // 일정 수정
   http.put(`${BASE_URL}/api/team/:teamId/schedule/:scheduleId`, () => {
     return HttpResponse.json(updateScheduleResponse);
