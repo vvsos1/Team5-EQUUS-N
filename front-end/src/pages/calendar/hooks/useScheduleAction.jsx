@@ -16,6 +16,7 @@ export default function useScheduleAction(date, selectedSchedule) {
       selectedSchedule?.startTime ?? new Date(date).setHours(12, 0, 0, 0),
     ),
   );
+  // console.log(startTime);
   const [endTime, setEndTime] = useState(
     new Date(selectedSchedule?.endTime ?? new Date(date).setHours(12, 0, 0, 0)),
   );
@@ -27,9 +28,7 @@ export default function useScheduleAction(date, selectedSchedule) {
 
   useEffect(() => {
     setSelectedDate(date);
-  }, [date]);
 
-  useEffect(() => {
     setScheduleName(selectedSchedule?.scheduleName ?? '');
     setStartTime(
       new Date(
@@ -45,9 +44,9 @@ export default function useScheduleAction(date, selectedSchedule) {
       selectedSchedule?.scheduleMemberNestedDtoList?.find(
         (dtoList) => dtoList.memberId == userId,
       )?.todoList ?? [];
-    // console.log(newTodos);
     setTodo(newTodos);
-  }, [selectedSchedule]);
+  }, [date, selectedSchedule]);
+  // 날짜 바꿔서 일정 만들때 startTime, endTime 제대로 설정하려면 date가 의존성배열에 포함되어야 함
 
   return {
     doingAction,
