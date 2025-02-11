@@ -78,7 +78,7 @@ export const useFeedbackFavorite = () => {
   });
 };
 
-export const useEditFavorite = (afterSuccess) => {
+export const useEditFavorite = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data) =>
@@ -86,7 +86,6 @@ export const useEditFavorite = (afterSuccess) => {
     onSuccess: () => {
       // TODO: 사용자 선호 피드백 정보 조회할때 캐시를 지우도록 수정
       // queryClient.invalidateQueries({ queryKey: ['feedback-favorite'] });
-      afterSuccess();
     },
   });
 };

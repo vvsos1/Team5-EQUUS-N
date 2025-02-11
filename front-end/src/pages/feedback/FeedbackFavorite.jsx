@@ -17,13 +17,7 @@ export default function FeedbackFavorite() {
 
   const { data } = useFeedbackFavorite();
 
-  const mutation =
-    process === 'signup' ?
-      useSignUp(() => navigate('/main'))
-    : useEditFavorite(() => {
-        navigate('/mypage');
-        showToast('수정 완료');
-      });
+  const mutation = process === 'signup' ? useSignUp() : useEditFavorite();
 
   const onKeywordButtonClick = (isStyle, keyword) => {
     const keywords = isStyle ? selectedStyle : selectedContent;
@@ -36,20 +30,22 @@ export default function FeedbackFavorite() {
   const onFinish = () => {
     selectedStyle.length === 0 && selectedContent.length === 0 ?
       showToast('피드백 유형을 선택해주세요')
-    : process === 'signup' ?
-      mutation.mutate({
-        email: 'email',
-        password: 'password',
-        name: 'name',
-        profileImage: {
-          iconName: 'iconName',
-          color: 'color',
+    : mutation.mutate(
+        {
+          ...location.state,
+          feedbackPreference: [...selectedStyle, ...selectedContent],
         },
-        feedbackPreference: [...selectedStyle, ...selectedContent],
-      })
-    : mutation.mutate({
-        feedbackPreference: [...selectedStyle, ...selectedContent],
-      });
+        {
+          onSuccess: () => {
+            if (process === 'signup') {
+              navigate('/main');
+            } else {
+              navigate('/mypage');
+              showToast('수정 완료');
+            }
+          },
+        },
+      );
   };
 
   return (
