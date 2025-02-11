@@ -26,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -34,6 +35,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@ActiveProfiles("test")
 class FeedbackQueryRepositoryTest {
 
     @TestConfiguration
@@ -136,8 +138,8 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
-                                                        .isLoaded(f.getSender()));
+                    .isLoaded(f.getTeam()) && persistenceUnitUtil
+                    .isLoaded(f.getSender()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.reverseOrder());
             assertThat(feedbacks).extracting(Feedback::getReceiver).containsOnly(receiver);
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team2", "team1", "team2", "team1");
@@ -180,8 +182,8 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
-                                                        .isLoaded(f.getSender()));
+                    .isLoaded(f.getTeam()) && persistenceUnitUtil
+                    .isLoaded(f.getSender()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.reverseOrder());
             assertThat(feedbacks).extracting(Feedback::getReceiver).containsOnly(receiver);
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsOnly("team1");
@@ -223,8 +225,8 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
-                                                        .isLoaded(f.getSender()));
+                    .isLoaded(f.getTeam()) && persistenceUnitUtil
+                    .isLoaded(f.getSender()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.naturalOrder());
             assertThat(feedbacks).extracting(Feedback::getReceiver).containsOnly(receiver);
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team2");
@@ -266,8 +268,8 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
-                                                        .isLoaded(f.getSender()));
+                    .isLoaded(f.getTeam()) && persistenceUnitUtil
+                    .isLoaded(f.getSender()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.naturalOrder());
             assertThat(feedbacks).extracting(Feedback::getReceiver).containsOnly(receiver);
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team1", "team2");
@@ -332,8 +334,8 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
-                                                        .isLoaded(f.getReceiver()));
+                    .isLoaded(f.getTeam()) && persistenceUnitUtil
+                    .isLoaded(f.getReceiver()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.reverseOrder());
             assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team2", "team1", "team2", "team1");
@@ -376,8 +378,8 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
-                                                        .isLoaded(f.getReceiver()));
+                    .isLoaded(f.getTeam()) && persistenceUnitUtil
+                    .isLoaded(f.getReceiver()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.reverseOrder());
             assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsOnly("team1");
@@ -419,8 +421,8 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
-                                                        .isLoaded(f.getReceiver()));
+                    .isLoaded(f.getTeam()) && persistenceUnitUtil
+                    .isLoaded(f.getReceiver()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.naturalOrder());
             assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team2");
@@ -462,8 +464,8 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                                                        .isLoaded(f.getTeam()) && persistenceUnitUtil
-                                                        .isLoaded(f.getReceiver()));
+                    .isLoaded(f.getTeam()) && persistenceUnitUtil
+                    .isLoaded(f.getReceiver()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.naturalOrder());
             assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team1", "team2");
