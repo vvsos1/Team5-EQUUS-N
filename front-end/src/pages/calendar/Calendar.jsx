@@ -41,7 +41,7 @@ export default function Calendar() {
     actionType,
     setActionType,
     clearData,
-    refresh,
+    actionInfo,
   } = useScheduleAction(selectedDate, selectedSchedule);
 
   // 일정 화면 스크롤 관련
@@ -116,12 +116,12 @@ export default function Calendar() {
       </ul>
       {scheduleOnDate && (
         <ScheduleAction
-          key={refresh}
           type={actionType}
           isOpen={doingAction}
           selectedDateFromParent={selectedDate}
           selectedScheduleFromParent={selectedSchedule}
           onClose={() => setDoingAction(false)}
+          actionInfo={actionInfo}
         />
       )}
     </div>

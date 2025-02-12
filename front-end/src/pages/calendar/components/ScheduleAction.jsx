@@ -41,22 +41,14 @@ export default function ScheduleAction({
   onClose,
   selectedScheduleFromParent,
   selectedDateFromParent,
+  actionInfo,
 }) {
   const { selectedTeam } = useTeam();
   const scrollRef = useRef(null);
-  const {
-    selectedDate,
-    setSelectedDate,
-    scheduleName,
-    setScheduleName,
-    startTime,
-    setStartTime,
-    endTime,
-    setEndTime,
-    todos,
-    setTodo,
-    clearData,
-  } = useScheduleAction(selectedDateFromParent, selectedScheduleFromParent);
+  const { selectedDate, setSelectedDate, clearData } = useScheduleAction(
+    selectedDateFromParent,
+    selectedScheduleFromParent,
+  );
 
   const { mutate: postSchedule } = usePostSchedule(selectedTeam);
   const { mutate: editSchedule } = useEditSchedule(selectedTeam);
@@ -102,6 +94,7 @@ export default function ScheduleAction({
         <button
           onClick={() => {
             if (type !== ScheduleActionType.EDIT) {
+              console.log('CLEAR');
               clearData();
             }
             onClose();
@@ -136,23 +129,27 @@ export default function ScheduleAction({
 
       <CustomInput
         label='일정 이름'
-        content={scheduleName}
-        setContent={setScheduleName}
+        content={actionInfo?.scheduleName ?? ''}
+        setContent={actionInfo?.setScheduleName ?? ''}
         isOutlined={false}
         bgColor='gray-700'
       />
       <div className='h-11 shrink-0' />
 
       <TimeSelector
-        startTime={startTime}
-        setStartTime={setStartTime}
-        endTime={endTime}
-        setEndTime={setEndTime}
+        startTime={actionInfo?.startTime ?? new Date()}
+        setStartTime={actionInfo?.setStartTime}
+        endTime={actionInfo?.endTime ?? new Date()}
+        setEndTime={actionInfo?.setEndTime}
       />
 
       <div className='h-11 shrink-0' />
 
-      <Todo todos={todos} setTodo={setTodo} scrollRef={scrollRef} />
+      <Todo
+        todos={actionInfo?.todos ?? []}
+        setTodo={actionInfo?.setTodo}
+        scrollRef={scrollRef}
+      />
 
       <div className='h-11 shrink-0' />
       <div className='flex-1' />
@@ -164,18 +161,25 @@ export default function ScheduleAction({
           isOutlined={false}
           text={type === ScheduleActionType.ADD ? '추가 완료' : '수정 완료'}
           onClick={() => {
-            const newTodos = todos.filter((todo) => !isEmpty(todo));
-            setTodo(newTodos);
-            if (checkNewSchedule(scheduleName, startTime, endTime)) {
+            const newTodos = actionInfo.todos.filter((todo) => !isEmpty(todo));
+            actionInfo.setTodo(newTodos);
+            if (
+              checkNewSchedule(
+                actionInfo.scheduleName,
+                actionInfo.startTime,
+                actionInfo.endTime,
+              )
+            ) {
               const sendingData = {
-                name: scheduleName,
-                startTime: toKST(startTime).toISOString(),
-                endTime: toKST(endTime).toISOString(),
-                todos: todos,
+                name: actionInfo.scheduleName,
+                startTime: toKST(actionInfo.startTime).toISOString(),
+                endTime: toKST(actionInfo.endTime).toISOString(),
+                todos: actionInfo.todos,
               };
               type === ScheduleActionType.ADD ?
                 postSchedule(sendingData, {
                   onSuccess: () => {
+                    console.log('성공 테스트2');
                     onClose();
                     showToast('일정이 추가되었어요');
                     clearData();
