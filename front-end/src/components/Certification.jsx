@@ -3,6 +3,7 @@ import CustomInput from './CustomInput';
 import SmallButton from './buttons/SmallButton';
 import Icon from './Icon';
 import { showToast } from '../utility/handleToast';
+import { useSendVerifMail, useVerifyToken } from '../api/useAuth';
 
 export const CertState = Object.freeze({
   BEFORE_SEND_CODE: '인증코드 전송',
@@ -24,6 +25,55 @@ export default function Certification({ email = '', certState, setCertState }) {
   const timerRef = useRef(null);
   const inputRef = useRef(null);
   const [shouldFocus, setShouldFocus] = useState(false);
+
+  const { mutate: sendVerifMail } = useSendVerifMail();
+  const { mutate: verifyToken } = useVerifyToken();
+
+  // 이메일 검증 및 코드 전송
+  function handleSendMailButton() {
+    let toastMessage = '';
+    if (certState === CertState.BEFORE_SEND_CODE) {
+      toastMessage = '인증번호를 전송했어요';
+    } else if (certState === CertState.RESEND_CODE) {
+      setCertCode('');
+      toastMessage = '인증번호를 재전송했어요';
+    }
+    sendVerifMail(
+      { email },
+      {
+        onSuccess: () => {
+          setCertState(CertState.RESEND_CODE);
+          showToast(toastMessage);
+          setTimer();
+          setShouldFocus(true);
+        },
+        onError: () => {
+          showToast('이미 가입된 이메일이에요');
+        },
+      },
+    );
+  }
+
+  function handleVerifyButton() {
+    verifyToken(
+      {
+        email: email,
+        code: certCode,
+      },
+      {
+        onSuccess: () => {
+          clearInterval(timerRef.current);
+          setCertState(CertState.AFTER_CHECK_CODE);
+          showToast('이메일 인증 완료');
+        },
+        onError: () => {
+          showToast('인증번호를 틀렸어요');
+          setCertCode('');
+          setCertState(CertState.BEFORE_SEND_CODE);
+        },
+      },
+    );
+  }
 
   // 제한시간 설정
   const setTimer = () => {
@@ -109,32 +159,11 @@ export default function Certification({ email = '', certState, setCertState }) {
         }
         onClick={() => {
           if (certState === CertState.BEFORE_SEND_CODE) {
-            // 이메일 검증
-            // 이미 가입되어 있으면 버튼 비활성화
-
-            // 인증코드 전송 절차
-            setCertState(CertState.RESEND_CODE);
-            showToast('인증번호를 전송했습니다');
-            setTimer();
-            setShouldFocus(true);
+            handleSendMailButton();
           } else if (certState === CertState.RESEND_CODE) {
-            setCertCode('');
-            // TODO: 인증코드 재전송 절차
-            showToast('인증번호를 재전송했습니다');
-            setTimer();
-            setShouldFocus(true);
+            handleSendMailButton();
           } else if (certState === CertState.AFTER_SEND_CODE) {
-            // TODO: 인증코드 확인 절차
-
-            // 틀림
-            // TODO: 팝업 띄우기
-            // setCertCode('');
-            // setCertState(CertState.BEFORE_SEND_CODE);
-
-            // 맞음
-            clearInterval(timerRef.current);
-            setCertState(CertState.AFTER_CHECK_CODE);
-            showToast('이메일 인증 완료');
+            handleVerifyButton();
           }
         }}
         isOutlined={false}
