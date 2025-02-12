@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.auth.service;
 
 import com.feedhanjum.back_end.auth.domain.EmailSignupToken;
+import com.feedhanjum.back_end.auth.domain.GoogleSignupToken;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.domain.PasswordResetToken;
 import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
@@ -9,6 +10,7 @@ import com.feedhanjum.back_end.auth.exception.PasswordResetTokenNotValidExceptio
 import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
 import com.feedhanjum.back_end.auth.passwordencoder.PasswordEncoder;
 import com.feedhanjum.back_end.auth.repository.MemberDetailsRepository;
+import com.feedhanjum.back_end.auth.service.dto.GoogleLoginResultDto;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
@@ -147,13 +149,11 @@ public class AuthService {
     }
 
     @Transactional
-    public MemberDetails registerGoogle(String googleCode, ProfileImage profileImage, List<FeedbackPreference> feedbackPreferences) {
-        GoogleAuthService.GoogleUserInfoResponse userInfo = googleAuthService.getUserInfo(googleCode);
-        String email = userInfo.email();
-
+    public MemberDetails registerGoogle(GoogleSignupToken googleSignupToken, ProfileImage profileImage, List<FeedbackPreference> feedbackPreferences) {
+        String email = googleSignupToken.getEmail();
         validateEmail(email);
 
-        String name = userInfo.name();
+        String name = googleSignupToken.getName();
         Member member = new Member(name, email, profileImage, feedbackPreferences);
         Member savedMember = memberRepository.save(member);
         MemberDetails savedMemberDetails = MemberDetails.createGoogleUser(savedMember.getId(), email);
@@ -162,15 +162,19 @@ public class AuthService {
     }
 
     @Transactional
-    public MemberDetails authenticateGoogle(String googleCode) {
+    public GoogleLoginResultDto authenticateGoogle(String googleCode) {
         GoogleAuthService.GoogleUserInfoResponse userInfo = googleAuthService.getUserInfo(googleCode);
         String email = userInfo.email();
 
-        MemberDetails memberDetails = memberDetailsRepository.findByEmail(email)
-                .orElseThrow(() -> new InvalidCredentialsException("회원 정보가 올바르지 않습니다"));
+        Optional<MemberDetails> memberDetailsOptional = memberDetailsRepository.findByEmail(email);
 
+        if (memberDetailsOptional.isEmpty()) {
+            return GoogleLoginResultDto.signupRequired(GoogleSignupToken.generateNewToken(email, userInfo.name()));
+        }
+
+        MemberDetails memberDetails = memberDetailsOptional.get();
         memberDetails.validateGoogleAccount();
-        return memberDetails;
+        return GoogleLoginResultDto.authenticated(memberDetails);
     }
 
 
