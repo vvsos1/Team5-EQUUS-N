@@ -14,7 +14,8 @@ import {
   checkSignUpInfos,
   isValidPassword,
 } from '../../utility/inputChecker';
-import { showToast } from '../../utility/handleToast';
+import { useNavigate } from 'react-router-dom';
+import { getRandomProfile } from '../../components/ProfileImage';
 
 /**
  * 회원가입 페이지
@@ -29,6 +30,7 @@ export default function SignUp() {
   const [isPasswordConfirmVisible, setIsPasswordConfirmVisible] =
     useState(false);
   const [nickName, setNickName] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     setNickName(nickName.trim());
@@ -136,8 +138,14 @@ export default function SignUp() {
                 nickName,
               ) === true
             ) {
-              // TODO: 회원가입 요청 절차
-              showToast('회원가입 요청 완료');
+              navigate('/feedback/favorite?process=signup', {
+                state: {
+                  email,
+                  password,
+                  name: nickName,
+                  profileImage: getRandomProfile(),
+                },
+              });
             }
           }}
         />

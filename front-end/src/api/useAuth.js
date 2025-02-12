@@ -4,10 +4,22 @@ import { useNavigate } from 'react-router-dom';
 import { showToast } from '../utility/handleToast';
 import { useUser } from '../useUser';
 
-export const useVerify = () => {
+const BASE_URL_2 = '/api/auth';
+
+export const useSendVerifMail = () => {
   return useMutation({
     mutationFn: (data) =>
-      api.post({ url: '/api/auth/send-signup-verification-email', body: data }),
+      api.post({
+        url: BASE_URL_2 + '/send-signup-verification-email',
+        body: data,
+      }),
+  });
+};
+
+export const useVerifyToken = () => {
+  return useMutation({
+    mutationFn: (data) =>
+      api.post({ url: BASE_URL_2 + '/verify-signup-email-token', body: data }),
   });
 };
 
@@ -25,7 +37,6 @@ export const useLogin = () => {
     mutationFn: (data) => api.post({ url: '/api/auth/login', body: data }),
     onSuccess: (data) => {
       const { email, message, userId } = data;
-      console.log(email, message, userId);
       setUserId(userId);
       navigate('/main');
     },

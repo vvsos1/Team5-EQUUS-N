@@ -68,25 +68,25 @@ export const handlers = [
   }),
 
   // 피드백 선호 키워드 조회
-  http.get(`${BASE_URL}/api/feedbacks/favorite`, () => {
-    return HttpResponse.json(prefers);
-  }),
+  // http.get(`${BASE_URL}/api/feedbacks/favorite`, () => {
+  //   return HttpResponse.json(prefers);
+  // }),
 
   // 회원가입
-  http.post(`${BASE_URL}/api/auth/signup`, async ({ request }) => {
-    const data = await request.json();
+  // http.post(`${BASE_URL}/api/auth/signup`, async ({ request }) => {
+  //   const data = await request.json();
 
-    console.log('서버에 도착한 정보: ', data);
+  //   console.log('서버에 도착한 정보: ', data);
 
-    // 2초 딜레이 추가
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  //   // 2초 딜레이 추가
+  //   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    return HttpResponse.json(data, { status: 201 });
-  }),
+  //   return HttpResponse.json(data, { status: 201 });
+  // }),
 
-  http.get(`${BASE_URL}/api/member/feedback-prefer`, () => {
-    return HttpResponse.json(objectivesByUser);
-  }),
+  // http.get(`${BASE_URL}/api/member/feedback-prefer`, () => {
+  //   return HttpResponse.json(objectivesByUser);
+  // }),
 
   // 피드백 선호 수정
   http.post(`${BASE_URL}/api/member/feedback-prefer`, async ({ request }) => {

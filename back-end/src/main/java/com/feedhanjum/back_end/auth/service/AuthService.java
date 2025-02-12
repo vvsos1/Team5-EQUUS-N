@@ -49,7 +49,7 @@ public class AuthService {
 
         validateEmail(memberDetails.getEmail());
         Member member = new Member(name, memberDetails.getEmail(), profileImage, feedbackPreferences);
-        Member savedMember = memberRepository.save(member);
+        memberRepository.save(member);
         String hashedPassword = passwordEncoder.encode(memberDetails.getPassword());
         MemberDetails savedMemberDetails = MemberDetails.createEmailUser(savedMember.getId(), memberDetails.getEmail(), hashedPassword);
 
