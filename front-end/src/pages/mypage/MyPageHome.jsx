@@ -8,13 +8,13 @@ import Icon from '../../components/Icon';
 export default function MyPageHome() {
   const navigate = useNavigate();
   const myId = useUser();
-  const { data: member } = useSearchMember(5145126);
+  const { data: member } = useSearchMember(myId);
 
   const listButtontexts = [
     ['피드백 리포트', 'report'],
     ['팀 스페이스 관리', '/teamspace/list'],
     ['피드백 선호도 관리', '/feedback/favorite'],
-    ['나의 회고', '/feedback/self'],
+    ['나의 회고', 'self'],
   ];
 
   return (
@@ -42,9 +42,16 @@ export default function MyPageHome() {
         )}
       </div>
       <div className='rounded-400 mt-10 flex w-full justify-evenly bg-gray-700 py-5'>
-        <FeedbackCount isSent={true} count={20} />
+        <FeedbackCount
+          isSent={true}
+          count={20}
+          onClick={() => navigate('/feedback/sent')}
+        />
         <div className='h-full w-px bg-gray-500' />
-        <FeedbackCount count={40} />
+        <FeedbackCount
+          count={40}
+          onClick={() => navigate('/feedback/received')}
+        />
       </div>
       <ul className='mt-8 flex w-full flex-col'>
         {listButtontexts.map((item, index) => (
@@ -59,9 +66,9 @@ export default function MyPageHome() {
   );
 }
 
-const FeedbackCount = ({ count, isSent }) => {
+const FeedbackCount = ({ count, isSent, onClick }) => {
   return (
-    <button className='flex flex-col items-center'>
+    <button className='flex flex-col items-center' onClick={onClick}>
       <p className='header-1 mx-4 text-white'>{count}</p>
       <p className='caption-1 mx-4 text-gray-300'>
         {isSent ? '보낸 피드백' : '받은 피드백'}

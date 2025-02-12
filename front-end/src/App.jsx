@@ -42,8 +42,8 @@ export default function App() {
                 <Route path='self' element={<FeedbackSelf />} />
                 <Route path='complete' element={<FeedbackComplete />} />
                 <Route path='favorite' element={<FeedbackFavorite />} />
-                <Route path='received/:userId' element={<FeedbackReceived />} />
-                <Route path='sent/:userId' element={<FeedbackSent />} />
+                <Route path='received' element={<FeedbackReceived />} />
+                <Route path='sent' element={<FeedbackSent />} />
               </Route>
               <Route path='signin' element={<SignIn />} />
               <Route path='signup' element={<SignUp />} />
@@ -69,8 +69,9 @@ export default function App() {
               </Route>
               <Route path='mypage'>
                 <Route index element={<MyPageHome />} />
-                <Route path='self/:userId' element={<SelfFeedback />} />
+                <Route path='self' element={<SelfFeedback />} />
                 <Route path='report' element={<div></div>} />
+                <Route path='edit' element={<div></div>} />
               </Route>
             </Route>
           </Routes>
