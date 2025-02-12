@@ -20,7 +20,7 @@ export default function MyPageHome() {
 
   return (
     <div className='flex size-full flex-col'>
-      <NavBar2 canClose={true} onClickClose={() => navigate(-1)} />
+      <NavBar2 canClose={true} onClickClose={() => navigate('/main')} />
       <div className='mx-auto flex flex-col items-center'>
         {member && (
           <>

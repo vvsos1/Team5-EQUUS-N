@@ -81,7 +81,7 @@ export default function Accordion({
       {isMainPage ?
         <div className='flex gap-4 divide-gray-600'>
           {teamList.length > 0 && (
-            <button onClick={() => navigate('notification')}>
+            <button onClick={() => navigate('/main/notification')}>
               <Icon name={isAlarmRead ? 'bellOn' : 'bellOff'} />
             </button>
           )}
