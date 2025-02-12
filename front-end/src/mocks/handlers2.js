@@ -48,11 +48,6 @@ export const handlers2 = [
     return HttpResponse.json(schedules2);
   }),
 
-  // 일정 생성
-  http.post(`${BASE_URL}/api/team/:teamId/schedule/create`, () => {
-    return HttpResponse.json(createScheduleResponse);
-  }),
-
   // 일정 수정
   http.put(`${BASE_URL}/api/team/:teamId/schedule/:scheduleId`, () => {
     return HttpResponse.json(updateScheduleResponse);
@@ -110,9 +105,9 @@ export const handlers2 = [
   }),
 
   // 팀 수정
-  http.post(`${BASE_URL}/api/team/:teamId`, () => {
-    return HttpResponse.json(teamResponse);
-  }),
+  // http.post(`${BASE_URL}/api/team/:teamId`, () => {
+  //   return HttpResponse.json(teamResponse);
+  // }),
 
   // 팀 삭제
   http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {

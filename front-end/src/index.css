@@ -52,7 +52,7 @@ button {
   cursor: pointer;
 }
 
-button:active {
+.classic:active {
   opacity: 0.8;
 }
 
