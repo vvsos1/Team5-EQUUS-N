@@ -46,6 +46,7 @@ public class AuthService {
 
         validateEmail(memberDetails.getEmail());
         Member member = new Member(name, memberDetails.getEmail(), profileImage, feedbackPreferences);
+        memberRepository.save(member);
         String hashedPassword = passwordEncoder.encode(memberDetails.getPassword());
         MemberDetails savedMemberDetails = new MemberDetails(member.getId(), memberDetails.getEmail(), hashedPassword);
 
