@@ -14,3 +14,6 @@ spring:
 server:
   http.port: 80
   port: 443
+
+cors:
+  allowed-origins: "http:localhost"

@@ -48,7 +48,7 @@ class AuthInterceptorTest {
 
         HttpSession session = mock(HttpSession.class);
         when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(SessionConst.MEMBER_ID)).thenReturn(new MemberDetails(1L, "test@example.com", "pass1234"));
+        when(session.getAttribute(SessionConst.MEMBER_ID)).thenReturn(MemberDetails.createEmailUser(1L, "test@example.com", "pass1234"));
 
         // when
         boolean result = authInterceptor.preHandle(request, response, handler);

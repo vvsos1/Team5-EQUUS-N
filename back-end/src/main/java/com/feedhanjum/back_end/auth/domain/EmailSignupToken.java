@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.Random;
 
 @Getter
-public class SignupToken {
+public class EmailSignupToken {
     public static final int TOKEN_LENGTH = 4;
     public static final int EXPIRE_MINUTE = 5;
     private final String email;
@@ -16,7 +16,7 @@ public class SignupToken {
     private final LocalDateTime expireDate;
 
 
-    private SignupToken(String email, String code) {
+    private EmailSignupToken(String email, String code) {
         this.email = email;
         this.code = code;
         expireDate = LocalDateTime.now().plusMinutes(EXPIRE_MINUTE);
@@ -31,8 +31,8 @@ public class SignupToken {
         return token;
     }
 
-    public static SignupToken generateNewToken(String email) {
-        return new SignupToken(email, generateCode());
+    public static EmailSignupToken generateNewToken(String email) {
+        return new EmailSignupToken(email, generateCode());
     }
 
     /**

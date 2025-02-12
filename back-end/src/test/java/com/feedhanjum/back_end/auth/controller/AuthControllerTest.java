@@ -62,7 +62,7 @@ class AuthControllerTest {
     }
 
     @Nested
-    @DisplayName("POST /api/auth/signup 테스트")
+    @DisplayName("POST /api/auth/email/signup 테스트")
     class SignupTests {
 
         @Test
@@ -71,16 +71,16 @@ class AuthControllerTest {
             List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
             MemberSignupRequest request = new MemberSignupRequest("test@example.com", "abcd1234", "홍길동", null, feedbackPreferences);
 
-            MemberDetails entity = new MemberDetails(null, request.email(), request.password());
+            MemberDetails entity = MemberDetails.createEmailUser(null, request.email(), request.password());
             when(memberMapper.toEntity(any(MemberSignupRequest.class))).thenReturn(entity);
 
-            MemberDetails savedMember = new MemberDetails(1L, "test@example.com", "abcd1234");
-            when(authService.registerMember(entity, request.name(), null, feedbackPreferences)).thenReturn(savedMember);
+            MemberDetails savedMember = MemberDetails.createEmailUser(1L, "test@example.com", "abcd1234");
+            when(authService.registerEmail(entity, request.name(), null, feedbackPreferences)).thenReturn(savedMember);
 
             MemberSignupResponse response = new MemberSignupResponse(1L, "test@example.com", "회원가입이 완료되었습니다.");
             when(memberMapper.toResponse(savedMember)).thenReturn(response);
 
-            mockMvc.perform(post("/api/auth/signup")
+            mockMvc.perform(post("/api/auth/email/signup")
                             .session(withSignupVerification(request.email()))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
@@ -96,13 +96,13 @@ class AuthControllerTest {
             List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
             MemberSignupRequest request = new MemberSignupRequest("duplicate@example.com", "abcd1234", "홍길동", null, feedbackPreferences);
 
-            MemberDetails entity = new MemberDetails(null, request.email(), request.password());
+            MemberDetails entity = MemberDetails.createEmailUser(null, request.email(), request.password());
             when(memberMapper.toEntity(any(MemberSignupRequest.class))).thenReturn(entity);
 
             doThrow(new EmailAlreadyExistsException("이미 사용 중인 이메일입니다."))
-                    .when(authService).registerMember(entity, request.name(), null, feedbackPreferences);
+                    .when(authService).registerEmail(entity, request.name(), null, feedbackPreferences);
 
-            mockMvc.perform(post("/api/auth/signup")
+            mockMvc.perform(post("/api/auth/email/signup")
                             .session(withSignupVerification(request.email()))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
@@ -117,7 +117,7 @@ class AuthControllerTest {
             List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
             MemberSignupRequest request = new MemberSignupRequest("", "12", "", null, feedbackPreferences);
 
-            mockMvc.perform(post("/api/auth/signup")
+            mockMvc.perform(post("/api/auth/email/signup")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
@@ -125,7 +125,7 @@ class AuthControllerTest {
     }
 
     @Nested
-    @DisplayName("POST /api/auth/login 테스트")
+    @DisplayName("POST /api/auth/email/login 테스트")
     class LoginTests {
 
         @Test
@@ -133,18 +133,18 @@ class AuthControllerTest {
         void login_success() throws Exception {
             LoginRequest request = new LoginRequest("test@example.com", "abcd1234");
 
-            MemberDetails member = new MemberDetails(1L, "test@example.com", "hashedpassword");
-            when(authService.authenticate(request.email(), request.password())).thenReturn(member);
+            MemberDetails member = MemberDetails.createEmailUser(1L, "test@example.com", "hashedpassword");
+            when(authService.authenticateEmail(request.email(), request.password())).thenReturn(member);
 
             // LoginResponse response = new LoginResponse("로그인에 성공했습니다.", 1L, "test@example.com");
 
-            mockMvc.perform(post("/api/auth/login")
+            mockMvc.perform(post("/api/auth/email/login")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.message").value("로그인에 성공했습니다."))
-                    .andExpect(jsonPath("$.userId").value(1L))
-                    .andExpect(jsonPath("$.email").value("test@example.com"));
+                    .andExpect(jsonPath("$.email").value("test@example.com"))
+                    .andExpect(jsonPath("$.userId").value(1L));
         }
 
         @Test
@@ -152,10 +152,10 @@ class AuthControllerTest {
         void login_invalidCredentials() throws Exception {
             LoginRequest request = new LoginRequest("test@example.com", "wrongpassword");
 
-            when(authService.authenticate(request.email(), request.password()))
+            when(authService.authenticateEmail(request.email(), request.password()))
                     .thenThrow(new com.feedhanjum.back_end.auth.exception.InvalidCredentialsException("이메일 또는 비밀번호가 올바르지 않습니다."));
 
-            mockMvc.perform(post("/api/auth/login")
+            mockMvc.perform(post("/api/auth/email/login")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isUnauthorized())
@@ -168,7 +168,7 @@ class AuthControllerTest {
         void login_invalidInput() throws Exception {
             LoginRequest request = new LoginRequest("", "");
 
-            mockMvc.perform(post("/api/auth/login")
+            mockMvc.perform(post("/api/auth/email/login")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());

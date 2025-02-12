@@ -2,15 +2,17 @@ package com.feedhanjum.back_end.auth.controller;
 
 import com.feedhanjum.back_end.auth.controller.dto.*;
 import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
+import com.feedhanjum.back_end.auth.domain.EmailSignupToken;
+import com.feedhanjum.back_end.auth.domain.GoogleSignupToken;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.domain.PasswordResetToken;
-import com.feedhanjum.back_end.auth.domain.SignupToken;
 import com.feedhanjum.back_end.auth.exception.PasswordResetTokenNotValidException;
 import com.feedhanjum.back_end.auth.exception.PasswordResetTokenVerifyRequiredException;
 import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
 import com.feedhanjum.back_end.auth.exception.SignupTokenVerifyRequiredException;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.auth.service.AuthService;
+import com.feedhanjum.back_end.auth.service.dto.GoogleLoginResultDto;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,17 +23,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -55,7 +56,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "이메일이 검증되지 않았을 경우", content = @Content),
             @ApiResponse(responseCode = "409", description = "중복된 이메일이 있을 경우", content = @Content)
     })
-    @PostMapping("/signup")
+    @PostMapping("/email/signup")
     public ResponseEntity<MemberSignupResponse> signup(
             HttpSession session,
             @Valid @RequestBody MemberSignupRequest request) {
@@ -67,7 +68,7 @@ public class AuthController {
         String name = request.name();
         ProfileImage profileImage = request.profileImage();
 
-        MemberDetails savedMember = authService.registerMember(member, name, profileImage, request.feedbackPreference());
+        MemberDetails savedMember = authService.registerEmail(member, name, profileImage, request.feedbackPreference());
 
         session.removeAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL);
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
@@ -84,11 +85,11 @@ public class AuthController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인을 처리합니다. 세션 ID를 쿠키로 등록합니다."),
-            @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호가 올바르지 않습니다.")
+            @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호가 올바르지 않습니다.", content = @Content)
     })
-    @PostMapping("/login")
+    @PostMapping("/email/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
-        MemberDetails member = authService.authenticate(request.email(), request.password());
+        MemberDetails member = authService.authenticateEmail(request.email(), request.password());
 
         session.setAttribute(SessionConst.MEMBER_ID, member.getId());
         session.setMaxInactiveInterval(Integer.MAX_VALUE);
@@ -126,25 +127,25 @@ public class AuthController {
     })
     @PostMapping(value = "/send-signup-verification-email", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SignupEmailSendResponse> sendSignupVerificationEmail(HttpSession session, @Valid @RequestBody SignupEmailSendRequest request) {
-        SignupToken signupToken = authService.sendSignupVerificationEmail(request.email());
-        session.setAttribute(SessionConst.SIGNUP_TOKEN, signupToken);
-        SignupEmailSendResponse signupEmailSendResponse = new SignupEmailSendResponse(signupToken.getExpireDate());
+        EmailSignupToken emailSignupToken = authService.sendSignupVerificationEmail(request.email());
+        session.setAttribute(SessionConst.SIGNUP_TOKEN, emailSignupToken);
+        SignupEmailSendResponse signupEmailSendResponse = new SignupEmailSendResponse(emailSignupToken.getExpireDate());
         return ResponseEntity.ok(signupEmailSendResponse);
     }
 
     @Operation(summary = "회원가입 이메일 토큰 인증")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "이메일 토큰 인증 성공. 세션에 해당 내역 저장"),
-            @ApiResponse(responseCode = "400", description = "이메일 토큰 인증 실패")
+            @ApiResponse(responseCode = "400", description = "이메일 토큰 인증 실패", content = @Content)
     })
     @PostMapping("/verify-signup-email-token")
     public ResponseEntity<Void> verifySignupEmailToken(HttpSession session, @Valid @RequestBody SignupEmailVerifyRequest request) {
         Object token = session.getAttribute(SessionConst.SIGNUP_TOKEN);
-        if (!(token instanceof SignupToken signupToken)) {
+        if (!(token instanceof EmailSignupToken emailSignupToken)) {
             throw new SignupTokenNotValidException();
         }
-        authService.validateSignupToken(signupToken, request.email(), request.code());
-        session.setAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL, signupToken.getEmail());
+        authService.validateSignupToken(emailSignupToken, request.email(), request.code());
+        session.setAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL, emailSignupToken.getEmail());
         session.removeAttribute(SessionConst.SIGNUP_TOKEN);
         return ResponseEntity.noContent().build();
     }
@@ -174,7 +175,7 @@ public class AuthController {
     @Operation(summary = "비밀번호 초기화 이메일 토큰 인증")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "비밀번호 초기화 토큰 인증 성공. 세션에 해당 내역 저장"),
-            @ApiResponse(responseCode = "400", description = "비밀번호 초기화 토큰 인증 실패")
+            @ApiResponse(responseCode = "400", description = "비밀번호 초기화 토큰 인증 실패", content = @Content)
     })
     @PostMapping("/verify-password-reset-token")
     public ResponseEntity<Void> verifyPasswordResetToken(HttpSession session, @Valid @RequestBody PasswordResetEmailVerifyRequest request) {
@@ -192,7 +193,7 @@ public class AuthController {
     @Operation(summary = "비밀번호 초기화", description = "비밀번호를 초기화한다. 미리 비밀번호 초기화 이메일 토큰 인증이 완료되었어야 한다.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "비밀번호 초기화 성공"),
-            @ApiResponse(responseCode = "401", description = "비밀번호 검증 토큰 인증 필요")
+            @ApiResponse(responseCode = "401", description = "비밀번호 검증 토큰 인증 필요", content = @Content)
     })
     @PostMapping("/reset-password")
     public ResponseEntity<Void> resetPassword(HttpSession session,
@@ -206,5 +207,65 @@ public class AuthController {
         session.removeAttribute(SessionConst.PASSWORD_RESET_TOKEN_VERIFIED_EMAIL);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "구글 로그인 페이지 url 조회", description = "사용자가 구글 로그인을 하게 될 페이지 주소를 조회한다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/google/login-url")
+    public ResponseEntity<GoogleLoginUrlResponse> getGoogleLoginUrl() {
+        return ResponseEntity.ok(new GoogleLoginUrlResponse(authService.getGoogleLoginUrl()));
+    }
+
+    @Operation(summary = "구글 로그인 or 구글 회원가입 토큰 응답", description = "구글 회원가입된 상태라면 로그인, 아니라면 회원가입 시 필요한 토큰을 발급합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 or 회원가입 토큰 발급 성공"),
+            @ApiResponse(responseCode = "401", description = "구글 로그인 실패", content = @Content)
+    })
+    @PostMapping("/google/login")
+    public ResponseEntity<GoogleLoginResponse> loginWithGoogle(HttpSession session, @Valid @RequestBody GoogleLoginRequest request) {
+        GoogleLoginResultDto loginResult = authService.authenticateGoogle(request.code());
+
+        if (loginResult.isAuthenticated()) {
+            MemberDetails member = loginResult.memberDetails();
+            LoginResponse response = new LoginResponse("로그인에 성공했습니다.", member.getId(), member.getEmail());
+            session.setAttribute(SessionConst.MEMBER_ID, member.getId());
+            session.setMaxInactiveInterval(Integer.MAX_VALUE);
+            log.info("member {} directly login google account", member.getId());
+            return ResponseEntity.ok(GoogleLoginResponse.authenticated(response));
+        }
+
+        GoogleSignupToken signupToken = loginResult.googleSignupToken();
+        session.setAttribute(SessionConst.GOOGLE_SIGNUP_TOKEN, signupToken);
+        log.info("generate google signup token with email {} and code: {}", signupToken.getEmail(), signupToken.getCode());
+        return ResponseEntity.ok(GoogleLoginResponse.signupRequired(signupToken));
+    }
+
+
+    @Operation(summary = "구글 회원가입", description = "구글 계정으로 회원가입 후 로그인합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "구글로 회원가입 성공 및 로그인 성공"),
+            @ApiResponse(responseCode = "400", description = "구글 회원가입 토큰 인증 실패", content = @Content),
+            @ApiResponse(responseCode = "401", description = "구글 회원가입 실패", content = @Content)
+    })
+    @PostMapping("/google/signup")
+    public ResponseEntity<MemberSignupResponse> signupWithGoogle(HttpSession session, @Valid @RequestBody GoogleSignupRequest request) {
+        Object token = session.getAttribute(SessionConst.GOOGLE_SIGNUP_TOKEN);
+        if (!(token instanceof GoogleSignupToken googleSignupToken)) {
+            throw new SignupTokenNotValidException();
+        }
+        googleSignupToken.validateToken(request.token());
+
+        MemberDetails member = authService.registerGoogle(googleSignupToken, request.profileImage(), request.feedbackPreference());
+
+        MemberSignupResponse response = memberMapper.toResponse(member);
+
+        session.setAttribute(SessionConst.MEMBER_ID, member.getId());
+        session.setMaxInactiveInterval(Integer.MAX_VALUE);
+        log.info("member {} signup and login with google account", member.getId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
 
 }
