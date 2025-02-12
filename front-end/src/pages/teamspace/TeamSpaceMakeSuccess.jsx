@@ -25,7 +25,6 @@ export default function TeamSpaceMakeSuccess() {
           text='초대링크 공유하기 🔗'
           isOutlined={true}
           onClick={() => {
-            console.log(location.state.teamId);
             if (location.state.teamId) {
               inviteTeam(location.state.teamId, {
                 onSuccess: (data) => {

@@ -21,14 +21,14 @@ const BASE_URL = 'https://api.feedhanjum.com';
 
 export const handlers2 = [
   // 인증
-  http.get(`${BASE_URL}/api/auth/send-signup-verification-email`, () => {
-    return HttpResponse.json(verifySignupResponse);
-  }),
+  // http.get(`${BASE_URL}/api/auth/send-signup-verification-email`, () => {
+  //   return HttpResponse.json(verifySignupResponse);
+  // }),
 
   // 회원가입
-  http.post(`${BASE_URL}/api/auth/signup`, () => {
-    return HttpResponse.json(signupResponse);
-  }),
+  // http.post(`${BASE_URL}/api/auth/signup`, () => {
+  //   return HttpResponse.json(signupResponse);
+  // }),
 
   // 팀 일정 조회
   http.get(`${BASE_URL}/api/team/:teamId/schedules`, () => {

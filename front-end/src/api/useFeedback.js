@@ -73,8 +73,8 @@ export const useFeedbackLikeCancel = (userId, feedbackId) => {
 
 export const useFeedbackFavorite = () => {
   return useQuery({
-    queryKey: ['feedback-favorite'],
-    queryFn: () => api.get({ url: '/api/feedbacks/favorite' }),
+    queryKey: ['feedback-preference'],
+    queryFn: () => api.get({ url: '/api/feedback/preference' }),
   });
 };
 

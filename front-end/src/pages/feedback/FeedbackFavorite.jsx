@@ -6,10 +6,12 @@ import FooterWrapper from '../../components/wrappers/FooterWrapper';
 import LargeButton from '../../components/buttons/LargeButton';
 import { useSignUp } from '../../api/useAuth';
 import { showToast } from '../../utility/handleToast';
+import { useUser } from '../../useUser';
 
 export default function FeedbackFavorite() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { setUserId } = useUser();
   const process = new URLSearchParams(location.search).get('process');
 
   const [selectedStyle, setSelectedStyle] = useState([]);
@@ -36,9 +38,12 @@ export default function FeedbackFavorite() {
           feedbackPreference: [...selectedStyle, ...selectedContent],
         },
         {
-          onSuccess: () => {
+          onSuccess: (data) => {
             if (process === 'signup') {
-              navigate('/main');
+              const { message, id } = data;
+              setUserId(id);
+              showToast(message);
+              navigate('/teamspace/make/first');
             } else {
               navigate('/mypage');
               showToast('수정 완료');
@@ -62,7 +67,7 @@ export default function FeedbackFavorite() {
         <div className='mt-10 flex flex-col'>
           <h2 className='subtitle-1 text-gray-0 mb-3'>스타일</h2>
           <div className='flex flex-wrap gap-2'>
-            {data[0]['스타일'].map((keyword, index) => (
+            {data['스타일'].map((keyword, index) => (
               <KeywordButton
                 key={index}
                 isActive={selectedStyle.includes(keyword)}
@@ -75,7 +80,7 @@ export default function FeedbackFavorite() {
           <div className='h-8' />
           <h2 className='subtitle-1 text-gray-0 mb-3'>내용</h2>
           <div className='flex flex-wrap gap-2'>
-            {data[1]['내용'].map((keyword, index) => (
+            {data['내용'].map((keyword, index) => (
               <KeywordButton
                 key={index}
                 isActive={selectedContent.includes(keyword)}
