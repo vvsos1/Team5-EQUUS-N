@@ -69,7 +69,6 @@ export default function Certification({ email = '', certState, setCertState }) {
         onError: () => {
           showToast('인증번호를 틀렸어요');
           setCertCode('');
-          setCertState(CertState.BEFORE_SEND_CODE);
         },
       },
     );
