@@ -200,8 +200,14 @@ public class ScheduleService {
 
     @Transactional
     public void addNewScheduleMembership(Long memberId, Long teamId){
+        Team team = teamRepository.findById(teamId)
+            .orElseThrow(() -> new EntityNotFoundException("Team with ID " + teamId + " does not exist"));
         List<Schedule> relatedSchedule = scheduleRepository.findAllByTeam_IdAndEndTimeGreaterThanEqual(teamId, LocalDateTime.now(clock));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자가 존재하지 않습니다."));
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new EntityNotFoundException("Member with ID " + memberId + " does not exist"));
+        if (relatedSchedule.isEmpty()) {
+            return;  // Early return if no schedules need updating
+        }
         List<ScheduleMember> scheduleMembers = relatedSchedule.stream()
                 .map(schedule -> new ScheduleMember(schedule, member))
                 .toList();
@@ -210,6 +216,12 @@ public class ScheduleService {
 
     @Transactional
     public void removeRemainScheduleMembership(Long memberId, Long teamId){
+        if (!teamRepository.existsById(teamId)) {
+            throw new EntityNotFoundException("Team with ID " + teamId + " does not exist");
+        }
+        if (!memberRepository.existsById(memberId)) {
+            throw new EntityNotFoundException("Member with ID " + memberId + " does not exist");
+        }
         scheduleMemberRepository.deleteScheduleMembersByMemberIdAndTeamIdAfterNow(memberId, teamId, LocalDateTime.now(clock));
     }
 
