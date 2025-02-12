@@ -21,7 +21,7 @@ export default function TeamSpaceList() {
         <NavBar2
           canPop={true}
           title='팀 스페이스 관리'
-          onClickClose={() => {
+          onClickPop={() => {
             navigate(-1);
           }}
         />

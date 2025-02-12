@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import NavBar2 from '../../components/NavBar2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
@@ -6,14 +6,18 @@ import { DropdownSmall } from '../../components/Dropdown';
 import Icon from '../../components/Icon';
 import FeedBack, { FeedBackType } from '../feedback/components/FeedBack';
 import { useGetSelfFeedback } from '../../api/useMyPage';
+import { useUser } from '../../useUser';
 
 export default function SelfFeedback() {
-  const { userId } = useParams();
+  const navigate = useNavigate();
+
   const [feedbacks, setFeedbacks] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('전체 보기');
   const [sortBy, setSortBy] = useState('createdAt:desc');
   const [loadedPage, setLoadedPage] = useState(0);
   const scrollRef = useRef(null);
+
+  const { userId } = useUser();
 
   const {
     data: retrospect,
@@ -63,9 +67,17 @@ export default function SelfFeedback() {
   console.log(feedbacks);
 
   return (
-    <div className='flex h-full flex-col overflow-y-auto' ref={scrollRef}>
+    <div
+      className='scrollbar-hidden flex h-full flex-col overflow-x-hidden overflow-y-auto'
+      ref={scrollRef}
+    >
       <StickyWrapper>
-        <NavBar2 canPop={true} canClose={false} title='받은 피드백' />
+        <NavBar2
+          canPop={true}
+          canClose={false}
+          title='나의 회고'
+          onClickPop={() => navigate(-1)}
+        />
         <div className='flex justify-between gap-4 border-b border-gray-700 py-5'>
           <DropdownSmall
             triggerText={selectedTeam}
