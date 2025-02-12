@@ -275,10 +275,12 @@ export const members2 = [
   },
 ];
 
-export const teamResponse = {
-  teamResponse: teams2[0],
-  members: members2,
-};
+export const teamResponse = [
+  {
+    teamResponse: teams2[0],
+    members: members2,
+  },
+];
 
 export const feedbackReceivedResponse = {
   page: 1073741824,

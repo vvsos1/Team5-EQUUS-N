@@ -4,6 +4,7 @@ import Icon from '../../../components/Icon';
 import MediumButton from '../../../components/buttons/MediumButton';
 import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
+import { useUser } from '../../../useUser';
 
 /**
  *
@@ -19,6 +20,7 @@ export default function ScheduleCard({
   onClickEdit,
   isFinished = false,
 }) {
+  const { userId } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const contentRef = useRef(null);
   const [height, setHeight] = useState(0);
@@ -31,7 +33,8 @@ export default function ScheduleCard({
   }, [isOpen]);
 
   // 나의 역할 찾기
-  const myRole = todos.find((todo) => todo.memberId === 1)?.task;
+  const myRole = todos.find((todo) => todo.memberId == userId)?.todoList;
+  const teamRole = todos.filter((todo) => todo.memberId != userId);
   return (
     <div
       className={classNames(
@@ -54,7 +57,7 @@ export default function ScheduleCard({
         </div>
         {/* 일정 종료 전에만 수정 버튼 표시 */}
         {!isFinished && (
-          <button onClick={onClickEdit}>
+          <button onClick={() => onClickEdit()}>
             <Icon
               name='edit'
               className={classNames('h-max w-max', schedule.teamName && 'pt-1')}
@@ -85,25 +88,28 @@ export default function ScheduleCard({
         className={`flex flex-col gap-6 overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'mb-0' : 'mb-[-24px]'}`}
         style={contentRef.current ? { height: `${height}px` } : { height: 0 }}
       >
-        {todos.map((todo, index) => {
-          //TODO: 내 멤버 id와 비교
-          if (todo.memberId === 1) return null;
-          return (
-            <div key={index} className='flex flex-col gap-3'>
-              <Tag type={TagType.MEMBER_ROLE}>{todo.memberName}</Tag>
-              {todo.todoList.length > 0 ?
-                <div className='flex flex-col gap-1'>
-                  {todo.todoList.map((task, index) => (
-                    <Role key={index}>{task}</Role>
-                  ))}
-                </div>
-              : <p className='body-1 text-gray-500'>
-                  아직 담당 업무를 입력하지 않았어요
-                </p>
-              }
-            </div>
-          );
-        })}
+        {teamRole.length > 0 ?
+          teamRole.map((todo, index) => {
+            return (
+              <div key={index} className='flex flex-col gap-3'>
+                <Tag type={TagType.MEMBER_ROLE}>{todo.memberName}</Tag>
+                {todo.todoList.length > 0 ?
+                  <div className='flex flex-col gap-1'>
+                    {todo.todoList.map((task, index) => (
+                      <Role key={index}>{task}</Role>
+                    ))}
+                  </div>
+                : <p className='body-1 text-gray-500'>
+                    아직 담당 업무를 입력하지 않았어요
+                  </p>
+                }
+              </div>
+            );
+          })
+        : <div className='body-1 text-center text-gray-500'>
+            팀원들이 아직 입력하지 않았어요
+          </div>
+        }
       </div>
       {/* 팀원 역할 보기 토글 버튼 */}
       <MediumButton
