@@ -72,7 +72,7 @@ public class AuthController {
         session.removeAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL);
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
 
-        session.setAttribute(SessionConst.MEMBER_ID, member.getId());
+        session.setAttribute(SessionConst.MEMBER_ID, savedMember.getId());
         session.setMaxInactiveInterval(Integer.MAX_VALUE);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
