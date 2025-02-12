@@ -24,8 +24,6 @@ export default function Accordion({
   canClose = true,
   onClickLastButton,
 }) {
-  const navigate = useNavigate();
-
   const detailsRef = useRef(null);
 
   const navigate = useNavigate();
