@@ -60,3 +60,13 @@ export const useFeedbackSelf = () => {
     },
   });
 };
+
+export const useRegularFeedbackSend = () => {
+  return useMutation({
+    mutationFn: (data) =>
+      api.post({
+        url: '/api/feedbacks/regular',
+        body: data,
+      }),
+  });
+};

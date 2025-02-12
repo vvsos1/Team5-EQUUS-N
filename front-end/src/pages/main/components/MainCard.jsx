@@ -5,7 +5,7 @@ import MediumButton from '../../../components/buttons/MediumButton';
 import { useEffect, useRef, useState } from 'react';
 
 /**
- * 메인 카드 컴포넌트
+ * 메인 카드 컴포넌트s
  * @param {object} props
  * @param {boolean} props.isInTeam - 팀에 속해있는지 여부
  * @param {object} props.recentSchedule - 최신 스케줄
@@ -37,7 +37,7 @@ export default function MainCard({
   if (!isInTeam) {
     // 팀에 속하지 않은 경우 무조건 팀 만들어야 함
     return (
-      <MainCardFrame>
+      <MainCardFrame onClickChevronButton={onClickChevronButton}>
         <p className='body-1 mt-11 mb-10 text-center text-gray-300'>
           팀 스페이스가 비어있어요
         </p>
@@ -53,7 +53,7 @@ export default function MainCard({
   // 마지막 일정이 끝난지 24시간이 넘은 경우 -> response 자체가 없음
   if (!scheduleDifferece) {
     return (
-      <MainCardFrame>
+      <MainCardFrame onClickChevronButton={onClickChevronButton}>
         <p className='body-1 mt-11 mb-10 text-center text-gray-300'>
           다음 일정이 비어있어요
         </p>
@@ -62,9 +62,6 @@ export default function MainCard({
           isOutlined={false}
           onClick={onClickMainButton}
         />
-        <button onClick={onClickChevronButton}>
-          <Icon name='chevronRight' className='absolute top-4 right-4' />
-        </button>
       </MainCardFrame>
     );
   }
@@ -72,7 +69,7 @@ export default function MainCard({
   // 마지막 일정이 끝난 후 24시간이 안된 경우: response 있음 && timeDiff가 0보다 작거나 같음
   if (scheduleDifferece <= 0) {
     return (
-      <MainCardFrame>
+      <MainCardFrame onClickChevronButton={onClickChevronButton}>
         <div className='flex flex-col items-center justify-center'>
           <p className='body-1 mt-6 mb-1 text-gray-300'>일정 종료</p>
           <h1 className='header-1 mb-7 text-gray-400'>{recentSchedule.name}</h1>
@@ -94,7 +91,7 @@ export default function MainCard({
   } else {
     // 다음 일정
     return (
-      <MainCardFrame>
+      <MainCardFrame onClickChevronButton={onClickChevronButton}>
         {renderTitle(recentSchedule, scheduleDifferece)}
         <hr className='my-6 w-full border-gray-500' />
         {renderMyRole(recentSchedule, onClickMainButton)}
@@ -118,10 +115,13 @@ export default function MainCard({
   }
 }
 
-function MainCardFrame({ children }) {
+function MainCardFrame({ children, onClickChevronButton }) {
   return (
     <div className={`rounded-400 relative mx-5 flex flex-col bg-gray-800 p-4`}>
       {children}
+      <button onClick={onClickChevronButton}>
+        <Icon name='chevronRight' className='absolute top-4 right-4' />
+      </button>
     </div>
   );
 }

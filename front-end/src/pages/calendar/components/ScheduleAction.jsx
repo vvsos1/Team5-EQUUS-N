@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import Icon from '../../../components/Icon';
 import { useEffect, useRef, useState } from 'react';
-import { changeDayName, timePickerToDate } from '../../../utility/time';
+import { changeDayName, timePickerToDate, toKST } from '../../../utility/time';
 import CustomInput from '../../../components/CustomInput';
 import LargeButton from '../../../components/buttons/LargeButton';
 import StickyWrapper from '../../../components/wrappers/StickyWrapper';
@@ -14,9 +14,13 @@ import ScheduleDeleteModal from './ScheduleDeleteModal';
 import CustomDatePicker, {
   DatePickerButton,
 } from '../../../components/CustomDatePicker';
-import { useUser } from '../../../useUser';
-import { usePostSchedule } from '../../../api/useCalendar';
+import {
+  useDeleteSchedule,
+  useEditSchedule,
+  usePostSchedule,
+} from '../../../api/useCalendar';
 import { useTeam } from '../../../useTeam';
+import useScheduleAction from '../hooks/useScheduleAction';
 
 export const ScheduleActionType = Object.freeze({
   ADD: 'add',
@@ -35,55 +39,20 @@ export default function ScheduleAction({
   type,
   isOpen,
   onClose,
-  onSubmit,
+  selectedScheduleFromParent,
   selectedDateFromParent,
-  selectedSchedule,
+  actionInfo,
 }) {
-  const { userId } = useUser();
   const { selectedTeam } = useTeam();
-  // 달력 선택 날짜를 기존 날짜로 초기화
-  const [selectedDate, setSelectedDate] = useState(selectedDateFromParent);
-  const [scheduleName, setScheduleName] = useState(
-    selectedSchedule?.scheduleName ?? '',
-  );
-  const [startTime, setStartTime] = useState(
-    selectedSchedule?.scheduleInfo?.startTime.split('T')[1].slice(0, 5) ??
-      '12:00',
-  );
-  const [endTime, setEndTime] = useState(
-    selectedSchedule?.scheduleInfo?.endTime.split('T')[1].slice(0, 5) ??
-      '12:00',
-  );
-  const [todos, setTodo] = useState(
-    selectedSchedule?.todos?.filter((todo) => {
-      return todo.memberId === userId;
-    }).task ?? [],
-  );
   const scrollRef = useRef(null);
+  const { selectedDate, setSelectedDate, clearData } = useScheduleAction(
+    selectedDateFromParent,
+    selectedScheduleFromParent,
+  );
 
-  const { mutate: postSchedule, isSuccess } = usePostSchedule(selectedTeam);
-
-  useEffect(() => {
-    setSelectedDate(selectedDateFromParent);
-
-    setScheduleName(selectedSchedule?.scheduleName ?? '');
-    setStartTime(
-      selectedSchedule?.startTime.split('T')[1].slice(0, 5) ?? '12:00',
-    );
-    setEndTime(selectedSchedule?.endTime.split('T')[1].slice(0, 5) ?? '12:00');
-    const newTodos =
-      selectedSchedule?.todos?.find((todo) => {
-        return todo.memberId === 1;
-      })?.task ?? [];
-    setTodo(newTodos);
-  }, [selectedDateFromParent, selectedSchedule]);
-
-  function clearData() {
-    setScheduleName('');
-    setStartTime('12:00');
-    setEndTime('12:00');
-    setTodo([]);
-  }
+  const { mutate: postSchedule } = usePostSchedule(selectedTeam);
+  const { mutate: editSchedule } = useEditSchedule(selectedTeam);
+  const { mutate: deleteSchedule } = useDeleteSchedule(selectedTeam);
 
   return (
     <div
@@ -99,14 +68,35 @@ export default function ScheduleAction({
         </h1>
         {type === ScheduleActionType.EDIT && (
           <button
-            onClick={() => showModal(<ScheduleDeleteModal onClose={onClose} />)}
+            onClick={() =>
+              showModal(
+                <ScheduleDeleteModal
+                  deleteSchedule={() => {
+                    deleteSchedule(
+                      selectedScheduleFromParent.scheduleId ?? -1,
+                      {
+                        onSuccess: () => {
+                          showToast('일정을 삭제했습니다');
+                          hideModal();
+                          onClose();
+                        },
+                      },
+                    );
+                  }}
+                  onClose={onClose}
+                />,
+              )
+            }
           >
             <Icon name='remove' className='absolute top-5 left-0 text-white' />
           </button>
         )}
         <button
           onClick={() => {
-            clearData();
+            if (type !== ScheduleActionType.EDIT) {
+              console.log('CLEAR');
+              clearData();
+            }
             onClose();
           }}
         >
@@ -139,23 +129,27 @@ export default function ScheduleAction({
 
       <CustomInput
         label='일정 이름'
-        content={scheduleName}
-        setContent={setScheduleName}
+        content={actionInfo?.scheduleName ?? ''}
+        setContent={actionInfo?.setScheduleName ?? ''}
         isOutlined={false}
         bgColor='gray-700'
       />
       <div className='h-11 shrink-0' />
 
       <TimeSelector
-        startTime={startTime}
-        setStartTime={setStartTime}
-        endTime={endTime}
-        setEndTime={setEndTime}
+        startTime={actionInfo?.startTime ?? new Date()}
+        setStartTime={actionInfo?.setStartTime}
+        endTime={actionInfo?.endTime ?? new Date()}
+        setEndTime={actionInfo?.setEndTime}
       />
 
       <div className='h-11 shrink-0' />
 
-      <Todo todos={todos} setTodo={setTodo} scrollRef={scrollRef} />
+      <Todo
+        todos={actionInfo?.todos ?? []}
+        setTodo={actionInfo?.setTodo}
+        scrollRef={scrollRef}
+      />
 
       <div className='h-11 shrink-0' />
       <div className='flex-1' />
@@ -167,24 +161,43 @@ export default function ScheduleAction({
           isOutlined={false}
           text={type === ScheduleActionType.ADD ? '추가 완료' : '수정 완료'}
           onClick={() => {
-            const startDate = timePickerToDate(
-              selectedDateFromParent,
-              startTime,
-            );
-            const endDate = timePickerToDate(selectedDateFromParent, endTime);
-            const newTodos = todos.filter((todo) => !isEmpty(todo));
-            setTodo(newTodos);
-            if (checkNewSchedule(scheduleName, startDate, endDate)) {
-              type === ScheduleActionType.ADD &&
-                postSchedule({
-                  name: scheduleName,
-                  startTime: startDate.toISOString(),
-                  endTime: endDate.toISOString(),
-                  todos: todos,
-                });
-              showToast('일정이 추가되었어요');
-              clearData();
-              onSubmit(true); // 추가 성공여부 파라미터로 받음
+            const newTodos = actionInfo.todos.filter((todo) => !isEmpty(todo));
+            actionInfo.setTodo(newTodos);
+            if (
+              checkNewSchedule(
+                actionInfo.scheduleName,
+                actionInfo.startTime,
+                actionInfo.endTime,
+              )
+            ) {
+              const sendingData = {
+                name: actionInfo.scheduleName,
+                startTime: toKST(actionInfo.startTime).toISOString(),
+                endTime: toKST(actionInfo.endTime).toISOString(),
+                todos: actionInfo.todos,
+              };
+              type === ScheduleActionType.ADD ?
+                postSchedule(sendingData, {
+                  onSuccess: () => {
+                    console.log('성공 테스트2');
+                    onClose();
+                    showToast('일정이 추가되었어요');
+                    clearData();
+                  },
+                })
+              : editSchedule(
+                  {
+                    scheduleId: selectedScheduleFromParent.scheduleId ?? -1,
+                    data: sendingData,
+                  },
+                  {
+                    onSuccess: () => {
+                      onClose();
+                      showToast('일정이 수정되었어요');
+                      clearData();
+                    },
+                  },
+                );
             }
           }}
         />

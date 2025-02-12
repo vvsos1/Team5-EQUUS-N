@@ -5,6 +5,9 @@ export default function useSchedule(teamId, selectedDate) {
   const [allSchedules, setAllSchedules] = useState([]);
   const [scheduleOnDate, setScheduleOnDate] = useState(null);
   const [scheduleSet, setScheduleSet] = useState(new Set());
+  const [selectedSchedule, setSelectedSchedule] = useState(
+    scheduleOnDate ? scheduleOnDate[0] : null,
+  );
 
   // 해당 날짜에 있는 스케줄 필터링
   useEffect(() => {
@@ -41,5 +44,7 @@ export default function useSchedule(teamId, selectedDate) {
     setAllSchedules,
     scheduleOnDate,
     scheduleSet,
+    selectedSchedule,
+    setSelectedSchedule,
   };
 }

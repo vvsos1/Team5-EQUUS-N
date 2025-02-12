@@ -4,6 +4,7 @@ package com.feedhanjum.back_end.feedback.service;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
+import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
@@ -88,5 +89,17 @@ public class FeedbackQueryService {
     public List<RegularFeedbackRequestForApiResponse> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
         List<RegularFeedbackRequest> requests = regularFeedbackRequestQueryRepository.getRegularFeedbackRequests(receiverId, scheduleId);
         return requests.stream().map(RegularFeedbackRequestForApiResponse::from).toList();
+    }
+
+
+    /**
+     * @throws EntityNotFoundException when memberId does not exist
+     */
+    @Transactional(readOnly = true)
+    public FeedbackReport getFeedbackReport(Long memberId) {
+        memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("memberId에 해당하는 Member가 없습니다."));
+        List<Feedback> receivedFeedback = feedbackQueryRepository.findReceivedFeedbacks(memberId);
+        return FeedbackReport.fromFeedbacks(receivedFeedback);
     }
 }

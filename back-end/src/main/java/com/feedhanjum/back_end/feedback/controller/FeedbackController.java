@@ -3,14 +3,18 @@ package com.feedhanjum.back_end.feedback.controller;
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.controller.dto.request.*;
+import com.feedhanjum.back_end.feedback.controller.dto.response.FeedbackReportDto;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
+import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
 import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
 import com.feedhanjum.back_end.feedback.service.FeedbackService;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
+import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,8 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -131,7 +134,7 @@ public class FeedbackController {
             @ApiResponse(responseCode = "204", description = "건너뛰기 성공", useReturnTypeSchema = true)
     })
     @DeleteMapping("/feedbacks/regular/request")
-    public ResponseEntity<Void> getRegularFeedbackRequests(@Login Long receiverId,
+    public ResponseEntity<Void> skipRegularFeedbackRequest(@Login Long receiverId,
                                                            @ParameterObject @Valid RegularFeedbackRequestQueryRequest request) {
         feedbackService.skipRegularFeedback(request.scheduleId(), receiverId);
         return ResponseEntity.noContent().build();
@@ -156,7 +159,7 @@ public class FeedbackController {
     @Operation(summary = "받은 피드백 조회하기", description = "받은 피드백을 조회힙니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "보낸 피드백 조회 성공", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우",content = @Content)
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우", content = @Content)
     })
     @GetMapping("/feedbacks/receiver/{receiverId}")
     public ResponseEntity<Paged<ReceivedFeedbackDto>> getReceivedFeedbacks(@Login Long loginId,
@@ -169,4 +172,38 @@ public class FeedbackController {
         return ResponseEntity.ok(Paged.from(receivedFeedbacks));
     }
 
+    @Operation(summary = "피드백 선호도 선택지 조회", description = "사용자에게 피드백 선호도 선택지를 제공하기 위한 API")
+    @ApiResponse(responseCode = "200", description = "선택 가능한 피드백 선호 정보를 반환한다.")
+    @GetMapping("/feedback/preference")
+    public ResponseEntity<Map<String, List<String>>> getSelectableFeedbackPreference() {
+        Map<String, List<String>> feedbackPreferenceMap = new HashMap<>();
+        for (FeedbackPreference feedbackPreference : FeedbackPreference.values()) {
+            List<String> descriptions = feedbackPreferenceMap.computeIfAbsent(feedbackPreference.getType(), key -> new ArrayList<>());
+            descriptions.add(feedbackPreference.getDescription());
+        }
+        return ResponseEntity.ok(feedbackPreferenceMap);
+    }
+
+    @Operation(summary = "객관식 피드백 선택지 조회", description = "사용자에게 객관식 피드백 선택지를 제공하기 위한 API")
+    @ApiResponse(responseCode = "200", description = "선택 가능한 객관식 피드백 정보를 반환한다.")
+    @GetMapping("/feedback/objective")
+    public ResponseEntity<Map<String, Map<String, List<String>>>> getSelectableObjectFeedbacks() {
+        Map<String, Map<String, List<String>>> objectiveFeedbacksMap = new HashMap<>();
+        for (ObjectiveFeedback objectiveFeedback : ObjectiveFeedback.values()) {
+            Map<String, List<String>> objectiveFeedbackFeelingMap = objectiveFeedbacksMap.computeIfAbsent(objectiveFeedback.getFeeling().getDescription(), key -> new HashMap<>());
+            List<String> objectiveFeedbackDescriptions = objectiveFeedbackFeelingMap.computeIfAbsent(objectiveFeedback.getCategory().getDescription(), key -> new ArrayList<>());
+            objectiveFeedbackDescriptions.add(objectiveFeedback.getDescription());
+        }
+        return ResponseEntity.ok(objectiveFeedbacksMap);
+    }
+
+    @Operation(summary = "피드백 리포트 조회", description = "로그인 유저의 피드백 리포트를 조회힙니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "피드백 리포트 조회 성공", useReturnTypeSchema = true)
+    })
+    @GetMapping("/feedbacks/report")
+    public ResponseEntity<FeedbackReportDto> getFeedbackReport(@Login Long receiverId) {
+        FeedbackReport feedbackReport = feedbackQueryService.getFeedbackReport(receiverId);
+        return ResponseEntity.ok(FeedbackReportDto.from(feedbackReport));
+    }
 }

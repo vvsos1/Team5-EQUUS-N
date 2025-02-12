@@ -154,13 +154,6 @@ public class ScheduleService {
         return nextSchedule;
     }
 
-
-    private LocalDateTime truncateToNearestTenMinutes(LocalDateTime dateTime) {
-        int minute = dateTime.getMinute();
-        int truncatedMinute = (minute / 10) * 10;
-        return dateTime.withMinute(truncatedMinute).withSecond(0).withNano(0);
-    }
-
     @Transactional
     public void endSchedules() {
         LocalDateTime now = truncateToNearestTenMinutes(LocalDateTime.now(clock));
@@ -173,6 +166,69 @@ public class ScheduleService {
         }
         jobRecord.updatePreviousFinishTime(now);
         jobRecordRepository.save(jobRecord);
+    }
+
+    /**
+     * Retrieves the earliest start time among all schedules for a given team.
+     *
+     * @param teamId The ID of the team
+     * @return The earliest schedule start time, or null if no schedules exist
+     * @throws IllegalArgumentException if teamId is null
+     */
+    @Transactional(readOnly = true)
+    public LocalDateTime getEarliestScheduleStartTime(Long teamId) {
+        if (teamId == null) {
+            throw new IllegalArgumentException("Team ID cannot be null");
+        }
+        return scheduleQueryRepository.findEarliestStartTimeByTeamId(teamId).orElse(null);
+    }
+
+    /**
+     * Retrieves the latest end time among all schedules for a given team.
+     *
+     * @param teamId The ID of the team
+     * @return The latest schedule end time, or null if no schedules exist
+     * @throws IllegalArgumentException if teamId is null
+     */
+    @Transactional(readOnly = true)
+    public LocalDateTime getLatestScheduleEndTime(Long teamId) {
+        if (teamId == null) {
+            throw new IllegalArgumentException("Team ID cannot be null");
+        }
+        return scheduleQueryRepository.findLatestEndTimeByTeamId(teamId).orElse(null);
+    }
+
+    @Transactional
+    public void addNewScheduleMembership(Long memberId, Long teamId){
+        Team team = teamRepository.findById(teamId)
+            .orElseThrow(() -> new EntityNotFoundException("Team with ID " + teamId + " does not exist"));
+        List<Schedule> relatedSchedule = scheduleRepository.findAllByTeam_IdAndEndTimeGreaterThanEqual(teamId, LocalDateTime.now(clock));
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new EntityNotFoundException("Member with ID " + memberId + " does not exist"));
+        if (relatedSchedule.isEmpty()) {
+            return;  // Early return if no schedules need updating
+        }
+        List<ScheduleMember> scheduleMembers = relatedSchedule.stream()
+                .map(schedule -> new ScheduleMember(schedule, member))
+                .toList();
+        scheduleMemberRepository.saveAll(scheduleMembers);
+    }
+
+    @Transactional
+    public void removeRemainScheduleMembership(Long memberId, Long teamId){
+        if (!teamRepository.existsById(teamId)) {
+            throw new EntityNotFoundException("Team with ID " + teamId + " does not exist");
+        }
+        if (!memberRepository.existsById(memberId)) {
+            throw new EntityNotFoundException("Member with ID " + memberId + " does not exist");
+        }
+        scheduleMemberRepository.deleteScheduleMembersByMemberIdAndTeamIdAfterNow(memberId, teamId, LocalDateTime.now(clock));
+    }
+
+    private LocalDateTime truncateToNearestTenMinutes(LocalDateTime dateTime) {
+        int minute = dateTime.getMinute();
+        int truncatedMinute = (minute / 10) * 10;
+        return dateTime.withMinute(truncatedMinute).withSecond(0).withNano(0);
     }
 
     private List<ScheduleNestedDto> getScheduleNestedDtos(List<ScheduleProjectionDto> schedules) {
@@ -255,4 +311,5 @@ public class ScheduleService {
         if (scheduleRepository.findByTeamIdAndStartTime(teamId, requestDto.startTime()).isPresent())
             throw new ScheduleAlreadyExistException("이미 같은 시작시간에 일정이 있습니다.");
     }
+
 }
