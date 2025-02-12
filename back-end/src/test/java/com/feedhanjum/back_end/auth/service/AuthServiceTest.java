@@ -1,12 +1,15 @@
 package com.feedhanjum.back_end.auth.service;
 
+import com.feedhanjum.back_end.auth.domain.GoogleSignupToken;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
 import com.feedhanjum.back_end.auth.exception.InvalidCredentialsException;
 import com.feedhanjum.back_end.auth.passwordencoder.PasswordEncoder;
 import com.feedhanjum.back_end.auth.repository.MemberDetailsRepository;
+import com.feedhanjum.back_end.auth.service.dto.GoogleLoginResultDto;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,6 +38,9 @@ class AuthServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private GoogleAuthService googleAuthService;
 
     @InjectMocks
     private AuthService authService;
@@ -153,5 +159,122 @@ class AuthServiceTest {
 
             verify(passwordEncoder).matches(password, hashedPassword);
         }
+    }
+
+    @Nested
+    @DisplayName("구글 로그인 테스트")
+    class GoogleLoginTest {
+        @Test
+        @DisplayName("구글 회원이 존재할 경우 성공")
+        void test1() {
+            // given
+            GoogleAuthService.GoogleUserInfoResponse userInfo = new GoogleAuthService.GoogleUserInfoResponse("test@email.com", "name1");
+            MemberDetails existGoogleUser = MemberDetails.createGoogleUser(1L, "test@email.com");
+            String googleCode = "googleCode";
+
+            when(googleAuthService.getUserInfo(googleCode))
+                    .thenReturn(userInfo);
+            when(memberDetailsRepository.findByEmail(existGoogleUser.getEmail()))
+                    .thenReturn(Optional.of(existGoogleUser));
+
+            // when
+            GoogleLoginResultDto result = authService.authenticateGoogle(googleCode);
+
+            // then
+            assertThat(result.isAuthenticated()).isTrue();
+            assertThat(result.memberDetails())
+                    .isNotNull()
+                    .isEqualTo(existGoogleUser);
+            assertThat(result.googleSignupToken()).isNull();
+        }
+
+        @Test
+        @DisplayName("이메일 회원이 존재할 경우 실패")
+        void test2() {
+            // given
+            GoogleAuthService.GoogleUserInfoResponse userInfo = new GoogleAuthService.GoogleUserInfoResponse("test@email.com", "name1");
+            MemberDetails existEmailUser = MemberDetails.createEmailUser(1L, "test@email.com", "password");
+            String googleCode = "googleCode";
+
+            when(googleAuthService.getUserInfo(googleCode))
+                    .thenReturn(userInfo);
+            when(memberDetailsRepository.findByEmail(existEmailUser.getEmail()))
+                    .thenReturn(Optional.of(existEmailUser));
+
+            // when & then
+            assertThatThrownBy(() -> authService.authenticateGoogle(googleCode))
+                    .isInstanceOf(InvalidCredentialsException.class);
+        }
+
+        @Test
+        @DisplayName("회원이 존재하지 않을 경우 회원가입 토큰 발급")
+        void test3() {
+            // given
+            String email = "test@email.com";
+            GoogleAuthService.GoogleUserInfoResponse userInfo = new GoogleAuthService.GoogleUserInfoResponse(email, "name1");
+            String googleCode = "googleCode";
+
+            when(googleAuthService.getUserInfo(googleCode))
+                    .thenReturn(userInfo);
+            when(memberDetailsRepository.findByEmail(email))
+                    .thenReturn(Optional.empty());
+
+            GoogleLoginResultDto result = authService.authenticateGoogle(googleCode);
+
+            assertThat(result.isAuthenticated()).isFalse();
+            assertThat(result.googleSignupToken().getEmail()).isEqualTo(email);
+            assertThat(result.memberDetails()).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("구글 회원가입 테스트")
+    class GoogleSignupTest {
+        @Test
+        @DisplayName("이미 존재하는 이메일이면 오류")
+        void test1() {
+            // given
+            String email = "test@email.com";
+            String name = "name1";
+            GoogleSignupToken token = GoogleSignupToken.generateNewToken(email, name);
+            ProfileImage image = new ProfileImage("bg", "img");
+            List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+            MemberDetails existGoogleUser = MemberDetails.createGoogleUser(1L, email);
+
+            when(memberDetailsRepository.findByEmail(email)).thenReturn(Optional.of(existGoogleUser));
+
+            assertThatThrownBy(() -> authService.registerGoogle(token, image, feedbackPreferences))
+                    .isInstanceOf(EmailAlreadyExistsException.class);
+        }
+
+        @Test
+        @DisplayName("토큰에 저장된 이메일로 가입")
+        void test2() {
+            // given
+            String email = "test@email.com";
+            String name = "name1";
+            GoogleSignupToken token = GoogleSignupToken.generateNewToken(email, name);
+            ProfileImage image = new ProfileImage("bg", "img");
+            List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
+            ArgumentCaptor<Member> memberCaptor = ArgumentCaptor.captor();
+
+            when(memberDetailsRepository.findByEmail(email)).thenReturn(Optional.empty());
+            when(memberRepository.save(memberCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+            when(memberDetailsRepository.save(any(MemberDetails.class))).thenAnswer(i -> i.getArgument(0));
+
+            // when
+            MemberDetails memberDetails = authService.registerGoogle(token, image, feedbackPreferences);
+
+            // then
+            assertThat(memberDetails.getEmail()).isEqualTo(email);
+            memberDetails.validateGoogleAccount();
+
+            Member member = memberCaptor.getValue();
+            assertThat(member.getEmail()).isEqualTo(email);
+            assertThat(member.getName()).isEqualTo(name);
+            assertThat(member.getProfileImage()).isEqualTo(image);
+            assertThat(member.getFeedbackPreferences()).containsAll(feedbackPreferences);
+        }
+
     }
 }
