@@ -25,6 +25,7 @@ import SelfFeedback from './pages/mypage/SelfFeedback';
 import CombinedProvider from './CombinedProvider';
 import { TeamProvider } from './TeamContext';
 import FeedbackFavorite from './pages/feedback/FeedbackFavorite';
+import MyPageHome from './pages/mypage/MyPageHome';
 
 const queryClient = new QueryClient();
 
@@ -67,7 +68,7 @@ export default function App() {
                 <Route path='notification' element={<NotificationPage />} />
               </Route>
               <Route path='mypage'>
-                <Route index element={<div></div>} />
+                <Route index element={<MyPageHome />} />
                 <Route path='self/:userId' element={<SelfFeedback />} />
                 <Route path='report' element={<div></div>} />
               </Route>

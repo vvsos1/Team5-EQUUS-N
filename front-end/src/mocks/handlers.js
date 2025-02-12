@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { teams, schedules, members, notifications } from './mockData';
+import { members2 } from './mockData2';
 
 const BASE_URL = 'https://api.feedhanjum.com';
 
@@ -110,5 +111,12 @@ export const handlers = [
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     return HttpResponse.json(data, { status: 201 });
+  }),
+
+  // 특정 유저 조회
+  http.get(`${BASE_URL}/api/member/:memberId`, async ({ params }) => {
+    const memberId = parseInt(params.memberId);
+    const member = members2.find((m) => m.id === memberId);
+    return HttpResponse.json(member);
   }),
 ];
