@@ -38,10 +38,9 @@ public class PasswordResetToken {
      * @throws PasswordResetTokenNotValidException 토큰 검증 실패
      */
     public void validateToken(String email, String code) {
-        if (this.email.equals(email) && this.code.equals(code))
-            return;
-        if (LocalDateTime.now().isBefore(expireDate))
-            return;
-        throw new PasswordResetTokenNotValidException();
+        if (!(this.email.equals(email) && this.code.equals(code)))
+            throw new PasswordResetTokenNotValidException();
+        if (LocalDateTime.now().isAfter(expireDate))
+            throw new PasswordResetTokenNotValidException();
     }
 }
