@@ -37,7 +37,6 @@ export const useLogin = () => {
     mutationFn: (data) => api.post({ url: '/api/auth/login', body: data }),
     onSuccess: (data) => {
       const { email, message, userId } = data;
-      console.log(email, message, userId);
       setUserId(userId);
       navigate('/main');
     },
