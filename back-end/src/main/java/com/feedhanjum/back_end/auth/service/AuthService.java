@@ -51,7 +51,7 @@ public class AuthService {
         Member member = new Member(name, memberDetails.getEmail(), profileImage, feedbackPreferences);
         memberRepository.save(member);
         String hashedPassword = passwordEncoder.encode(memberDetails.getPassword());
-        MemberDetails savedMemberDetails = MemberDetails.createEmailUser(savedMember.getId(), memberDetails.getEmail(), hashedPassword);
+        MemberDetails savedMemberDetails = MemberDetails.createEmailUser(member.getId(), memberDetails.getEmail(), hashedPassword);
 
         return memberDetailsRepository.save(savedMemberDetails);
     }
