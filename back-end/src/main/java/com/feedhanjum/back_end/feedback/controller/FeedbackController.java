@@ -3,8 +3,10 @@ package com.feedhanjum.back_end.feedback.controller;
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.controller.dto.request.*;
+import com.feedhanjum.back_end.feedback.controller.dto.response.FeedbackReportDto;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
+import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
@@ -156,7 +158,7 @@ public class FeedbackController {
     @Operation(summary = "받은 피드백 조회하기", description = "받은 피드백을 조회힙니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "보낸 피드백 조회 성공", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우",content = @Content)
+            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우", content = @Content)
     })
     @GetMapping("/feedbacks/receiver/{receiverId}")
     public ResponseEntity<Paged<ReceivedFeedbackDto>> getReceivedFeedbacks(@Login Long loginId,
@@ -167,6 +169,16 @@ public class FeedbackController {
         }
         Page<ReceivedFeedbackDto> receivedFeedbacks = feedbackQueryService.getReceivedFeedbacks(receiverId, request.teamId(), request.filterHelpful(), request.page(), request.sortOrder());
         return ResponseEntity.ok(Paged.from(receivedFeedbacks));
+    }
+
+    @Operation(summary = "피드백 리포트 조회", description = "로그인 유저의 피드백 리포트를 조회힙니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "피드백 리포트 조회 성공", useReturnTypeSchema = true)
+    })
+    @GetMapping("/feedbacks/report")
+    public ResponseEntity<FeedbackReportDto> getFeedbackReport(@Login Long receiverId) {
+        FeedbackReport feedbackReport = feedbackQueryService.getFeedbackReport(receiverId);
+        return ResponseEntity.ok(FeedbackReportDto.from(feedbackReport));
     }
 
 }
