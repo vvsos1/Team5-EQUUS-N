@@ -12,7 +12,13 @@ public interface ScheduleMemberRepository extends JpaRepository<ScheduleMember, 
 
     Optional<ScheduleMember> findByMemberIdAndScheduleId(Long memberId, Long scheduleId);
 
-    @Modifying
-    @Query("delete from ScheduleMember sm where sm.member.id = :memberId and sm.schedule.team.id = :teamId and sm.schedule.endTime > :now")
+    @Modifying(clearAutomatically = true)
+    @Query("delete from ScheduleMember sm " +
+            "where sm.member.id = :memberId " +
+            "  and sm.schedule.id in (" +
+            "       select s.id from Schedule s " +
+            "       where s.team.id = :teamId " +
+            "         and s.endTime > :now" +
+            "  )")
     void deleteScheduleMembersByMemberIdAndTeamIdAfterNow(Long memberId, Long teamId, LocalDateTime now);
 }
