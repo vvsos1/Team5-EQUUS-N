@@ -39,10 +39,9 @@ public class SignupToken {
      * @throws SignupTokenNotValidException 토큰 검증 실패
      */
     public void validateToken(String email, String code) {
-        if (this.email.equals(email) && this.code.equals(code))
-            return;
-        if (LocalDateTime.now().isBefore(expireDate))
-            return;
-        throw new SignupTokenNotValidException();
+        if (!(this.email.equals(email) && this.code.equals(code)))
+            throw new SignupTokenNotValidException();
+        if (LocalDateTime.now().isAfter(expireDate))
+            throw new SignupTokenNotValidException();
     }
 }

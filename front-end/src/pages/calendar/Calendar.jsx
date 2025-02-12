@@ -25,14 +25,24 @@ export default function Calendar() {
     location.state?.initialDate ?? new Date(new Date().setHours(0, 0, 0, 0)),
   );
 
-  // 일정 조회, 저장 관련
-  const { setAllSchedules, scheduleOnDate, scheduleSet } = useSchedule(
-    selectedTeam,
-    selectedDate,
-  );
-  // 일정 수정, 삭제 관련
-  const { doingAction, setDoingAction, actionType, setActionType } =
-    useScheduleAction();
+  // 일정 조회 관련
+  const {
+    setAllSchedules,
+    scheduleOnDate,
+    scheduleSet,
+    selectedSchedule,
+    setSelectedSchedule,
+  } = useSchedule(selectedTeam, selectedDate);
+
+  // 일정 등록, 수정, 삭제 등 액션 관련
+  const {
+    doingAction,
+    setDoingAction,
+    actionType,
+    setActionType,
+    clearData,
+    actionInfo,
+  } = useScheduleAction(selectedDate, selectedSchedule);
 
   // 일정 화면 스크롤 관련
   const { scrollRef, isScrolling } = useCalendarScroll();
@@ -77,8 +87,9 @@ export default function Calendar() {
                   todos={schedule.scheduleMemberNestedDtoList}
                   isFinished={checkIsFinished(schedule.endTime)}
                   onClickEdit={() => {
+                    console.log(schedule);
+                    setSelectedSchedule(schedule);
                     setActionType(ScheduleActionType.EDIT);
-                    setDoingAction(true);
                     setDoingAction(true);
                   }}
                 />
@@ -94,8 +105,8 @@ export default function Calendar() {
               </p>
             }
             onClick={() => {
+              clearData();
               setActionType(ScheduleActionType.ADD);
-              setDoingAction(true);
               setDoingAction(true);
             }}
             isOutlined={true}
@@ -108,16 +119,9 @@ export default function Calendar() {
           type={actionType}
           isOpen={doingAction}
           selectedDateFromParent={selectedDate}
-          selectedSchedule={scheduleOnDate.find(
-            (schedule) => schedule.teamId === selectedTeam,
-          )}
+          selectedScheduleFromParent={selectedSchedule}
           onClose={() => setDoingAction(false)}
-          onSubmit={(postSuccess) => {
-            setDoingAction(false);
-            if (postSuccess) {
-              // TODO: 일정 재조회
-            }
-          }}
+          actionInfo={actionInfo}
         />
       )}
     </div>

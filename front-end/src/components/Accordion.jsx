@@ -28,6 +28,8 @@ export default function Accordion({
 
   const detailsRef = useRef(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (isMainPage) {
       // 만약 메인페이지면 알람 api get 요청 후 setIsAlarmRead() 호출
@@ -90,7 +92,7 @@ export default function Accordion({
           </button>
         </div>
       : canClose ?
-        <button onClick={() => navigate(-1)}>
+        <button onClick={() => navigate('/main')}>
           <Icon name='delete' color='var(--color-gray-100)' />
         </button>
       : null}

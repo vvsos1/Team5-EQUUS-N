@@ -17,4 +17,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findByEndTimeBetween(LocalDateTime endTimeAfter, LocalDateTime endTimeBefore);
 
+    List<Schedule> findAllByTeam_IdAndEndTimeGreaterThanEqual(Long teamId, LocalDateTime now);
 }

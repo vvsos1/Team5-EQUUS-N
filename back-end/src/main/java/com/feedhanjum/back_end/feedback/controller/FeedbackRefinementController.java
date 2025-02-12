@@ -23,7 +23,7 @@ public class FeedbackRefinementController {
     })
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<FeedbackRefineResponse> refineFeedback(@Valid @RequestBody FeedbackRefineRequest request) {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new FeedbackRefineResponse("테스트 데이터입니다", 3));
     }
 
     @Operation(summary = "남은 호출 가능 횟수 조회", description = "주관식 피드백 다듬기 호출 가능 횟수를 조회합니다.")

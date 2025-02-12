@@ -122,7 +122,6 @@ export function CalendarWeek({
                 haveSchedule={scheduleSet.has(
                   new Date(toKST(date)).toISOString().split('T')[0],
                 )}
-                setSelectedDate={setSelectedDate}
               />
             </div>
           );

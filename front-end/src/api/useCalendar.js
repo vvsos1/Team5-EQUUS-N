@@ -1,3 +1,4 @@
+import { showToast } from '../utility/handleToast';
 import { api } from './baseApi';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -18,8 +19,11 @@ export const useGetSchedules = (params) => {
         startDay: params.startDay,
         endDay: params.endDay,
       };
-      const response = api.get({ url: '/api/schedules', params: sendingData });
-      return response;
+      if (params.teamId) {
+        return api.get({ url: '/api/schedules', params: sendingData });
+      } else {
+        return null;
+      }
     },
   });
 };
@@ -44,19 +48,35 @@ export const usePostSchedule = (teamId) => {
   return useMutation({
     mutationFn: (data) =>
       api.post({ url: `/api/team/${teamId}/schedule/create`, body: data }),
+    onSuccess: (data) => {
+      console.log(data);
+      console.log('성공 테스트1');
+      queryClient.invalidateQueries({ queryKey: ['schedules'] });
+    },
+  });
+};
+
+export const useEditSchedule = (teamId) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ scheduleId, data }) => {
+      return api.post({
+        url: `/api/team/${teamId}/schedule/${scheduleId}`,
+        body: data,
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
     },
   });
 };
 
-export const usePutSchedule = (teamId, scheduleId) => {
+export const useDeleteSchedule = (teamId) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data) =>
-      api.put({
+    mutationFn: (scheduleId) =>
+      api.delete({
         url: `/api/team/${teamId}/schedule/${scheduleId}`,
-        body: data,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedules'] });

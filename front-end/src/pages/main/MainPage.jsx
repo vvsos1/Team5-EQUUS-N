@@ -63,7 +63,13 @@ export default function MainPage() {
       return () => toggleSchedule();
     }
     if (timeDiff <= 0) {
-      return () => console.log('피드백 작성하기 화면으로 이동');
+      return () =>
+        navigate('/feedback/send', {
+          state: {
+            members: matesData.filter((member) => member.id !== 1),
+            scheduleId: recentScheduleData.scheduleId,
+          },
+        });
     }
     return () => toggleTodoAdd();
   };
@@ -131,7 +137,9 @@ export default function MainPage() {
                     onClick={() => {
                       mate.id === 1 ?
                         navigate(`/feedback/self`)
-                      : navigate(`/feedback/send`);
+                      : navigate(`/feedback/send`, {
+                          state: { members: [mate] },
+                        });
                       hideModal();
                     }}
                     isOutlined={false}
