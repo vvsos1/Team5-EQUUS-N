@@ -7,6 +7,8 @@ import LargeButton from '../../components/buttons/LargeButton';
 import { useSignUp } from '../../api/useAuth';
 import { showToast } from '../../utility/handleToast';
 import { useUser } from '../../useUser';
+import StickyWrapper from '../../components/wrappers/StickyWrapper';
+import NavBar2 from '../../components/NavBar2';
 
 export default function FeedbackFavorite() {
   const navigate = useNavigate();
@@ -55,12 +57,21 @@ export default function FeedbackFavorite() {
 
   return (
     <div className='flex size-full flex-col'>
-      {process === 'signup' && (
+      {process === 'signup' ?
         <h1 className='header-2 text-gray-0 pt-10 pb-3 whitespace-pre-line'>
           {'선호하는 피드백 유형을\n선택해 주세요'}
         </h1>
-      )}
-      <p className='body-1 text-gray-200'>
+      : <StickyWrapper>
+          <NavBar2
+            canPop={true}
+            title='선호 피드백 유형 관리'
+            onClickPop={() => {
+              navigate(-1);
+            }}
+          />
+        </StickyWrapper>
+      }
+      <p className={`body-1 ${process !== 'signup' && 'mt-5'} text-gray-200`}>
         카테고리별 최대 2개까지 선택해 주세요
       </p>
       {data && (

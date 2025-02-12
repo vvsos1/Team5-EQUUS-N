@@ -4,11 +4,12 @@ import ProfileImage from '../../components/ProfileImage';
 import { useSearchMember } from '../../api/useMyPage';
 import { useUser } from '../../useUser';
 import Icon from '../../components/Icon';
+import { useId } from 'react';
 
 export default function MyPageHome() {
   const navigate = useNavigate();
-  const myId = useUser();
-  const { data: member } = useSearchMember(myId);
+  const { userId } = useUser();
+  const { data: member } = useSearchMember(userId);
 
   const listButtontexts = [
     ['피드백 리포트', 'report'],

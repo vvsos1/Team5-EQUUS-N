@@ -17,7 +17,7 @@ export default function FeedbackReceived() {
   const [loadedPage, setLoadedPage] = useState(0);
   const scrollRef = useRef(null);
 
-  const userId = useUser();
+  const { userId } = useUser();
 
   const {
     data: feedbackReceived,
