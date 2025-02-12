@@ -1,6 +1,8 @@
 package com.feedhanjum.back_end.member.controller;
 
 import com.feedhanjum.back_end.auth.infra.Login;
+import com.feedhanjum.back_end.feedback.service.FeedbackService;
+import com.feedhanjum.back_end.member.controller.dto.LoginMemberDto;
 import com.feedhanjum.back_end.member.controller.dto.MemberDto;
 import com.feedhanjum.back_end.member.controller.dto.MemberFeedbackPreferenceDto;
 import com.feedhanjum.back_end.member.controller.dto.ProfileChangeRequest;
@@ -24,6 +26,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class MemberController {
     private final MemberService memberService;
+    private final FeedbackService feedbackService;
 
     @Operation(summary = "특정 회원 정보 조회", description = "특정 회원의 정보를 조회합니다.")
     @ApiResponses({
@@ -34,6 +37,21 @@ public class MemberController {
     public ResponseEntity<MemberDto> getMemberById(@PathVariable Long id) {
         MemberDto memberDto = new MemberDto(memberService.getMemberById(id));
         return new ResponseEntity<>(memberDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "특정 회원 정보 조회", description = "특정 회원의 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원 정보 조회에 성공했을 경우, 해당 회원 정보를 반환합니다."),
+            @ApiResponse(responseCode = "404", description = "해당 회원이 존재하지 않을 경우", content = @Content)
+    })
+    @GetMapping("/member")
+    public ResponseEntity<LoginMemberDto> getLoginMember(@Login Long id) {
+        LoginMemberDto loginMemberDto = new LoginMemberDto(
+                memberService.getMemberById(id),
+                feedbackService.getReceivedFeedbackCount(id),
+                feedbackService.getSentFeedbackCount(id)
+        );
+        return new ResponseEntity<>(loginMemberDto, HttpStatus.OK);
     }
 
     @Operation(summary = "회원의 정보를 변경한다.")
