@@ -41,7 +41,6 @@ export const useMakeTeam = () => {
       return api.post({ url: `/api/team/create`, body: sendingData });
     },
     onSuccess: (data) => {
-      console.log(data);
       return data;
     },
   });

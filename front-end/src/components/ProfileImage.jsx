@@ -154,7 +154,7 @@ export function getRandomProfile() {
   const randomIconName =
     iconNames[Math.floor(Math.random() * iconNames.length)];
   const randomColor = bgColors[Math.floor(Math.random() * bgColors.length)];
-  return { randomIconName, randomColor };
+  return { image: randomIconName, backgroundColor: randomColor };
 }
 
 // 미리 짜둔 아이콘 변경 관련 코드

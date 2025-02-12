@@ -47,8 +47,6 @@ export default function Calendar() {
   // 일정 화면 스크롤 관련
   const { scrollRef, isScrolling } = useCalendarScroll();
 
-  // console.log(scheduleOnDate);
-
   return (
     <div
       ref={scrollRef}
@@ -87,7 +85,6 @@ export default function Calendar() {
                   todos={schedule.scheduleMemberNestedDtoList}
                   isFinished={checkIsFinished(schedule.endTime)}
                   onClickEdit={() => {
-                    console.log(schedule);
                     setSelectedSchedule(schedule);
                     setActionType(ScheduleActionType.EDIT);
                     setDoingAction(true);
