@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw';
+import { members2 } from './mockData2';
 import {
   teams,
   schedules,
@@ -98,7 +99,13 @@ export const handlers = [
 
     return HttpResponse.json(data, { status: 201 });
   }),
-
+  // 특정 유저 조회
+  http.get(`${BASE_URL}/api/member/:memberId`, async ({ params }) => {
+    const memberId = parseInt(params.memberId);
+    const member = members2.find((m) => m.id === memberId);
+    return HttpResponse.json(member);
+  }),
+           
   // 피드백 키워드 조회
   http.get(`${BASE_URL}/api/feedback/keyword`, () => {
     return HttpResponse.json(objectives);

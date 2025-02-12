@@ -25,7 +25,8 @@ export const useVerifyToken = () => {
 
 export const useSignUp = () => {
   return useMutation({
-    mutationFn: (data) => api.post({ url: '/api/auth/signup', body: data }),
+    mutationFn: (data) =>
+      api.post({ url: '/api/auth/email/signup', body: data }),
     onSuccess: () => {},
   });
 };
@@ -34,7 +35,8 @@ export const useLogin = () => {
   const navigate = useNavigate();
   const { setUserId } = useUser();
   return useMutation({
-    mutationFn: (data) => api.post({ url: '/api/auth/login', body: data }),
+    mutationFn: (data) =>
+      api.post({ url: '/api/auth/email/login', body: data }),
     onSuccess: (data) => {
       const { email, message, userId } = data;
       setUserId(userId);

@@ -28,6 +28,7 @@ import FeedbackSendLayout from './pages/feedback/FeedbackSendLayout';
 import FeedbackSendStep from './pages/feedback/FeedbackSendStep';
 import FeedbackSend from './pages/feedback/FeedbackSend';
 import FeedbackFavorite from './pages/feedback/FeedbackFavorite';
+import MyPageHome from './pages/mypage/MyPageHome';
 
 const queryClient = new QueryClient();
 
@@ -48,8 +49,8 @@ export default function App() {
                 <Route path='self' element={<FeedbackSelf />} />
                 <Route path='complete' element={<FeedbackComplete />} />
                 <Route path='favorite' element={<FeedbackFavorite />} />
-                <Route path='received/:userId' element={<FeedbackReceived />} />
-                <Route path='sent/:userId' element={<FeedbackSent />} />
+                <Route path='received' element={<FeedbackReceived />} />
+                <Route path='sent' element={<FeedbackSent />} />
               </Route>
               <Route path='signin' element={<SignIn />} />
               <Route path='signup' element={<SignUp />} />
@@ -74,9 +75,10 @@ export default function App() {
                 <Route path='notification' element={<NotificationPage />} />
               </Route>
               <Route path='mypage'>
-                <Route index element={<div></div>} />
-                <Route path='self/:userId' element={<SelfFeedback />} />
+                <Route index element={<MyPageHome />} />
+                <Route path='self' element={<SelfFeedback />} />
                 <Route path='report' element={<div></div>} />
+                <Route path='edit' element={<div></div>} />
               </Route>
             </Route>
           </Routes>

@@ -42,7 +42,7 @@ const request = async (method, url, params = {}, body) => {
     }
     const text = await response.text();
     if (!text) {
-      return {};
+      return null;
     } else {
       return JSON.parse(text);
     }
