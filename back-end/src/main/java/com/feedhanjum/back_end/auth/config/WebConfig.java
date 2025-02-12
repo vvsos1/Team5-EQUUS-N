@@ -1,7 +1,9 @@
 package com.feedhanjum.back_end.auth.config;
 
+import com.feedhanjum.back_end.auth.config.property.CorsProperties;
 import com.feedhanjum.back_end.auth.infra.AuthInterceptor;
 import com.feedhanjum.back_end.auth.infra.LoginMemberArgumentResolver;
+import lombok.RequiredArgsConstructor;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
@@ -18,10 +20,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${cors.allowed-origins}")
-    private String allowedOrigins;
+    private final CorsProperties corsProperties;
 
     @Value("${server.http.port}")
     private int httpPort;
@@ -42,7 +44,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins(allowedOrigins.split(","))
+                .allowedOrigins(corsProperties.getAllowedOrigins().toArray(new String[0]))
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
