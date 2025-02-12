@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import TextButton, { TextButtonType } from './buttons/TextButton';
 import Icon from './Icon';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * 아코디언 컴포넌트... 그냥 네비바 같은디..?
@@ -24,6 +25,8 @@ export default function Accordion({
   onClickLastButton,
 }) {
   const detailsRef = useRef(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isMainPage) {
@@ -78,11 +81,7 @@ export default function Accordion({
       {isMainPage ?
         <div className='flex gap-4 divide-gray-600'>
           {teamList.length > 0 && (
-            <button
-              onClick={() => {
-                console.log('알람 페이지로 이동');
-              }}
-            >
+            <button onClick={() => navigate('notification')}>
               <Icon name={isAlarmRead ? 'bellOn' : 'bellOff'} />
             </button>
           )}
@@ -91,7 +90,7 @@ export default function Accordion({
           </button>
         </div>
       : canClose ?
-        <button onClick={() => console.log('뒤로가기')}>
+        <button onClick={() => navigate('/main')}>
           <Icon name='delete' color='var(--color-gray-100)' />
         </button>
       : null}

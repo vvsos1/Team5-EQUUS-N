@@ -4,6 +4,7 @@ import { transformToBytes } from '../utility/inputChecker';
 
 export default function TextArea({
   isWithGpt = false,
+  isGptLoading = false,
   canToggleAnonymous = false,
   generatedByGpt = false,
   isAnonymous = false,
@@ -32,14 +33,28 @@ export default function TextArea({
     setTextContent(e.target.value);
   };
 
+  const Spinner = () => {
+    return (
+      <div className='absolute inset-0 flex flex-col items-center justify-center'>
+        <div className='relative mt-6 mb-10 flex items-center justify-center'>
+          <div className='absolute size-10 animate-spin rounded-full bg-conic from-transparent from-5% to-lime-600' />
+          <div className='absolute size-[30px] rounded-full bg-gray-800' />
+        </div>
+        <p className='body-1 animate-pulse text-gray-300'>
+          AI가 글을 다듬는 중...
+        </p>
+      </div>
+    );
+  };
+
   return (
     <div
-      className={`rounded-300 flex h-fit w-full flex-col border-white p-5 ring-gray-500 has-focus:ring-gray-300 ${generatedByGpt ? 'bg-gray-800' : 'ring'}`}
+      className={`rounded-300 relative flex h-fit w-full flex-col border-white p-5 ring-gray-500 has-focus:ring-gray-300 ${generatedByGpt ? 'bg-gray-800' : 'ring'}`}
     >
       <textarea
         value={textContent}
         onInput={onInput}
-        className={`text-gray-0 placeholder:body-1 scrollbar-hidden relative max-h-56 min-h-44 w-full resize-none outline-none placeholder:text-gray-500 focus:placeholder:text-gray-400`}
+        className={`text-gray-0 placeholder:body-1 scrollbar-hidden relative min-h-32 w-full resize-none outline-none placeholder:text-gray-500 focus:placeholder:text-gray-400`}
         placeholder={
           generatedByGpt ? undefined
           : isWithGpt ?
@@ -57,8 +72,11 @@ export default function TextArea({
             : <Icon name='checkBoxNone' />}
           </button>
         : <div />}
-        <p className='caption-1 text-gray-300'>{`${textLength}/400 byte`}</p>
+        <p
+          className={`caption-1 text-gray-300 ${isGptLoading && 'invisible'}`}
+        >{`${textLength}/400 byte`}</p>
       </div>
+      {isGptLoading && Spinner()}
     </div>
   );
 }
