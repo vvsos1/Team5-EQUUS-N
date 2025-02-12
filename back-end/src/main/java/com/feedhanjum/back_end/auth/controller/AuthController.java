@@ -3,6 +3,7 @@ package com.feedhanjum.back_end.auth.controller;
 import com.feedhanjum.back_end.auth.controller.dto.*;
 import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
 import com.feedhanjum.back_end.auth.domain.EmailSignupToken;
+import com.feedhanjum.back_end.auth.domain.GoogleSignupToken;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.domain.PasswordResetToken;
 import com.feedhanjum.back_end.auth.exception.PasswordResetTokenNotValidException;
@@ -11,6 +12,7 @@ import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
 import com.feedhanjum.back_end.auth.exception.SignupTokenVerifyRequiredException;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.auth.service.AuthService;
+import com.feedhanjum.back_end.auth.service.dto.GoogleLoginResultDto;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -215,14 +217,46 @@ public class AuthController {
         return ResponseEntity.ok(new GoogleLoginUrlResponse(authService.getGoogleLoginUrl()));
     }
 
+    @Operation(summary = "구글 로그인 or 구글 회원가입 토큰 응답", description = "구글 회원가입된 상태라면 로그인, 아니라면 회원가입 시 필요한 토큰을 발급합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 or 회원가입 토큰 발급 성공"),
+            @ApiResponse(responseCode = "401", description = "구글 로그인 실패", content = @Content)
+    })
+    @PostMapping("/google/login")
+    public ResponseEntity<GoogleLoginResponse> loginWithGoogle(HttpSession session, @Valid @RequestBody GoogleLoginRequest request) {
+        GoogleLoginResultDto loginResult = authService.authenticateGoogle(request.code());
+
+        if (loginResult.isAuthenticated()) {
+            MemberDetails member = loginResult.memberDetails();
+            LoginResponse response = new LoginResponse("로그인에 성공했습니다.", member.getId(), member.getEmail());
+            session.setAttribute(SessionConst.MEMBER_ID, member.getId());
+            session.setMaxInactiveInterval(Integer.MAX_VALUE);
+            log.info("member {} directly login google account", member.getId());
+            return ResponseEntity.ok(GoogleLoginResponse.authenticated(response));
+        }
+
+        GoogleSignupToken signupToken = loginResult.googleSignupToken();
+        session.setAttribute(SessionConst.GOOGLE_SIGNUP_TOKEN, signupToken);
+        log.info("generate google signup token with email {} and code: {}", signupToken.getEmail(), signupToken.getCode());
+        return ResponseEntity.ok(GoogleLoginResponse.signupRequired(signupToken));
+    }
+
+
     @Operation(summary = "구글 회원가입", description = "구글 계정으로 회원가입 후 로그인합니다")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "구글로 회원가입 성공 및 로그인 성공"),
+            @ApiResponse(responseCode = "400", description = "구글 회원가입 토큰 인증 실패", content = @Content),
             @ApiResponse(responseCode = "401", description = "구글 회원가입 실패", content = @Content)
     })
     @PostMapping("/google/signup")
     public ResponseEntity<MemberSignupResponse> signupWithGoogle(HttpSession session, @Valid @RequestBody GoogleSignupRequest request) {
-        MemberDetails member = authService.registerGoogle(request.code(), request.profileImage(), request.feedbackPreference());
+        Object token = session.getAttribute(SessionConst.GOOGLE_SIGNUP_TOKEN);
+        if (!(token instanceof GoogleSignupToken googleSignupToken)) {
+            throw new SignupTokenNotValidException();
+        }
+        googleSignupToken.validateToken(request.token());
+
+        MemberDetails member = authService.registerGoogle(googleSignupToken, request.profileImage(), request.feedbackPreference());
 
         MemberSignupResponse response = memberMapper.toResponse(member);
 
@@ -231,24 +265,6 @@ public class AuthController {
         log.info("member {} signup and login with google account", member.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @Operation(summary = "구글 로그인", description = "구글 계정으로 로그인합니다")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "구글 로그인 성공"),
-            @ApiResponse(responseCode = "401", description = "구글 로그인 실패", content = @Content)
-    })
-    @PostMapping("/google/login")
-    public ResponseEntity<LoginResponse> signupWithGoogle(HttpSession session, @Valid @RequestBody GoogleLoginRequest request) {
-        MemberDetails member = authService.authenticateGoogle(request.code());
-
-        LoginResponse response = new LoginResponse("로그인에 성공했습니다.", member.getId(), member.getEmail());
-
-        session.setAttribute(SessionConst.MEMBER_ID, member.getId());
-        session.setMaxInactiveInterval(Integer.MAX_VALUE);
-        log.info("member {} login with google account", member.getId());
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 

@@ -10,8 +10,8 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record GoogleSignupRequest(
-        @Schema(description = "구글측에서 발급받은 인증 관련 코드")
-        String code,
+        @Schema(description = "구글 로그인 api에서 본 서버로부터 응답받은 토큰.")
+        String token,
 
         @Schema(description = "사용자가 사용할 프로필 이미지")
         ProfileImage profileImage,
