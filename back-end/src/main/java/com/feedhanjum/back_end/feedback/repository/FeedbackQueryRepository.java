@@ -101,5 +101,21 @@ public class FeedbackQueryRepository {
                 .fetch();
     }
 
+    public Long findReceivedFeedbackCount(Long receiverId) {
+        return queryFactory
+                .select(feedback.count())
+                .from(feedback)
+                .where(feedback.receiver.id.eq(receiverId))
+                .fetchOne();
+    }
+
+    public Long findSentFeedbackCount(Long senderId) {
+        return queryFactory
+                .select(feedback.count())
+                .from(feedback)
+                .where(feedback.sender.id.eq(senderId))
+                .fetchOne();
+    }
+
 
 }
