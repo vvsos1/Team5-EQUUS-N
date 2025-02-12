@@ -154,13 +154,6 @@ public class ScheduleService {
         return nextSchedule;
     }
 
-
-    private LocalDateTime truncateToNearestTenMinutes(LocalDateTime dateTime) {
-        int minute = dateTime.getMinute();
-        int truncatedMinute = (minute / 10) * 10;
-        return dateTime.withMinute(truncatedMinute).withSecond(0).withNano(0);
-    }
-
     @Transactional
     public void endSchedules() {
         LocalDateTime now = truncateToNearestTenMinutes(LocalDateTime.now(clock));
@@ -203,6 +196,23 @@ public class ScheduleService {
             throw new IllegalArgumentException("Team ID cannot be null");
         }
         return scheduleQueryRepository.findLatestEndTimeByTeamId(teamId).orElse(null);
+    }
+
+    @Transactional
+    public void addNewScheduleMembership(Long memberId, Long teamId){
+        List<Schedule> relatedSchedule = scheduleRepository.findAllByTeam_IdAndEndTimeGreaterThanEqual(teamId, LocalDateTime.now(clock));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자가 존재하지 않습니다."));
+        List<ScheduleMember> scheduleMembers = relatedSchedule.stream()
+                .map(schedule -> new ScheduleMember(schedule, member))
+                .toList();
+        scheduleMemberRepository.saveAll(scheduleMembers);
+    }
+
+
+    private LocalDateTime truncateToNearestTenMinutes(LocalDateTime dateTime) {
+        int minute = dateTime.getMinute();
+        int truncatedMinute = (minute / 10) * 10;
+        return dateTime.withMinute(truncatedMinute).withSecond(0).withNano(0);
     }
 
     private List<ScheduleNestedDto> getScheduleNestedDtos(List<ScheduleProjectionDto> schedules) {
