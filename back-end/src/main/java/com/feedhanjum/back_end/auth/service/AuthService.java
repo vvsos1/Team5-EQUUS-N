@@ -1,8 +1,8 @@
 package com.feedhanjum.back_end.auth.service;
 
+import com.feedhanjum.back_end.auth.domain.EmailSignupToken;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.domain.PasswordResetToken;
-import com.feedhanjum.back_end.auth.domain.SignupToken;
 import com.feedhanjum.back_end.auth.exception.EmailAlreadyExistsException;
 import com.feedhanjum.back_end.auth.exception.InvalidCredentialsException;
 import com.feedhanjum.back_end.auth.exception.PasswordResetTokenNotValidException;
@@ -79,15 +79,15 @@ public class AuthService {
      * @throws EmailAlreadyExistsException 이미 이메일이 존재하는 경우
      */
     @Transactional(readOnly = true)
-    public SignupToken sendSignupVerificationEmail(String email) {
-        SignupToken token = SignupToken.generateNewToken(email);
+    public EmailSignupToken sendSignupVerificationEmail(String email) {
+        EmailSignupToken token = EmailSignupToken.generateNewToken(email);
         validateEmail(email);
         emailService.sendMail(
                 email,
                 "피드한줌 회원가입 이메일 인증",
                 "회원가입을 위한 이메일입니다. 아래의 코드를 회원가입 창에 입력해주세요 " +
                         token.getCode() +
-                        " 유효기간은 " + SignupToken.EXPIRE_MINUTE + "분입니다"
+                        " 유효기간은 " + EmailSignupToken.EXPIRE_MINUTE + "분입니다"
         );
         return token;
     }
@@ -95,7 +95,7 @@ public class AuthService {
     /**
      * @throws SignupTokenNotValidException 토큰 검증 실패
      */
-    public void validateSignupToken(SignupToken existToken, String email, String token) {
+    public void validateSignupToken(EmailSignupToken existToken, String email, String token) {
         existToken.validateToken(email, token);
     }
 

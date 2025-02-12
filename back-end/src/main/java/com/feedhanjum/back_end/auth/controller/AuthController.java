@@ -2,9 +2,9 @@ package com.feedhanjum.back_end.auth.controller;
 
 import com.feedhanjum.back_end.auth.controller.dto.*;
 import com.feedhanjum.back_end.auth.controller.mapper.MemberMapper;
+import com.feedhanjum.back_end.auth.domain.EmailSignupToken;
 import com.feedhanjum.back_end.auth.domain.MemberDetails;
 import com.feedhanjum.back_end.auth.domain.PasswordResetToken;
-import com.feedhanjum.back_end.auth.domain.SignupToken;
 import com.feedhanjum.back_end.auth.exception.PasswordResetTokenNotValidException;
 import com.feedhanjum.back_end.auth.exception.PasswordResetTokenVerifyRequiredException;
 import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
@@ -125,9 +125,9 @@ public class AuthController {
     })
     @PostMapping(value = "/send-signup-verification-email", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SignupEmailSendResponse> sendSignupVerificationEmail(HttpSession session, @Valid @RequestBody SignupEmailSendRequest request) {
-        SignupToken signupToken = authService.sendSignupVerificationEmail(request.email());
-        session.setAttribute(SessionConst.SIGNUP_TOKEN, signupToken);
-        SignupEmailSendResponse signupEmailSendResponse = new SignupEmailSendResponse(signupToken.getExpireDate());
+        EmailSignupToken emailSignupToken = authService.sendSignupVerificationEmail(request.email());
+        session.setAttribute(SessionConst.SIGNUP_TOKEN, emailSignupToken);
+        SignupEmailSendResponse signupEmailSendResponse = new SignupEmailSendResponse(emailSignupToken.getExpireDate());
         return ResponseEntity.ok(signupEmailSendResponse);
     }
 
@@ -139,11 +139,11 @@ public class AuthController {
     @PostMapping("/verify-signup-email-token")
     public ResponseEntity<Void> verifySignupEmailToken(HttpSession session, @Valid @RequestBody SignupEmailVerifyRequest request) {
         Object token = session.getAttribute(SessionConst.SIGNUP_TOKEN);
-        if (!(token instanceof SignupToken signupToken)) {
+        if (!(token instanceof EmailSignupToken emailSignupToken)) {
             throw new SignupTokenNotValidException();
         }
-        authService.validateSignupToken(signupToken, request.email(), request.code());
-        session.setAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL, signupToken.getEmail());
+        authService.validateSignupToken(emailSignupToken, request.email(), request.code());
+        session.setAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL, emailSignupToken.getEmail());
         session.removeAttribute(SessionConst.SIGNUP_TOKEN);
         return ResponseEntity.noContent().build();
     }

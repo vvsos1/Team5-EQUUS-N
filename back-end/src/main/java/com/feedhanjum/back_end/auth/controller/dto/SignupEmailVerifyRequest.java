@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.auth.controller.dto;
 
-import com.feedhanjum.back_end.auth.domain.SignupToken;
+import com.feedhanjum.back_end.auth.domain.EmailSignupToken;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +14,7 @@ public record SignupEmailVerifyRequest(
         String email,
 
         @Schema(description = "회원가입 인증 토큰")
-        @Size(min = SignupToken.TOKEN_LENGTH, max = SignupToken.TOKEN_LENGTH)
+        @Size(min = EmailSignupToken.TOKEN_LENGTH, max = EmailSignupToken.TOKEN_LENGTH)
         String code
 ) {
 }
