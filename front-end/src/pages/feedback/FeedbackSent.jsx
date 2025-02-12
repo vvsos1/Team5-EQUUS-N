@@ -15,12 +15,15 @@ export default function FeedbackSent() {
   const [onlyLiked, setOnlyLiked] = useState(false);
   const [sortBy, setSortBy] = useState('createdAt:desc');
   const [loadedPage, setLoadedPage] = useState(0);
+  const [loadFinished, setLoadFinished] = useState(false);
   const scrollRef = useRef(null);
 
   const { userId } = useUser();
   const {
     data: feedbackSent,
     isLoading,
+    isError,
+    error,
     refetch,
   } = useFeedbackSent(userId, {
     teamId: selectedTeam === '전체 보기' ? null : selectedTeam,
@@ -48,15 +51,21 @@ export default function FeedbackSent() {
   }, [isLoading]);
 
   useEffect(() => {
-    refetch();
+    if (!loadFinished) {
+      refetch();
+    }
   }, [loadedPage, refetch]);
 
   useEffect(() => {
     if (!feedbackSent) return;
+    if (!feedbackReceived.hasNext) {
+      setLoadFinished(true);
+    }
     setFeedbacks((prev) => [...prev, ...(feedbackSent?.content ?? [])]);
   }, [feedbackSent]);
 
   useEffect(() => {
+    setLoadFinished(false);
     const container = scrollRef.current;
     container.scrollTo(0, 0);
     setLoadedPage(0);
@@ -111,7 +120,7 @@ export default function FeedbackSent() {
           </div>
         </div>
       </StickyWrapper>
-      {feedbacks && (
+      {feedbacks.length > 0 && (
         <ul>
           {feedbacks.map((feedback) => {
             return (
@@ -122,6 +131,24 @@ export default function FeedbackSent() {
           })}
         </ul>
       )}
+      {isError ?
+        <div className='text-gray-0 text-cente5 flex h-full flex-col items-center justify-center gap-4'>
+          {error.message.includes('404') ?
+            <>
+              <p className='text-5xl'>😥</p>
+              <p>팀을 찾을 수 없어요</p>
+            </>
+          : <>
+              <p className='text-5xl'>📭</p>
+              <p>보낸 피드백이 없어요</p>
+            </>
+          }
+        </div>
+      : <div className='text-gray-0 text-cente5 flex h-full flex-col items-center justify-center gap-4'>
+          <p className='text-5xl'>📭</p>
+          <p>보낸 피드백이 없어요</p>
+        </div>
+      }
     </div>
   );
 }

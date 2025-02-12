@@ -15,6 +15,7 @@ export default function FeedbackReceived() {
   const [onlyLiked, setOnlyLiked] = useState(false);
   const [sortBy, setSortBy] = useState('createdAt:desc');
   const [loadedPage, setLoadedPage] = useState(0);
+  const [loadFinished, setLoadFinished] = useState(false);
   const scrollRef = useRef(null);
 
   const { userId } = useUser();
@@ -22,9 +23,11 @@ export default function FeedbackReceived() {
   const {
     data: feedbackReceived,
     isLoading,
+    isError,
+    error,
     refetch,
   } = useFeedbackReceived(userId, {
-    teamId: selectedTeam === '전체 보기' ? null : selectedTeam,
+    teamId: selectedTeam === '전체 보기' ? 0 : selectedTeam,
     onlyLiked,
     sortBy,
     page: loadedPage,
@@ -49,15 +52,21 @@ export default function FeedbackReceived() {
   }, [isLoading]);
 
   useEffect(() => {
-    refetch();
+    if (!loadFinished) {
+      refetch();
+    }
   }, [loadedPage, refetch]);
 
   useEffect(() => {
     if (!feedbackReceived) return;
+    if (!feedbackReceived.hasNext) {
+      setLoadFinished(true);
+    }
     setFeedbacks((prev) => [...prev, ...(feedbackReceived?.content ?? [])]);
   }, [feedbackReceived]);
 
   useEffect(() => {
+    setLoadFinished(false);
     const container = scrollRef.current;
     container.scrollTo(0, 0);
     setLoadedPage(0);
@@ -112,7 +121,7 @@ export default function FeedbackReceived() {
           </div>
         </div>
       </StickyWrapper>
-      {feedbacks && (
+      {feedbacks.length > 0 && (
         <ul>
           {feedbacks.map((feedback) => {
             return (
@@ -123,6 +132,24 @@ export default function FeedbackReceived() {
           })}
         </ul>
       )}
+      {isError ?
+        <div className='text-gray-0 text-cente5 flex h-full flex-col items-center justify-center gap-4'>
+          {error.message.includes('404') ?
+            <>
+              <p className='text-5xl'>😥</p>
+              <p>팀을 찾을 수 없어요</p>
+            </>
+          : <>
+              <p className='text-5xl'>📭</p>
+              <p>받은 피드백이 없어요</p>
+            </>
+          }
+        </div>
+      : <div className='text-gray-0 text-cente5 flex h-full flex-col items-center justify-center gap-4'>
+          <p className='text-5xl'>📭</p>
+          <p>받은 피드백이 없어요</p>
+        </div>
+      }
     </div>
   );
 }
