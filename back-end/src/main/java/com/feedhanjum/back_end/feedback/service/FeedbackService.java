@@ -9,6 +9,7 @@ import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
+import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -46,6 +47,7 @@ public class FeedbackService {
     private final FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
     private final RegularFeedbackRequestRepository regularFeedbackRequestRepository;
     private final EventPublisher eventPublisher;
+    private final FeedbackQueryRepository feedbackQueryRepository;
 
     /**
      * @throws EntityNotFoundException  sender id, receiver id, team id에 해당하는 엔티티가 없을 경우
@@ -216,5 +218,15 @@ public class FeedbackService {
 
         team.removeFeedbackRequest(sender, receiver);
 
+    }
+
+    @Transactional(readOnly = true)
+    public Long getReceivedFeedbackCount(Long id) {
+        return feedbackQueryRepository.findReceivedFeedbackCount(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Long getSentFeedbackCount(Long id) {
+        return feedbackQueryRepository.findSentFeedbackCount(id);
     }
 }
