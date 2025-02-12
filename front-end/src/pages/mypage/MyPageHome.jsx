@@ -44,12 +44,12 @@ export default function MyPageHome() {
       <div className='rounded-400 mt-10 flex w-full justify-evenly bg-gray-700 py-5'>
         <FeedbackCount
           isSent={true}
-          count={20}
+          count={20} // api 연결 후 수정
           onClick={() => navigate('/feedback/sent')}
         />
         <div className='h-full w-px bg-gray-500' />
         <FeedbackCount
-          count={40}
+          count={40} // api 연결 후 수정
           onClick={() => navigate('/feedback/received')}
         />
       </div>
