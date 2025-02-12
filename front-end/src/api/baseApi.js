@@ -40,7 +40,12 @@ const request = async (method, url, params = {}, body) => {
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    return response.json();
+    const text = await response.text();
+    if (!text) {
+      return {};
+    } else {
+      return JSON.parse(text);
+    }
   } catch (error) {
     console.error('API Request Error:', error);
     throw error;

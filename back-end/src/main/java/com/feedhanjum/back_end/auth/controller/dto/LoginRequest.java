@@ -1,12 +1,10 @@
 package com.feedhanjum.back_end.auth.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public record LoginRequest(
         @Schema(description = "사용자가 가입하는데 사용한 이메일")
-        @Email(message = "유효한 이메일 주소를 입력해주세요.")
         @NotBlank(message = "이메일은 필수 입력 항목입니다.")
         String email,
 

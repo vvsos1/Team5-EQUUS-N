@@ -8,9 +8,6 @@ import { http, HttpResponse } from 'msw';
 import {
   verifySignupResponse,
   signupResponse,
-  loginResponse,
-  teams2,
-  createScheduleResponse,
   updateScheduleResponse,
   schedules2,
   members2,
@@ -33,16 +30,6 @@ export const handlers2 = [
     return HttpResponse.json(signupResponse);
   }),
 
-  // 팀 목록 조회
-  http.get(`${BASE_URL}/api/team/my-teams2`, () => {
-    return HttpResponse.json(teams2);
-  }),
-
-  // 일정 조회
-  http.get(`${BASE_URL}/api/schedules`, () => {
-    return HttpResponse.json(schedules2);
-  }),
-
   // 팀 일정 조회
   http.get(`${BASE_URL}/api/team/:teamId/schedules`, () => {
     return HttpResponse.json(schedules2);
@@ -51,16 +38,6 @@ export const handlers2 = [
   // 일정 수정
   http.put(`${BASE_URL}/api/team/:teamId/schedule/:scheduleId`, () => {
     return HttpResponse.json(updateScheduleResponse);
-  }),
-
-  // 일정 삭제
-  // http.delete(`${BASE_URL}/api/team/:teamId/schedule/:scheduleId`, () => {
-  //   return HttpResponse.json(deleteScheduleResponse);
-  // }),
-
-  // 팀 조회
-  http.get(`${BASE_URL}/api/team/:teamId`, () => {
-    return HttpResponse.json(teamResponse);
   }),
 
   // 팀 멤버 조회

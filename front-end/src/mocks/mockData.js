@@ -20,6 +20,7 @@ export const teams = [
 export const schedules = [
   {
     name: 'schedule 1',
+    scheduleId: 1,
     startTime: '2025-02-06T05:30:39.318Z',
     endTime: '2025-02-06T06:30:39.318Z',
     roles: [
@@ -42,6 +43,7 @@ export const schedules = [
   },
   {
     name: 'schedule 2',
+    scheduleId: 2,
     startTime: '2025-02-06T05:30:39.318Z',
     endTime: '2025-02-06T19:30:39.318Z',
     roles: [
@@ -61,6 +63,7 @@ export const schedules = [
   },
   {
     name: 'schedule 3',
+    scheduleId: 3,
     startTime: '2025-02-06T05:30:39.318Z',
     endTime: '2025-02-06T19:30:39.318Z',
     roles: [
@@ -80,6 +83,7 @@ export const schedules = [
   },
   {
     name: 'schedule 4',
+    scheduleId: 4,
     startTime: '2025-02-06T05:30:39.318Z',
     endTime: '2025-02-06T19:30:39.318Z',
     roles: [
@@ -221,3 +225,65 @@ export const notifications = [
     teamId: 9007199254740991,
   },
 ];
+
+export const prefers = [
+  {
+    스타일: [
+      '완곡하게',
+      '솔직하게',
+      '칭찬과 함께',
+      '가볍게',
+      '간단하게',
+      '신중하게',
+      '유머러스한',
+      '구체적인',
+    ],
+  },
+  {
+    내용: [
+      '명확한',
+      '현실적인',
+      '대안을 제시하는',
+      '핵심적인',
+      '발전적인',
+      '이상적인',
+      '색다른',
+      '논리적인',
+    ],
+  },
+];
+
+export const objectives = [
+  {
+    title: '커뮤니케이션',
+    keywords: [
+      '논리적으로 말해요',
+      '상대방의 말을 경청해요',
+      '의견에 근거를 제안해요',
+      '복잡한 내용을 간단하게 설명해요',
+      '다른 의견을 잘 조율해요',
+    ],
+  },
+  {
+    title: '협업태도',
+    keywords: [
+      '시간 약속을 잘 지켜요',
+      '긍정적으로 생각해요',
+      '다른 사람 탓을 하지 않아요',
+      '신뢰를 주는 태도를 보여요',
+      '변화에 유연하게 대처해요',
+      '스스로 역할을 찾아 나서요',
+    ],
+  },
+  {
+    title: '성과',
+    keywords: [
+      '목표를 확실하게 설정해요',
+      '성과를 측정 가능하게 설정해요',
+      '성과를 공유하고 피드백을 받아요',
+      '성과를 팀원과 함께 공유해요',
+    ],
+  },
+];
+
+export const objectivesByUser = ['명확한', '현실적인'];

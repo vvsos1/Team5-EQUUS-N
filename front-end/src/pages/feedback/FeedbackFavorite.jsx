@@ -22,7 +22,7 @@ export default function FeedbackFavorite() {
   const onKeywordButtonClick = (isStyle, keyword) => {
     const keywords = isStyle ? selectedStyle : selectedContent;
     const setKeywords = isStyle ? setSelectedStyle : setSelectedContent;
-    keywords.find((k) => k == keyword) ?
+    keywords.includes(keyword) ?
       setKeywords([...keywords.filter((item) => item !== keyword)])
     : keywords.length < 2 && setKeywords([...keywords, keyword]);
   };

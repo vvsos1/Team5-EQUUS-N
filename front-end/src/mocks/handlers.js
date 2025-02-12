@@ -1,13 +1,21 @@
 import { http, HttpResponse } from 'msw';
-import { teams, schedules, members, notifications } from './mockData';
+import {
+  teams,
+  schedules,
+  members,
+  notifications,
+  objectives,
+  prefers,
+  objectivesByUser,
+} from './mockData';
 
 const BASE_URL = 'https://api.feedhanjum.com';
 
 export const handlers = [
   // 팀 목록 조회
-  http.get(`${BASE_URL}/api/team/my-teams`, () => {
-    return HttpResponse.json(teams);
-  }),
+  // http.get(`${BASE_URL}/api/team/my-teams`, () => {
+  //   return HttpResponse.json(teams);
+  // }),
 
   // 메인 카드 조회
   http.get(`${BASE_URL}/api/team/:teamId/schedule`, () => {
@@ -59,34 +67,9 @@ export const handlers = [
     return HttpResponse.json(data, { status: 201 });
   }),
 
-  // 피드백 키워드 조회
+  // 피드백 선호 키워드 조회
   http.get(`${BASE_URL}/api/feedbacks/favorite`, () => {
-    return HttpResponse.json([
-      {
-        스타일: [
-          '완곡하게',
-          '솔직하게',
-          '칭찬과 함께',
-          '가볍게',
-          '간단하게',
-          '신중하게',
-          '유머러스한',
-          '구체적인',
-        ],
-      },
-      {
-        내용: [
-          '명확한',
-          '현실적인',
-          '대안을 제시하는',
-          '핵심적인',
-          '발전적인',
-          '이상적인',
-          '색다른',
-          '논리적인',
-        ],
-      },
-    ]);
+    return HttpResponse.json(prefers);
   }),
 
   // 회원가입
@@ -101,6 +84,10 @@ export const handlers = [
     return HttpResponse.json(data, { status: 201 });
   }),
 
+  http.get(`${BASE_URL}/api/member/feedback-prefer`, () => {
+    return HttpResponse.json(objectivesByUser);
+  }),
+
   // 피드백 선호 수정
   http.post(`${BASE_URL}/api/member/feedback-prefer`, async ({ request }) => {
     const data = await request.json();
@@ -110,5 +97,49 @@ export const handlers = [
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     return HttpResponse.json(data, { status: 201 });
+  }),
+
+  // 피드백 키워드 조회
+  http.get(`${BASE_URL}/api/feedback/keyword`, () => {
+    return HttpResponse.json(objectives);
+  }),
+
+  // gpt 다듬기
+  http.post(`${BASE_URL}/api/feedback-refinement`, async ({ request }) => {
+    const data = await request.json();
+    console.log('gpt 받은거: ', data);
+    const text = data.subjectiveFeedback;
+
+    // 이후는 그냥 문자열 섞는 데모 코드
+    // ...
+    // ...
+    const textArray = text.split('');
+
+    // 배열의 요소를 무작위로 섞기
+    for (let i = textArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [textArray[i], textArray[j]] = [textArray[j], textArray[i]];
+    }
+
+    // 배열을 다시 문자열로 변환
+    const shuffledText = textArray.join('');
+
+    // 2초 딜레이 추가
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    return HttpResponse.json(
+      { subjectiveFeedback: shuffledText, remainCount: 2012312 },
+      { status: 201 },
+    );
+  }),
+
+  // 정규 피드백 보내기
+  http.post(`${BASE_URL}/api/feedbacks/regular`, async ({ request }) => {
+    const data = await request.json();
+
+    // 2초 딜레이 추가
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    return HttpResponse.json('보내기 성공', { status: 201 });
   }),
 ];

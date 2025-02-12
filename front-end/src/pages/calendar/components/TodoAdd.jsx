@@ -1,12 +1,12 @@
 import classNames from 'classnames';
 import Icon from '../../../components/Icon';
 import { useEffect, useRef, useState } from 'react';
-import { changeDayName, timePickerToDate } from '../../../utility/time';
 import LargeButton from '../../../components/buttons/LargeButton';
 import StickyWrapper from '../../../components/wrappers/StickyWrapper';
 import { showToast } from '../../../utility/handleToast';
-import { checkNewSchedule, isEmpty } from '../../../utility/inputChecker';
+import { isEmpty } from '../../../utility/inputChecker';
 import Todo from './Todo';
+import { useUser } from '../../../useUser';
 
 /**
  * 일정 추가 페이지
@@ -22,9 +22,10 @@ export default function TodoAdd({
   onSubmit,
   selectedSchedule,
 }) {
+  const { userId } = useUser();
   const [todos, setTodo] = useState(
     selectedSchedule?.todos?.filter((todo) => {
-      return todo.memberId === 1;
+      return todo.memberId == userId;
     }).task ?? [],
   );
   const scrollRef = useRef(null);
@@ -32,7 +33,7 @@ export default function TodoAdd({
   useEffect(() => {
     const newTodos =
       selectedSchedule?.todos?.find((todo) => {
-        return todo.memberId === 1;
+        return todo.memberId == userId;
       })?.task ?? [];
     setTodo(newTodos);
   }, [selectedSchedule]);
