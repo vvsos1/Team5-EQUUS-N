@@ -90,7 +90,7 @@ class FeedbackControllerTest {
     }
 
     private Team createTeam(String name, Member leader) {
-        return new Team(name, leader, LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS);
+        return new Team(name, leader, LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now(clock));
     }
 
     private Schedule createSchedule(String name, Team team, Member leader, boolean isEnd) {

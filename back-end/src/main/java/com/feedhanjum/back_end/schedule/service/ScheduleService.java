@@ -8,6 +8,7 @@ import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
+import com.feedhanjum.back_end.schedule.event.ScheduleCreatedEvent;
 import com.feedhanjum.back_end.schedule.event.ScheduleEndedEvent;
 import com.feedhanjum.back_end.schedule.exception.ScheduleAlreadyExistException;
 import com.feedhanjum.back_end.schedule.exception.ScheduleIsAlreadyEndException;
@@ -82,6 +83,7 @@ public class ScheduleService {
         memberQueryRepository.findMembersByTeamId(teamId).forEach(m -> scheduleMemberRepository.save(new ScheduleMember(schedule, m)));
         ScheduleMember scheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, schedule.getId()).orElseThrow(() -> new RuntimeException("내부 서버 에러: 방금 조회한 사용자 ID가 사라짐"));
         scheduleMember.setTodos(requestDto.todos());
+        eventPublisher.publishEvent(new ScheduleCreatedEvent(schedule.getId()));
     }
 
     /**

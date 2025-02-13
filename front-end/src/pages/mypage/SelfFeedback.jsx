@@ -7,11 +7,13 @@ import Icon from '../../components/Icon';
 import FeedBack, { FeedBackType } from '../feedback/components/FeedBack';
 import { useGetSelfFeedback } from '../../api/useMyPage';
 import { useUser } from '../../useUser';
+import { useTeam } from '../../useTeam';
 
 export default function SelfFeedback() {
   const navigate = useNavigate();
 
   const [feedbacks, setFeedbacks] = useState([]);
+  const { teams } = useTeam();
   const [selectedTeam, setSelectedTeam] = useState('전체 보기');
   const [sortBy, setSortBy] = useState('createdAt:desc');
   const [loadedPage, setLoadedPage] = useState(0);
@@ -24,7 +26,10 @@ export default function SelfFeedback() {
     isLoading,
     refetch,
   } = useGetSelfFeedback(userId, {
-    teamId: selectedTeam === '전체 보기' ? null : selectedTeam,
+    teamId:
+      selectedTeam === '전체 보기' ? null : (
+        teams.find((t) => t.name === selectedTeam)?.id
+      ),
     sortBy,
     page: loadedPage,
   });
@@ -82,7 +87,7 @@ export default function SelfFeedback() {
           <DropdownSmall
             triggerText={selectedTeam}
             setTriggerText={setSelectedTeam}
-            items={[]}
+            items={teams.map((team) => team.name)}
           />
           <div className='button-2 flex items-center gap-2 text-gray-100'>
             <button
@@ -102,7 +107,7 @@ export default function SelfFeedback() {
           </div>
         </div>
       </StickyWrapper>
-      {feedbacks && (
+      {feedbacks.length > 0 ?
         <ul>
           {feedbacks.map((feedback, index) => {
             return (
@@ -112,7 +117,11 @@ export default function SelfFeedback() {
             );
           })}
         </ul>
-      )}
+      : <div className='flex h-full flex-col items-center justify-center gap-4 text-gray-300'>
+          <p className='text-5xl'>📭</p>
+          <p>작성한 회고가 없어요</p>
+        </div>
+      }
     </div>
   );
 }

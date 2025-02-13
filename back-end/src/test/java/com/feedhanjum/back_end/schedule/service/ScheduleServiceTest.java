@@ -1,11 +1,13 @@
 package com.feedhanjum.back_end.schedule.service;
 
+import com.feedhanjum.back_end.event.EventPublisher;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
 import com.feedhanjum.back_end.schedule.domain.Todo;
+import com.feedhanjum.back_end.schedule.event.ScheduleCreatedEvent;
 import com.feedhanjum.back_end.schedule.exception.ScheduleAlreadyExistException;
 import com.feedhanjum.back_end.schedule.exception.ScheduleIsAlreadyEndException;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
@@ -56,6 +58,9 @@ class ScheduleServiceTest {
 
     @Mock
     ScheduleQueryRepository scheduleQueryRepository;
+
+    @Mock
+    EventPublisher eventPublisher;
 
     @Mock
     MemberQueryRepository memberQueryRepository;
@@ -115,6 +120,7 @@ class ScheduleServiceTest {
 
         // then
         verify(scheduleMember, times(1)).setTodos(List.of(hehe));
+        verify(eventPublisher).publishEvent(new ScheduleCreatedEvent(schedule.getId()));
     }
 
     @Test

@@ -35,22 +35,22 @@ public class DomainTestUtils {
     }
 
     public static Team createTeamWithoutId(String name, Member leader) {
-        return createTeamWithoutId(name, leader, LocalDate.now().minusDays(1), LocalDate.now().plusDays(1));
+        return createTeamWithoutId(name, leader, LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), LocalDate.now());
     }
 
-    public static Team createTeamWithoutId(String name, Member leader, LocalDate startDate, LocalDate endDate) {
-        return new Team(name, leader, startDate, endDate, FeedbackType.ANONYMOUS);
+    public static Team createTeamWithoutId(String name, Member leader, LocalDate startDate, LocalDate endDate, LocalDate now) {
+        return new Team(name, leader, startDate, endDate, FeedbackType.ANONYMOUS, now);
     }
 
-    public static Team createTeamWithId(String name, Member leader, LocalDate startDate, LocalDate endDate) {
+    public static Team createTeamWithId(String name, Member leader, LocalDate startDate, LocalDate endDate, LocalDate now) {
         Long id = nextId.getAndIncrement();
-        Team team = createTeamWithoutId(name, leader, startDate, endDate);
+        Team team = createTeamWithoutId(name, leader, startDate, endDate, now);
         ReflectionTestUtils.setField(team, "id", id);
         return team;
     }
 
     public static Team createTeamWithId(String name, Member leader) {
-        return createTeamWithId(name, leader, LocalDate.now().minusDays(1), LocalDate.now().plusDays(1));
+        return createTeamWithId(name, leader, LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), LocalDate.now());
     }
 
     public static ScheduleMember createScheduleMemberWithId(Schedule schedule, Member member) {
