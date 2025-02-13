@@ -14,7 +14,6 @@ public class LoggingConfig {
         filter.setIncludeQueryString(true);
         filter.setIncludePayload(true);
         filter.setMaxPayloadLength(10000);
-        filter.setIncludeHeaders(true);
         return filter;
     }
 }
