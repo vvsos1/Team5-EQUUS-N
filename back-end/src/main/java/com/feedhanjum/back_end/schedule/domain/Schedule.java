@@ -6,15 +6,23 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE schedule SET deleted = true WHERE schedule_id = ?")
+@Table(name = "schedule")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Schedule {
+    @Column(name = "deleted")
+    private final boolean deleted = false;
+
     @Id
     @Column(name = "schedule_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,11 +68,11 @@ public class Schedule {
         return !this.startTime.isEqual(startTime) || !this.endTime.isEqual(endTime);
     }
 
-    public boolean isStartTimeDifferent(LocalDateTime startTime){
+    public boolean isStartTimeDifferent(LocalDateTime startTime) {
         return !this.startTime.isEqual(startTime);
     }
 
-    public void setTime(LocalDateTime startTime, LocalDateTime endTime){
+    public void setTime(LocalDateTime startTime, LocalDateTime endTime) {
         validate10MinuteInterval(startTime);
         validate10MinuteInterval(endTime);
         validateStartTimeIsBeforeEndTime(startTime, endTime);

@@ -140,7 +140,7 @@ class FeedbackServiceTest {
             // then
             assertEqualSender(sender, feedback.getSender());
             assertEqualReceiver(receiver, feedback.getReceiver());
-            assertThat(feedback.getTeam()).isEqualTo(team);
+            assertEqualTeam(team, feedback.getTeam());
             assertThat(feedback.getFeedbackType()).isEqualTo(feedbackType);
             assertThat(feedback.getFeedbackFeeling()).isEqualTo(feedbackFeeling);
             assertThat(feedback.getObjectiveFeedbacks())
@@ -451,7 +451,7 @@ class FeedbackServiceTest {
             // then
             assertEqualSender(sender, feedback.getSender());
             assertEqualReceiver(receiver, feedback.getReceiver());
-            assertThat(feedback.getTeam()).isEqualTo(team);
+            assertEqualTeam(team, feedback.getTeam());
             assertThat(feedback.getFeedbackType()).isEqualTo(feedbackType);
             assertThat(feedback.getFeedbackFeeling()).isEqualTo(feedbackFeeling);
             assertThat(feedback.getObjectiveFeedbacks())
@@ -927,7 +927,7 @@ class FeedbackServiceTest {
             when(feedbackRepository.findById(feedback.getId())).thenReturn(Optional.of(feedback));
             when(memberRepository.findById(sender.getId())).thenReturn(Optional.of(sender));
             when(memberRepository.findById(receiver.getId())).thenReturn(Optional.of(receiver));
-
+            when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
 
             // when
             feedbackService.deleteRelatedFrequentFeedbackRequest(feedback.getId());
@@ -964,6 +964,7 @@ class FeedbackServiceTest {
             when(feedbackRepository.findById(feedback.getId())).thenReturn(Optional.of(feedback));
             when(memberRepository.findById(receiver.getId())).thenReturn(Optional.of(receiver));
             when(memberRepository.findById(sender.getId())).thenReturn(Optional.of(sender));
+            when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
 
 
             // when & then

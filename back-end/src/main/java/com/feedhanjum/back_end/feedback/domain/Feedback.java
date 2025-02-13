@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -43,7 +45,6 @@ public class Feedback {
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "sender_id")),
             @AttributeOverride(name = "name", column = @Column(name = "sender_name")),
-            @AttributeOverride(name = "profileImage", column = @Column(name = "sender_profile_image")),
     })
     private Sender sender;
 
@@ -51,17 +52,19 @@ public class Feedback {
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "receiver_id")),
             @AttributeOverride(name = "name", column = @Column(name = "receiver_name")),
-            @AttributeOverride(name = "profileImage", column = @Column(name = "receiver_profile_image")),
     })
     private Receiver receiver;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "team_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "team_name")),
+    })
+    private AssociatedTeam team;
 
     // 객관식 피드백
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "objective_feedback", joinColumns = @JoinColumn(name = "feedback_id"))
+    @Column(name = "objective_feedbacks", columnDefinition = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     private final Set<ObjectiveFeedback> objectiveFeedbacks = new HashSet<>();
 
     /**
@@ -75,7 +78,7 @@ public class Feedback {
         this.objectiveFeedbacks.addAll(objectiveFeedbacks);
         this.sender = Sender.of(sender);
         this.receiver = Receiver.of(receiver);
-        this.team = team;
+        this.team = AssociatedTeam.of(team);
         this.createdAt = LocalDateTime.now();
         validateObjectiveFeedbacks();
     }

@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.test.util;
 
+import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.Receiver;
 import com.feedhanjum.back_end.feedback.domain.Sender;
@@ -76,5 +77,10 @@ public class DomainTestUtils {
         assertThat(member.getId()).isEqualTo(receiver.getId());
         assertThat(member.getName()).isEqualTo(receiver.getName());
         assertThat(member.getProfileImage()).isEqualTo(receiver.getProfileImage());
+    }
+
+    public static void assertEqualTeam(Team team, AssociatedTeam associatedTeam) {
+        assertThat(team.getId()).isEqualTo(associatedTeam.getId());
+        assertThat(team.getName()).isEqualTo(associatedTeam.getName());
     }
 }
