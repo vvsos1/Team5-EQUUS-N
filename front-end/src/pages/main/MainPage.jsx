@@ -44,11 +44,14 @@ export default function MainPage() {
   // 리렌더링 시 값이 바뀌지 않는 상태 생성
   const date = useRef(new Date()).current;
 
-  const { actionInfo } = useScheduleAction(date, recentScheduleData);
-
+  const { actionInfo, clearData } = useScheduleAction(date, recentScheduleData);
   const navigate = useNavigate();
 
   // TODO: 로딩 중 혹은 에러 발생 시 처리
+
+  useEffect(() => {
+    clearData();
+  }, [isScheduleOpen]);
 
   useEffect(() => {
     if (notificationsData) {
@@ -185,22 +188,16 @@ export default function MainPage() {
         />
       )}
       <div className='h-8' />
-      {!recentScheduleData && (
-        <ScheduleAction
-          type={ScheduleActionType.ADD}
-          isOpen={isScheduleOpen}
-          onSubmit={() => {
-            toggleSchedule();
-            // TODO: 일정 조회
-          }}
-          onClose={() => {
-            toggleSchedule();
-          }}
-          selectedDateFromParent={new Date()}
-          selectedScheduleFromParent={recentScheduleData}
-          actionInfo={actionInfo}
-        />
-      )}
+      // TODO: 달력으로 바꿔야 함
+      <ScheduleAction
+        type={ScheduleActionType.ADD}
+        isOpen={isScheduleOpen}
+        onClose={() => {
+          toggleSchedule();
+        }}
+        selectedDateFromParent={new Date()}
+        actionInfo={actionInfo}
+      />
       {recentScheduleData && (
         <TodoAdd
           isOpen={isTodoAddOpen}
