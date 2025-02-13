@@ -78,7 +78,7 @@ export default function MainPage() {
       return () =>
         navigate('/feedback/send', {
           state: {
-            members: matesData.filter((member) => member.id !== 1),
+            members: matesData.filter((member) => member.id !== userId),
             scheduleId: recentScheduleData.scheduleId,
           },
         });

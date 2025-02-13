@@ -202,6 +202,9 @@ function renderMyRole(recentSchedule, onButtonClick, userId) {
  * @param {number} userId
  */
 function renderTeamRole(recentSchedule, contentRef, currentHeight, userId) {
+  const filteredTeamTodos = recentSchedule.scheduleMemberNestedDtoList.filter(
+    (todo) => todo.memberId !== userId && todo.todoList.length > 0,
+  );
   return (
     <ul
       ref={contentRef}
@@ -210,32 +213,34 @@ function renderTeamRole(recentSchedule, contentRef, currentHeight, userId) {
         contentRef.current ? { height: `${currentHeight}px` } : { height: 0 }
       }
     >
-      {recentSchedule.scheduleMemberNestedDtoList.map((role, index) => {
-        if (role.memberId === userId) return null;
-        return (
-          <li key={index} className='flex flex-col gap-3 first:mt-3'>
-            <Tag type={TagType.MEMBER_ROLE}>{role.memberName}</Tag>
-            {role.todoList.length > 0 ?
-              <ul className='flex list-disc flex-col gap-1 pl-6'>
-                {role.todoList.map((todo, index) => (
-                  <li
-                    key={index}
-                    className='body-1 pl-1 text-gray-100 last:mb-6'
-                  >
-                    {todo}
-                  </li>
-                ))}
-              </ul>
-            : <p className='body-1 text-gray-500'>
-                아직 담당 업무를 입력하지 않았어요
-              </p>
-            }
-          </li>
-        );
-      })}{' '}
-      <div className='body-1 mt-2 mb-4 text-center text-gray-400'>
-        팀원들이 아직 입력하지 않았어요
-      </div>
+      {filteredTeamTodos.length > 0 ?
+        recentSchedule.scheduleMemberNestedDtoList.map((role, index) => {
+          if (role.memberId === userId) return null;
+          return (
+            <li key={index} className='flex flex-col gap-3 first:mt-3'>
+              <Tag type={TagType.MEMBER_ROLE}>{role.memberName}</Tag>
+              {role.todoList.length > 0 ?
+                <ul className='flex list-disc flex-col gap-1 pl-6'>
+                  {role.todoList.map((todo, index) => (
+                    <li
+                      key={index}
+                      className='body-1 pl-1 text-gray-100 last:mb-6'
+                    >
+                      {todo}
+                    </li>
+                  ))}
+                </ul>
+              : <p className='body-1 text-gray-500'>
+                  아직 담당 업무를 입력하지 않았어요
+                </p>
+              }
+            </li>
+          );
+        })
+      : <div className='body-1 mt-2 mb-4 text-center text-gray-400'>
+          팀원들이 아직 입력하지 않았어요
+        </div>
+      }
     </ul>
   );
 }
