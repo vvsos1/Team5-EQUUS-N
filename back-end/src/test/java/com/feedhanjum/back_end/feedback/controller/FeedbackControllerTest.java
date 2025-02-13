@@ -49,6 +49,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.assertEqualReceiver;
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.assertEqualSender;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
@@ -196,8 +198,8 @@ class FeedbackControllerTest {
             List<Feedback> feedbacks = feedbackRepository.findAll();
             assertThat(feedbacks).hasSize(1);
             Feedback feedback = feedbacks.get(0);
-            assertThat(feedback.getSender()).isEqualTo(sender);
-            assertThat(feedback.getReceiver()).isEqualTo(receiver);
+            assertEqualSender(sender, feedback.getSender());
+            assertEqualReceiver(receiver, feedback.getReceiver());
             assertThat(feedback.getTeam()).isEqualTo(team);
             assertThat(feedback.getFeedbackType()).isEqualTo(FeedbackType.ANONYMOUS);
             assertThat(feedback.getFeedbackFeeling()).isEqualTo(FeedbackFeeling.CONSTRUCTIVE);
@@ -273,8 +275,8 @@ class FeedbackControllerTest {
             List<Feedback> feedbacks = feedbackRepository.findAll();
             assertThat(feedbacks).hasSize(1);
             Feedback feedback = feedbacks.get(0);
-            assertThat(feedback.getSender()).isEqualTo(sender);
-            assertThat(feedback.getReceiver()).isEqualTo(receiver);
+            assertEqualSender(sender, feedback.getSender());
+            assertEqualReceiver(receiver, feedback.getReceiver());
             assertThat(feedback.getTeam()).isEqualTo(team);
             assertThat(feedback.getFeedbackType()).isEqualTo(FeedbackType.ANONYMOUS);
             assertThat(feedback.getFeedbackFeeling()).isEqualTo(FeedbackFeeling.CONSTRUCTIVE);
