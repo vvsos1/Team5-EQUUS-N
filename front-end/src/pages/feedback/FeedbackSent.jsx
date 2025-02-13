@@ -7,10 +7,12 @@ import { DropdownSmall } from '../../components/Dropdown';
 import Icon from '../../components/Icon';
 import FeedBack, { FeedBackType } from './components/FeedBack';
 import { useUser } from '../../useUser';
+import { useTeam } from '../../useTeam';
 
 export default function FeedbackSent() {
   const navigate = useNavigate();
   const [feedbacks, setFeedbacks] = useState([]);
+  const { teams } = useTeam();
   const [selectedTeam, setSelectedTeam] = useState('전체 보기');
   const [onlyLiked, setOnlyLiked] = useState(false);
   const [sortBy, setSortBy] = useState('createdAt:desc');
@@ -26,7 +28,10 @@ export default function FeedbackSent() {
     error,
     refetch,
   } = useFeedbackSent(userId, {
-    teamId: selectedTeam === '전체 보기' ? null : selectedTeam,
+    teamId:
+      selectedTeam === '전체 보기' ? null : (
+        teams.find((t) => t.name === selectedTeam)?.id
+      ),
     onlyLiked,
     sortBy,
     page: loadedPage,
@@ -58,7 +63,7 @@ export default function FeedbackSent() {
 
   useEffect(() => {
     if (!feedbackSent) return;
-    if (!feedbackReceived.hasNext) {
+    if (!feedbackSent.hasNext) {
       setLoadFinished(true);
     }
     setFeedbacks((prev) => [...prev, ...(feedbackSent?.content ?? [])]);
@@ -89,7 +94,7 @@ export default function FeedbackSent() {
           <DropdownSmall
             triggerText={selectedTeam}
             setTriggerText={setSelectedTeam}
-            items={[]}
+            items={teams.map((team) => team.name)}
           />
           <div className='button-2 flex items-center gap-2 text-gray-100'>
             <button
@@ -120,7 +125,7 @@ export default function FeedbackSent() {
           </div>
         </div>
       </StickyWrapper>
-      {feedbacks.length > 0 && (
+      {feedbacks.length > 0 ?
         <ul>
           {feedbacks.map((feedback) => {
             return (
@@ -130,21 +135,7 @@ export default function FeedbackSent() {
             );
           })}
         </ul>
-      )}
-      {isError ?
-        <div className='text-gray-0 text-cente5 flex h-full flex-col items-center justify-center gap-4'>
-          {error.message.includes('404') ?
-            <>
-              <p className='text-5xl'>😥</p>
-              <p>팀을 찾을 수 없어요</p>
-            </>
-          : <>
-              <p className='text-5xl'>📭</p>
-              <p>보낸 피드백이 없어요</p>
-            </>
-          }
-        </div>
-      : <div className='text-gray-0 text-cente5 flex h-full flex-col items-center justify-center gap-4'>
+      : <div className='flex h-full flex-col items-center justify-center gap-4 text-gray-300'>
           <p className='text-5xl'>📭</p>
           <p>보낸 피드백이 없어요</p>
         </div>
