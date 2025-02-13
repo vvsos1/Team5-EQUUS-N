@@ -62,9 +62,9 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "해당 회원이 존재하지 않을 경우", content = @Content)
     })
     @PostMapping("/member")
-    public ResponseEntity<MemberDto> changeProfile(@Login Long memberId, @Valid @RequestBody ProfileChangeRequest profileChageRequest) {
-        String name = profileChageRequest.name();
-        ProfileImage profileImage = profileChageRequest.profileImage();
+    public ResponseEntity<MemberDto> changeProfile(@Login Long memberId, @Valid @RequestBody ProfileChangeRequest profileChangeRequest) {
+        String name = profileChangeRequest.name();
+        ProfileImage profileImage = profileChangeRequest.profileImage();
         MemberDto memberDto = new MemberDto(memberService.changeProfile(memberId, name, profileImage));
         return new ResponseEntity<>(memberDto, HttpStatus.OK);
     }
