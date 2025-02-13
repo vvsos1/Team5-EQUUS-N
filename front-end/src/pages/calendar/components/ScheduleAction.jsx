@@ -55,7 +55,7 @@ export default function ScheduleAction({
   const { mutate: postSchedule } = usePostSchedule(selectedTeam);
   const { mutate: editSchedule } = useEditSchedule(selectedTeam);
   const { mutate: deleteSchedule } = useDeleteSchedule(selectedTeam);
-  console.log(actionInfo);
+
   return (
     <div
       ref={scrollRef}

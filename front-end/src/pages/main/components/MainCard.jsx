@@ -28,7 +28,6 @@ export default function MainCard({
   const contentRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [height, setHeight] = useState(0);
-  console.log(userId, '으아아아');
   // 스케줄 컨텐츠 높이 계산
   useEffect(() => {
     if (contentRef.current) {
@@ -198,7 +197,6 @@ function renderMyRole(recentSchedule, onButtonClick, userId) {
  * @param {number} userId
  */
 function renderTeamRole(recentSchedule, contentRef, currentHeight, userId) {
-  console.log(userId);
   return (
     <ul
       ref={contentRef}
@@ -208,7 +206,6 @@ function renderTeamRole(recentSchedule, contentRef, currentHeight, userId) {
       }
     >
       {recentSchedule.scheduleMemberNestedDtoList.map((role, index) => {
-        console.log(typeof userId, typeof role.memberId);
         if (role.memberId === userId) return null;
         return (
           <li key={index} className='flex flex-col gap-3 first:mt-3'>
