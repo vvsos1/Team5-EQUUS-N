@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 
 async function enableMocking() {
+  return;
+
   if (process.env.NODE_ENV !== 'development') {
     return;
   }

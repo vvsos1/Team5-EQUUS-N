@@ -36,7 +36,8 @@
     "msw": "^2.7.0",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "vite-plugin-pwa": "^0.21.1"
   },
   "msw": {
     "workerDirectory": [

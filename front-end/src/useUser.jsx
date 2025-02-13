@@ -10,7 +10,7 @@ export const useUser = () => {
   };
 
   return {
-    userId: state.userId,
+    userId: parseInt(state.userId),
     setUserId,
   };
 };

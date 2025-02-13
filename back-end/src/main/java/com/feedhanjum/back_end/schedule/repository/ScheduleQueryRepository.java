@@ -37,7 +37,7 @@ public class ScheduleQueryRepository {
                 .from(schedule)
                 .where(schedule.team.id.eq(teamId), schedule.startTime.after(time))
                 .orderBy(schedule.startTime.asc())
-                .fetchOne();
+                .fetchFirst();
 
         if(closestNextScheduleId == null) return List.of();
 
@@ -51,7 +51,7 @@ public class ScheduleQueryRepository {
                 .from(schedule)
                 .where(schedule.team.id.eq(teamId), schedule.endTime.before(time))
                 .orderBy(schedule.endTime.desc())
-                .fetchOne();
+                .fetchFirst();
 
         if(closestPreviousSchedule == null) return List.of();
 
@@ -78,7 +78,7 @@ public class ScheduleQueryRepository {
                 .from(schedule)
                 .where(teamIdEq(teamId))
                 .orderBy(schedule.startTime.asc())
-                .fetchOne());
+                .fetchFirst());
     }
 
     public Optional<LocalDateTime> findLatestEndTimeByTeamId(Long teamId){
@@ -86,7 +86,7 @@ public class ScheduleQueryRepository {
                 .from(schedule)
                 .where(teamIdEq(teamId))
                 .orderBy(schedule.endTime.desc())
-                .fetchOne());
+                .fetchFirst());
     }
 
 

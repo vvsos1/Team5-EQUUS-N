@@ -13,7 +13,7 @@ import CustomDatePicker, {
 import Modal from '../../components/modals/Modal';
 import MediumButton from '../../components/buttons/MediumButton';
 import { hideModal, showModal } from '../../utility/handleModal';
-import { useDeleteTeam, useEditTeam } from '../../api/useTeamspace';
+import { useEditTeam, useLeaveTeam } from '../../api/useTeamspace';
 
 /**
  * @param {object} props
@@ -27,14 +27,23 @@ export default function TeamSpaceEdit({ isFirst = false }) {
     name: '',
     startDate: new Date(),
     endDate: new Date(),
-    feedbackType: false,
+    feedbackType: 'ANONYMOUS',
   });
   const [isDatePickerOpen1, setIsDatePickerOpen1] = useState(false);
   const [isDatePickerOpen2, setIsDatePickerOpen2] = useState(false);
+  const [canDelete, setCanDelete] = useState(false);
   const { mutate: editTeam } = useEditTeam(teamId);
-  const { mutate: deleteTeam } = useDeleteTeam(teamId);
+  const { mutate: leaveTeam } = useLeaveTeam(teamId);
 
   const navigate = useNavigate();
+
+  const handleDeleteButton = () => {
+    if (canDelete) {
+      showModal(deleteTeamModal);
+    } else {
+      showToast('남은 팀원이 있어 삭제할 수 없어요');
+    }
+  };
 
   const deleteTeamModal = (
     <Modal
@@ -45,9 +54,12 @@ export default function TeamSpaceEdit({ isFirst = false }) {
           text='삭제'
           isOutlined={false}
           onClick={() => {
-            deleteTeam();
-            hideModal();
-            navigate('/teamspace/list');
+            leaveTeam(null, {
+              onSuccess: () => {
+                hideModal();
+                navigate('/teamspace/list');
+              },
+            });
           }}
         />
       }
@@ -69,8 +81,8 @@ export default function TeamSpaceEdit({ isFirst = false }) {
       return;
     } else {
       editTeam(team);
+      navigate(-1);
     }
-    navigate(-1);
   };
 
   const onClickPop = () => {
@@ -80,6 +92,7 @@ export default function TeamSpaceEdit({ isFirst = false }) {
   useEffect(() => {
     if (location.state) {
       setTeam(location.state?.teamResponse);
+      setCanDelete(location.state?.members?.length < 2);
     }
   }, []);
 
@@ -148,11 +161,24 @@ export default function TeamSpaceEdit({ isFirst = false }) {
         addOn={
           <button
             className='flex h-full w-full items-center justify-center'
-            onClick={() =>
-              setTeam({ ...team, feedbackType: !team.feedbackType })
-            }
+            onClick={() => {
+              console.log(team.feedbackType);
+              setTeam({
+                ...team,
+                feedbackType:
+                  team.feedbackType === 'IDENTIFIED' ?
+                    'ANONYMOUS'
+                  : 'IDENTIFIED',
+              });
+            }}
           >
-            <Icon name={team.feedbackType ? 'checkBoxClick' : 'checkBoxNone'} />
+            <Icon
+              name={
+                team.feedbackType === 'ANONYMOUS' ?
+                  'checkBoxClick'
+                : 'checkBoxNone'
+              }
+            />
           </button>
         }
       />
@@ -175,7 +201,7 @@ export default function TeamSpaceEdit({ isFirst = false }) {
             'rounded-300 flex h-[56px] w-full items-center justify-center px-4 py-2 text-gray-300'
           }
         >
-          <a onClick={() => showModal(deleteTeamModal)}>팀 스페이스 삭제</a>
+          <a onClick={() => handleDeleteButton()}>팀 스페이스 삭제</a>
         </div>
       </div>
     </div>
