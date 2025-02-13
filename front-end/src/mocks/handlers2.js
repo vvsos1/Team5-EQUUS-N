@@ -90,8 +90,4 @@ export const handlers2 = [
   http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {
     return HttpResponse.json(teamResponse);
   }),
-
-  http.get(`${BASE_URL}/api/retrospect/:writerId`, () => {
-    return HttpResponse.json(retrospectResponse);
-  }),
 ];
