@@ -4,11 +4,15 @@ package com.feedhanjum.back_end.auth.domain;
 import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
 import lombok.Getter;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.Random;
 
 @Getter
-public class EmailSignupToken {
+public class EmailSignupToken implements java.io.Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     public static final int TOKEN_LENGTH = 4;
     public static final int EXPIRE_MINUTE = 5;
     private final String email;

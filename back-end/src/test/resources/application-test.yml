@@ -9,7 +9,9 @@ spring:
       ddl-auto: create
     database-platform: org.hibernate.dialect.H2Dialect
   autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+    exclude:
+      - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 
 server:
   http.port: 80
