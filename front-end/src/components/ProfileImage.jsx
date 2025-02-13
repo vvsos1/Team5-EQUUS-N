@@ -1,4 +1,4 @@
-import { bgColors, iconNames } from '../constants/iconRelated';
+import { bgColors, iconNames } from '../constants/IconRelated';
 import Icon from './Icon';
 
 /**
