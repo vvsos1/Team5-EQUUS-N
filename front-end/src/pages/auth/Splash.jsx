@@ -30,15 +30,17 @@ export default function Splash() {
   };
 
   useEffect(() => {
-    if (member) {
-      setUserId(member.id);
-      if (teamCode) {
-        joinTeam(teamCode);
+    setTimeout(() => {
+      if (member) {
+        setUserId(member.id);
+        if (teamCode) {
+          joinTeam(teamCode);
+        }
+        moveTo('/main');
+      } else {
+        setIsLoading(false);
       }
-      moveTo('/main');
-    } else {
-      setIsLoading(false);
-    }
+    }, 1500);
   }, [member]);
 
   return (
