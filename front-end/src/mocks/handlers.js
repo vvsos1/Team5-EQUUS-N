@@ -19,9 +19,9 @@ export const handlers = [
   // }),
 
   // 메인 카드 조회
-  http.get(`${BASE_URL}/api/team/:teamId/schedule`, () => {
-    return HttpResponse.json(schedules[0]);
-  }),
+  // http.get(`${BASE_URL}/api/team/:teamId/schedule`, () => {
+  //   return HttpResponse.json(schedules[0]);
+  // }),
 
   // 팀 멤버 조회
   http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
@@ -105,7 +105,7 @@ export const handlers = [
     const member = members2.find((m) => m.id === memberId);
     return HttpResponse.json(member);
   }),
-           
+
   // 피드백 키워드 조회
   http.get(`${BASE_URL}/api/feedback/keyword`, () => {
     return HttpResponse.json(objectives);

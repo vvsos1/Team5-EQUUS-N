@@ -25,6 +25,8 @@ import ScheduleAction, {
 import TodoAdd from '../calendar/components/TodoAdd';
 import { getScheduleTimeDiff } from '../../utility/time';
 import { useTeam } from '../../useTeam';
+import useScheduleAction from '../calendar/hooks/useScheduleAction';
+import { useUser } from '../../useUser';
 
 export default function MainPage() {
   const [banners, setBanners] = useState();
@@ -33,9 +35,32 @@ export default function MainPage() {
   const [isScheduleOpen, toggleSchedule] = useReducer((prev) => !prev, false);
 
   const { teams, selectedTeam, selectTeam } = useTeam();
-  const { data: recentScheduleData } = useMainCard(selectedTeam);
+  const { userId } = useUser();
+  const { data: recentScheduleData, isPending: isMainCardPending } =
+    useMainCard(selectedTeam);
   const { data: matesData } = useMainCard2(selectedTeam);
   const { data: notificationsData, markAsRead } = useNotification(selectedTeam);
+  const { actionInfo } = useScheduleAction(
+    '2025-02-14T00:00:00.000Z',
+    recentScheduleData,
+  );
+
+  console.log(
+    '현재 선택 팀: ',
+    selectedTeam,
+    '팀즈: ',
+    teams,
+    '스케쥴: ',
+    recentScheduleData,
+    '멤버: ',
+    matesData,
+    '알람: ',
+    notificationsData,
+    '토글 스케쥴: ',
+    isScheduleOpen,
+    '현재 사용자 id: ',
+    userId,
+  );
 
   const navigate = useNavigate();
 
@@ -60,6 +85,7 @@ export default function MainPage() {
       return () => navigate('/teamspace/make');
     }
     if (!recentScheduleData) {
+      console.log('일정 없음');
       return () => toggleSchedule();
     }
     if (timeDiff <= 0) {
@@ -102,8 +128,9 @@ export default function MainPage() {
         </Slider>
       )}
       <div className='h-2' />
-      {(teams.length === 0 || recentScheduleData) && (
+      {!isMainCardPending && (
         <MainCard
+          userId={userId}
           isInTeam={teams.length > 0}
           recentSchedule={recentScheduleData}
           scheduleDifferece={timeDiff}
@@ -168,7 +195,7 @@ export default function MainPage() {
         />
       )}
       <div className='h-8' />
-      {recentScheduleData && (
+      {!recentScheduleData && (
         <ScheduleAction
           type={ScheduleActionType.ADD}
           isOpen={isScheduleOpen}
@@ -180,7 +207,8 @@ export default function MainPage() {
             toggleSchedule();
           }}
           selectedDateFromParent={new Date()}
-          selectedSchedule={recentScheduleData}
+          selectedScheduleFromParent={recentScheduleData}
+          actionInfo={actionInfo}
         />
       )}
       {recentScheduleData && (

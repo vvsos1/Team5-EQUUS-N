@@ -14,7 +14,7 @@ import { ProfileImageWithText } from './ProfileImage';
 export default function MainCard2({ teamMates, onClick }) {
   return (
     <div className={'rounded-400 mx-5 h-fit bg-gray-800 p-4'}>
-      <p className='pl-1 text-gray-100'>피드백 주고받기</p>
+      <p className='subtitle-2 pl-1 text-gray-100'>피드백 주고받기</p>
       <div className='mx-2 my-5 grid grid-cols-4 gap-x-4 gap-y-4'>
         {teamMates.map((mate, index) => {
           return (

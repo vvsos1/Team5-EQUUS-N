@@ -33,7 +33,9 @@ export const ScheduleActionType = Object.freeze({
  * @param {boolean} props.isOpen - 페이지 열림 여부
  * @param {function} props.onClose - 페이지 닫기 함수
  * @param {function} props.onSubmit - 일정 추가 완료 함수
- * @param {Date} props.selectedDate - 선택된 날짜
+ * @param {Date} props.selectedDateFromParent - 선택된 날짜
+ * @param {object} props.selectedScheduleFromParent - 선택된 일정
+ * @param {object} props.actionInfo - 일정 정보
  */
 export default function ScheduleAction({
   type,
@@ -53,7 +55,7 @@ export default function ScheduleAction({
   const { mutate: postSchedule } = usePostSchedule(selectedTeam);
   const { mutate: editSchedule } = useEditSchedule(selectedTeam);
   const { mutate: deleteSchedule } = useDeleteSchedule(selectedTeam);
-
+  console.log(actionInfo);
   return (
     <div
       ref={scrollRef}
