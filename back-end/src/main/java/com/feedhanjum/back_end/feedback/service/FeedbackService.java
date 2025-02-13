@@ -216,7 +216,8 @@ public class FeedbackService {
                 .orElseThrow();
         Member sender = memberRepository.findById(feedback.getSender().getId())
                 .orElseThrow();
-        Team team = feedback.getTeam();
+        Team team = teamRepository.findById(feedback.getTeam().getId())
+                .orElseThrow();
 
         team.removeFeedbackRequest(sender, receiver);
 
