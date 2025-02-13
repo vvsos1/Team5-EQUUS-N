@@ -42,8 +42,8 @@ public class Team {
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<FrequentFeedbackRequest> frequentFeedbackRequests = new ArrayList<>();
 
-    public Team(String name, Member leader, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType) {
-        validateDuration(startDate, endDate);
+    public Team(String name, Member leader, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType, LocalDate now) {
+        validateDuration(startDate, endDate, now);
         this.feedbackType = feedbackType;
         this.name = name;
         this.startDate = startDate;
@@ -59,9 +59,9 @@ public class Team {
         this.leader = newLeader;
     }
 
-    public void updateInfo(Member leader, String name, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType) {
+    public void updateInfo(Member leader, String name, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType, LocalDate now) {
         validateTeamLeader(leader);
-        validateDuration(startDate, endDate);
+        validateDuration(startDate, endDate, now);
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -154,9 +154,12 @@ public class Team {
             throw new TeamMembershipNotFoundException("팀원이 아닙니다");
     }
 
-    private void validateDuration(LocalDate startDate, LocalDate endDate) {
+    private void validateDuration(LocalDate startDate, LocalDate endDate, LocalDate now) {
         if (endDate != null && !startDate.isBefore(endDate)) {
             throw new IllegalArgumentException("프로젝트 시작 시간이 종료 시간보다 앞서야 합니다.");
+        }
+        if(endDate != null && endDate.isBefore(now)){
+            throw new IllegalArgumentException("프로젝트 종료 날짜는 오늘 이후여야 합니다.");
         }
     }
 

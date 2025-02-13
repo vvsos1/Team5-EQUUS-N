@@ -3,7 +3,7 @@ package com.feedhanjum.back_end.feedback.service.dto;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
-import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.feedback.domain.Receiver;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 public record SentFeedbackDto(
         Long feedbackId,
         boolean isAnonymous,
-        Receiver receiver,
+        ReceiverDto receiver,
         List<String> objectiveFeedbacks,
         String subjectiveFeedback,
         String teamName,
@@ -24,7 +24,7 @@ public record SentFeedbackDto(
         return new SentFeedbackDto(
                 feedback.getId(),
                 feedback.getFeedbackType() == FeedbackType.ANONYMOUS,
-                Receiver.from(feedback.getReceiver()),
+                ReceiverDto.from(feedback.getReceiver()),
                 feedback.getObjectiveFeedbacks().stream().map(ObjectiveFeedback::getDescription).toList(),
                 feedback.getSubjectiveFeedback(),
                 feedback.getTeam().getName(),
@@ -34,9 +34,9 @@ public record SentFeedbackDto(
     }
 
 
-    public record Receiver(String name, String backgroundColor, String image) {
-        public static Receiver from(Member member) {
-            return new Receiver(member.getName(), member.getProfileImage().getBackgroundColor(), member.getProfileImage().getImage());
+    public record ReceiverDto(String name, String backgroundColor, String image) {
+        public static ReceiverDto from(Receiver receiver) {
+            return new ReceiverDto(receiver.getName(), receiver.getProfileImage().getBackgroundColor(), receiver.getProfileImage().getImage());
         }
     }
 

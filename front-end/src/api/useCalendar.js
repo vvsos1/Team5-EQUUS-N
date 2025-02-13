@@ -48,9 +48,7 @@ export const usePostSchedule = (teamId) => {
   return useMutation({
     mutationFn: (data) =>
       api.post({ url: `/api/team/${teamId}/schedule/create`, body: data }),
-    onSuccess: (data) => {
-      console.log(data);
-      console.log('성공 테스트1');
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
       queryClient.invalidateQueries({ queryKey: ['mainCard', teamId] });
     },

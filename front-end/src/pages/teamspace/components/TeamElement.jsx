@@ -66,8 +66,8 @@ export default function TeamElement({
                   </div>
                 : <div className='h-8 w-8'>
                     <ProfileImage
-                      iconName={`@animals/${member.iconName}`}
-                      color={member.color}
+                      iconName={`@animals/${member.profileImage.image}`}
+                      color={member.profileImage.backgroundColor}
                     />
                   </div>
                 }

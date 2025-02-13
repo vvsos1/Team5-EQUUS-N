@@ -16,7 +16,7 @@ export default function TeamSpaceList() {
   }
 
   return (
-    <div className='flex flex-col'>
+    <div className='scrollbar-hidden flex h-full flex-col overflow-x-hidden overflow-y-auto'>
       <StickyWrapper>
         <NavBar2
           canPop={true}
@@ -35,9 +35,9 @@ export default function TeamSpaceList() {
           <p className={`${showEndedTeams ? 'text-lime-500' : ''}`}>종료됨</p>
         </button>
       </div>
-      <ul className='flex flex-col gap-4'>
-        {teams &&
-          teams
+      {teams.length > 0 ?
+        <ul className='flex flex-col gap-4'>
+          {teams
             .filter((team) => {
               if (showEndedTeams) {
                 return checkIsFinished(team.endDate);
@@ -59,7 +59,12 @@ export default function TeamSpaceList() {
                 />
               </button>
             ))}
-      </ul>
+        </ul>
+      : <div className='flex h-full flex-col items-center justify-center gap-4 text-gray-300'>
+          <p className='text-5xl'>😢</p>
+          <p>소속된 팀이 없어요</p>
+        </div>
+      }
     </div>
   );
 }

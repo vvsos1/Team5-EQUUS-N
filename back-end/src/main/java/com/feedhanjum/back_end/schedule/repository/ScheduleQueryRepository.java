@@ -33,25 +33,30 @@ public class ScheduleQueryRepository {
     }
 
     public List<ScheduleProjectionDto> findScheduleByClosestNextStartTime(Long teamId, LocalDateTime time) {
-        JPQLQuery<Long> subQuery = JPAExpressions.select(schedule.id)
+        Long closestNextScheduleId = queryFactory.select(schedule.id)
                 .from(schedule)
                 .where(schedule.team.id.eq(teamId), schedule.startTime.after(time))
                 .orderBy(schedule.startTime.asc())
-                .limit(1);
+                .fetchOne();
+
+        if(closestNextScheduleId == null) return List.of();
 
         return queryScheduleProjectionDto()
-                .where(schedule.id.eq(subQuery))
+                .where(schedule.id.eq(closestNextScheduleId))
                 .fetch();
     }
 
     public List<ScheduleProjectionDto> findScheduleByClosestPreviousEndTime(Long teamId, LocalDateTime time) {
-        JPQLQuery<Long> subQuery = JPAExpressions.select(schedule.id)
+        Long closestPreviousSchedule = queryFactory.select(schedule.id)
                 .from(schedule)
                 .where(schedule.team.id.eq(teamId), schedule.endTime.before(time))
                 .orderBy(schedule.endTime.desc())
-                .limit(1);
+                .fetchOne();
+
+        if(closestPreviousSchedule == null) return List.of();
+
         return queryScheduleProjectionDto()
-                .where(schedule.id.eq(subQuery))
+                .where(schedule.id.eq(closestPreviousSchedule))
                 .fetch();
     }
 

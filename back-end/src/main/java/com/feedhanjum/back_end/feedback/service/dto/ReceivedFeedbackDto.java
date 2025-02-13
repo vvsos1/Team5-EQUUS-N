@@ -3,7 +3,7 @@ package com.feedhanjum.back_end.feedback.service.dto;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
-import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.feedback.domain.Sender;
 import jakarta.annotation.Nullable;
 
 import java.time.LocalDateTime;
@@ -12,7 +12,7 @@ import java.util.List;
 public record ReceivedFeedbackDto(
         Long feedbackId,
         boolean isAnonymous,
-        @Nullable Sender sender,
+        @Nullable SenderDto sender,
         List<String> objectiveFeedbacks,
         String subjectiveFeedback,
         String teamName,
@@ -20,7 +20,7 @@ public record ReceivedFeedbackDto(
         LocalDateTime createdAt
 ) {
 
-    public ReceivedFeedbackDto(Long feedbackId, boolean isAnonymous, @Nullable Sender sender, List<String> objectiveFeedbacks, String subjectiveFeedback, String teamName, boolean liked, LocalDateTime createdAt) {
+    public ReceivedFeedbackDto(Long feedbackId, boolean isAnonymous, @Nullable SenderDto sender, List<String> objectiveFeedbacks, String subjectiveFeedback, String teamName, boolean liked, LocalDateTime createdAt) {
         this.feedbackId = feedbackId;
         this.isAnonymous = isAnonymous;
         this.objectiveFeedbacks = objectiveFeedbacks;
@@ -38,7 +38,7 @@ public record ReceivedFeedbackDto(
         return new ReceivedFeedbackDto(
                 feedback.getId(),
                 feedback.getFeedbackType() == FeedbackType.ANONYMOUS,
-                Sender.from(feedback.getSender()),
+                SenderDto.from(feedback.getSender()),
                 feedback.getObjectiveFeedbacks().stream().map(ObjectiveFeedback::getDescription).toList(),
                 feedback.getSubjectiveFeedback(),
                 feedback.getTeam().getName(),
@@ -48,9 +48,9 @@ public record ReceivedFeedbackDto(
     }
 
 
-    public record Sender(String name, String backgroundColor, String image) {
-        public static Sender from(Member member) {
-            return new Sender(member.getName(), member.getProfileImage().getBackgroundColor(), member.getProfileImage().getImage());
+    public record SenderDto(String name, String backgroundColor, String image) {
+        public static SenderDto from(Sender sender) {
+            return new SenderDto(sender.getName(), sender.getProfileImage().getBackgroundColor(), sender.getProfileImage().getImage());
         }
     }
 
