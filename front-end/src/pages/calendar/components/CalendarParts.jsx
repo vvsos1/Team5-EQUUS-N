@@ -88,8 +88,12 @@ export function CalendarWeek({
   scheduleSet,
   setAllSchedules,
 }) {
-  const { selectedTeam } = useTeam();
-  const { data: schedules, isLoading: isSchedulesLoading } = useGetSchedules({
+  const { selectedTeam, teams } = useTeam();
+  const {
+    data: schedules,
+    isLoading: isSchedulesLoading,
+    refetch,
+  } = useGetSchedules({
     teamId: selectedTeam,
     startDay: new Date(curSunday).toISOString().split('T')[0],
     endDay: new Date(new Date().setDate(new Date(curSunday).getDate() + 7))

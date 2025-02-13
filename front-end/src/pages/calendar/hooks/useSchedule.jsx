@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { timeInPeriod, toKST } from '../../../utility/time';
 
-export default function useSchedule(teamId, selectedDate) {
+export default function useSchedule(teamId, selectedDate, showAllSchedule) {
   const [allSchedules, setAllSchedules] = useState([]);
   const [scheduleOnDate, setScheduleOnDate] = useState(null);
   const [scheduleSet, setScheduleSet] = useState(new Set());
@@ -25,19 +25,27 @@ export default function useSchedule(teamId, selectedDate) {
 
   // 특정 팀 관련 일정들의 날짜 모두 종합
   useEffect(() => {
-    setScheduleSet(
+    if (showAllSchedule) {
       new Set(
-        allSchedules
-          ?.filter((data) => {
-            return data.teamId === teamId;
-          })
-          ?.map(
-            (data) =>
-              new Date(toKST(data.startTime)).toISOString().split('T')[0],
-          ) ?? [],
-      ),
-    );
-  }, [allSchedules]);
+        allSchedules?.map(
+          (data) => new Date(toKST(data.startTime)).toISOString().split('T')[0],
+        ) ?? [],
+      );
+    } else {
+      setScheduleSet(
+        new Set(
+          allSchedules
+            ?.filter((data) => {
+              return data.teamId === teamId;
+            })
+            ?.map(
+              (data) =>
+                new Date(toKST(data.startTime)).toISOString().split('T')[0],
+            ) ?? [],
+        ),
+      );
+    }
+  }, [allSchedules, teamId, showAllSchedule]);
 
   return {
     allSchedules,

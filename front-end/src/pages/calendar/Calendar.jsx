@@ -33,7 +33,7 @@ export default function Calendar() {
     scheduleSet,
     selectedSchedule,
     setSelectedSchedule,
-  } = useSchedule(selectedTeam, selectedDate);
+  } = useSchedule(selectedTeam, selectedDate, showAllSchedule);
 
   // 일정 등록, 수정, 삭제 등 액션 관련
   const {
@@ -59,14 +59,15 @@ export default function Calendar() {
           selectedTeamId={selectedTeam}
           teamList={teams}
           onTeamClick={(teamId) => {
-            setAllSchedules([]);
             setShowAllSchedule(false);
+            setAllSchedules([]);
             selectTeam(teamId);
           }}
           canClose={!doingAction}
           onClickLastButton={() => {
             setShowAllSchedule(true);
           }}
+          showAllSchedule={showAllSchedule}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
       </StickyWrapper>
