@@ -6,13 +6,16 @@ import { showToast } from '../utility/handleToast';
 export const useFeedbackReceived = (userId, params) => {
   return useQuery({
     queryKey: ['feedback-received', userId, params],
+    retry: 0,
     queryFn: () => {
-      const sendingParams = {
-        teamId: params.teamId,
+      let sendingParams = {
         filterHelpful: params.onlyLiked,
         sortOrder: params.sortBy === 'createdAt:desc' ? 'DESC' : 'ASC',
         page: params.page,
       };
+      if (params.teamId) {
+        sendingParams.teamId = params.teamId;
+      }
       return api.get({
         url: `/api/feedbacks/receiver/${userId}`,
         params: sendingParams,
@@ -24,13 +27,16 @@ export const useFeedbackReceived = (userId, params) => {
 export const useFeedbackSent = (userId, params) => {
   return useQuery({
     queryKey: ['feedback-sent', userId, params],
+    retry: 0,
     queryFn: () => {
-      const sendingParams = {
-        teamId: params.teamId,
+      let sendingParams = {
         filterHelpful: params.onlyLiked,
         sortOrder: params.sortBy === 'createdAt:desc' ? 'DESC' : 'ASC',
         page: params.page,
       };
+      if (params.teamId) {
+        sendingParams.teamId = params.teamId;
+      }
       return api.get({
         url: `/api/feedbacks/sender/${userId}`,
         params: sendingParams,

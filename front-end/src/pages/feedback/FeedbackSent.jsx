@@ -7,23 +7,31 @@ import { DropdownSmall } from '../../components/Dropdown';
 import Icon from '../../components/Icon';
 import FeedBack, { FeedBackType } from './components/FeedBack';
 import { useUser } from '../../useUser';
+import { useTeam } from '../../useTeam';
 
 export default function FeedbackSent() {
   const navigate = useNavigate();
   const [feedbacks, setFeedbacks] = useState([]);
+  const { teams } = useTeam();
   const [selectedTeam, setSelectedTeam] = useState('전체 보기');
   const [onlyLiked, setOnlyLiked] = useState(false);
   const [sortBy, setSortBy] = useState('createdAt:desc');
   const [loadedPage, setLoadedPage] = useState(0);
+  const [loadFinished, setLoadFinished] = useState(false);
   const scrollRef = useRef(null);
 
   const { userId } = useUser();
   const {
     data: feedbackSent,
     isLoading,
+    isError,
+    error,
     refetch,
   } = useFeedbackSent(userId, {
-    teamId: selectedTeam === '전체 보기' ? null : selectedTeam,
+    teamId:
+      selectedTeam === '전체 보기' ? null : (
+        teams.find((t) => t.name === selectedTeam)?.id
+      ),
     onlyLiked,
     sortBy,
     page: loadedPage,
@@ -48,15 +56,21 @@ export default function FeedbackSent() {
   }, [isLoading]);
 
   useEffect(() => {
-    refetch();
+    if (!loadFinished) {
+      refetch();
+    }
   }, [loadedPage, refetch]);
 
   useEffect(() => {
     if (!feedbackSent) return;
+    if (!feedbackSent.hasNext) {
+      setLoadFinished(true);
+    }
     setFeedbacks((prev) => [...prev, ...(feedbackSent?.content ?? [])]);
   }, [feedbackSent]);
 
   useEffect(() => {
+    setLoadFinished(false);
     const container = scrollRef.current;
     container.scrollTo(0, 0);
     setLoadedPage(0);
@@ -80,7 +94,7 @@ export default function FeedbackSent() {
           <DropdownSmall
             triggerText={selectedTeam}
             setTriggerText={setSelectedTeam}
-            items={[]}
+            items={teams.map((team) => team.name)}
           />
           <div className='button-2 flex items-center gap-2 text-gray-100'>
             <button
@@ -111,7 +125,7 @@ export default function FeedbackSent() {
           </div>
         </div>
       </StickyWrapper>
-      {feedbacks && (
+      {feedbacks.length > 0 ?
         <ul>
           {feedbacks.map((feedback) => {
             return (
@@ -121,7 +135,11 @@ export default function FeedbackSent() {
             );
           })}
         </ul>
-      )}
+      : <div className='flex h-full flex-col items-center justify-center gap-4 text-gray-300'>
+          <p className='text-5xl'>📭</p>
+          <p>보낸 피드백이 없어요</p>
+        </div>
+      }
     </div>
   );
 }
