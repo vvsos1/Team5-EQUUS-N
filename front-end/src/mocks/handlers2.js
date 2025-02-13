@@ -77,9 +77,9 @@ export const handlers2 = [
   // }),
 
   // 멤버 삭제
-  http.delete(`${BASE_URL}/api/team/:teamId/member/:memberId`, () => {
-    return new HttpResponse({ status: 204 });
-  }),
+  // http.delete(`${BASE_URL}/api/team/:teamId/member/:memberId`, () => {
+  //   return new HttpResponse({ status: 204 });
+  // }),
 
   // 팀 수정
   // http.post(`${BASE_URL}/api/team/:teamId`, () => {

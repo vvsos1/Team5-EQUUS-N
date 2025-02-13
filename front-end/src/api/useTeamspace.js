@@ -30,9 +30,14 @@ export const useSetLeader = (teamId) => {
 };
 
 export const useKickMember = (teamId) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (memberId) => {
       return api.delete({ url: `/api/team/${teamId}/member/${memberId}` });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['team', teamId]);
+      showToast('팀원을 내보냈어요');
     },
   });
 };
