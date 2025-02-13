@@ -39,6 +39,8 @@ public class ScheduleQueryRepository {
                 .orderBy(schedule.startTime.asc())
                 .fetchOne();
 
+        if(closestNextScheduleId == null) return List.of();
+
         return queryScheduleProjectionDto()
                 .where(schedule.id.eq(closestNextScheduleId))
                 .fetch();
@@ -50,6 +52,9 @@ public class ScheduleQueryRepository {
                 .where(schedule.team.id.eq(teamId), schedule.endTime.before(time))
                 .orderBy(schedule.endTime.desc())
                 .fetchOne();
+
+        if(closestPreviousSchedule == null) return List.of();
+
         return queryScheduleProjectionDto()
                 .where(schedule.id.eq(closestPreviousSchedule))
                 .fetch();
