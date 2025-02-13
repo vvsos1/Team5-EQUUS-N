@@ -144,6 +144,11 @@ export default function MainPage() {
       {matesData && (
         <MainCard2
           teamMates={matesData}
+          onReceivedFeedbackClick={() =>
+            navigate(
+              `/feedback/received?teamName=${teams.find((team) => team.id === selectedTeam).name}`,
+            )
+          }
           onClick={(mate) =>
             showModal(
               <Modal
@@ -151,19 +156,21 @@ export default function MainPage() {
                 profileImage={
                   <div className='size-[62px]'>
                     <ProfileImage
-                      iconName={`@animals/${mate.iconName}`}
-                      color={mate.color}
+                      iconName={`@animals/${mate.profileImage.image}`}
+                      color={mate.profileImage.backgroundColor}
                     />
                   </div>
                 }
                 content={
-                  mate.id === 1 ? `${mate.name}(나)` : `${mate.name}님에게`
+                  mate.id === userId ? `${mate.name}(나)` : `${mate.name}님에게`
                 }
                 mainButton={
                   <MediumButton
-                    text={mate.id === 1 ? '회고 작성하기' : '피드백 보내기'}
+                    text={
+                      mate.id === userId ? '회고 작성하기' : '피드백 보내기'
+                    }
                     onClick={() => {
-                      mate.id === 1 ?
+                      mate.id === userId ?
                         navigate(`/feedback/self`)
                       : navigate(`/feedback/send`, {
                           state: { members: [mate] },
@@ -175,7 +182,7 @@ export default function MainPage() {
                   />
                 }
                 subButton={
-                  mate.id === 1 ?
+                  mate.id === userId ?
                     null
                   : <MediumButton
                       text='피드백 요청하기'

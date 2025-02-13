@@ -8,10 +8,15 @@ import { ProfileImageWithText } from './ProfileImage';
  * @param {string} props.teamMates[].name - 팀원 이름
  * @param {string} props.teamMates[].iconName - 팀원 아이콘 이름
  * @param {string} props.teamMates[].color - 팀원 아이콘 색상
- * @param {function} props.onClick - 클릭 이벤트
+ * @param {function} props.onClick - 아이콘 클릭 이벤트
+ * @param {function} props.onReceivedFeedbackClick - 피드백 보관함 클릭 이벤트
  * @returns {JSX.Element} - 메인 카드 2 컴포넌트
  */
-export default function MainCard2({ teamMates, onClick }) {
+export default function MainCard2({
+  teamMates,
+  onClick,
+  onReceivedFeedbackClick,
+}) {
   return (
     <div className={'rounded-400 mx-5 h-fit bg-gray-800 p-4'}>
       <p className='subtitle-2 pl-1 text-gray-100'>피드백 주고받기</p>
@@ -31,7 +36,11 @@ export default function MainCard2({ teamMates, onClick }) {
           <ProfileImageWithText text='팀원초대' onClick={() => {}} />
         )}
       </div>
-      <MediumButton text='피드백 보관함' onClick={() => {}} disabled={true} />
+      <MediumButton
+        text='피드백 보관함'
+        onClick={onReceivedFeedbackClick}
+        disabled={true}
+      />
     </div>
   );
 }

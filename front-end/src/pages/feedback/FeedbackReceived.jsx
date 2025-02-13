@@ -1,19 +1,24 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useFeedbackReceived } from '../../api/useFeedback';
 import { useEffect, useRef, useState } from 'react';
 import NavBar2 from '../../components/NavBar2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import { DropdownSmall } from '../../components/Dropdown';
 import Icon from '../../components/Icon';
-import FeedBack, { FeedBackType } from './components/FeedBack';
+import FeedBack from './components/FeedBack';
 import { useUser } from '../../useUser';
 import { useTeam } from '../../useTeam';
 
 export default function FeedbackReceived() {
+  const location = useLocation();
+  const defaultTeamName = new URLSearchParams(location.search).get('teamName');
+
   const navigate = useNavigate();
   const [feedbacks, setFeedbacks] = useState([]);
   const { teams } = useTeam();
-  const [selectedTeam, setSelectedTeam] = useState('전체 보기');
+  const [selectedTeam, setSelectedTeam] = useState(
+    defaultTeamName ?? '전체 보기',
+  );
   const [onlyLiked, setOnlyLiked] = useState(false);
   const [sortBy, setSortBy] = useState('createdAt:desc');
   const [loadedPage, setLoadedPage] = useState(0);
