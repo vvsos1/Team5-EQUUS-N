@@ -152,7 +152,7 @@ export function toKST(date) {
  * @returns
  */
 export function getScheduleTimeDiff(recentSchedule) {
-  const todayTime = toKST(new Date());
+  const todayTime = new Date();
   const startTime = new Date(recentSchedule.startTime);
   const endTime = new Date(recentSchedule.endTime);
 

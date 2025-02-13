@@ -42,26 +42,9 @@ export default function MainPage() {
   const { data: notificationsData, markAsRead } = useNotification(selectedTeam);
 
   // 리렌더링 시 값이 바뀌지 않는 상태 생성
-  const date = useRef(new Date());
+  const date = useRef(new Date()).current;
 
   const { actionInfo } = useScheduleAction(date, recentScheduleData);
-
-  console.log(
-    '현재 선택 팀: ',
-    selectedTeam,
-    '팀즈: ',
-    teams,
-    '스케쥴: ',
-    recentScheduleData,
-    '멤버: ',
-    matesData,
-    '알람: ',
-    notificationsData,
-    '토글 스케쥴: ',
-    isScheduleOpen,
-    '현재 사용자 id: ',
-    userId,
-  );
 
   const navigate = useNavigate();
 
@@ -82,7 +65,6 @@ export default function MainPage() {
   }, [recentScheduleData]);
 
   const getOnMainButtonClick = () => {
-    console.log(recentScheduleData, timeDiff);
     if (teams.length === 0) {
       return () => navigate('/teamspace/make');
     }

@@ -1,3 +1,6 @@
+import { useInviteTeam } from '../api/useTeamspace';
+import { useTeam } from '../useTeam';
+import { showToast } from '../utility/handleToast';
 import MediumButton from './buttons/MediumButton';
 import { ProfileImageWithText } from './ProfileImage';
 
@@ -17,6 +20,9 @@ export default function MainCard2({
   onClick,
   onReceivedFeedbackClick,
 }) {
+  const { mutate: inviteTeam } = useInviteTeam();
+  const { selectedTeam } = useTeam();
+
   return (
     <div className={'rounded-400 mx-5 h-fit bg-gray-800 p-4'}>
       <p className='subtitle-2 pl-1 text-gray-100'>피드백 주고받기</p>
@@ -33,7 +39,18 @@ export default function MainCard2({
           );
         })}
         {teamMates.length < 4 && (
-          <ProfileImageWithText text='팀원초대' onClick={() => {}} />
+          <ProfileImageWithText
+            text='팀원초대'
+            onClick={() => {
+              inviteTeam(selectedTeam, {
+                onSuccess: (data) => {
+                  const inviteCode = data.token;
+                  navigator.clipboard.writeText(`feedhanjum.com/${inviteCode}`);
+                  showToast('클립보드에 복사됨');
+                },
+              });
+            }}
+          />
         )}
       </div>
       <MediumButton

@@ -2,7 +2,8 @@ import Tag from '../../../components/Tag';
 import { TagType } from '../../../components/Tag';
 import Icon from '../../../components/Icon';
 import MediumButton from '../../../components/buttons/MediumButton';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { changeDayName } from '../../../utility/time';
 
 /**
  * 메인 카드 컴포넌트
@@ -136,6 +137,7 @@ function MainCardFrame({ children, onClickChevronButton }) {
  * @returns
  */
 function renderTitle(recentSchedule, scheduleDifferece) {
+  const dateObject = new Date(recentSchedule.startTime);
   return (
     <div className='flex flex-col items-center justify-center pt-6'>
       <p className='body-1 text-gray-300'>
@@ -147,7 +149,10 @@ function renderTitle(recentSchedule, scheduleDifferece) {
       </h1>
       <Tag
         type={TagType.TEAM_SCHEDULE}
-        children={{ date: '12일 목요일', time: '17:00' }}
+        children={{
+          date: `${dateObject.getDate()}일 ${changeDayName(dateObject.getDay())}요일`,
+          time: `${dateObject.getHours()}:${dateObject.getMinutes()}`,
+        }}
       />
     </div>
   );
