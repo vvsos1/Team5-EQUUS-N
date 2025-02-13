@@ -8,12 +8,14 @@ export const useFeedbackReceived = (userId, params) => {
     queryKey: ['feedback-received', userId, params],
     retry: 0,
     queryFn: () => {
-      const sendingParams = {
-        teamId: params.teamId,
+      let sendingParams = {
         filterHelpful: params.onlyLiked,
         sortOrder: params.sortBy === 'createdAt:desc' ? 'DESC' : 'ASC',
         page: params.page,
       };
+      if (params.teamId) {
+        sendingParams.teamId = params.teamId;
+      }
       return api.get({
         url: `/api/feedbacks/receiver/${userId}`,
         params: sendingParams,
@@ -27,12 +29,14 @@ export const useFeedbackSent = (userId, params) => {
     queryKey: ['feedback-sent', userId, params],
     retry: 0,
     queryFn: () => {
-      const sendingParams = {
-        teamId: params.teamId,
+      let sendingParams = {
         filterHelpful: params.onlyLiked,
         sortOrder: params.sortBy === 'createdAt:desc' ? 'DESC' : 'ASC',
         page: params.page,
       };
+      if (params.teamId) {
+        sendingParams.teamId = params.teamId;
+      }
       return api.get({
         url: `/api/feedbacks/sender/${userId}`,
         params: sendingParams,
