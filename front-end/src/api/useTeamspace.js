@@ -1,5 +1,6 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './baseApi';
+import { showToast } from '../utility/handleToast';
 
 export const useMembers = (teamId) => {
   return useQuery({
@@ -16,12 +17,14 @@ export const useTeamInfo = (teamId) => {
 };
 
 export const useSetLeader = (teamId) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (leaderId) => {
-      const sendingData = {
-        newLeaderId: leaderId,
-      };
-      return api.post({ url: `/api/team/${teamId}/leader`, body: sendingData });
+      return api.post({ url: `/api/team/${teamId}/leader`, body: leaderId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['team', teamId]);
+      showToast('팀장이 바뀌었어요');
     },
   });
 };

@@ -70,13 +70,15 @@ export default function MemberElement({ teamId, member, leaderId, iamLeader }) {
       <div className='flex flex-1 flex-col gap-2'>
         <div className='flex items-center gap-3'>
           <p className='subtitle-1 text-gray-100'>{member.name}</p>
-          {member.id === leaderId ?
+          {member.id == leaderId ?
             <Tag type={TagType.TEAM_LEADER} />
           : null}
         </div>
-        <p className='caption-1 text-gray-300'>{member.email}</p>
+        <p className='caption-1 overflow-ellipsis text-gray-300'>
+          {member.email}
+        </p>
       </div>
-      {iamLeader && member.id !== leaderId ?
+      {iamLeader && member.id != leaderId ?
         <div className='flex gap-2'>
           <div
             className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-gray-600 p-1.5'

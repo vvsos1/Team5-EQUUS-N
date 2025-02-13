@@ -21,6 +21,8 @@ export default function TeamSpaceManage() {
     if (team) {
       if (team?.teamResponse?.leader?.id == userId) {
         setIamLeader(true);
+      } else {
+        setIamLeader(false);
       }
     }
   }, [team]);

@@ -72,9 +72,9 @@ export const handlers2 = [
   ),
 
   // 리더 변경
-  http.post(`${BASE_URL}/api/team/:teamId/leader`, () => {
-    return new HttpResponse({ status: 200 });
-  }),
+  // http.post(`${BASE_URL}/api/team/:teamId/leader`, () => {
+  //   return new HttpResponse({ status: 200 });
+  // }),
 
   // 멤버 삭제
   http.delete(`${BASE_URL}/api/team/:teamId/member/:memberId`, () => {
