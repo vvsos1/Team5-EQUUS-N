@@ -41,9 +41,9 @@ export const handlers2 = [
   }),
 
   // 팀 멤버 조회
-  http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
-    return HttpResponse.json(members2);
-  }),
+  // http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
+  //   return HttpResponse.json(members2);
+  // }),
 
   // 피드백 받은 내역 조회
   // http.get(`${BASE_URL}/api/feedbacks/receiver/:memberId`, () => {

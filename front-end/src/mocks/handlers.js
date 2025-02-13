@@ -24,9 +24,9 @@ export const handlers = [
   }),
 
   // 팀 멤버 조회
-  http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
-    return HttpResponse.json(members);
-  }),
+  // http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
+  //   return HttpResponse.json(members);
+  // }),
 
   // 알람 조회
   http.get(`${BASE_URL}/api/notification`, () => {
