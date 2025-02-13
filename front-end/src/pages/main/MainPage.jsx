@@ -114,17 +114,16 @@ export default function MainPage() {
         </Slider>
       )}
       <div className='h-2' />
-      {!isMainCardPending && (
-        <MainCard
-          userId={userId}
-          isInTeam={teams.length > 0}
-          recentSchedule={recentScheduleData}
-          scheduleDifferece={timeDiff}
-          onClickMainButton={getOnMainButtonClick()}
-          onClickSubButton={() => toggleSchedule()}
-          onClickChevronButton={() => navigate('/calendar')}
-        />
-      )}
+      {/* 로컬 스토리지 관련 문제 잡히면 다시 보기 */}
+      <MainCard
+        userId={userId}
+        isInTeam={teams.length > 0}
+        recentSchedule={recentScheduleData}
+        scheduleDifferece={timeDiff}
+        onClickMainButton={getOnMainButtonClick()}
+        onClickSubButton={() => toggleSchedule()}
+        onClickChevronButton={() => navigate('/calendar')}
+      />
       <div className='h-8' />
       {matesData && (
         <MainCard2
