@@ -67,10 +67,14 @@ export const useEditTeam = (teamId) => {
   });
 };
 
-export const useDeleteTeam = (teamId) => {
+export const useLeaveTeam = (teamId) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
       return api.delete({ url: `/api/team/${teamId}/leave` });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['team', teamId]);
     },
   });
 };

@@ -87,7 +87,7 @@ export const handlers2 = [
   // }),
 
   // 팀 삭제
-  http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {
-    return HttpResponse.json(teamResponse);
-  }),
+  // http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {
+  //   return HttpResponse.json(teamResponse);
+  // }),
 ];
