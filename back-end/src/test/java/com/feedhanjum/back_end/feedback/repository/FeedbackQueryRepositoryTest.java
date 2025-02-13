@@ -28,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -98,8 +99,8 @@ class FeedbackQueryRepositoryTest {
             member2 = new Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
             memberRepository.saveAll(List.of(member1, member2));
 
-            team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS);
-            team2 = new Team("team2", member2, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS);
+            team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS, LocalDate.now());
+            team2 = new Team("team2", member2, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS, LocalDate.now());
             teamRepository.saveAll(List.of(team1, team2));
         }
 
@@ -294,8 +295,8 @@ class FeedbackQueryRepositoryTest {
             member2 = new Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
             memberRepository.saveAll(List.of(member1, member2));
 
-            team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS);
-            team2 = new Team("team2", member2, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS);
+            team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS, LocalDate.now());
+            team2 = new Team("team2", member2, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS, LocalDate.now());
             teamRepository.saveAll(List.of(team1, team2));
         }
 

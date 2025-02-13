@@ -71,7 +71,7 @@ class TeamServiceTest {
         when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
         Member leader = new Member("haha", "haha@hoho", new ProfileImage("blue", "image1"), feedbackPreferences);
-        Team team = new Team("haha", leader, LocalDate.now(clock).plusDays(1), LocalDate.now(clock).plusDays(10), FeedbackType.ANONYMOUS);
+        Team team = new Team("haha", leader, LocalDate.now(clock).plusDays(1), LocalDate.now(clock).plusDays(10), FeedbackType.ANONYMOUS, LocalDate.now(clock));
         when(teamQueryRepository.findTeamByMemberId(userId)).thenReturn(List.of(team));
 
         //when
@@ -378,10 +378,12 @@ class TeamServiceTest {
         void updateTeamInfo_성공() {
             // given
             Member leader = createMemberWithId("leader");
+            when(clock.instant()).thenReturn(LocalDate.of(2025, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
             LocalDate startDate = LocalDate.of(2025, 1, 1);
             LocalDate endDate = LocalDate.of(2025, 1, 2);
             TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startDate, endDate, FeedbackType.IDENTIFIED);
-            Team team = createTeamWithId("team", leader, startDate, endDate);
+            Team team = createTeamWithId("team", leader, startDate, endDate, LocalDate.now(clock));
 
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
             when(memberRepository.findById(leader.getId())).thenReturn(Optional.of(leader));
@@ -401,6 +403,8 @@ class TeamServiceTest {
         void updateTeamInfo_잘못된기간() {
             // given
             Member member = createMemberWithId("member");
+            when(clock.instant()).thenReturn(LocalDate.of(2025, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
             LocalDate startDate = LocalDate.of(2025, 1, 3);
             LocalDate endDate = LocalDate.of(2025, 1, 2);
             Team team = createTeamWithId("team", member);
@@ -437,9 +441,11 @@ class TeamServiceTest {
         void updateTeamInfo_팀장아님() {
             // given
             Member notLeader = createMemberWithId("notLeader");
+            when(clock.instant()).thenReturn(LocalDate.of(2025, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
             LocalDate startDate = LocalDate.of(2025, 1, 1);
             LocalDate endDate = LocalDate.of(2025, 1, 2);
-            Team team = createTeamWithId("team", createMemberWithId("leader"), startDate, endDate);
+            Team team = createTeamWithId("team", createMemberWithId("leader"), startDate, endDate, LocalDate.now(clock));
             TeamUpdateDto teamUpdateDto = new TeamUpdateDto("hoho", startDate, endDate, FeedbackType.ANONYMOUS);
 
             when(memberRepository.findById(notLeader.getId())).thenReturn(Optional.of(notLeader));
@@ -456,10 +462,12 @@ class TeamServiceTest {
         void updateTeamInfo_기간초과1(){
             // given
             Member leader = createMemberWithId("leader");
+            when(clock.instant()).thenReturn(LocalDate.of(2025, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
             LocalDate startDate = LocalDate.of(2025, 1, 1);
             LocalDate endDate = LocalDate.of(2025, 1, 3);
             TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startDate, endDate, FeedbackType.IDENTIFIED);
-            Team team = createTeamWithId("team", leader, startDate, endDate);
+            Team team = createTeamWithId("team", leader, startDate, endDate, LocalDate.now(clock));
 
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
             when(memberRepository.findById(leader.getId())).thenReturn(Optional.of(leader));
@@ -476,10 +484,12 @@ class TeamServiceTest {
         void updateTeamInfo_기간초과2(){
             // given
             Member leader = createMemberWithId("leader");
+            when(clock.instant()).thenReturn(LocalDate.of(2025, 1, 1).atStartOfDay(Clock.systemDefaultZone().getZone()).toInstant());
+            when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
             LocalDate startDate = LocalDate.of(2025, 1, 2);
             LocalDate endDate = LocalDate.of(2025, 1, 3);
             TeamUpdateDto teamUpdateDto = new TeamUpdateDto("haha", startDate, endDate, FeedbackType.IDENTIFIED);
-            Team team = createTeamWithId("team", leader, startDate, endDate);
+            Team team = createTeamWithId("team", leader, startDate, endDate, LocalDate.now(clock));
 
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
             when(memberRepository.findById(leader.getId())).thenReturn(Optional.of(leader));

@@ -83,7 +83,7 @@ class FeedbackServiceTest {
     }
 
     private Team createTeam(String name, Member leader) {
-        Team team = new Team(name, leader, LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS);
+        Team team = new Team(name, leader, LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now(clock));
         ReflectionTestUtils.setField(team, "id", nextId.getAndIncrement());
         return team;
     }
