@@ -42,8 +42,6 @@ public class FeedbackQueryRepository {
 
         List<Feedback> result = queryFactory
                 .selectFrom(feedback)
-                .innerJoin(feedback.sender).fetchJoin()
-                .innerJoin(feedback.team).fetchJoin()
                 .where(predicate)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -75,8 +73,6 @@ public class FeedbackQueryRepository {
 
         List<Feedback> result = queryFactory
                 .selectFrom(feedback)
-                .innerJoin(feedback.receiver).fetchJoin()
-                .innerJoin(feedback.team).fetchJoin()
                 .where(predicate)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
