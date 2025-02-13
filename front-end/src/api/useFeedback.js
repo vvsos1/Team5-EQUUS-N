@@ -103,10 +103,10 @@ export const useFeedbackFavoriteByUser = () => {
   });
 };
 
-export const useFeedbackKeyword = () => {
+export const useFeedbackObjective = () => {
   return useQuery({
-    queryKey: ['feedback-keyword'],
-    queryFn: () => api.get({ url: '/api/feedback/keyword' }),
+    queryKey: ['feedback-objective'],
+    queryFn: () => api.get({ url: '/api/feedback/objective' }),
   });
 };
 

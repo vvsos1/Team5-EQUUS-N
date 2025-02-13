@@ -157,7 +157,7 @@ export default function MainPage() {
                       mate.id === userId ?
                         navigate(`/feedback/self`)
                       : navigate(`/feedback/send`, {
-                          state: { members: [mate] },
+                          state: { members: [mate], isRegular: false },
                         });
                       hideModal();
                     }}
