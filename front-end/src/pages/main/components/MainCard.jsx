@@ -232,7 +232,10 @@ function renderTeamRole(recentSchedule, contentRef, currentHeight, userId) {
             }
           </li>
         );
-      })}
+      })}{' '}
+      <div className='body-1 mt-2 mb-4 text-center text-gray-400'>
+        팀원들이 아직 입력하지 않았어요
+      </div>
     </ul>
   );
 }
