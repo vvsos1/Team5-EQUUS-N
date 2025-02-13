@@ -27,6 +27,7 @@ export default function FeedbackSend() {
                   state: {
                     receiver: { name: member.name, id: member.id },
                     scheduleId: locationState.scheduleId,
+                    isRegular: locationState.isRegular,
                   },
                 })
               }

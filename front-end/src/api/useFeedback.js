@@ -99,7 +99,8 @@ export const useEditFavorite = () => {
 export const useFeedbackFavoriteByUser = () => {
   return useQuery({
     queryKey: ['feedback-favorite-by-user'],
-    queryFn: () => api.get({ url: '/api/member/feedback-prefer' }),
+    queryFn: (data) =>
+      api.get({ url: `/api/member/feedback-prefer?findMemberId=${data}` }),
   });
 };
 

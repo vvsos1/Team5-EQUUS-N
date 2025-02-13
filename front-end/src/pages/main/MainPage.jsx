@@ -80,6 +80,7 @@ export default function MainPage() {
           state: {
             members: matesData.filter((member) => member.id !== userId),
             scheduleId: recentScheduleData.scheduleId,
+            isRegular: true,
           },
         });
     }

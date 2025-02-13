@@ -20,7 +20,9 @@ export default function FeedbackSend3() {
   const navigate = useNavigate();
   const locationState = useLocation().state;
 
-  const { data: favoriteKeywords } = useFeedbackFavoriteByUser();
+  const { data: favoriteKeywords } = useFeedbackFavoriteByUser(
+    locationState.receiver.id,
+  );
   const { teams, selectedTeam } = useTeam();
   const gptMutation = useFeedbackRefinement();
   const feedbackMutation =
@@ -116,7 +118,7 @@ export default function FeedbackSend3() {
           disabled={textLength === 0}
           onClick={() => {
             if (0 < textLength && textLength <= 400) {
-              const { receiver, ...rest } = locationState;
+              const { receiver, isRegular, ...rest } = locationState;
               feedbackMutation.mutate(
                 {
                   ...rest,
