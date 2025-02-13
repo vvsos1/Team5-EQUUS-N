@@ -45,6 +45,11 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk18on:1.80'
 
 
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.session:spring-session-data-redis'
+    implementation 'com.github.codemonstur:embedded-redis:1.4.2'
+
     //Querydsl 추가
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
@@ -55,3 +60,4 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+

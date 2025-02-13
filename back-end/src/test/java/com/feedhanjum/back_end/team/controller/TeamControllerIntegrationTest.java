@@ -4,6 +4,7 @@ package com.feedhanjum.back_end.team.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.feedhanjum.back_end.event.EventPublisher;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.member.controller.dto.MemberDto;
 import com.feedhanjum.back_end.member.domain.Member;
@@ -12,6 +13,7 @@ import com.feedhanjum.back_end.team.controller.dto.*;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamJoinToken;
 import com.feedhanjum.back_end.team.domain.TeamMember;
+import com.feedhanjum.back_end.team.event.TeamMemberLeftEvent;
 import com.feedhanjum.back_end.team.repository.TeamJoinTokenRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +41,8 @@ import static com.feedhanjum.back_end.test.util.DomainTestUtils.createTeamWithou
 import static com.feedhanjum.back_end.test.util.SessionTestUtil.withLoginUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -55,6 +60,9 @@ public class TeamControllerIntegrationTest {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @MockitoBean
+    private EventPublisher eventPublisher;
 
     private Member member1;
     private Member member2;
@@ -207,7 +215,7 @@ public class TeamControllerIntegrationTest {
                         List<TeamJoinToken> tokens = teamJoinTokenRepository.findAll();
                         assertThat(tokens).hasSize(1);
                         assertThat(tokens.get(0).getToken()).isEqualTo(token.token());
-                      
+
                         assertThat(tokens.get(0).getExpireDate()).isEqualTo(token.validUntil());
                     });
         }
@@ -267,6 +275,7 @@ public class TeamControllerIntegrationTest {
             ).hasStatus(HttpStatus.NO_CONTENT);
 
             assertThat(team.isTeamMember(member)).isFalse();
+            verify(eventPublisher).publishEvent(any(TeamMemberLeftEvent.class));
         }
 
         @Test
@@ -518,6 +527,7 @@ public class TeamControllerIntegrationTest {
                     .getTeamMembers().stream().map(TeamMember::getMember).toList();
             assertThat(membersInTeam).hasSize(1);
             assertThat(membersInTeam.get(0).getId()).isEqualTo(leader.getId());
+            verify(eventPublisher).publishEvent(any(TeamMemberLeftEvent.class));
         }
 
         @Test
