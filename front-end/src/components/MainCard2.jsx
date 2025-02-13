@@ -21,8 +21,8 @@ export default function MainCard2({ teamMates, onClick }) {
             <ProfileImageWithText
               key={index}
               text={mate.name}
-              iconName={`@animals/${mate.iconName}`}
-              color={mate.color}
+              iconName={`@animals/${mate.profileImage.image}`}
+              color={mate.profileImage.backgroundColor}
               onClick={() => onClick(mate)}
             />
           );
