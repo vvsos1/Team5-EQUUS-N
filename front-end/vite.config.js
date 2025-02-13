@@ -2,8 +2,32 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import svgr from '@svgr/rollup';
 import tailwindcss from '@tailwindcss/vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss(), svgr()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    svgr(),
+    VitePWA({
+      manifest: {
+        name: '피드한줌',
+        short_name: '피드한줌',
+        start_url: '/',
+        display: 'standalone',
+        background_color: '#191919',
+        theme_color: '#191919',
+        icons: [
+          {
+            src: 'src/assets/images/logo.png',
+            sizes: '188x188',
+            type: 'image/png',
+          },
+        ],
+      },
+      registerType: 'autoUpdate', // 서비스 워커 업데이트 설정
+      // 추가 캐싱 전략 등 원하는 옵션 추가 가능
+    }),
+  ],
 });
