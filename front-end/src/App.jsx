@@ -39,7 +39,7 @@ export default function App() {
         <CombinedProvider>
           <Routes>
             <Route element={<Layout />}>
-              <Route path='/' element={<Splash />} />
+              <Route path='/:teamCode?' element={<Splash />} />
               <Route path='feedback'>
                 <Route path='request' element={<FeedbackRequest />} />
                 <Route path='send' element={<FeedbackSendLayout />}>
