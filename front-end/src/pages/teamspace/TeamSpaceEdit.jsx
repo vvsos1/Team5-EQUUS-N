@@ -27,7 +27,7 @@ export default function TeamSpaceEdit({ isFirst = false }) {
     name: '',
     startDate: new Date(),
     endDate: new Date(),
-    feedbackType: false,
+    feedbackType: 'ANONYMOUS',
   });
   const [isDatePickerOpen1, setIsDatePickerOpen1] = useState(false);
   const [isDatePickerOpen2, setIsDatePickerOpen2] = useState(false);
@@ -69,8 +69,8 @@ export default function TeamSpaceEdit({ isFirst = false }) {
       return;
     } else {
       editTeam(team);
+      navigate(-1);
     }
-    navigate(-1);
   };
 
   const onClickPop = () => {
@@ -79,6 +79,7 @@ export default function TeamSpaceEdit({ isFirst = false }) {
 
   useEffect(() => {
     if (location.state) {
+      console.log(location.state?.teamResponse);
       setTeam(location.state?.teamResponse);
     }
   }, []);
@@ -148,11 +149,24 @@ export default function TeamSpaceEdit({ isFirst = false }) {
         addOn={
           <button
             className='flex h-full w-full items-center justify-center'
-            onClick={() =>
-              setTeam({ ...team, feedbackType: !team.feedbackType })
-            }
+            onClick={() => {
+              console.log(team.feedbackType);
+              setTeam({
+                ...team,
+                feedbackType:
+                  team.feedbackType === 'IDENTIFIED' ?
+                    'ANONYMOUS'
+                  : 'IDENTIFIED',
+              });
+            }}
           >
-            <Icon name={team.feedbackType ? 'checkBoxClick' : 'checkBoxNone'} />
+            <Icon
+              name={
+                team.feedbackType === 'ANONYMOUS' ?
+                  'checkBoxClick'
+                : 'checkBoxNone'
+              }
+            />
           </button>
         }
       />

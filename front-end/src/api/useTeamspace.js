@@ -55,10 +55,14 @@ export const useMakeTeam = () => {
 };
 
 export const useEditTeam = (teamId) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (teamInfo) => {
       const sendingData = teamInfo;
-      return api.post({ url: `/api/team/${teamId}/`, body: sendingData });
+      return api.post({ url: `/api/team/${teamId}`, body: sendingData });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['team', teamId]);
     },
   });
 };
