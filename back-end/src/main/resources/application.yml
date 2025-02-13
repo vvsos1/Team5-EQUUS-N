@@ -33,3 +33,7 @@ server:
         max-age: 2147483647
         http-only: true
         name: JSESSIONID
+
+logging:
+  level:
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

@@ -113,13 +113,13 @@ public class TeamService {
         LocalDateTime earliestStartTime = scheduleQueryRepository.findEarliestStartTimeByTeamId(teamId).orElse(null);
         LocalDateTime latestEndTime = scheduleQueryRepository.findLatestEndTimeByTeamId(teamId).orElse(null);
 
-        if(earliestStartTime != null && teamUpdateDto.startDate().atStartOfDay().isAfter(earliestStartTime)){
+        if (earliestStartTime != null && teamUpdateDto.startDate().atStartOfDay().isAfter(earliestStartTime)) {
             throw new IllegalArgumentException("팀 시작 날짜는 팀 내 존재하는 일정의 가장 빠른 시작 시점보다 빠를 수 없습니다.");
         }
 
-        if(latestEndTime != null
+        if (latestEndTime != null
                 && teamUpdateDto.endDate() != null
-                && teamUpdateDto.endDate().plusDays(1).atStartOfDay().isBefore(latestEndTime)){
+                && teamUpdateDto.endDate().plusDays(1).atStartOfDay().isBefore(latestEndTime)) {
             throw new IllegalArgumentException("팀 종료 날짜는 팀 내 존재하는 일정의 가장 늦은 종료 시점보다 느릴 수 없습니다.");
         }
 
@@ -177,6 +177,6 @@ public class TeamService {
 
     private void deleteTeam(Team team) {
         // TODO: 팀 삭제 로직 결정
-//        teamRepository.delete(team);
+        teamRepository.delete(team);
     }
 }

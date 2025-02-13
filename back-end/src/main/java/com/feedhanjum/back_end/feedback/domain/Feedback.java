@@ -63,7 +63,7 @@ public class Feedback {
     private AssociatedTeam team;
 
     // 객관식 피드백
-    @Column(name = "objectiveFeedbacks", columnDefinition = "json")
+    @Column(name = "objective_feedbacks", columnDefinition = "json")
     @JdbcTypeCode(SqlTypes.JSON)
     private final Set<ObjectiveFeedback> objectiveFeedbacks = new HashSet<>();
 
