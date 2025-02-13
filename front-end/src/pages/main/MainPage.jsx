@@ -188,7 +188,7 @@ export default function MainPage() {
         />
       )}
       <div className='h-8' />
-      // TODO: 달력으로 바꿔야 함
+      {/* TODO: 달력으로 바꿔야 함 */}
       <ScheduleAction
         type={ScheduleActionType.ADD}
         isOpen={isScheduleOpen}
