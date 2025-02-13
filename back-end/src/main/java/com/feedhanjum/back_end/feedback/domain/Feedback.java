@@ -55,9 +55,12 @@ public class Feedback {
     })
     private Receiver receiver;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "team_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "team_name")),
+    })
+    private AssociatedTeam team;
 
     // 객관식 피드백
     @ElementCollection(fetch = FetchType.LAZY)
@@ -75,7 +78,7 @@ public class Feedback {
         this.objectiveFeedbacks.addAll(objectiveFeedbacks);
         this.sender = Sender.of(sender);
         this.receiver = Receiver.of(receiver);
-        this.team = team;
+        this.team = AssociatedTeam.of(team);
         this.createdAt = LocalDateTime.now();
         validateObjectiveFeedbacks();
     }
