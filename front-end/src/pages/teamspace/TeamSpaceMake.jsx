@@ -12,6 +12,7 @@ import CustomDatePicker, {
   DatePickerDropdown,
 } from '../../components/CustomDatePicker';
 import { useMakeTeam } from '../../api/useTeamspace';
+import { useTeam } from '../../useTeam';
 
 /**
  * @param {object} props
@@ -27,6 +28,7 @@ export default function TeamSpaceMake({ isFirst = false }) {
   const [isDatePickerOpen2, setIsDatePickerOpen2] = useState(false);
   const navigate = useNavigate();
   const { mutate: makeTeam } = useMakeTeam();
+  const { selectTeam } = useTeam();
 
   const onClickNext = () => {
     if (!checkTeamSpaceMakingInfo(teamSpaceName, startDate, endDate)) {
@@ -47,6 +49,7 @@ export default function TeamSpaceMake({ isFirst = false }) {
                   { from: '/first', teamId: teamData.id }
                 : { from: '/', teamId: teamData.id },
             });
+            selectTeam(teamData.id);
           },
         },
       );

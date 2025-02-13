@@ -50,6 +50,7 @@ export const usePostSchedule = (teamId) => {
       api.post({ url: `/api/team/${teamId}/schedule/create`, body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
+      queryClient.invalidateQueries({ queryKey: ['mainCard', teamId] });
     },
   });
 };

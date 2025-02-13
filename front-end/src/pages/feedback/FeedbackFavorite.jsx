@@ -32,8 +32,8 @@ export default function FeedbackFavorite() {
   };
 
   const onFinish = () => {
-    selectedStyle.length === 0 && selectedContent.length === 0 ?
-      showToast('피드백 유형을 선택해주세요')
+    selectedStyle.length === 0 || selectedContent.length === 0 ?
+      showToast('피드백 유형을 최소 한 개씩 선택해주세요')
     : mutation.mutate(
         {
           ...location.state,
