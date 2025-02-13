@@ -2,23 +2,27 @@ import { useNavigate, useParams } from 'react-router-dom';
 import NavBar2 from '../../components/NavBar2';
 import Tag, { TagType } from '../../components/Tag';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
-import { useTeamInfo } from '../../api/useTeamspace';
+import { useInviteTeam, useTeamInfo } from '../../api/useTeamspace';
 import { useEffect, useState } from 'react';
 import Icon from '../../components/Icon';
 import MemberElement from './components/MemberElement';
 import { showToast } from '../../utility/handleToast';
+import { useUser } from '../../useUser';
 
 export default function TeamSpaceManage() {
   const { teamId } = useParams();
   const [iamLeader, setIamLeader] = useState(false);
   const { data: team } = useTeamInfo(teamId);
+  const { userId } = useUser();
   const navigate = useNavigate();
+  const { mutate: inviteTeam } = useInviteTeam();
 
   useEffect(() => {
     if (team) {
-      // TODO: id를 본인 것과 비교
-      if (team?.teamResponse?.leader?.id === 52345513) {
+      if (team?.teamResponse?.leader?.id == userId) {
         setIamLeader(true);
+      } else {
+        setIamLeader(false);
       }
     }
   }, [team]);
@@ -51,10 +55,13 @@ export default function TeamSpaceManage() {
         </div>
         <button
           onClick={() => {
-            navigator.clipboard.writeText(
-              `${window.location.origin}/teamspace/${teamId}`,
-            );
-            showToast('초대링크 복사 완료');
+            inviteTeam(teamId, {
+              onSuccess: (data) => {
+                const inviteCode = data.token;
+                navigator.clipboard.writeText(`feedhanjum.com/${inviteCode}`);
+                showToast('초대링크 복사 완료');
+              },
+            });
           }}
         >
           <Tag type={TagType.TEAM_NAME}>초대링크 복사</Tag>

@@ -107,25 +107,25 @@ export const members = [
   {
     id: 1,
     name: '백현식',
-    iconName: 'panda',
+    iconName: 'Panda',
     color: '#90C18A',
   },
   {
     id: 2,
     name: '양준호',
-    iconName: 'penguin',
+    iconName: 'Penguin',
     color: '#AFD1DC',
   },
   {
     id: 3,
     name: '김민수',
-    iconName: 'whale',
+    iconName: 'Whale',
     color: '#F28796',
   },
   {
     id: 4,
     name: '한준호',
-    iconName: 'rooster',
+    iconName: 'Rooster',
     color: '#62BFCA',
   },
 ];

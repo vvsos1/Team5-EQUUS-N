@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import Icon from '../../../components/Icon';
-import ProfileImage from '../../../components/ProfileImage';
+import ProfileImage, {
+  getRandomProfile,
+} from '../../../components/ProfileImage';
 import Tag from '../../../components/Tag';
 import {
   useFeedbackLikeCancel,
@@ -35,14 +37,20 @@ export default function FeedBack({ feedbackType, data }) {
     <div className='flex flex-col gap-5 border-b-8 border-gray-800 bg-gray-900 py-5'>
       <div className='flex gap-3'>
         {/* 회고 아닌 경우에만 프로필 이미지 표시 */}
-        {FeedBackType[feedbackType] !== FeedBackType.SELF && (
-          <div className='aspect-square h-11'>
-            <ProfileImage
-              iconName={'@animals/' + teamMate.image}
-              color={teamMate.backgroundColor}
-            />
-          </div>
-        )}
+        {FeedBackType[feedbackType] !== FeedBackType.SELF &&
+          (teamMate ?
+            <div className='aspect-square h-11'>
+              <ProfileImage
+                iconName={'@animals/' + teamMate.image}
+                color={teamMate.backgroundColor}
+              />
+            </div>
+          : <div className='aspect-square h-11'>
+              <ProfileImage
+                iconName={'@animals/' + getRandomProfile().image}
+                color={getRandomProfile().backgroundColor}
+              />
+            </div>)}
         <div className='flex flex-1 flex-col gap-0.5'>
           {/* 회고 아닌 경우 To. 또는 From. + 이름 표시 || 회고인 경우 팀 이름 표시 */}
           <p className='body-3 text-gray-0'>
