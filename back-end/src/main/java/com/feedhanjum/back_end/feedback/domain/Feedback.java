@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -43,7 +45,6 @@ public class Feedback {
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "sender_id")),
             @AttributeOverride(name = "name", column = @Column(name = "sender_name")),
-            @AttributeOverride(name = "profileImage", column = @Column(name = "sender_profile_image")),
     })
     private Sender sender;
 
@@ -51,7 +52,6 @@ public class Feedback {
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "receiver_id")),
             @AttributeOverride(name = "name", column = @Column(name = "receiver_name")),
-            @AttributeOverride(name = "profileImage", column = @Column(name = "receiver_profile_image")),
     })
     private Receiver receiver;
 
