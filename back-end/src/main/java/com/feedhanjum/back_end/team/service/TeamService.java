@@ -6,6 +6,7 @@ import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleQueryRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.domain.TeamJoinToken;
+import com.feedhanjum.back_end.team.event.TeamLeaderChangedEvent;
 import com.feedhanjum.back_end.team.event.TeamMemberJoinEvent;
 import com.feedhanjum.back_end.team.event.TeamMemberLeftEvent;
 import com.feedhanjum.back_end.team.exception.TeamLeaderMustExistException;
@@ -20,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,6 +35,7 @@ public class TeamService {
     private final EventPublisher eventPublisher;
     private final TeamJoinTokenRepository teamJoinTokenRepository;
     private final ScheduleQueryRepository scheduleQueryRepository;
+    private final Clock clock;
 
     /**
      * @throws IllegalArgumentException 프로젝트 기간의 시작일이 종료일보다 앞서지 않을 경우
@@ -41,7 +45,7 @@ public class TeamService {
     public Team createTeam(Long leaderId, TeamCreateDto teamCreateDto) {
         Member leader = memberRepository.findById(leaderId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-        Team team = new Team(teamCreateDto.teamName(), leader, teamCreateDto.startDate(), teamCreateDto.endDate(), teamCreateDto.feedbackType());
+        Team team = new Team(teamCreateDto.teamName(), leader, teamCreateDto.startDate(), teamCreateDto.endDate(), teamCreateDto.feedbackType(), LocalDate.now(clock));
         teamRepository.save(team);
         return team;
     }
@@ -91,6 +95,7 @@ public class TeamService {
         Member newLeader = memberRepository.findById(newLeaderId).orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다"));
 
         team.changeLeader(currentLeader, newLeader);
+        eventPublisher.publishEvent(new TeamLeaderChangedEvent(teamId, newLeaderId));
     }
 
     /**
@@ -118,7 +123,7 @@ public class TeamService {
             throw new IllegalArgumentException("팀 종료 날짜는 팀 내 존재하는 일정의 가장 늦은 종료 시점보다 느릴 수 없습니다.");
         }
 
-        team.updateInfo(leader, teamUpdateDto.teamName(), teamUpdateDto.startDate(), teamUpdateDto.endDate(), teamUpdateDto.feedbackType());
+        team.updateInfo(leader, teamUpdateDto.teamName(), teamUpdateDto.startDate(), teamUpdateDto.endDate(), teamUpdateDto.feedbackType(), LocalDate.now(clock));
         return team;
     }
 

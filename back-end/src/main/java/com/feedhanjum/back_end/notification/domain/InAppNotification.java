@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Entity
-public class InAppNotification {
+public abstract class InAppNotification {
     @Id
     @Column(name = "notification_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -54,7 +54,7 @@ class RetrospectServiceTest {
     }
 
     private Team createTeam(String teamName, Member leader) {
-        Team team = new Team(teamName, leader, LocalDate.now(), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS);
+        Team team = new Team(teamName, leader, LocalDate.now(), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
         ReflectionTestUtils.setField(team, "id", nextId.getAndIncrement());
         return team;
     }
