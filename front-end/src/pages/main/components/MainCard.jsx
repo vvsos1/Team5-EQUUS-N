@@ -52,7 +52,7 @@ export default function MainCard({
   }
 
   // 마지막 일정이 끝난지 24시간이 넘은 경우 -> response 자체가 없음
-  if (!scheduleDifferece) {
+  if (scheduleDifferece == null) {
     return (
       <MainCardFrame onClickChevronButton={onClickChevronButton}>
         <p className='body-1 mt-11 mb-10 text-center text-gray-300'>

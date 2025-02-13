@@ -36,7 +36,7 @@ export default function ProfileImage({ iconName, color, isButton }) {
   // iconName이 없을 때 기본 아이콘 표시
   if (!iconName) {
     return (
-      <div className='flex aspect-square items-center justify-center rounded-full bg-gray-700 p-4.5'>
+      <div className='flex aspect-square items-center justify-center rounded-full bg-gray-700'>
         <Icon name='plusM' color={'var(--color-gray-100)'} />
       </div>
     );

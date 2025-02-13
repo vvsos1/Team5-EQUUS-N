@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import {
   useMainCard,
   useMainCard2,
@@ -40,10 +40,11 @@ export default function MainPage() {
     useMainCard(selectedTeam);
   const { data: matesData } = useMainCard2(selectedTeam);
   const { data: notificationsData, markAsRead } = useNotification(selectedTeam);
-  const { actionInfo } = useScheduleAction(
-    '2025-02-14T00:00:00.000Z',
-    recentScheduleData,
-  );
+
+  // 리렌더링 시 값이 바뀌지 않는 상태 생성
+  const date = useRef(new Date());
+
+  const { actionInfo } = useScheduleAction(date, recentScheduleData);
 
   console.log(
     '현재 선택 팀: ',
@@ -81,11 +82,11 @@ export default function MainPage() {
   }, [recentScheduleData]);
 
   const getOnMainButtonClick = () => {
+    console.log(recentScheduleData, timeDiff);
     if (teams.length === 0) {
       return () => navigate('/teamspace/make');
     }
     if (!recentScheduleData) {
-      console.log('일정 없음');
       return () => toggleSchedule();
     }
     if (timeDiff <= 0) {

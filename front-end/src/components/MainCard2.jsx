@@ -4,7 +4,7 @@ import { ProfileImageWithText } from './ProfileImage';
 /**
  * 메인 카드 2 컴포넌트
  * @param {object} props
- * @param {object[]} props.teamMates - 팀원 목록
+ * @param {Member[]} props.teamMates - 팀원 목록
  * @param {string} props.teamMates[].name - 팀원 이름
  * @param {string} props.teamMates[].iconName - 팀원 아이콘 이름
  * @param {string} props.teamMates[].color - 팀원 아이콘 색상
@@ -21,8 +21,8 @@ export default function MainCard2({ teamMates, onClick }) {
             <ProfileImageWithText
               key={index}
               text={mate.name}
-              iconName={`@animals/${mate.iconName}`}
-              color={mate.color}
+              iconName={`@animals/${mate.profileImage.image}`}
+              color={mate.profileImage.backgroundColor}
               onClick={() => onClick(mate)}
             />
           );
