@@ -46,14 +46,14 @@ export const handlers2 = [
   }),
 
   // 피드백 받은 내역 조회
-  http.get(`${BASE_URL}/api/feedbacks/receiver/:memberId`, () => {
-    return HttpResponse.json(feedbackReceivedResponse);
-  }),
+  // http.get(`${BASE_URL}/api/feedbacks/receiver/:memberId`, () => {
+  //   return HttpResponse.json(feedbackReceivedResponse);
+  // }),
 
   // 피드백 보낸 내역 조회
-  http.get(`${BASE_URL}/api/feedbacks/sender/:memberId`, () => {
-    return HttpResponse.json(feedbackSentResponse);
-  }),
+  // http.get(`${BASE_URL}/api/feedbacks/sender/:memberId`, () => {
+  //   return HttpResponse.json(feedbackSentResponse);
+  // }),
 
   // 피드백 좋아요
   http.post(
@@ -89,9 +89,5 @@ export const handlers2 = [
   // 팀 삭제
   http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {
     return HttpResponse.json(teamResponse);
-  }),
-
-  http.get(`${BASE_URL}/api/retrospect/:writerId`, () => {
-    return HttpResponse.json(retrospectResponse);
   }),
 ];
