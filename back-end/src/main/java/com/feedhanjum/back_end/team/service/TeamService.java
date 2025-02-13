@@ -177,6 +177,6 @@ public class TeamService {
 
     private void deleteTeam(Team team) {
         // TODO: 팀 삭제 로직 결정
-        teamRepository.delete(team);
+//        teamRepository.delete(team);
     }
 }
