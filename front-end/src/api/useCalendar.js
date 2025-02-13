@@ -52,6 +52,7 @@ export const usePostSchedule = (teamId) => {
       console.log(data);
       console.log('성공 테스트1');
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
+      queryClient.invalidateQueries({ queryKey: ['mainCard', teamId] });
     },
   });
 };
