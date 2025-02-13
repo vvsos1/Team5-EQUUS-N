@@ -63,8 +63,8 @@ public class Feedback {
     private AssociatedTeam team;
 
     // 객관식 피드백
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "objective_feedback", joinColumns = @JoinColumn(name = "feedback_id"))
+    @Column(name = "objectiveFeedbacks", columnDefinition = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     private final Set<ObjectiveFeedback> objectiveFeedbacks = new HashSet<>();
 
     /**
