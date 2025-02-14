@@ -43,7 +43,7 @@ export default function TeamSpaceMakeSuccess() {
       {/* 다음 버튼 */}
       <div className='absolute right-0 bottom-[34px] left-0 flex flex-col bg-gray-900'>
         <LargeButton
-          text={location.state?.from === '/first' ? '시작하기' : '흠으로'}
+          text={location.state?.from === '/first' ? '시작하기' : '홈으로'}
           isOutlined={false}
           onClick={() => navigate('/main')}
         />
