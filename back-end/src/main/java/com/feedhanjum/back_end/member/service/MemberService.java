@@ -70,6 +70,6 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public Member getMemberFeedbackPreference(Long memberId) {
-        return memberRepository.findMemberAndFeedbackPreferenceById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
+        return memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
     }
 }
