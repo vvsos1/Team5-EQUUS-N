@@ -159,8 +159,12 @@ export default function MainPage() {
                     onClick={() => {
                       mate.id === userId ?
                         navigate(`/feedback/self`)
-                      : navigate(`/feedback/send`, {
-                          state: { members: [mate], isRegular: false },
+                      : navigate(`/feedback/send/1`, {
+                          state: {
+                            isRegular: false,
+                            receiver: { name: mate.name, id: mate.id },
+                            scheduleId: recentScheduleData.scheduleId,
+                          },
                         });
                       hideModal();
                     }}

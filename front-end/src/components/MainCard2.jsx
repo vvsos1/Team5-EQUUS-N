@@ -1,5 +1,6 @@
 import { useInviteTeam } from '../api/useTeamspace';
 import { useTeam } from '../useTeam';
+import { useUser } from '../useUser';
 import { showToast } from '../utility/handleToast';
 import MediumButton from './buttons/MediumButton';
 import { ProfileImageWithText } from './ProfileImage';
@@ -22,6 +23,12 @@ export default function MainCard2({
 }) {
   const { mutate: inviteTeam } = useInviteTeam();
   const { selectedTeam } = useTeam();
+  const { userId } = useUser();
+
+  teamMates = [
+    teamMates.find((mate) => mate.id === userId),
+    ...teamMates.filter((mate) => mate.id !== userId),
+  ];
 
   return (
     <div className={'rounded-400 mx-5 h-fit bg-gray-800 p-4'}>
@@ -31,7 +38,7 @@ export default function MainCard2({
           return (
             <ProfileImageWithText
               key={index}
-              text={mate.name}
+              text={mate.id === userId ? '나' : mate.name}
               iconName={`@animals/${mate.profileImage.image}`}
               color={mate.profileImage.backgroundColor}
               onClick={() => onClick(mate)}
