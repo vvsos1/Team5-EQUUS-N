@@ -162,7 +162,6 @@ export default function TeamSpaceEdit({ isFirst = false }) {
           <button
             className='flex h-full w-full items-center justify-center'
             onClick={() => {
-              console.log(team.feedbackType);
               setTeam({
                 ...team,
                 feedbackType:

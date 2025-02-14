@@ -95,7 +95,6 @@ export default function ScheduleAction({
         <button
           onClick={() => {
             if (type !== ScheduleActionType.EDIT) {
-              console.log('CLEAR');
               clearData();
             }
             onClose();
@@ -180,7 +179,6 @@ export default function ScheduleAction({
               type === ScheduleActionType.ADD ?
                 postSchedule(sendingData, {
                   onSuccess: () => {
-                    console.log('성공 테스트2');
                     onClose();
                     showToast('일정이 추가되었어요');
                     clearData();
