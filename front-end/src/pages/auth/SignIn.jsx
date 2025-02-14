@@ -5,16 +5,18 @@ import logo from '../../assets/images/logo.png';
 import Icon from '../../components/Icon';
 import { useState } from 'react';
 import { useLogin } from '../../api/useAuth';
+import { useLocation } from 'react-router-dom';
 
 /**
  * 로그인 페이지
  * @returns
  */
 export default function SignIn() {
+  const locationState = useLocation().state;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const { mutate: login, isLoading } = useLogin();
+  const { mutate: login, isLoading } = useLogin(locationState);
 
   return (
     <div className='relative flex h-dvh w-full flex-col justify-start'>

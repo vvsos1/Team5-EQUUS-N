@@ -26,6 +26,7 @@ export default function MainCard({
   onClickSubButton,
   onClickChevronButton,
 }) {
+  console.log(userId, isInTeam, recentSchedule, scheduleDifferece);
   const contentRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [height, setHeight] = useState(0);
@@ -75,7 +76,7 @@ export default function MainCard({
         <div className='flex flex-col items-center justify-center'>
           <p className='body-1 mt-6 mb-1 text-gray-300'>일정 종료</p>
           <h1 className='header-1 mb-7 text-gray-400'>
-            {recentSchedule.scheduleName}
+            {recentSchedule?.scheduleName ?? ''}
           </h1>
           <MediumButton
             text={'피드백 작성하기'}
@@ -165,33 +166,37 @@ function renderTitle(recentSchedule, scheduleDifferece) {
  * @param {number} userId
  */
 function renderMyRole(recentSchedule, onButtonClick, userId) {
-  return (
-      recentSchedule.scheduleMemberNestedDtoList.find(
-        (role) => role.memberId === userId,
-      ).todoList[0] !== null
-    ) ?
-      <div className='flex flex-col gap-3'>
-        <Tag type={TagType.MY_ROLE} />
-        <ul className='flex list-disc flex-col gap-1 pl-6'>
-          {recentSchedule.scheduleMemberNestedDtoList
-            .find((role) => role.memberId === userId)
-            .todoList.map((role, index) => (
-              <li key={index} className='body-1 pl-1 text-gray-100 last:mb-3'>
-                {role}
-              </li>
-            ))}
-        </ul>
-      </div>
-    : <div className='mb-3 flex flex-col gap-6'>
-        <p className='body-1 text-center text-gray-400'>
-          나의 역할이 비어있어요
-        </p>
-        <MediumButton
-          text={'나의 역할 추가하기'}
-          isOutlined={false}
-          onClick={onButtonClick}
-        />
-      </div>;
+  try {
+    return (
+        recentSchedule.scheduleMemberNestedDtoList.find(
+          (role) => role.memberId === userId,
+        )?.todoList[0] !== null
+      ) ?
+        <div className='flex flex-col gap-3'>
+          <Tag type={TagType.MY_ROLE} />
+          <ul className='flex list-disc flex-col gap-1 pl-6'>
+            {recentSchedule.scheduleMemberNestedDtoList
+              .find((role) => role.memberId === userId)
+              .todoList.map((role, index) => (
+                <li key={index} className='body-1 pl-1 text-gray-100 last:mb-3'>
+                  {role}
+                </li>
+              ))}
+          </ul>
+        </div>
+      : <div className='mb-3 flex flex-col gap-6'>
+          <p className='body-1 text-center text-gray-400'>
+            나의 역할이 비어있어요
+          </p>
+          <MediumButton
+            text={'나의 역할 추가하기'}
+            isOutlined={false}
+            onClick={onButtonClick}
+          />
+        </div>;
+  } catch (error) {
+    console.error('카드에러', error);
+  }
 }
 
 /**
@@ -202,6 +207,9 @@ function renderMyRole(recentSchedule, onButtonClick, userId) {
  * @param {number} userId
  */
 function renderTeamRole(recentSchedule, contentRef, currentHeight, userId) {
+  const filteredTeamTodos = recentSchedule.scheduleMemberNestedDtoList.filter(
+    (todo) => todo.memberId !== userId,
+  );
   return (
     <ul
       ref={contentRef}
@@ -210,13 +218,15 @@ function renderTeamRole(recentSchedule, contentRef, currentHeight, userId) {
         contentRef.current ? { height: `${currentHeight}px` } : { height: 0 }
       }
     >
-      {recentSchedule.scheduleMemberNestedDtoList.map((role, index) => {
-        if (role.memberId === userId) return null;
-        return (
+      {filteredTeamTodos.length > 0 ?
+        filteredTeamTodos.map((role, index) => (
           <li key={index} className='flex flex-col gap-3 first:mt-3'>
             <Tag type={TagType.MEMBER_ROLE}>{role.memberName}</Tag>
-            {role.todoList.length > 0 ?
-              <ul className='flex list-disc flex-col gap-1 pl-6'>
+            {role.todoList[0] === null ?
+              <p className='body-1 mb-2 ml-1 text-gray-500'>
+                아직 담당 업무를 입력하지 않았어요
+              </p>
+            : <ul className='flex list-disc flex-col gap-1 pl-6'>
                 {role.todoList.map((todo, index) => (
                   <li
                     key={index}
@@ -226,16 +236,13 @@ function renderTeamRole(recentSchedule, contentRef, currentHeight, userId) {
                   </li>
                 ))}
               </ul>
-            : <p className='body-1 text-gray-500'>
-                아직 담당 업무를 입력하지 않았어요
-              </p>
             }
           </li>
-        );
-      })}{' '}
-      <div className='body-1 mt-2 mb-4 text-center text-gray-400'>
-        팀원들이 아직 입력하지 않았어요
-      </div>
+        ))
+      : <div className='body-1 mt-2 mb-4 text-center text-gray-400'>
+          팀원이 존재하지 않아요
+        </div>
+      }
     </ul>
   );
 }

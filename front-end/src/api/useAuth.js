@@ -1,8 +1,9 @@
 import { api } from './baseApi';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { showToast } from '../utility/handleToast';
 import { useUser } from '../useUser';
+import { useJoinTeam } from './useTeamspace';
 
 const BASE_URL_2 = '/api/auth';
 
@@ -23,6 +24,13 @@ export const useVerifyToken = () => {
   });
 };
 
+export const useGetMember = (id) => {
+  return useQuery({
+    queryKey: ['member', id],
+    queryFn: () => api.get({ url: '/api/member', params: { id } }),
+  });
+};
+
 export const useSignUp = () => {
   return useMutation({
     mutationFn: (data) =>
@@ -31,15 +39,19 @@ export const useSignUp = () => {
   });
 };
 
-export const useLogin = () => {
+export const useLogin = (teamCode) => {
   const navigate = useNavigate();
   const { setUserId } = useUser();
+  const { mutate: joinTeam } = useJoinTeam();
   return useMutation({
     mutationFn: (data) =>
       api.post({ url: '/api/auth/email/login', body: data }),
     onSuccess: (data) => {
       const { email, message, userId } = data;
       setUserId(userId);
+      if (teamCode) {
+        joinTeam(teamCode);
+      }
       navigate('/main');
     },
     onError: (error) => {

@@ -67,6 +67,20 @@ export const useEditTeam = (teamId) => {
   });
 };
 
+export const useJoinTeam = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (code) => {
+      const sendingData = { token: code };
+      return api.post({ url: `/api/team/join`, params: sendingData });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['myTeams']);
+      showToast('새 팀에 가입했어요');
+    },
+  });
+};
+
 export const useLeaveTeam = (teamId) => {
   const queryClient = useQueryClient();
   return useMutation({

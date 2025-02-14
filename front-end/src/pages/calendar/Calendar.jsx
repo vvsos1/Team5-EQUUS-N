@@ -19,6 +19,7 @@ export default function Calendar() {
   const location = useLocation();
   // 팀 불러오기
   const { teams, selectedTeam, selectTeam } = useTeam();
+  const [showAllSchedule, setShowAllSchedule] = useState(false);
 
   // 날짜 지정
   const [selectedDate, setSelectedDate] = useState(
@@ -32,7 +33,7 @@ export default function Calendar() {
     scheduleSet,
     selectedSchedule,
     setSelectedSchedule,
-  } = useSchedule(selectedTeam, selectedDate);
+  } = useSchedule(selectedTeam, selectedDate, showAllSchedule);
 
   // 일정 등록, 수정, 삭제 등 액션 관련
   const {
@@ -58,13 +59,14 @@ export default function Calendar() {
           selectedTeamId={selectedTeam}
           teamList={teams}
           onTeamClick={(teamId) => {
-            setAllSchedules([]);
             selectTeam(teamId);
+            setShowAllSchedule(false);
           }}
           canClose={!doingAction}
           onClickLastButton={() => {
-            selectTeam(-1);
+            setShowAllSchedule(true);
           }}
+          showAllSchedule={showAllSchedule}
         />
         <SelectedDateInfo date={selectedDate} isScrolling={isScrolling} />
       </StickyWrapper>
@@ -77,7 +79,8 @@ export default function Calendar() {
       <ul className='flex flex-col gap-6'>
         {scheduleOnDate &&
           scheduleOnDate.map((schedule, index) => {
-            if (schedule.teamId !== selectedTeam) return null;
+            if (!showAllSchedule && schedule.teamId !== selectedTeam)
+              return null;
             return (
               <li key={index} className='last:mb-5'>
                 <ScheduleCard

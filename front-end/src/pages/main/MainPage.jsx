@@ -78,8 +78,9 @@ export default function MainPage() {
       return () =>
         navigate('/feedback/send', {
           state: {
-            members: matesData.filter((member) => member.id !== 1),
+            members: matesData.filter((member) => member.id !== userId),
             scheduleId: recentScheduleData.scheduleId,
+            isRegular: true,
           },
         });
     }
@@ -114,7 +115,8 @@ export default function MainPage() {
         </Slider>
       )}
       <div className='h-2' />
-      {!isMainCardPending && (
+      {/* 로컬 스토리지 관련 문제 잡히면 다시 보기 */}
+      {timeDiff !== undefined && (
         <MainCard
           userId={userId}
           isInTeam={teams.length > 0}
@@ -158,7 +160,7 @@ export default function MainPage() {
                       mate.id === userId ?
                         navigate(`/feedback/self`)
                       : navigate(`/feedback/send`, {
-                          state: { members: [mate] },
+                          state: { members: [mate], isRegular: false },
                         });
                       hideModal();
                     }}

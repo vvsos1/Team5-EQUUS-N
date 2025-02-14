@@ -8,6 +8,7 @@ import {
   useFeedbackLikeCancel,
   useFeedbackLike,
 } from '../../../api/useFeedback';
+import { useUser } from '../../../useUser';
 
 export const FeedBackType = Object.freeze({
   SELF: 'SELF',
@@ -25,10 +26,11 @@ export const FeedBackType = Object.freeze({
 export default function FeedBack({ feedbackType, data }) {
   const teamMate = feedbackType === 'RECEIVE' ? data.sender : data.receiver;
   const date = data.createdAt.split('T')[0].replace(/-/g, '.');
+  const { userId } = useUser();
 
-  const { mutate: likeFeedback } = useFeedbackLike(1, data.feedbackId);
+  const { mutate: likeFeedback } = useFeedbackLike(userId, data.feedbackId);
   const { mutate: cancelLikeFeedback } = useFeedbackLikeCancel(
-    1,
+    userId,
     data.feedbackId,
   );
   const [isLiked, setIsLiked] = useState(data.liked);
