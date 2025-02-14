@@ -17,6 +17,7 @@ export default function SelfFeedback() {
   const [selectedTeam, setSelectedTeam] = useState('전체 보기');
   const [sortBy, setSortBy] = useState('createdAt:desc');
   const [loadedPage, setLoadedPage] = useState(0);
+  const [noMoreData, setNoMoreData] = useState(false);
   const scrollRef = useRef(null);
 
   const { userId } = useUser();
@@ -42,8 +43,9 @@ export default function SelfFeedback() {
           container.scrollHeight - 200 &&
         !isLoading
       ) {
-        setLoadedPage(loadedPage + 1);
-        refetch();
+        if (!noMoreData) {
+          setLoadedPage(loadedPage + 1);
+        }
       }
     }
     container.addEventListener('scroll', handleScroll);
@@ -53,23 +55,26 @@ export default function SelfFeedback() {
   }, [isLoading]);
 
   useEffect(() => {
-    refetch();
+    if (!noMoreData) {
+      refetch();
+    }
   }, [loadedPage, refetch]);
 
   useEffect(() => {
     if (!retrospect) return;
+    if (!retrospect.hasNext) {
+      setNoMoreData(true);
+    }
     setFeedbacks((prev) => [...prev, ...(retrospect?.content ?? [])]);
   }, [retrospect]);
 
-  useEffect(() => {
+  function refreshData() {
     const container = scrollRef.current;
     container.scrollTo(0, 0);
     setLoadedPage(0);
     setFeedbacks([]);
     refetch();
-  }, [selectedTeam, sortBy]);
-
-  console.log(feedbacks);
+  }
 
   return (
     <div
@@ -86,7 +91,10 @@ export default function SelfFeedback() {
         <div className='flex justify-between gap-4 border-b border-gray-700 py-5'>
           <DropdownSmall
             triggerText={selectedTeam}
-            setTriggerText={setSelectedTeam}
+            setTriggerText={(text) => {
+              setSelectedTeam(text);
+              refreshData();
+            }}
             items={teams.map((team) => team.name)}
           />
           <div className='button-2 flex items-center gap-2 text-gray-100'>
@@ -98,7 +106,7 @@ export default function SelfFeedback() {
                     'createdAt:desc'
                   ),
                 );
-                refetch();
+                refreshData();
               }}
             >
               <p>{sortBy === 'createdAt:desc' ? '최신순' : '과거순'}</p>
