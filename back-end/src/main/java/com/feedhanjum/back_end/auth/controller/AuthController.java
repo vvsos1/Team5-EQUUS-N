@@ -66,7 +66,7 @@ public class AuthController {
         String name = request.name();
         ProfileImage profileImage = request.profileImage();
 
-        MemberDetails savedMember = authService.registerEmail(member, name, profileImage, request.feedbackPreference());
+        MemberDetails savedMember = authService.registerEmail(member, name, profileImage, request.feedbackPreferences());
 
         session.removeAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL);
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
@@ -247,7 +247,7 @@ public class AuthController {
         }
         googleSignupToken.validateToken(request.token());
 
-        MemberDetails member = authService.registerGoogle(googleSignupToken, request.profileImage(), request.feedbackPreference());
+        MemberDetails member = authService.registerGoogle(googleSignupToken, request.profileImage(), request.feedbackPreferences());
 
         MemberSignupResponse response = memberMapper.toResponse(member);
 
