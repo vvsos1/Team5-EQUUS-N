@@ -96,10 +96,10 @@ export const useEditFavorite = () => {
   });
 };
 
-export const useFeedbackFavoriteByUser = () => {
+export const useFeedbackFavoriteByUser = (data) => {
   return useQuery({
     queryKey: ['feedback-favorite-by-user'],
-    queryFn: (data) =>
+    queryFn: () =>
       api.get({ url: `/api/member/feedback-prefer?findMemberId=${data}` }),
   });
 };
