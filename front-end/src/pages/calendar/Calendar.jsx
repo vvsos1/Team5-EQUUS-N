@@ -59,9 +59,8 @@ export default function Calendar() {
           selectedTeamId={selectedTeam}
           teamList={teams}
           onTeamClick={(teamId) => {
-            setShowAllSchedule(false);
-            setAllSchedules([]);
             selectTeam(teamId);
+            setShowAllSchedule(false);
           }}
           canClose={!doingAction}
           onClickLastButton={() => {

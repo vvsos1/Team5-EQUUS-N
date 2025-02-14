@@ -12,18 +12,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
  */
 export const useGetSchedules = (params) => {
   return useQuery({
-    queryKey: ['schedules', params.teamId, params.startDay],
+    queryKey: ['schedules', params.startDay],
     queryFn: () => {
       const sendingData = {
-        teamId: params.teamId,
         startDay: params.startDay,
         endDay: params.endDay,
       };
-      if (params.teamId) {
-        return api.get({ url: '/api/schedules', params: sendingData });
-      } else {
-        return null;
-      }
+      return api.get({ url: '/api/schedules', params: sendingData });
     },
   });
 };

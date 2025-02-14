@@ -25,26 +25,19 @@ export default function useSchedule(teamId, selectedDate, showAllSchedule) {
 
   // 특정 팀 관련 일정들의 날짜 모두 종합
   useEffect(() => {
-    if (showAllSchedule) {
+    setScheduleSet(
       new Set(
-        allSchedules?.map(
-          (data) => new Date(toKST(data.startTime)).toISOString().split('T')[0],
-        ) ?? [],
-      );
-    } else {
-      setScheduleSet(
-        new Set(
-          allSchedules
-            ?.filter((data) => {
-              return data.teamId === teamId;
-            })
-            ?.map(
-              (data) =>
-                new Date(toKST(data.startTime)).toISOString().split('T')[0],
-            ) ?? [],
-        ),
-      );
-    }
+        allSchedules
+          ?.filter((data) => {
+            if (showAllSchedule) return true;
+            return data.teamId === teamId;
+          })
+          ?.map(
+            (data) =>
+              new Date(toKST(data.startTime)).toISOString().split('T')[0],
+          ) ?? [],
+      ),
+    );
   }, [allSchedules, teamId, showAllSchedule]);
 
   return {
