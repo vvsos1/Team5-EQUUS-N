@@ -201,12 +201,12 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void addNewScheduleMembership(Long memberId, Long teamId){
+    public void addNewScheduleMembership(Long memberId, Long teamId) {
         Team team = teamRepository.findById(teamId)
-            .orElseThrow(() -> new EntityNotFoundException("Team with ID " + teamId + " does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("Team with ID " + teamId + " does not exist"));
         List<Schedule> relatedSchedule = scheduleRepository.findAllByTeam_IdAndEndTimeGreaterThanEqual(teamId, LocalDateTime.now(clock));
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new EntityNotFoundException("Member with ID " + memberId + " does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("Member with ID " + memberId + " does not exist"));
         if (relatedSchedule.isEmpty()) {
             return;  // Early return if no schedules need updating
         }
@@ -217,7 +217,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void removeRemainScheduleMembership(Long memberId, Long teamId){
+    public void removeRemainScheduleMembership(Long memberId, Long teamId) {
         if (!teamRepository.existsById(teamId)) {
             throw new EntityNotFoundException("Team with ID " + teamId + " does not exist");
         }
@@ -245,7 +245,7 @@ public class ScheduleService {
             ScheduleMemberNestedDto scheduleMemberNestedDto = scheduleMemberNestedDtoMap.computeIfAbsent(scheduleMemberId, id -> new ScheduleMemberNestedDto(dto));
 
             scheduleNestedDto.addScheduleMemberNestedDto(scheduleMemberNestedDto);
-            scheduleMemberNestedDto.addTodo(dto.getTodo());
+            if (dto.getTodo() != null) scheduleMemberNestedDto.addTodo(dto.getTodo());
         }
         return new ArrayList<>(scheduleNestedDtoMap.values());
     }
@@ -298,7 +298,7 @@ public class ScheduleService {
             throw new IllegalArgumentException("일정 시작 시간이 팀의 시작 시간 이후여야 합니다.");
         }
         if (team.getEndDate() != null &&
-            team.getEndDate().isBefore(requestDto.endTime().toLocalDate())) {
+                team.getEndDate().isBefore(requestDto.endTime().toLocalDate())) {
             throw new IllegalArgumentException("일정 종료 시간이 팀의 종료 시간 이전이어야 합니다.");
         }
     }
