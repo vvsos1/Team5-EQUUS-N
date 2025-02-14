@@ -46,13 +46,11 @@ export const useFeedbackSent = (userId, params) => {
 };
 
 export const useFeedbackLike = (userId, feedbackId) => {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () =>
       api.post({ url: `/api/member/${userId}/feedbacks/${feedbackId}/liked` }),
-    onSuccess: (data) => {
-      showToast(data.message);
-      queryClient.invalidateQueries({ queryKey: ['feedback-received'] });
+    onSuccess: () => {
+      showToast('좋아요를 눌렀어요');
     },
     onError: (error) => {
       showToast(error.response.data.message);
@@ -67,9 +65,8 @@ export const useFeedbackLikeCancel = (userId, feedbackId) => {
       api.delete({
         url: `/api/member/${userId}/feedbacks/${feedbackId}/liked`,
       }),
-    onSuccess: (data) => {
-      showToast(data.message);
-      queryClient.invalidateQueries({ queryKey: ['feedback-received'] });
+    onSuccess: () => {
+      showToast('좋아요를 취소했어요');
     },
     onError: (error) => {
       showToast(error.response.data.message);
@@ -96,10 +93,10 @@ export const useEditFavorite = () => {
   });
 };
 
-export const useFeedbackFavoriteByUser = () => {
+export const useFeedbackFavoriteByUser = (data) => {
   return useQuery({
     queryKey: ['feedback-favorite-by-user'],
-    queryFn: (data) =>
+    queryFn: () =>
       api.get({ url: `/api/member/feedback-prefer?findMemberId=${data}` }),
   });
 };
