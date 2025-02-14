@@ -19,6 +19,6 @@ public record GoogleSignupRequest(
         @Schema(description = "사용자의 피드백 선호 정보")
         @NotNull
         @Size(min = 2)
-        List<FeedbackPreference> feedbackPreference
+        List<FeedbackPreference> feedbackPreferences
 ) {
 }

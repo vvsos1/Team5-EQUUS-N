@@ -33,6 +33,6 @@ public record MemberSignupRequest(
 
         @NotNull
         @Schema(description = "사용자의 피드백 선호 정보")
-        List<FeedbackPreference> feedbackPreference
+        List<FeedbackPreference> feedbackPreferences
 ) {
 }
