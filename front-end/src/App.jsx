@@ -43,6 +43,7 @@ export default function App() {
               <Route path='/:teamCode?' element={<Splash />} />
               <Route path='signin' element={<SignIn />} />
               <Route path='signup' element={<SignUp />} />
+              {/* 이 아래는 로그인 해야 이용 가능 */}
               <Route element={<ProtectedRoute />}>
                 <Route path='feedback'>
                   <Route path='request' element={<FeedbackRequest />} />
