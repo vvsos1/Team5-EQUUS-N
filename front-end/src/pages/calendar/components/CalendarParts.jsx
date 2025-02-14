@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useGetSchedules } from '../../../api/useCalendar';
 import { useTeam } from '../../../useTeam';
-import { getDateInfo, toKST } from '../../../utility/time';
+import { changeDayName, getDateInfo, toKST } from '../../../utility/time';
 import classNames from 'classnames';
 
 /**
@@ -12,29 +12,7 @@ import classNames from 'classnames';
  */
 function CalenderDay({ dayIndex }) {
   let dayString = '월';
-  switch (dayIndex) {
-    case 0:
-      dayString = '일';
-      break;
-    case 1:
-      dayString = '월';
-      break;
-    case 2:
-      dayString = '화';
-      break;
-    case 3:
-      dayString = '수';
-      break;
-    case 4:
-      dayString = '목';
-      break;
-    case 5:
-      dayString = '금';
-      break;
-    case 6:
-      dayString = '토';
-      break;
-  }
+  dayString = changeDayName(dayIndex);
   return (
     <div className='caption-1 mx-auto w-9 text-center text-gray-200'>
       {dayString}
@@ -88,9 +66,12 @@ export function CalendarWeek({
   scheduleSet,
   setAllSchedules,
 }) {
-  const { selectedTeam } = useTeam();
-  const { data: schedules, isLoading: isSchedulesLoading } = useGetSchedules({
-    teamId: selectedTeam,
+  const { selectedTeam, teams } = useTeam();
+  const {
+    data: schedules,
+    isLoading: isSchedulesLoading,
+    refetch,
+  } = useGetSchedules({
     startDay: new Date(curSunday).toISOString().split('T')[0],
     endDay: new Date(new Date().setDate(new Date(curSunday).getDate() + 7))
       .toISOString()

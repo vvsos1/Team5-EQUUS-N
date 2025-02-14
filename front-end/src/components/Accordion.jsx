@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
  * @param {boolean} props.isAlarmRead - 알람 읽음 여부
  * @param {boolean} props.canClose - 닫기 버튼 여부
  * @param {function} props.onClickLastButton - 마지막 버튼 클릭 시 호출되는 함수
+ * @param {boolean} props.showAllSchedule - 전체 일정 보기 선택 여부
  * @returns
  */
 export default function Accordion({
@@ -23,6 +24,7 @@ export default function Accordion({
   isAlarmRead = false,
   canClose = true,
   onClickLastButton,
+  showAllSchedule = false,
 }) {
   const detailsRef = useRef(null);
 
@@ -40,8 +42,11 @@ export default function Accordion({
         <Icon name='logo' />
       : <details ref={detailsRef} className='group z-0'>
           <summary className='header-3 flex cursor-pointer list-none items-center gap-0.5 text-white'>
-            {teamList.find((team) => team.id === selectedTeamId)?.name ??
-              '선택 안됨'}
+            {showAllSchedule ?
+              '전체 일정'
+            : (teamList.find((team) => team.id === selectedTeamId)?.name ??
+              '선택 안됨')
+            }
             <Icon
               name='unfoldMore'
               className='transition group-open:rotate-180'
@@ -52,7 +57,7 @@ export default function Accordion({
               <TextButton
                 key={team.id}
                 type={
-                  team.id === selectedTeamId ?
+                  team.id === selectedTeamId && !showAllSchedule ?
                     TextButtonType.CHECK
                   : TextButtonType.DEFAULT
                 }
@@ -65,10 +70,18 @@ export default function Accordion({
               </TextButton>
             ))}
             <TextButton
-              type={isMainPage ? TextButtonType.PLUS : TextButtonType.DEFAULT}
-              onClick={() => onClickLastButton()}
+              type={
+                isMainPage ? TextButtonType.PLUS
+                : showAllSchedule ?
+                  TextButtonType.CHECK
+                : TextButtonType.DEFAULT
+              }
+              onClick={() => {
+                onClickLastButton();
+                detailsRef.current.open = false;
+              }}
             >
-              {isMainPage ? '새로운 팀 스페이스 만들기' : '전체 일정 보기'}
+              {isMainPage ? '새로운 팀 스페이스 만들기' : '전체 일정'}
             </TextButton>
           </div>
           {/* 빽드롭필터 */}
