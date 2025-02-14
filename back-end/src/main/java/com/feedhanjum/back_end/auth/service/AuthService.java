@@ -84,12 +84,12 @@ public class AuthService {
     public EmailSignupToken sendSignupVerificationEmail(String email) {
         EmailSignupToken token = EmailSignupToken.generateNewToken(email);
         validateEmail(email);
-        emailService.sendMail(
+        emailService.sendCodeToMail(
                 email,
                 "피드한줌 회원가입 이메일 인증",
-                "회원가입을 위한 이메일입니다. 아래의 코드를 회원가입 창에 입력해주세요 " +
-                        token.getCode() +
-                        " 유효기간은 " + EmailSignupToken.EXPIRE_MINUTE + "분입니다"
+                "회원가입 인증",
+                token.getCode(),
+                EmailSignupToken.EXPIRE_MINUTE
         );
         return token;
     }
@@ -113,12 +113,12 @@ public class AuthService {
         }
 
         PasswordResetToken token = PasswordResetToken.generateNewToken(email);
-        emailService.sendMail(
+        emailService.sendCodeToMail(
                 email,
-                "피드한줌 비밀번호 초기화 이메일",
-                "비밀번호 초기화를 위한 이메일입니다. 아래의 코드를 비밀번호 초기화 창에 입력해주세요 " +
-                        token.getCode() +
-                        " 유효기간은 " + PasswordResetToken.EXPIRE_MINUTE + "분입니다"
+                "피드한줌 비밀번호 초기화 인증",
+                "비밀번호 초기화",
+                token.getCode(),
+                PasswordResetToken.EXPIRE_MINUTE
         );
         return Optional.of(token);
     }

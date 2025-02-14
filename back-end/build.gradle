@@ -44,6 +44,13 @@ dependencies {
     implementation 'nl.martijndwars:web-push:5.1.1'
     implementation 'org.bouncycastle:bcprov-jdk18on:1.80'
 
+    // 이메일용 템플릿 엔진
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.session:spring-session-data-redis'
+    implementation 'com.github.codemonstur:embedded-redis:1.4.2'
 
     //Querydsl 추가
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -55,3 +62,4 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+

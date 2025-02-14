@@ -1,20 +1,28 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useFeedbackReceived } from '../../api/useFeedback';
 import { useEffect, useRef, useState } from 'react';
 import NavBar2 from '../../components/NavBar2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import { DropdownSmall } from '../../components/Dropdown';
 import Icon from '../../components/Icon';
-import FeedBack, { FeedBackType } from './components/FeedBack';
+import FeedBack from './components/FeedBack';
 import { useUser } from '../../useUser';
+import { useTeam } from '../../useTeam';
 
 export default function FeedbackReceived() {
+  const location = useLocation();
+  const defaultTeamName = new URLSearchParams(location.search).get('teamName');
+
   const navigate = useNavigate();
   const [feedbacks, setFeedbacks] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState('전체 보기');
+  const { teams } = useTeam();
+  const [selectedTeam, setSelectedTeam] = useState(
+    defaultTeamName ?? '전체 보기',
+  );
   const [onlyLiked, setOnlyLiked] = useState(false);
   const [sortBy, setSortBy] = useState('createdAt:desc');
   const [loadedPage, setLoadedPage] = useState(0);
+  const [loadFinished, setLoadFinished] = useState(false);
   const scrollRef = useRef(null);
 
   const { userId } = useUser();
@@ -24,7 +32,10 @@ export default function FeedbackReceived() {
     isLoading,
     refetch,
   } = useFeedbackReceived(userId, {
-    teamId: selectedTeam === '전체 보기' ? null : selectedTeam,
+    teamId:
+      selectedTeam === '전체 보기' ? null : (
+        teams.find((t) => t.name === selectedTeam)?.id
+      ),
     onlyLiked,
     sortBy,
     page: loadedPage,
@@ -49,15 +60,21 @@ export default function FeedbackReceived() {
   }, [isLoading]);
 
   useEffect(() => {
-    refetch();
+    if (!loadFinished) {
+      refetch();
+    }
   }, [loadedPage, refetch]);
 
   useEffect(() => {
     if (!feedbackReceived) return;
+    if (!feedbackReceived.hasNext) {
+      setLoadFinished(true);
+    }
     setFeedbacks((prev) => [...prev, ...(feedbackReceived?.content ?? [])]);
   }, [feedbackReceived]);
 
   useEffect(() => {
+    setLoadFinished(false);
     const container = scrollRef.current;
     container.scrollTo(0, 0);
     setLoadedPage(0);
@@ -81,7 +98,7 @@ export default function FeedbackReceived() {
           <DropdownSmall
             triggerText={selectedTeam}
             setTriggerText={setSelectedTeam}
-            items={[]}
+            items={teams.map((team) => team.name)}
           />
           <div className='button-2 flex items-center gap-2 text-gray-100'>
             <button
@@ -112,7 +129,7 @@ export default function FeedbackReceived() {
           </div>
         </div>
       </StickyWrapper>
-      {feedbacks && (
+      {feedbacks.length > 0 ?
         <ul>
           {feedbacks.map((feedback) => {
             return (
@@ -122,7 +139,11 @@ export default function FeedbackReceived() {
             );
           })}
         </ul>
-      )}
+      : <div className='flex h-full flex-col items-center justify-center gap-4 text-gray-300'>
+          <p className='text-5xl'>📭</p>
+          <p>받은 피드백이 없어요</p>
+        </div>
+      }
     </div>
   );
 }

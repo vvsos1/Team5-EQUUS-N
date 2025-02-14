@@ -8,16 +8,25 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE team SET deleted = true WHERE team_id = ?")
+@Table(name = "team")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Team {
+    @Column(name = "deleted")
+    private final boolean deleted = false;
+
     @Id
     @Column(name = "team_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -158,7 +167,7 @@ public class Team {
         if (endDate != null && !startDate.isBefore(endDate)) {
             throw new IllegalArgumentException("프로젝트 시작 시간이 종료 시간보다 앞서야 합니다.");
         }
-        if(endDate != null && endDate.isBefore(now)){
+        if (endDate != null && endDate.isBefore(now)) {
             throw new IllegalArgumentException("프로젝트 종료 날짜는 오늘 이후여야 합니다.");
         }
     }

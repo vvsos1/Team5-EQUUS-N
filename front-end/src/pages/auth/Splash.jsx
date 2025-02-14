@@ -4,30 +4,44 @@ import { useEffect, useState } from 'react';
 import logo from '../../assets/images/logo.png';
 import googleLogo from '../../assets/images/google-logo.png';
 import Icon from '../../components/Icon';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useGetMember } from '../../api/useAuth';
+import { useUser } from '../../useUser';
+import { useJoinTeam } from '../../api/useTeamspace';
 
 /**
  * 스플래시 페이지
  * @returns
  */
 export default function Splash() {
+  const { teamCode } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { userId, setUserId } = useUser();
+  const { data: member } = useGetMember(userId);
+  const { mutate: joinTeam } = useJoinTeam();
 
   /**
    * 버튼 클릭 핸들러
    * @param {string} path - 이동할 경로
    */
-  const handleButtonClick = (path) => {
-    navigate(path);
+  const moveTo = (path) => {
+    navigate(path, { state: teamCode });
   };
 
   useEffect(() => {
-    // TODO: 로그인 여부 확인
     setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-  }, []);
+      if (member) {
+        setUserId(member.id);
+        if (teamCode) {
+          joinTeam(teamCode);
+        }
+        moveTo('/main');
+      } else {
+        setIsLoading(false);
+      }
+    }, 1500);
+  }, [member]);
 
   return (
     <div className='flex h-full w-full items-center justify-center'>
@@ -56,7 +70,7 @@ export default function Splash() {
               {/* 이메일 로그인 */}
               <button
                 className='flex w-full items-center gap-2 rounded-full border border-[#A3A3A3] bg-white px-5'
-                onClick={() => handleButtonClick('/signup')}
+                onClick={() => moveTo('/signup')}
               >
                 <div className='ml-4'>
                   <Icon name='mail' color='#595959' />
@@ -69,7 +83,7 @@ export default function Splash() {
               <p className='caption-1 text-[#414141]'>이미 회원이신가요?</p>
               <a
                 className='caption-2 text-[#414141]'
-                onClick={() => handleButtonClick('/signin')}
+                onClick={() => moveTo('/signin')}
               >
                 로그인하기
               </a>

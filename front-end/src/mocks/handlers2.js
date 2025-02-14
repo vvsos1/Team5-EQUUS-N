@@ -41,19 +41,19 @@ export const handlers2 = [
   }),
 
   // 팀 멤버 조회
-  http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
-    return HttpResponse.json(members2);
-  }),
+  // http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
+  //   return HttpResponse.json(members2);
+  // }),
 
   // 피드백 받은 내역 조회
-  http.get(`${BASE_URL}/api/feedbacks/receiver/:memberId`, () => {
-    return HttpResponse.json(feedbackReceivedResponse);
-  }),
+  // http.get(`${BASE_URL}/api/feedbacks/receiver/:memberId`, () => {
+  //   return HttpResponse.json(feedbackReceivedResponse);
+  // }),
 
   // 피드백 보낸 내역 조회
-  http.get(`${BASE_URL}/api/feedbacks/sender/:memberId`, () => {
-    return HttpResponse.json(feedbackSentResponse);
-  }),
+  // http.get(`${BASE_URL}/api/feedbacks/sender/:memberId`, () => {
+  //   return HttpResponse.json(feedbackSentResponse);
+  // }),
 
   // 피드백 좋아요
   http.post(
@@ -72,14 +72,14 @@ export const handlers2 = [
   ),
 
   // 리더 변경
-  http.post(`${BASE_URL}/api/team/:teamId/leader`, () => {
-    return new HttpResponse({ status: 200 });
-  }),
+  // http.post(`${BASE_URL}/api/team/:teamId/leader`, () => {
+  //   return new HttpResponse({ status: 200 });
+  // }),
 
   // 멤버 삭제
-  http.delete(`${BASE_URL}/api/team/:teamId/member/:memberId`, () => {
-    return new HttpResponse({ status: 204 });
-  }),
+  // http.delete(`${BASE_URL}/api/team/:teamId/member/:memberId`, () => {
+  //   return new HttpResponse({ status: 204 });
+  // }),
 
   // 팀 수정
   // http.post(`${BASE_URL}/api/team/:teamId`, () => {
@@ -87,11 +87,7 @@ export const handlers2 = [
   // }),
 
   // 팀 삭제
-  http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {
-    return HttpResponse.json(teamResponse);
-  }),
-
-  http.get(`${BASE_URL}/api/retrospect/:writerId`, () => {
-    return HttpResponse.json(retrospectResponse);
-  }),
+  // http.delete(`${BASE_URL}/api/team/:teamId/leave`, () => {
+  //   return HttpResponse.json(teamResponse);
+  // }),
 ];

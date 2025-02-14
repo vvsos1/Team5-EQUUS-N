@@ -49,6 +49,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
@@ -196,9 +197,9 @@ class FeedbackControllerTest {
             List<Feedback> feedbacks = feedbackRepository.findAll();
             assertThat(feedbacks).hasSize(1);
             Feedback feedback = feedbacks.get(0);
-            assertThat(feedback.getSender()).isEqualTo(sender);
-            assertThat(feedback.getReceiver()).isEqualTo(receiver);
-            assertThat(feedback.getTeam()).isEqualTo(team);
+            assertEqualSender(sender, feedback.getSender());
+            assertEqualReceiver(receiver, feedback.getReceiver());
+            assertEqualTeam(team, feedback.getTeam());
             assertThat(feedback.getFeedbackType()).isEqualTo(FeedbackType.ANONYMOUS);
             assertThat(feedback.getFeedbackFeeling()).isEqualTo(FeedbackFeeling.CONSTRUCTIVE);
             assertThat(feedback.getObjectiveFeedbacks()).containsExactlyInAnyOrderElementsOf(FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(1, 3));
@@ -269,13 +270,12 @@ class FeedbackControllerTest {
                     .content(mapper.writeValueAsString(request))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-
             List<Feedback> feedbacks = feedbackRepository.findAll();
             assertThat(feedbacks).hasSize(1);
             Feedback feedback = feedbacks.get(0);
-            assertThat(feedback.getSender()).isEqualTo(sender);
-            assertThat(feedback.getReceiver()).isEqualTo(receiver);
-            assertThat(feedback.getTeam()).isEqualTo(team);
+            assertEqualSender(sender, feedback.getSender());
+            assertEqualReceiver(receiver, feedback.getReceiver());
+            assertEqualTeam(team, feedback.getTeam());
             assertThat(feedback.getFeedbackType()).isEqualTo(FeedbackType.ANONYMOUS);
             assertThat(feedback.getFeedbackFeeling()).isEqualTo(FeedbackFeeling.CONSTRUCTIVE);
             assertThat(feedback.getObjectiveFeedbacks()).containsExactlyInAnyOrderElementsOf(FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(1, 3));

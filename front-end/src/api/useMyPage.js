@@ -12,12 +12,15 @@ import { showToast } from '../utility/handleToast';
 export const useGetSelfFeedback = (userId, params) => {
   return useQuery({
     queryKey: ['feedback-received', userId, params],
+    retry: 0,
     queryFn: () => {
-      const sendingParams = {
-        teamId: params.teamId,
+      let sendingParams = {
         sortOrder: params.sortBy === 'createdAt:desc' ? 'DESC' : 'ASC',
         page: params.page,
       };
+      if (params.teamId) {
+        sendingParams.teamId = params.teamId;
+      }
       return api.get({
         url: `/api/retrospect/${userId}`,
         params: sendingParams,

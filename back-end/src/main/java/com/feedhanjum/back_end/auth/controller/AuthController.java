@@ -18,8 +18,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -74,8 +72,7 @@ public class AuthController {
         MemberSignupResponse response = memberMapper.toResponse(savedMember);
 
         session.setAttribute(SessionConst.MEMBER_ID, savedMember.getId());
-        session.setMaxInactiveInterval(Integer.MAX_VALUE);
-
+        log.info("email signup success {}", savedMember.getId());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -92,7 +89,6 @@ public class AuthController {
         MemberDetails member = authService.authenticateEmail(request.email(), request.password());
 
         session.setAttribute(SessionConst.MEMBER_ID, member.getId());
-        session.setMaxInactiveInterval(Integer.MAX_VALUE);
 
         LoginResponse response = new LoginResponse("로그인에 성공했습니다.", member.getId(), member.getEmail());
 
@@ -107,14 +103,8 @@ public class AuthController {
             @ApiResponse(responseCode = "204", description = "로그아웃 처리 성공")
     })
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response, HttpSession session) {
+    public ResponseEntity<Void> logout(HttpSession session) {
         session.invalidate();
-
-        Cookie sessionCookie = new Cookie("JSESSIONID", null);
-        sessionCookie.setPath("/");
-        sessionCookie.setMaxAge(0);
-        sessionCookie.setHttpOnly(true);
-        response.addCookie(sessionCookie);
 
         return ResponseEntity.noContent().build();
     }
@@ -142,11 +132,13 @@ public class AuthController {
     public ResponseEntity<Void> verifySignupEmailToken(HttpSession session, @Valid @RequestBody SignupEmailVerifyRequest request) {
         Object token = session.getAttribute(SessionConst.SIGNUP_TOKEN);
         if (!(token instanceof EmailSignupToken emailSignupToken)) {
+            log.info("email signup token verification failed. token: {}, token class: {}", token, token.getClass().getName());
             throw new SignupTokenNotValidException();
         }
         authService.validateSignupToken(emailSignupToken, request.email(), request.code());
         session.setAttribute(SessionConst.SIGNUP_TOKEN_VERIFIED_EMAIL, emailSignupToken.getEmail());
         session.removeAttribute(SessionConst.SIGNUP_TOKEN);
+        log.info("email signup token verification success. email: {}, token: {}", emailSignupToken.getEmail(), emailSignupToken.getCode());
         return ResponseEntity.noContent().build();
     }
 
@@ -230,7 +222,6 @@ public class AuthController {
             MemberDetails member = loginResult.memberDetails();
             LoginResponse response = new LoginResponse("로그인에 성공했습니다.", member.getId(), member.getEmail());
             session.setAttribute(SessionConst.MEMBER_ID, member.getId());
-            session.setMaxInactiveInterval(Integer.MAX_VALUE);
             log.info("member {} directly login google account", member.getId());
             return ResponseEntity.ok(GoogleLoginResponse.authenticated(response));
         }
@@ -261,7 +252,6 @@ public class AuthController {
         MemberSignupResponse response = memberMapper.toResponse(member);
 
         session.setAttribute(SessionConst.MEMBER_ID, member.getId());
-        session.setMaxInactiveInterval(Integer.MAX_VALUE);
         log.info("member {} signup and login with google account", member.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

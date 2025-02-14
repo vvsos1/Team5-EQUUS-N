@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import {
   useMainCard,
   useMainCard2,
@@ -25,6 +25,8 @@ import ScheduleAction, {
 import TodoAdd from '../calendar/components/TodoAdd';
 import { getScheduleTimeDiff } from '../../utility/time';
 import { useTeam } from '../../useTeam';
+import useScheduleAction from '../calendar/hooks/useScheduleAction';
+import { useUser } from '../../useUser';
 
 export default function MainPage() {
   const [banners, setBanners] = useState();
@@ -33,13 +35,23 @@ export default function MainPage() {
   const [isScheduleOpen, toggleSchedule] = useReducer((prev) => !prev, false);
 
   const { teams, selectedTeam, selectTeam } = useTeam();
-  const { data: recentScheduleData } = useMainCard(selectedTeam);
+  const { userId } = useUser();
+  const { data: recentScheduleData, isPending: isMainCardPending } =
+    useMainCard(selectedTeam);
   const { data: matesData } = useMainCard2(selectedTeam);
   const { data: notificationsData, markAsRead } = useNotification(selectedTeam);
 
+  // 리렌더링 시 값이 바뀌지 않는 상태 생성
+  const date = useRef(new Date()).current;
+
+  const { actionInfo, clearData } = useScheduleAction(date, recentScheduleData);
   const navigate = useNavigate();
 
   // TODO: 로딩 중 혹은 에러 발생 시 처리
+
+  useEffect(() => {
+    clearData();
+  }, [isScheduleOpen]);
 
   useEffect(() => {
     if (notificationsData) {
@@ -66,8 +78,9 @@ export default function MainPage() {
       return () =>
         navigate('/feedback/send', {
           state: {
-            members: matesData.filter((member) => member.id !== 1),
+            members: matesData.filter((member) => member.id !== userId),
             scheduleId: recentScheduleData.scheduleId,
+            isRegular: true,
           },
         });
     }
@@ -102,20 +115,25 @@ export default function MainPage() {
         </Slider>
       )}
       <div className='h-2' />
-      {(teams.length === 0 || recentScheduleData) && (
-        <MainCard
-          isInTeam={teams.length > 0}
-          recentSchedule={recentScheduleData}
-          scheduleDifferece={timeDiff}
-          onClickMainButton={getOnMainButtonClick()}
-          onClickSubButton={() => toggleSchedule()}
-          onClickChevronButton={() => navigate('/calendar')}
-        />
-      )}
+      {/* 로컬 스토리지 관련 문제 잡히면 다시 보기 */}
+      <MainCard
+        userId={userId}
+        isInTeam={teams.length > 0}
+        recentSchedule={recentScheduleData}
+        scheduleDifferece={timeDiff}
+        onClickMainButton={getOnMainButtonClick()}
+        onClickSubButton={() => toggleSchedule()}
+        onClickChevronButton={() => navigate('/calendar')}
+      />
       <div className='h-8' />
       {matesData && (
         <MainCard2
           teamMates={matesData}
+          onReceivedFeedbackClick={() =>
+            navigate(
+              `/feedback/received?teamName=${teams.find((team) => team.id === selectedTeam).name}`,
+            )
+          }
           onClick={(mate) =>
             showModal(
               <Modal
@@ -123,22 +141,24 @@ export default function MainPage() {
                 profileImage={
                   <div className='size-[62px]'>
                     <ProfileImage
-                      iconName={`@animals/${mate.iconName}`}
-                      color={mate.color}
+                      iconName={`@animals/${mate.profileImage.image}`}
+                      color={mate.profileImage.backgroundColor}
                     />
                   </div>
                 }
                 content={
-                  mate.id === 1 ? `${mate.name}(나)` : `${mate.name}님에게`
+                  mate.id === userId ? `${mate.name}(나)` : `${mate.name}님에게`
                 }
                 mainButton={
                   <MediumButton
-                    text={mate.id === 1 ? '회고 작성하기' : '피드백 보내기'}
+                    text={
+                      mate.id === userId ? '회고 작성하기' : '피드백 보내기'
+                    }
                     onClick={() => {
-                      mate.id === 1 ?
+                      mate.id === userId ?
                         navigate(`/feedback/self`)
                       : navigate(`/feedback/send`, {
-                          state: { members: [mate] },
+                          state: { members: [mate], isRegular: false },
                         });
                       hideModal();
                     }}
@@ -147,7 +167,7 @@ export default function MainPage() {
                   />
                 }
                 subButton={
-                  mate.id === 1 ?
+                  mate.id === userId ?
                     null
                   : <MediumButton
                       text='피드백 요청하기'
@@ -168,21 +188,16 @@ export default function MainPage() {
         />
       )}
       <div className='h-8' />
-      {recentScheduleData && (
-        <ScheduleAction
-          type={ScheduleActionType.ADD}
-          isOpen={isScheduleOpen}
-          onSubmit={() => {
-            toggleSchedule();
-            // TODO: 일정 조회
-          }}
-          onClose={() => {
-            toggleSchedule();
-          }}
-          selectedDateFromParent={new Date()}
-          selectedSchedule={recentScheduleData}
-        />
-      )}
+      {/* TODO: 달력으로 바꿔야 함 */}
+      <ScheduleAction
+        type={ScheduleActionType.ADD}
+        isOpen={isScheduleOpen}
+        onClose={() => {
+          toggleSchedule();
+        }}
+        selectedDateFromParent={new Date()}
+        actionInfo={actionInfo}
+      />
       {recentScheduleData && (
         <TodoAdd
           isOpen={isTodoAddOpen}

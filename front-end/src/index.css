@@ -44,6 +44,12 @@
   --breakpoint-desktop: 1024px;
 }
 
+html,
+body {
+  overscroll-behavior-y: none;
+  user-select: none;
+}
+
 body {
   font-family: var(--font-pretendard);
 }

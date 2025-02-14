@@ -33,6 +33,8 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.assertEqualReceiver;
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.assertEqualSender;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -53,9 +55,6 @@ class FeedbackQueryRepositoryTest {
         }
 
     }
-
-    @Autowired
-    private PersistenceUnitUtil persistenceUnitUtil;
 
     @Autowired
     private FeedbackQueryRepository feedbackQueryRepository;
@@ -82,6 +81,7 @@ class FeedbackQueryRepositoryTest {
         }
         return feedback;
     }
+
 
     @Nested
     @DisplayName("findReceivedFeedbacks 메소드 테스트")
@@ -138,11 +138,8 @@ class FeedbackQueryRepositoryTest {
             assertThat(result.getTotalElements()).isEqualTo(10);
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
-            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                    .isLoaded(f.getTeam()) && persistenceUnitUtil
-                    .isLoaded(f.getSender()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.reverseOrder());
-            assertThat(feedbacks).extracting(Feedback::getReceiver).containsOnly(receiver);
+            assertThat(feedbacks).extracting(Feedback::getReceiver).allSatisfy(r -> assertEqualReceiver(receiver, r));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team2", "team1", "team2", "team1");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, true, false, false);
         }
@@ -182,11 +179,8 @@ class FeedbackQueryRepositoryTest {
             assertThat(result.getTotalElements()).isEqualTo(5);
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
-            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                    .isLoaded(f.getTeam()) && persistenceUnitUtil
-                    .isLoaded(f.getSender()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.reverseOrder());
-            assertThat(feedbacks).extracting(Feedback::getReceiver).containsOnly(receiver);
+            assertThat(feedbacks).extracting(Feedback::getReceiver).allSatisfy(r -> assertEqualReceiver(receiver, r));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsOnly("team1");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, false, true, false);
         }
@@ -225,11 +219,8 @@ class FeedbackQueryRepositoryTest {
             assertThat(result.getTotalElements()).isEqualTo(4);
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
-            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                    .isLoaded(f.getTeam()) && persistenceUnitUtil
-                    .isLoaded(f.getSender()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.naturalOrder());
-            assertThat(feedbacks).extracting(Feedback::getReceiver).containsOnly(receiver);
+            assertThat(feedbacks).extracting(Feedback::getReceiver).allSatisfy(r -> assertEqualReceiver(receiver, r));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team2");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsOnly(true);
         }
@@ -268,11 +259,8 @@ class FeedbackQueryRepositoryTest {
             assertThat(result.getTotalElements()).isEqualTo(10);
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
-            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                    .isLoaded(f.getTeam()) && persistenceUnitUtil
-                    .isLoaded(f.getSender()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.naturalOrder());
-            assertThat(feedbacks).extracting(Feedback::getReceiver).containsOnly(receiver);
+            assertThat(feedbacks).extracting(Feedback::getReceiver).allSatisfy(r -> assertEqualReceiver(receiver, r));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team1", "team2");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, true, false, false);
         }
@@ -334,11 +322,8 @@ class FeedbackQueryRepositoryTest {
             assertThat(result.getTotalElements()).isEqualTo(10);
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
-            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                    .isLoaded(f.getTeam()) && persistenceUnitUtil
-                    .isLoaded(f.getReceiver()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.reverseOrder());
-            assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
+            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(sender, s));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team2", "team1", "team2", "team1");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, true, false, false);
         }
@@ -378,11 +363,8 @@ class FeedbackQueryRepositoryTest {
             assertThat(result.getTotalElements()).isEqualTo(5);
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
-            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                    .isLoaded(f.getTeam()) && persistenceUnitUtil
-                    .isLoaded(f.getReceiver()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.reverseOrder());
-            assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
+            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(sender, s));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsOnly("team1");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, false, true, false);
         }
@@ -421,11 +403,8 @@ class FeedbackQueryRepositoryTest {
             assertThat(result.getTotalElements()).isEqualTo(4);
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
-            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                    .isLoaded(f.getTeam()) && persistenceUnitUtil
-                    .isLoaded(f.getReceiver()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.naturalOrder());
-            assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
+            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(sender, s));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team2");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsOnly(true);
         }
@@ -464,11 +443,8 @@ class FeedbackQueryRepositoryTest {
             assertThat(result.getTotalElements()).isEqualTo(10);
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
-            assertThat(feedbacks).allMatch(f -> persistenceUnitUtil
-                    .isLoaded(f.getTeam()) && persistenceUnitUtil
-                    .isLoaded(f.getReceiver()));
             assertThat(feedbacks).extracting(Feedback::getId).isSortedAccordingTo(Comparator.naturalOrder());
-            assertThat(feedbacks).extracting(Feedback::getSender).containsOnly(sender);
+            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(sender, s));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team1", "team2");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, true, false, false);
         }

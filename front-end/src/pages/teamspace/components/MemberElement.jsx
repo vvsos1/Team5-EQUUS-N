@@ -1,10 +1,16 @@
-import { useKickMember, useSetLeader } from '../../../api/useTeamspace';
+import {
+  useKickMember,
+  useLeaveTeam,
+  useSetLeader,
+} from '../../../api/useTeamspace';
 import MediumButton from '../../../components/buttons/MediumButton';
 import Icon from '../../../components/Icon';
 import Modal from '../../../components/modals/Modal';
 import ProfileImage from '../../../components/ProfileImage';
 import Tag, { TagType } from '../../../components/Tag';
+import { useUser } from '../../../useUser';
 import { hideModal, showModal } from '../../../utility/handleModal';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * 팀원 요소 컴포넌트
@@ -19,6 +25,9 @@ import { hideModal, showModal } from '../../../utility/handleModal';
 export default function MemberElement({ teamId, member, leaderId, iamLeader }) {
   const { mutate: setLeader } = useSetLeader(teamId);
   const { mutate: kickMember } = useKickMember(teamId);
+  const { mutate: leaveTeam } = useLeaveTeam(teamId);
+  const { userId } = useUser();
+  const navigate = useNavigate();
 
   const changeLeaderModal = (
     <Modal
@@ -54,6 +63,27 @@ export default function MemberElement({ teamId, member, leaderId, iamLeader }) {
     />
   );
 
+  const leaveTeamModal = (
+    <Modal
+      type='SINGLE'
+      content={`정말 팀에서 떠나시겠어요?`}
+      mainButton={
+        <MediumButton
+          text='확인'
+          isOutlined={false}
+          onClick={() => {
+            leaveTeam(null, {
+              onSuccess: () => {
+                hideModal();
+                navigate('/teamspace/list');
+              },
+            });
+          }}
+        />
+      }
+    />
+  );
+
   return (
     <li
       className={`rounded-400 flex h-fit w-full items-center bg-gray-800 px-5 py-4`}
@@ -70,13 +100,15 @@ export default function MemberElement({ teamId, member, leaderId, iamLeader }) {
       <div className='flex flex-1 flex-col gap-2'>
         <div className='flex items-center gap-3'>
           <p className='subtitle-1 text-gray-100'>{member.name}</p>
-          {member.id === leaderId ?
+          {member.id == leaderId ?
             <Tag type={TagType.TEAM_LEADER} />
           : null}
         </div>
-        <p className='caption-1 text-gray-300'>{member.email}</p>
+        <p className='caption-1 overflow-ellipsis text-gray-300'>
+          {member.email}
+        </p>
       </div>
-      {iamLeader && member.id !== leaderId ?
+      {iamLeader && member.id != leaderId ?
         <div className='flex gap-2'>
           <div
             className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-gray-600 p-1.5'
@@ -94,6 +126,15 @@ export default function MemberElement({ teamId, member, leaderId, iamLeader }) {
           >
             <Icon name={'logout'} color={'var(--color-gray-200)'} />
           </div>
+        </div>
+      : !iamLeader && member.id == userId ?
+        <div
+          className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-gray-600 p-1.5'
+          onClick={() => {
+            showModal(leaveTeamModal);
+          }} // 떠나기
+        >
+          <Icon name={'logout'} color={'var(--color-gray-200)'} />
         </div>
       : null}
     </li>

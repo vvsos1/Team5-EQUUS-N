@@ -19,14 +19,14 @@ export const handlers = [
   // }),
 
   // 메인 카드 조회
-  http.get(`${BASE_URL}/api/team/:teamId/schedule`, () => {
-    return HttpResponse.json(schedules[0]);
-  }),
+  // http.get(`${BASE_URL}/api/team/:teamId/schedule`, () => {
+  //   return HttpResponse.json(schedules[0]);
+  // }),
 
   // 팀 멤버 조회
-  http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
-    return HttpResponse.json(members);
-  }),
+  // http.get(`${BASE_URL}/api/team/:teamId/members`, () => {
+  //   return HttpResponse.json(members);
+  // }),
 
   // 알람 조회
   http.get(`${BASE_URL}/api/notification`, () => {
@@ -58,15 +58,15 @@ export const handlers = [
   ),
 
   // 회고
-  http.post(`${BASE_URL}/api/retrospect`, async ({ request }) => {
-    const data = await request.json();
-    console.log(data);
+  // http.post(`${BASE_URL}/api/retrospect`, async ({ request }) => {
+  //   const data = await request.json();
+  //   console.log(data);
 
-    // 2초 딜레이 추가
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  //   // 2초 딜레이 추가
+  //   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    return HttpResponse.json(data, { status: 201 });
-  }),
+  //   return HttpResponse.json(data, { status: 201 });
+  // }),
 
   // 피드백 선호 키워드 조회
   // http.get(`${BASE_URL}/api/feedbacks/favorite`, () => {
@@ -105,7 +105,7 @@ export const handlers = [
     const member = members2.find((m) => m.id === memberId);
     return HttpResponse.json(member);
   }),
-           
+
   // 피드백 키워드 조회
   http.get(`${BASE_URL}/api/feedback/keyword`, () => {
     return HttpResponse.json(objectives);

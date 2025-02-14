@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { timeInPeriod, toKST } from '../../../utility/time';
 
-export default function useSchedule(teamId, selectedDate) {
+export default function useSchedule(teamId, selectedDate, showAllSchedule) {
   const [allSchedules, setAllSchedules] = useState([]);
   const [scheduleOnDate, setScheduleOnDate] = useState(null);
   const [scheduleSet, setScheduleSet] = useState(new Set());
@@ -29,6 +29,7 @@ export default function useSchedule(teamId, selectedDate) {
       new Set(
         allSchedules
           ?.filter((data) => {
+            if (showAllSchedule) return true;
             return data.teamId === teamId;
           })
           ?.map(
@@ -37,7 +38,7 @@ export default function useSchedule(teamId, selectedDate) {
           ) ?? [],
       ),
     );
-  }, [allSchedules]);
+  }, [allSchedules, teamId, showAllSchedule]);
 
   return {
     allSchedules,

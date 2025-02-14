@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -39,21 +41,30 @@ public class Feedback {
 
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id")
-    private Member sender;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "sender_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "sender_name")),
+    })
+    private Sender sender;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id")
-    private Member receiver;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "receiver_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "receiver_name")),
+    })
+    private Receiver receiver;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "team_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "team_name")),
+    })
+    private AssociatedTeam team;
 
     // 객관식 피드백
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "objective_feedback", joinColumns = @JoinColumn(name = "feedback_id"))
+    @Column(name = "objective_feedbacks", columnDefinition = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     private final Set<ObjectiveFeedback> objectiveFeedbacks = new HashSet<>();
 
     /**
@@ -65,9 +76,9 @@ public class Feedback {
         this.subjectiveFeedback = subjectiveFeedback;
         this.feedbackFeeling = feedbackFeeling;
         this.objectiveFeedbacks.addAll(objectiveFeedbacks);
-        this.sender = sender;
-        this.receiver = receiver;
-        this.team = team;
+        this.sender = Sender.of(sender);
+        this.receiver = Receiver.of(receiver);
+        this.team = AssociatedTeam.of(team);
         this.createdAt = LocalDateTime.now();
         validateObjectiveFeedbacks();
     }
@@ -87,12 +98,12 @@ public class Feedback {
     }
 
     private boolean isReceiver(Member member) {
-        return receiver.equals(member);
+        return receiver.getId().equals(member.getId());
     }
 
     private void validateObjectiveFeedbacks() {
         if (!(MIN_OBJECTIVE_FEEDBACK_SIZE <= objectiveFeedbacks.size()
-              && objectiveFeedbacks.size() <= MAX_OBJECTIVE_FEEDBACK_SIZE)) {
+                && objectiveFeedbacks.size() <= MAX_OBJECTIVE_FEEDBACK_SIZE)) {
             throw new IllegalArgumentException("객관식 피드백은 " + MIN_OBJECTIVE_FEEDBACK_SIZE + "개 이상 " + MAX_OBJECTIVE_FEEDBACK_SIZE + "개 이하만 가능합니다.");
         }
         for (ObjectiveFeedback objectiveFeedback : objectiveFeedbacks) {
