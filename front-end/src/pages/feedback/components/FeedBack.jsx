@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Icon from '../../../components/Icon';
 import ProfileImage, {
   getRandomProfile,
@@ -27,6 +27,7 @@ export default function FeedBack({ feedbackType, data }) {
   const teamMate = feedbackType === 'RECEIVE' ? data.sender : data.receiver;
   const date = data.createdAt.split('T')[0].replace(/-/g, '.');
   const { userId } = useUser();
+  const randomProfile = useRef(getRandomProfile());
 
   const { mutate: likeFeedback } = useFeedbackLike(userId, data.feedbackId);
   const { mutate: cancelLikeFeedback } = useFeedbackLikeCancel(
@@ -49,8 +50,8 @@ export default function FeedBack({ feedbackType, data }) {
             </div>
           : <div className='aspect-square h-11'>
               <ProfileImage
-                iconName={'@animals/' + getRandomProfile().image}
-                color={getRandomProfile().backgroundColor}
+                iconName={'@animals/' + randomProfile.current.image}
+                color={randomProfile.current.backgroundColor}
               />
             </div>)}
         <div className='flex flex-1 flex-col gap-0.5'>
