@@ -62,7 +62,7 @@ export default function FeedbackSend3() {
       <p className='body-1 mt-8 mb-2 text-gray-300'>{`${locationState.receiver.name}님이 원하는 피드백 스타일이에요!`}</p>
       {favoriteKeywords && (
         <div className='mb-5 flex flex-wrap gap-2'>
-          {favoriteKeywords.map((keyword, index) => (
+          {favoriteKeywords.feedbackPreferences.map((keyword, index) => (
             <Tag key={index} type={TagType.KEYWORD}>
               {keyword}
             </Tag>
