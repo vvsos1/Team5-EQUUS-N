@@ -26,7 +26,6 @@ export default function MainCard({
   onClickSubButton,
   onClickChevronButton,
 }) {
-  console.log(userId, isInTeam, recentSchedule, scheduleDifferece);
   const contentRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [height, setHeight] = useState(0);

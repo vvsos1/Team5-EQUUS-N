@@ -4,10 +4,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 /**
  *  팀 목록을 가져오는 훅 (쿠키에 있는 sessionId로 조회)
  */
-export const useMyTeams = (userId) => {
+export const useMyTeams = ({ enabled }) => {
   return useQuery({
-    queryKey: ['myTeams', userId],
+    queryKey: ['myTeams'],
     queryFn: () => api.get({ url: '/api/team/my-teams' }),
+    enabled: enabled,
+    gcTime: 0,
   });
 };
 
