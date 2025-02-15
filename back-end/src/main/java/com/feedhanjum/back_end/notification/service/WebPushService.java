@@ -61,7 +61,14 @@ public class WebPushService {
         List<WebPushSubscription> subscriptions = subscriptionRepository.findAllBySubscriber(subscriber);
         for (WebPushSubscription subscription : subscriptions) {
             sendPushMessage(subscription.getSubscription(), message)
-                    .thenAccept(response -> log.info("Push message sent to {}: {}", subscriber.getName(), response))
+                    .thenAcceptAsync(response -> {
+                        log.info("Push message sent to {}: {}", subscriber.getName(), response);
+                        if (response.getStatusCode() == 410) {
+                            // 구독 정보 만료
+                            log.info("Subscription deletded. expired: {}", subscription);
+                            subscriptionRepository.delete(subscription);
+                        }
+                    })
                     .exceptionally(e -> {
                         log.info("Failed to send push message to {}", subscriber.getName(), e);
                         return null;
