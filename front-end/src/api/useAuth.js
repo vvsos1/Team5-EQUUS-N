@@ -63,13 +63,13 @@ export const useLogin = (teamCode) => {
 
 export const useLogout = () => {
   const navigate = useNavigate();
-  const { setTeams } = useTeam();
-  const { setUserId } = useUser();
+  const { removeTeam } = useTeam();
+  const { removeUserId } = useUser();
   return useMutation({
     mutationFn: () => api.post({ url: '/api/auth/logout' }),
     onSuccess: () => {
-      setUserId(null);
-      setTeams([]);
+      removeTeam();
+      removeUserId();
       navigate('/', { replace: true });
     },
   });
