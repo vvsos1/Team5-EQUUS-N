@@ -5,13 +5,11 @@ import { showToast } from '../utility/handleToast';
 import { useUser } from '../useUser';
 import { useJoinTeam } from './useTeamspace';
 
-const BASE_URL_2 = '/api/auth';
-
 export const useSendVerifMail = () => {
   return useMutation({
     mutationFn: (data) =>
       api.post({
-        url: BASE_URL_2 + '/send-signup-verification-email',
+        url: '/api/auth/send-signup-verification-email',
         body: data,
       }),
   });
@@ -20,7 +18,7 @@ export const useSendVerifMail = () => {
 export const useVerifyToken = () => {
   return useMutation({
     mutationFn: (data) =>
-      api.post({ url: BASE_URL_2 + '/verify-signup-email-token', body: data }),
+      api.post({ url: '/api/auth/verify-signup-email-token', body: data }),
   });
 };
 

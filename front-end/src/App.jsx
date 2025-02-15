@@ -29,12 +29,14 @@ import FeedbackSendStep from './pages/feedback/FeedbackSendStep';
 import FeedbackSend from './pages/feedback/FeedbackSend';
 import FeedbackFavorite from './pages/feedback/FeedbackFavorite';
 import MyPageHome from './pages/mypage/MyPageHome';
+import PushNotiManager from './PushNotiManager';
 
 const queryClient = new QueryClient();
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <PushNotiManager />
       <BrowserRouter>
         <CombinedProvider>
           <Routes>
