@@ -30,8 +30,9 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
       registerType: 'autoUpdate', // 서비스 워커 업데이트 설정
-      injectRegister: 'inline',
-      filename: 'service-worker.js',
+      injectManifest: {
+        swSrc: 'public/service-worker.js',
+      },
       // 추가 캐싱 전략 등 원하는 옵션 추가 가능
     }),
   ],
