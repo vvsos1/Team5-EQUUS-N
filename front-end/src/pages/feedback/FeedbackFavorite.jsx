@@ -4,7 +4,7 @@ import { useEditFavorite, useFeedbackFavorite } from '../../api/useFeedback';
 import { useState } from 'react';
 import FooterWrapper from '../../components/wrappers/FooterWrapper';
 import LargeButton from '../../components/buttons/LargeButton';
-import { useSignUp } from '../../api/useAuth';
+import { useEmailSignUp, useGoogleSignup } from '../../api/useAuth';
 import { showToast } from '../../utility/handleToast';
 import { useUser } from '../../useUser';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
@@ -21,7 +21,12 @@ export default function FeedbackFavorite() {
 
   const { data } = useFeedbackFavorite();
 
-  const mutation = process === 'signup' ? useSignUp() : useEditFavorite();
+  const mutation =
+    process === 'signup' ?
+      location.state.token ?
+        useGoogleSignup()
+      : useEmailSignUp()
+    : useEditFavorite();
 
   const onKeywordButtonClick = (isStyle, keyword) => {
     const keywords = isStyle ? selectedStyle : selectedContent;
