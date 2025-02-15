@@ -13,12 +13,14 @@ export default function PushNotiManager() {
 
     // 서비스 워커 등록
     if ('serviceWorker' in navigator) {
+      console.log('1!1!1!1!1!1!1!1!1!');
       navigator.serviceWorker
         .getRegistration('/service-worker.js')
         .then((registration) => {
+          console.log(registration);
           if (!registration) {
             navigator.serviceWorker
-              .register('service-worker.js')
+              .register('/service-worker.js')
               .then(function (registration) {
                 console.log('Service Worker 등록 성공:', registration);
               })
@@ -27,6 +29,7 @@ export default function PushNotiManager() {
               });
           }
         });
+      console.log('2!2!2!2!2!2!2!');
     } else {
       console.log(
         'Service Worker를 지원하지 않는 브라우저입니다. 푸시 알림을 사용할 수 없습니다.',
