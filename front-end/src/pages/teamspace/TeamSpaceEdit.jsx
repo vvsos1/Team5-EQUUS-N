@@ -14,6 +14,8 @@ import Modal from '../../components/modals/Modal';
 import MediumButton from '../../components/buttons/MediumButton';
 import { hideModal, showModal } from '../../utility/handleModal';
 import { useEditTeam, useLeaveTeam } from '../../api/useTeamspace';
+import { reSelectTeam } from './components/MemberElement';
+import { useTeam } from '../../useTeam';
 
 /**
  * @param {object} props
@@ -34,6 +36,7 @@ export default function TeamSpaceEdit({ isFirst = false }) {
   const [canDelete, setCanDelete] = useState(false);
   const { mutate: editTeam } = useEditTeam(teamId);
   const { mutate: leaveTeam } = useLeaveTeam(teamId);
+  const { selectedTeam, removeSelectedTeam } = useTeam();
 
   const navigate = useNavigate();
 
@@ -57,6 +60,7 @@ export default function TeamSpaceEdit({ isFirst = false }) {
             leaveTeam(null, {
               onSuccess: () => {
                 hideModal();
+                reSelectTeam(teamId, selectedTeam, removeSelectedTeam);
                 navigate('/teamspace/list');
               },
             });

@@ -39,7 +39,12 @@ public class WebPushService {
     public void subscribe(Long subscriberId, Subscription subscription) {
         Member member = memberRepository.findById(subscriberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 회원을 찾을 수 없습니다."));
-        subscriptionRepository.save(new WebPushSubscription(member, subscription));
+
+        WebPushSubscription webPushSubscription = subscriptionRepository.findBySubscription_Endpoint(subscription.endpoint)
+                .orElseGet(() -> new WebPushSubscription(member, subscription));
+        webPushSubscription.updateSubscriber(member);
+
+        subscriptionRepository.save(webPushSubscription);
         log.info("Web push subscription saved: {} {}", member.getName(), subscription);
     }
 
@@ -56,7 +61,14 @@ public class WebPushService {
         List<WebPushSubscription> subscriptions = subscriptionRepository.findAllBySubscriber(subscriber);
         for (WebPushSubscription subscription : subscriptions) {
             sendPushMessage(subscription.getSubscription(), message)
-                    .thenAccept(response -> log.info("Push message sent to {}: {}", subscriber.getName(), response))
+                    .thenAcceptAsync(response -> {
+                        log.info("Push message sent to {}: {}", subscriber.getName(), response);
+                        if (response.getStatusCode() == 410) {
+                            // 구독 정보 만료
+                            log.info("Subscription deletded. expired: {}", subscription);
+                            subscriptionRepository.delete(subscription);
+                        }
+                    })
                     .exceptionally(e -> {
                         log.info("Failed to send push message to {}", subscriber.getName(), e);
                         return null;

@@ -22,6 +22,15 @@ const teamReducer = (state, action) => {
       localStorage.setItem('selectedTeam', JSON.stringify(action.payload));
       return { ...state, selectedTeam: action.payload };
 
+    case 'REMOVE_TEAMS':
+      localStorage.removeItem('teams');
+      localStorage.removeItem('selectedTeam');
+      return { teams: [], selectedTeam: null };
+
+    case 'REMOVE_SELECTED_TEAM':
+      localStorage.removeItem('selectedTeam');
+      return { ...state, selectedTeam: null };
+
     default:
       return state;
   }

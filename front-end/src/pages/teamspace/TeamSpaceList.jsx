@@ -1,19 +1,15 @@
 import { useState } from 'react';
-import { useMyTeams } from '../../api/useMainPage';
 import NavBar2 from '../../components/NavBar2';
 import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import { useNavigate } from 'react-router-dom';
 import TeamElement from './components/TeamElement';
 import { checkIsFinished } from '../../utility/time';
+import { useTeam } from '../../useTeam';
 
 export default function TeamSpaceList() {
   const navigate = useNavigate();
   const [showEndedTeams, setShowEndedTeams] = useState(false);
-  const { data: teams, isLoading } = useMyTeams();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const { teams } = useTeam(true);
 
   return (
     <div className='scrollbar-hidden flex h-full flex-col overflow-x-hidden overflow-y-auto'>
