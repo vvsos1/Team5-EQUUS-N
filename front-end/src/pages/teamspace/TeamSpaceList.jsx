@@ -5,15 +5,14 @@ import StickyWrapper from '../../components/wrappers/StickyWrapper';
 import { useNavigate } from 'react-router-dom';
 import TeamElement from './components/TeamElement';
 import { checkIsFinished } from '../../utility/time';
+import { useUser } from '../../useUser';
+import { useTeam } from '../../useTeam';
 
 export default function TeamSpaceList() {
   const navigate = useNavigate();
   const [showEndedTeams, setShowEndedTeams] = useState(false);
-  const { data: teams, isLoading } = useMyTeams();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const { userId } = useUser();
+  const { teams } = useTeam(userId);
 
   return (
     <div className='scrollbar-hidden flex h-full flex-col overflow-x-hidden overflow-y-auto'>

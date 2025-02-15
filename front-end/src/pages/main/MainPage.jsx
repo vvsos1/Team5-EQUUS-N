@@ -138,7 +138,7 @@ export default function MainPage() {
         />
       )}
       <div className='h-8' />
-      {/* {matesData && (
+      {matesData && (
         <MainCard2
           teamMates={matesData}
           onReceivedFeedbackClick={() =>
@@ -201,7 +201,7 @@ export default function MainPage() {
             )
           }
         />
-      )} */}
+      )}
       <div className='h-8' />
       {/* TODO: 달력으로 바꿔야 함 */}
       <ScheduleAction
