@@ -17,7 +17,7 @@ export default function FeedbackSent() {
   const [onlyLiked, setOnlyLiked] = useState(false);
   const [sortBy, setSortBy] = useState('createdAt:desc');
   const [loadedPage, setLoadedPage] = useState(0);
-  const [loadFinished, setLoadFinished] = useState(false);
+  const [noMoreData, setNoMoreData] = useState(false);
   const scrollRef = useRef(null);
 
   const { userId } = useUser();
@@ -45,8 +45,9 @@ export default function FeedbackSent() {
           container.scrollHeight - 200 &&
         !isLoading
       ) {
-        setLoadedPage(loadedPage + 1);
-        refetch();
+        if (!noMoreData) {
+          setLoadedPage(loadedPage + 1);
+        }
       }
     }
     container.addEventListener('scroll', handleScroll);
@@ -56,7 +57,7 @@ export default function FeedbackSent() {
   }, [isLoading]);
 
   useEffect(() => {
-    if (!loadFinished) {
+    if (!noMoreData) {
       refetch();
     }
   }, [loadedPage, refetch]);
@@ -64,19 +65,19 @@ export default function FeedbackSent() {
   useEffect(() => {
     if (!feedbackSent) return;
     if (!feedbackSent.hasNext) {
-      setLoadFinished(true);
+      setNoMoreData(true);
     }
     setFeedbacks((prev) => [...prev, ...(feedbackSent?.content ?? [])]);
   }, [feedbackSent]);
 
-  useEffect(() => {
-    setLoadFinished(false);
+  function refreshData() {
+    setNoMoreData(false);
     const container = scrollRef.current;
     container.scrollTo(0, 0);
     setLoadedPage(0);
     setFeedbacks([]);
     refetch();
-  }, [selectedTeam, onlyLiked, sortBy]);
+  }
 
   return (
     <div
@@ -93,14 +94,17 @@ export default function FeedbackSent() {
         <div className='flex justify-between gap-4 border-b border-gray-700 py-5'>
           <DropdownSmall
             triggerText={selectedTeam}
-            setTriggerText={setSelectedTeam}
+            setTriggerText={(text) => {
+              setSelectedTeam(text);
+              refreshData();
+            }}
             items={teams.map((team) => team.name)}
           />
           <div className='button-2 flex items-center gap-2 text-gray-100'>
             <button
               onClick={() => {
                 setOnlyLiked(!onlyLiked);
-                refetch();
+                refreshData();
               }}
             >
               <p className={onlyLiked ? 'caption-2 text-lime-500' : ''}>
@@ -116,7 +120,7 @@ export default function FeedbackSent() {
                     'createdAt:desc'
                   ),
                 );
-                refetch();
+                refreshData();
               }}
             >
               <p>{sortBy === 'createdAt:desc' ? '최신순' : '과거순'}</p>
