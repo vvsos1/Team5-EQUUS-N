@@ -36,7 +36,7 @@ export default function MainPage() {
   const [isTodoAddOpen, toggleTodoAdd] = useReducer((prev) => !prev, false);
   const [isScheduleOpen, toggleSchedule] = useReducer((prev) => !prev, false);
 
-  const { teams, selectedTeam, selectTeam } = useTeam();
+  const { teams, selectedTeam, selectTeam } = useTeam(true);
   const { userId } = useUser();
   const { data: recentScheduleData, isPending: isMainCardPending } =
     useMainCard(selectedTeam);
