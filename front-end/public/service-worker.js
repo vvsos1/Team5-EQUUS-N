@@ -1,7 +1,13 @@
 // 푸시 알림 관련
 self.addEventListener('push', function (event) {
   // 푸시 알림이 도착할 때 발생하는 push 이벤트를 리스닝하고, 해당 알림을 처리합니다.
-  const notification = event.data.json();
+  console.log(event.data);
+  let notification = '알림 없다~';
+  try {
+    notification = event.data.json();
+  } catch (error) {
+    console.error('Invalid JSON data:', error);
+  }
 
   console.log(notification);
   const notificationType = notification.type;
