@@ -37,7 +37,6 @@ public class RetrospectQueryRepository {
 
         List<Retrospect> result = queryFactory
                 .selectFrom(retrospect)
-                .innerJoin(retrospect.team).fetchJoin()
                 .where(predicate)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

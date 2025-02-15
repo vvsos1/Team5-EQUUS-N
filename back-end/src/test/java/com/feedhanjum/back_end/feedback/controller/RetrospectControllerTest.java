@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.assertEqualTeam;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -265,7 +266,7 @@ class RetrospectControllerTest {
             assertThat(retrospect.getTitle()).isEqualTo("title");
             assertThat(retrospect.getContent()).isEqualTo("content");
             assertThat(retrospect.getWriter()).isEqualTo(writer);
-            assertThat(retrospect.getTeam()).isEqualTo(team);
+            assertEqualTeam(team, retrospect.getTeam());
         }
 
         @Test
