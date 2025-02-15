@@ -18,9 +18,14 @@ export const useTeam = () => {
     }
   };
 
-  // 로그아웃 시 팀 리스트, 선택 팀 초기화
-  const removeTeam = () => {
-    dispatch({ type: 'REMOVE_TEAM' });
+  // 팀 리스트 제거
+  const removeTeams = () => {
+    dispatch({ type: 'REMOVE_TEAMS' });
+  };
+
+  // 특정 팀 제거
+  const removeSelectedTeam = () => {
+    dispatch({ type: 'REMOVE_SELECTED_TEAM' });
   };
 
   // useTeam 호출하면 팀 목록을 가져옴
@@ -37,6 +42,7 @@ export const useTeam = () => {
     selectedTeam: state.selectedTeam,
     setTeams,
     selectTeam,
-    removeTeam,
+    removeTeams,
+    removeSelectedTeam,
   };
 };

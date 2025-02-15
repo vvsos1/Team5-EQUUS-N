@@ -8,6 +8,7 @@ import Icon from '../../../components/Icon';
 import Modal from '../../../components/modals/Modal';
 import ProfileImage from '../../../components/ProfileImage';
 import Tag, { TagType } from '../../../components/Tag';
+import { useTeam } from '../../../useTeam';
 import { useUser } from '../../../useUser';
 import { hideModal, showModal } from '../../../utility/handleModal';
 import { useNavigate } from 'react-router-dom';
@@ -27,6 +28,8 @@ export default function MemberElement({ teamId, member, leaderId, iamLeader }) {
   const { mutate: kickMember } = useKickMember(teamId);
   const { mutate: leaveTeam } = useLeaveTeam(teamId);
   const { userId } = useUser();
+  const { selectedTeam, removeSelectedTeam } = useTeam();
+
   const navigate = useNavigate();
 
   const changeLeaderModal = (
@@ -75,6 +78,7 @@ export default function MemberElement({ teamId, member, leaderId, iamLeader }) {
             leaveTeam(null, {
               onSuccess: () => {
                 hideModal();
+                reSelectTeam(teamId, selectedTeam, removeSelectedTeam);
                 navigate('/teamspace/list');
               },
             });
@@ -140,3 +144,14 @@ export default function MemberElement({ teamId, member, leaderId, iamLeader }) {
     </li>
   );
 }
+
+export const reSelectTeam = (
+  deleteTeamId,
+  selectedTeamId,
+  onRemoveSelectedTeam,
+) => {
+  // 지우려는 팀이 현재 로컬스토리지에 선택된 팀이라면, 로컬스토리지에서 해당 필드 제거
+  if (deleteTeamId == selectedTeamId) {
+    onRemoveSelectedTeam();
+  }
+};
