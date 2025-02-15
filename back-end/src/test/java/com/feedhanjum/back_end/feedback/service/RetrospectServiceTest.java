@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.assertEqualTeam;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -89,7 +90,7 @@ class RetrospectServiceTest {
         assertThat(result.getTitle()).isEqualTo(title);
         assertThat(result.getContent()).isEqualTo(content);
         assertThat(result.getWriter()).isEqualTo(writer);
-        assertThat(result.getTeam()).isEqualTo(team);
+        assertEqualTeam(team, result.getTeam());
     }
 
     @Test
