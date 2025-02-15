@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { useAppServerKey, useSubscribe } from './api/usePushNoti';
+import { useUser } from './useUser';
 
 export default function PushNotiManager() {
   const { data } = useAppServerKey();
   const { mutate: subscribe } = useSubscribe();
+  const { userId } = useUser();
 
   useEffect(() => {
     if (!data) return;
@@ -60,8 +62,6 @@ export default function PushNotiManager() {
       let subscription =
         await serviceWorkerRegistration.pushManager.getSubscription();
       if (subscription === null) {
-        // create a new subscription
-        console.log('create a new subscription');
         subscription = await serviceWorkerRegistration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(applicationServerKey),
@@ -83,5 +83,5 @@ export default function PushNotiManager() {
       }
       return outputArray;
     }
-  }, [data, subscribe]);
+  }, [data, subscribe, userId]);
 }

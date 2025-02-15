@@ -37,9 +37,9 @@ const queryClient = new QueryClient();
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <PushNotiManager />
       <BrowserRouter>
         <CombinedProvider>
+          <PushNotiManager />
           <Routes>
             <Route element={<Layout />}>
               <Route path='/:teamCode?' element={<Splash />} />

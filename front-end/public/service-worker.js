@@ -10,7 +10,7 @@ self.addEventListener('push', function (event) {
   let clickUrl = '';
   let notificationBody = '';
   switch (notificationType) {
-    case 'feedbackReceived':
+    case 'feedbackReceive':
       clickUrl = `/feedback/received`;
       notificationBody = '피드백이 도착했어요!';
       break;
@@ -19,11 +19,11 @@ self.addEventListener('push', function (event) {
       notificationBody = '피드백이 도움이 됐어요!';
       break;
     case 'frequentFeedbackRequest':
-      clickUrl = `/feedback/received`;
+      clickUrl = `/feedback/send`;
       notificationBody = '피드백을 요청받았어요!';
       break;
     case 'feedbackReportCreate':
-      clickUrl = `/feedback/received`;
+      clickUrl = `/mypage/report`;
       notificationBody = '피드백 리포트가 생성됐어요! 보러가볼까요?';
       break;
     case 'unreadFeedbackExist':
@@ -31,15 +31,15 @@ self.addEventListener('push', function (event) {
       notificationBody = '아직 읽지 않은 피드백이 있어요!';
       break;
     case 'teamLeaderChange':
-      clickUrl = `/feedback/received`;
+      clickUrl = `/`;
       notificationBody = '팀장이 되었어요! 팀을 이끌 준비가 되셨나요?';
       break;
     case 'scheduleCreate':
-      clickUrl = `/feedback/received`;
+      clickUrl = `/`;
       notificationBody = '새로운 일정이 추가되었어요!';
       break;
     case 'regularFeedbackRequest':
-      clickUrl = `/feedback/received`;
+      clickUrl = `/feedback/send`;
       notificationBody = '일정이 끝났으니 피드백을 작성해볼까요?';
       break;
   }
@@ -60,35 +60,10 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
   event.preventDefault();
   const notification = event.notification;
-  const url = notification.data.clickUrl;
-  console.log(`serviceWorker.notificationclick: ${notification}`);
-  console.dir(event);
+  const url = new URL(notification.data.clickUrl, self.location.origin).href;
   notification.close();
 
-  event.waitUntil(self.clients.openWindow(clickUrl));
-
-  // event.waitUntil(
-  //     self.clients.matchAll({type: 'window'}).then(windowClients => {
-  //         for (let i = 0; i < windowClients.length; i++) {
-  //             const client = windowClients[i];
-  //             if (client.url === url && 'focus' in client) {
-  //                 return client.focus();
-  //             }
-  //         }
-  //         if (self.clients.openWindow) {
-  //             return self.clients.openWindow(url);
-  //         }
-  //     })
-  // );
-  //
-  // switch (action) {
-  //     case "my-confirm":
-  //         console.log('confirmed');
-  //         break;
-  //     case "my-cancel":
-  //         console.log('cancelled');
-  //         break;
-  // }
+  event.waitUntil(self.clients.openWindow(url));
 });
 
 // 푸시 알림이 닫힐 때 발생하는 notificationclose 이벤트를 리스닝하고, 해당 알림을 처리합니다.
