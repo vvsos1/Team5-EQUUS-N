@@ -30,6 +30,7 @@ import FeedbackSend from './pages/feedback/FeedbackSend';
 import FeedbackFavorite from './pages/feedback/FeedbackFavorite';
 import MyPageHome from './pages/mypage/MyPageHome';
 import ProtectedRoute from './ProtectedRoute';
+import SplashForOAuth from './pages/auth/SplashForOAuth';
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ export default function App() {
           <Routes>
             <Route element={<Layout />}>
               <Route path='/:teamCode?' element={<Splash />} />
+              <Route path='/login/google' element={<SplashForOAuth />} />
               <Route path='signin' element={<SignIn />} />
               <Route path='signup' element={<SignUp />} />
               {/* 이 아래는 로그인 해야 이용 가능 */}
