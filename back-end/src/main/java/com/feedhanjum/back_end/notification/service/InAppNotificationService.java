@@ -51,7 +51,7 @@ public class InAppNotificationService {
     }
 
     /**
-     * @throw EntityNotFoundException receiverId에 해당하는 엔티티가 없을 때
+     * @throws EntityNotFoundException receiverId에 해당하는 엔티티가 없을 때
      */
     @Transactional
     public void readInAppNotifications(Long receiverId, List<Long> notificationIds) {
@@ -70,7 +70,7 @@ public class InAppNotificationService {
 
         Member sender = memberRepository.findById(senderId).orElseThrow();
 
-        InAppNotification notification = new FrequentFeedbackRequestNotification(receiverId, sender.getName(), teamId);
+        InAppNotification notification = new FrequentFeedbackRequestNotification(receiverId, sender.getName(), teamId, senderId);
         inAppNotificationRepository.save(notification);
         eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
     }
