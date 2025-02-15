@@ -5,7 +5,7 @@ import logo from '../../assets/images/logo.png';
 import googleLogo from '../../assets/images/google-logo.png';
 import Icon from '../../components/Icon';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useGetMember } from '../../api/useAuth';
+import { useGetGoogleUrl, useGetMember } from '../../api/useAuth';
 import { useUser } from '../../useUser';
 import { useJoinTeam } from '../../api/useTeamspace';
 
@@ -20,6 +20,7 @@ export default function Splash() {
   const { userId, setUserId } = useUser();
   const { data: member } = useGetMember(userId);
   const { mutate: joinTeam } = useJoinTeam();
+  const { data: googleAuthUrl } = useGetGoogleUrl();
 
   /**
    * 버튼 클릭 핸들러
@@ -43,6 +44,10 @@ export default function Splash() {
     }, 1500);
   }, [member]);
 
+  const handleGoogleButton = () => {
+    window.location.href = googleAuthUrl.loginUrl;
+  };
+
   return (
     <div className='flex h-full w-full items-center justify-center'>
       {isLoading ?
@@ -63,7 +68,10 @@ export default function Splash() {
           <div className='flex w-full flex-col items-center gap-5'>
             <div className='flex w-full flex-col items-center gap-2'>
               {/* 구글 로그인 */}
-              <button className='flex w-full items-center gap-2 rounded-full bg-[#F5F4F7] px-5'>
+              <button
+                className='flex w-full items-center gap-2 rounded-full bg-[#F5F4F7] px-5'
+                onClick={handleGoogleButton}
+              >
                 <img src={googleLogo} alt='google' className='ml-4' />
                 <p className='mx-auto py-[15px]'>Google로 시작하기</p>
               </button>
