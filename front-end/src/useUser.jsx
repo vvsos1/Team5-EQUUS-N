@@ -9,8 +9,13 @@ export const useUser = () => {
     dispatch({ type: 'SET_USER_ID', payload: userId });
   };
 
+  const removeUserId = () => {
+    dispatch({ type: 'REMOVE_USER_ID' });
+  };
+
   return {
     userId: parseInt(state.userId),
     setUserId,
+    removeUserId,
   };
 };

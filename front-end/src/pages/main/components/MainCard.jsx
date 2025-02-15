@@ -54,7 +54,7 @@ export default function MainCard({
   }
 
   // 마지막 일정이 끝난지 24시간이 넘은 경우 -> response 자체가 없음
-  if (scheduleDifferece == null) {
+  if (!recentSchedule) {
     return (
       <MainCardFrame onClickChevronButton={onClickChevronButton}>
         <p className='body-1 mt-11 mb-10 text-center text-gray-300'>
@@ -166,37 +166,33 @@ function renderTitle(recentSchedule, scheduleDifferece) {
  * @param {number} userId
  */
 function renderMyRole(recentSchedule, onButtonClick, userId) {
-  try {
-    return (
-        recentSchedule.scheduleMemberNestedDtoList.find(
-          (role) => role.memberId === userId,
-        )?.todoList[0] !== null
-      ) ?
-        <div className='flex flex-col gap-3'>
-          <Tag type={TagType.MY_ROLE} />
-          <ul className='flex list-disc flex-col gap-1 pl-6'>
-            {recentSchedule.scheduleMemberNestedDtoList
-              .find((role) => role.memberId === userId)
-              .todoList.map((role, index) => (
-                <li key={index} className='body-1 pl-1 text-gray-100 last:mb-3'>
-                  {role}
-                </li>
-              ))}
-          </ul>
-        </div>
-      : <div className='mb-3 flex flex-col gap-6'>
-          <p className='body-1 text-center text-gray-400'>
-            나의 역할이 비어있어요
-          </p>
-          <MediumButton
-            text={'나의 역할 추가하기'}
-            isOutlined={false}
-            onClick={onButtonClick}
-          />
-        </div>;
-  } catch (error) {
-    console.error('카드에러', error);
-  }
+  return (
+      recentSchedule.scheduleMemberNestedDtoList.find(
+        (role) => role.memberId === userId,
+      )?.todoList[0] !== null
+    ) ?
+      <div className='flex flex-col gap-3'>
+        <Tag type={TagType.MY_ROLE} />
+        <ul className='flex list-disc flex-col gap-1 pl-6'>
+          {recentSchedule.scheduleMemberNestedDtoList
+            .find((role) => role.memberId === userId)
+            .todoList.map((role, index) => (
+              <li key={index} className='body-1 pl-1 text-gray-100 last:mb-3'>
+                {role}
+              </li>
+            ))}
+        </ul>
+      </div>
+    : <div className='mb-3 flex flex-col gap-6'>
+        <p className='body-1 text-center text-gray-400'>
+          나의 역할이 비어있어요
+        </p>
+        <MediumButton
+          text={'나의 역할 추가하기'}
+          isOutlined={false}
+          onClick={onButtonClick}
+        />
+      </div>;
 }
 
 /**

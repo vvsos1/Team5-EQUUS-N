@@ -71,6 +71,12 @@ export default function MainPage() {
     }
   }, [recentScheduleData]);
 
+  useEffect(() => {
+    if (teams.length > 0 && !selectedTeam) {
+      selectTeam(teams[0].id);
+    }
+  }, [teams]);
+
   const getOnMainButtonClick = () => {
     if (teams.length === 0) {
       return () => navigate('/teamspace/make');
@@ -104,7 +110,7 @@ export default function MainPage() {
           />
         )}
       </StickyWrapper>
-      {banners && (
+      {banners && banners.notifications.length > 0 && (
         <Slider {...sliderSettings} className='my-4'>
           {banners.notifications.map((banner, index) => (
             <div className='px-[6px]' key={index}>
@@ -163,8 +169,11 @@ export default function MainPage() {
                     onClick={() => {
                       mate.id === userId ?
                         navigate(`/feedback/self`)
-                      : navigate(`/feedback/send`, {
-                          state: { members: [mate], isRegular: false },
+                      : navigate(`/feedback/send/1`, {
+                          state: {
+                            isRegular: false,
+                            receiver: { name: mate.name, id: mate.id },
+                          },
                         });
                       hideModal();
                     }}
