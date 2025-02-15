@@ -39,7 +39,12 @@ public class WebPushService {
     public void subscribe(Long subscriberId, Subscription subscription) {
         Member member = memberRepository.findById(subscriberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 회원을 찾을 수 없습니다."));
-        subscriptionRepository.save(new WebPushSubscription(member, subscription));
+
+        WebPushSubscription webPushSubscription = subscriptionRepository.findBySubscription_Endpoint(subscription.endpoint)
+                .orElseGet(() -> new WebPushSubscription(member, subscription));
+        webPushSubscription.updateSubscriber(member);
+
+        subscriptionRepository.save(webPushSubscription);
         log.info("Web push subscription saved: {} {}", member.getName(), subscription);
     }
 
