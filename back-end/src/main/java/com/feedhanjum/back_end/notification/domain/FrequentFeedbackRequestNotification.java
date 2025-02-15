@@ -13,10 +13,12 @@ import lombok.NoArgsConstructor;
 public class FrequentFeedbackRequestNotification extends InAppNotification {
     private String senderName;
     private Long teamId;
+    private Long senderId;
 
-    public FrequentFeedbackRequestNotification(Long receiverId, String senderName, Long teamId) {
+    public FrequentFeedbackRequestNotification(Long receiverId, String senderName, Long teamId, Long senderId) {
         super(receiverId);
         this.senderName = senderName;
         this.teamId = teamId;
+        this.senderId = senderId;
     }
 }
