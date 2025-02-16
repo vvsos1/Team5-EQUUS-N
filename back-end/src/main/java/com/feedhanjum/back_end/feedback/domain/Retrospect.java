@@ -30,14 +30,17 @@ public class Retrospect {
     @JoinColumn(name = "writer_id")
     private Member writer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "team_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "team_name")),
+    })
+    private AssociatedTeam team;
 
     public Retrospect(String title, String content, Member writer, Team team) {
         this.title = title;
         this.content = content;
-        this.team = team;
+        this.team = AssociatedTeam.of(team);
         this.writer = writer;
         this.createdAt = LocalDateTime.now();
     }
