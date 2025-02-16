@@ -36,7 +36,7 @@ export default function ProfileEdit() {
             }))
           }
         >
-          프로필 수정
+          랜덤 변경
         </AiButton>
       </div>
       <CustomInput label='이메일' hint={member.email} type='email' />
