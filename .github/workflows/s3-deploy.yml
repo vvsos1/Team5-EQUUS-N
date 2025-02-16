@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     defaults:
       run:
-        working-directory: ./front-end
+        working-directory: 'front-end'
     steps:
       - uses: actions/checkout@v4
 
