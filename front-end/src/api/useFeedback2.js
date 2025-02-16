@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from './baseApi';
 
 export const useFeedbackRequest = () => {
@@ -79,4 +79,27 @@ export const useFrequnetFeedbackSend = () => {
         body: data,
       }),
   });
+};
+
+/**
+ * 정기피드백 인원 조회 및 건너뛰기 훅
+ * @param {string} scheduleId
+ */
+export const useRegularFeedback = (scheduleId) => {
+  const { data } = useQuery({
+    queryKey: ['check-regular', scheduleId],
+    queryFn: () =>
+      api.get({
+        url: `/api/feedbacks/regular/request?scheduleId=${scheduleId}`,
+      }),
+  });
+
+  const mutation = useMutation({
+    mutationFn: () =>
+      api.delete({
+        url: `/api/feedbacks/regular/request?scheduleId=${scheduleId}`,
+      }),
+  });
+
+  return { data, mutation };
 };

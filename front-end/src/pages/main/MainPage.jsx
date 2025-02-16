@@ -88,7 +88,6 @@ export default function MainPage() {
       return () =>
         navigate('/feedback/send', {
           state: {
-            members: matesData.filter((member) => member.id !== userId),
             scheduleId: recentScheduleData.scheduleId,
             isRegular: true,
           },
