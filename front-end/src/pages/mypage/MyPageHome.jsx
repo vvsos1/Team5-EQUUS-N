@@ -9,8 +9,7 @@ import { useLogout } from '../../api/useAuth';
 export default function MyPageHome() {
   const navigate = useNavigate();
 
-  const { userId } = useUser();
-  const { data: member } = useSearchMember(userId);
+  const { data: member } = useSearchMember();
   const { mutate: logout } = useLogout();
 
   const listButtontexts = [

@@ -33,6 +33,7 @@ import ProtectedRoute from './ProtectedRoute';
 import SplashForOAuth from './pages/auth/SplashForOAuth';
 import PushNotiManager from './PushNotiManager';
 import FeedbackSendFreq from './pages/feedback/FeedbackSendFreq';
+import ProfileEdit from './pages/mypage/ProfileEdit';
 
 const queryClient = new QueryClient();
 
@@ -87,7 +88,7 @@ export default function App() {
                   <Route index element={<MyPageHome />} />
                   <Route path='self' element={<SelfFeedback />} />
                   <Route path='report' element={<div></div>} />
-                  <Route path='edit' element={<div></div>} />
+                  <Route path='edit' element={<ProfileEdit />} />
                 </Route>
               </Route>
             </Route>

@@ -1,6 +1,6 @@
 import { api } from './baseApi';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { replace, useNavigate } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { showToast } from '../utility/handleToast';
 import { useUser } from '../useUser';
 import { useJoinTeam } from './useTeamspace';
@@ -64,12 +64,14 @@ export const useLogout = () => {
   const navigate = useNavigate();
   const { removeTeams } = useTeam();
   const { removeUserId } = useUser();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => api.post({ url: '/api/auth/logout' }),
     onSuccess: () => {
       removeTeams();
       removeUserId();
       navigate('/', { replace: true });
+      queryClient.invalidateQueries({ queryKey: ['search-member'] });
     },
   });
 };

@@ -1,5 +1,5 @@
 import { api } from './baseApi';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**
  * 피드백 요청 커스텀 훅
@@ -39,5 +39,20 @@ export const useSearchMember = () => {
         url: `/api/member`,
       });
     },
+    // 프로필 변경 및 로그인이 발생하지 않는 한 무한 캐시
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+};
+
+/**
+ * 회원 정보 변경 훅
+ */
+export const useEditMember = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => api.post({ url: '/api/member', body: data }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['search-member'] }),
   });
 };
