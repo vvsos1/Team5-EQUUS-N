@@ -1,3 +1,8 @@
+import { precacheAndRoute } from 'workbox-precaching';
+
+// self.__WB_MANIFEST는 프리캐시할 파일 목록을 자동으로 생성합니다.
+precacheAndRoute(self.__WB_MANIFEST);
+
 // 푸시 알림 관련
 self.addEventListener('push', function (event) {
   // 푸시 알림이 도착할 때 발생하는 push 이벤트를 리스닝하고, 해당 알림을 처리합니다.
