@@ -4,21 +4,20 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.core.dto.Paged;
-import com.feedhanjum.back_end.feedback.adapter.in.web.dto.SendFrequentFeedbackRequest;
-import com.feedhanjum.back_end.feedback.adapter.in.web.dto.SendRegularFeedbackRequest;
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendFrequentFeedbackRequest;
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendRegularFeedbackRequest;
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.response.RegularFeedbackRequestResponse;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadReceivedFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
-import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
-import com.feedhanjum.back_end.feedback.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
@@ -30,7 +29,6 @@ import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.team.domain.Team;
-import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -73,15 +71,11 @@ class FeedbackControllerTest {
     @Autowired
     private TeamRepository teamRepository;
     @Autowired
-    private TeamMemberRepository teamMemberRepository;
-    @Autowired
     private ScheduleRepository scheduleRepository;
     @Autowired
     private ScheduleMemberRepository scheduleMemberRepository;
     @Autowired
     private FeedbackRepository feedbackRepository;
-    @Autowired
-    private RegularFeedbackRequestRepository regularFeedbackRequestRepository;
     @Autowired
     private FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
     private final Clock clock = Clock.fixed(Instant.parse("2025-01-10T12:00:00Z"), ZoneId.systemDefault());
@@ -417,8 +411,8 @@ class FeedbackControllerTest {
             Member sender2 = member3;
             ScheduleMember scheduleMember = scheduleMember2;
             Member receiver = scheduleMember.getMember();
-            regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), sender1, scheduleMember.getSchedule(), scheduleMember.getMember()));
-            regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), sender2, scheduleMember.getSchedule(), scheduleMember.getMember()));
+            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender1, scheduleMember.getSchedule(), scheduleMember.getMember()));
+            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender2, scheduleMember.getSchedule(), scheduleMember.getMember()));
 
             // when
             assertThat(mvc.get()
@@ -429,7 +423,7 @@ class FeedbackControllerTest {
             ).hasStatus(HttpStatus.OK)
                     .body()
                     .satisfies(result -> {
-                        List<RegularFeedbackRequestForApiResponse> requests = mapper.readValue(result, new TypeReference<List<RegularFeedbackRequestForApiResponse>>() {
+                        List<RegularFeedbackRequestResponse> requests = mapper.readValue(result, new TypeReference<>() {
                         });
                         assertThat(requests).hasSize(2);
                         assertThat(requests).extracting(req -> req.requester().email())
@@ -548,7 +542,7 @@ class FeedbackControllerTest {
                     .session(withLoginUser(receiver))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-            var requests = loadRegularFeedbackRequestPort.loadRegularFeedbackRequest(schedule.getId(), sender.getId());
+            var requests = loadRegularFeedbackRequestPort.loadRegularFeedbackRequest(receiver.getId(), schedule.getId(), sender.getId());
             assertThat(requests).isEmpty();
         }
     }

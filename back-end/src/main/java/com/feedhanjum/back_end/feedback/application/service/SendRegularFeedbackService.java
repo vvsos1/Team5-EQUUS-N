@@ -1,8 +1,8 @@
 package com.feedhanjum.back_end.feedback.application.service;
 
 import com.feedhanjum.back_end.core.event.Events;
-import com.feedhanjum.back_end.feedback.application.port.in.SendRegularFeedbackCommand;
 import com.feedhanjum.back_end.feedback.application.port.in.SendRegularFeedbackUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.command.SendRegularFeedbackCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadReceiverPort;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadSenderPort;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadTeamFromSchedulePort;
@@ -42,7 +42,7 @@ public class SendRegularFeedbackService implements SendRegularFeedbackUseCase {
         Long receiverId = command.getReceiverId();
         Long scheduleId = command.getScheduleId();
 
-        Optional<RegularFeedbackRequest> regularFeedbackRequest = loadRegularFeedbackRequestPort.loadRegularFeedbackRequest(scheduleId, senderId);
+        Optional<RegularFeedbackRequest> regularFeedbackRequest = loadRegularFeedbackRequestPort.loadRegularFeedbackRequest(receiverId, scheduleId, senderId);
         if (regularFeedbackRequest.isEmpty())
             throw new RegularFeedbackRequestNotFoundException(scheduleId, senderId);
 

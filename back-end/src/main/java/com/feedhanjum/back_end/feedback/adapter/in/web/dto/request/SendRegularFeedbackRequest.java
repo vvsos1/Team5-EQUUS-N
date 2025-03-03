@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.adapter.in.web.dto;
+package com.feedhanjum.back_end.feedback.adapter.in.web.dto.request;
 
 import com.feedhanjum.back_end.core.constraints.ByteLength;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
@@ -10,14 +10,15 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
-public record SendFrequentFeedbackRequest(
-        @Schema(description = "수시 피드백을 받을 사람의 ID")
+
+public record SendRegularFeedbackRequest(
+        @Schema(description = "정기 피드백을 받을 사람의 ID")
         @NotNull
         Long receiverId,
 
-        @Schema(description = "연관된 팀 ID")
+        @Schema(description = "연관된 일정 ID")
         @NotNull
-        Long teamId,
+        Long scheduleId,
 
         @Schema(description = "피드백의 방향성")
         @NotNull

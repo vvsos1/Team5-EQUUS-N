@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.application.port.in;
+package com.feedhanjum.back_end.feedback.application.port.in.command;
 
 
 import com.feedhanjum.back_end.core.SelfValidating;
@@ -13,13 +13,13 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class SendRegularFeedbackCommand extends SelfValidating<SendRegularFeedbackCommand> {
+public class SendFrequentFeedbackCommand extends SelfValidating<SendFrequentFeedbackCommand> {
     @NotNull
     private final Long senderId;
     @NotNull
     private final Long receiverId;
     @NotNull
-    private final Long scheduleId;
+    private final Long teamId;
     @NotNull
     private final FeedbackType feedbackType;
     @NotNull
@@ -29,10 +29,10 @@ public class SendRegularFeedbackCommand extends SelfValidating<SendRegularFeedba
     @Size(min = Feedback.MIN_SUBJECTIVE_FEEDBACK_BYTE, max = Feedback.MAX_SUBJECTIVE_FEEDBACK_BYTE)
     private final String subjectiveFeedback;
 
-    public SendRegularFeedbackCommand(Long senderId, Long receiverId, Long scheduleId, FeedbackType feedbackType, FeedbackFeeling feedbackFeeling, List<ObjectiveFeedback> objectiveFeedbacks, String subjectiveFeedback) {
+    public SendFrequentFeedbackCommand(Long senderId, Long receiverId, Long teamId, FeedbackType feedbackType, FeedbackFeeling feedbackFeeling, List<ObjectiveFeedback> objectiveFeedbacks, String subjectiveFeedback) {
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.scheduleId = scheduleId;
+        this.teamId = teamId;
         this.feedbackType = feedbackType;
         this.feedbackFeeling = feedbackFeeling;
         this.objectiveFeedbacks = objectiveFeedbacks;

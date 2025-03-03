@@ -1,17 +1,19 @@
 package com.feedhanjum.back_end.feedback.adapter.out.persistence;
 
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.DeleteRegularFeedbackRequestPort;
+import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestListPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
-public class RegularFeedbackRequestAdapter implements LoadRegularFeedbackRequestPort, DeleteRegularFeedbackRequestPort, SaveRegularFeedbackRequestPort {
+public class RegularFeedbackRequestAdapter implements LoadRegularFeedbackRequestPort, DeleteRegularFeedbackRequestPort, SaveRegularFeedbackRequestPort, LoadRegularFeedbackRequestListPort {
     private final RegularFeedbackRequestJpaEntityRepository regularFeedbackRequestJpaEntityRepository;
     private final RegularFeedbackRequestMapper regularFeedbackRequestMapper;
 
@@ -21,9 +23,9 @@ public class RegularFeedbackRequestAdapter implements LoadRegularFeedbackRequest
     }
 
     @Override
-    public Optional<RegularFeedbackRequest> loadRegularFeedbackRequest(Long scheduleId, Long receiverId) {
+    public Optional<RegularFeedbackRequest> loadRegularFeedbackRequest(Long requesterId, Long scheduleId, Long receiverId) {
         return regularFeedbackRequestJpaEntityRepository
-                .findByScheduleIdAndReceiverId(scheduleId, receiverId)
+                .findByRequesterIdAndScheduleIdAndReceiverId(requesterId, scheduleId, receiverId)
                 .map(regularFeedbackRequestMapper::toDomain);
     }
 
@@ -34,4 +36,9 @@ public class RegularFeedbackRequestAdapter implements LoadRegularFeedbackRequest
         regularFeedbackRequestMapper.setId(domain, entity.getId());
     }
 
+    @Override
+    public List<RegularFeedbackRequest> loadRegularFeedbackRequestList(Long scheduleId, Long receiverId) {
+        var entities = regularFeedbackRequestJpaEntityRepository.findAllByScheduleIdAndReceiverId(scheduleId, receiverId);
+        return entities.stream().map(regularFeedbackRequestMapper::toDomain).toList();
+    }
 }

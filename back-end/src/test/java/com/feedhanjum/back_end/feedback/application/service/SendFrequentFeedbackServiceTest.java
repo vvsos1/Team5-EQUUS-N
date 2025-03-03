@@ -2,7 +2,7 @@ package com.feedhanjum.back_end.feedback.application.service;
 
 import com.feedhanjum.back_end.core.event.EventPublisher;
 import com.feedhanjum.back_end.core.event.Events;
-import com.feedhanjum.back_end.feedback.application.port.in.SendFrequentFeedbackCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.command.SendFrequentFeedbackCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadReceiverPort;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadSenderPort;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadTeamPort;

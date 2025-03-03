@@ -2,10 +2,13 @@ package com.feedhanjum.back_end.feedback.controller;
 
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.core.dto.Paged;
-import com.feedhanjum.back_end.feedback.controller.dto.request.*;
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.RegularFeedbackRequestQueryRequest;
+import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
+import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestQueryRequest;
+import com.feedhanjum.back_end.feedback.controller.dto.request.ReceivedFeedbacksQueryRequest;
+import com.feedhanjum.back_end.feedback.controller.dto.request.SentFeedbacksQueryRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FeedbackReportDto;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
-import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.domain.FeedbackId;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
@@ -56,17 +59,6 @@ public class FeedbackController {
                                                                                                   @ParameterObject @Valid FrequentFeedbackRequestQueryRequest request) {
         List<FrequentFeedbackRequestForApiResponse> frequentFeedbackRequests = feedbackQueryService.getFrequentFeedbackRequests(receiverId, request.teamId());
         return ResponseEntity.ok(frequentFeedbackRequests);
-    }
-
-    @Operation(summary = "정기 피드백 요청 조회", description = "일정별 정기 피드백 요청을 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "일정별 정기 피드백 요청 조회 성공", useReturnTypeSchema = true)
-    })
-    @GetMapping("/feedbacks/regular/request")
-    public ResponseEntity<List<RegularFeedbackRequestForApiResponse>> getRegularFeedbackRequest(@Login Long receiverId,
-                                                                                                @ParameterObject @Valid RegularFeedbackRequestQueryRequest request) {
-        List<RegularFeedbackRequestForApiResponse> regularFeedbackRequests = feedbackQueryService.getRegularFeedbackRequests(receiverId, request.scheduleId());
-        return ResponseEntity.ok(regularFeedbackRequests);
     }
 
     @Operation(summary = "피드백 좋아요", description = "피드백에 좋아요를 누릅니다.")

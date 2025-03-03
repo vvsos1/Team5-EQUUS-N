@@ -1,0 +1,17 @@
+package com.feedhanjum.back_end.feedback.adapter.in.web.dto.response;
+
+import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
+
+import java.time.LocalDateTime;
+
+public record RegularFeedbackRequestResponse(
+        MemberResponse requester,
+        Long scheduleId,
+        LocalDateTime createdAt
+) {
+    public static RegularFeedbackRequestResponse from(RegularFeedbackRequest request) {
+        return new RegularFeedbackRequestResponse(new MemberResponse(request.getRequester()),
+                request.getSchedule().getId(), request.getCreatedAt());
+    }
+}
+

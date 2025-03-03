@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.controller.dto.request;
+package com.feedhanjum.back_end.feedback.adapter.in.web.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;

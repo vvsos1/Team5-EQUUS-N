@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface LoadRegularFeedbackRequestPort {
 
-    Optional<RegularFeedbackRequest> loadRegularFeedbackRequest(Long scheduleId, Long receiverId);
+    Optional<RegularFeedbackRequest> loadRegularFeedbackRequest(Long requesterId, Long scheduleId, Long receiverId);
 }

@@ -1,8 +1,8 @@
 package com.feedhanjum.back_end.feedback.service;
 
 
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.response.RegularFeedbackRequestResponse;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
-import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.domain.FrequentFeedbackRequest;
@@ -86,9 +86,9 @@ public class FeedbackQueryService {
     }
 
     @Transactional(readOnly = true)
-    public List<RegularFeedbackRequestForApiResponse> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
+    public List<RegularFeedbackRequestResponse> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
         List<RegularFeedbackRequest> requests = regularFeedbackRequestQueryRepository.getRegularFeedbackRequests(receiverId, scheduleId);
-        return requests.stream().map(RegularFeedbackRequestForApiResponse::from).toList();
+        return requests.stream().map(RegularFeedbackRequestResponse::from).toList();
     }
 
 
