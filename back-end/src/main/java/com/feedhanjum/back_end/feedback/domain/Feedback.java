@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.feedback.domain;
 
-import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.core.event.Events;
+import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -86,22 +87,23 @@ public class Feedback {
         validateObjectiveFeedbacks();
     }
 
-    public void like(Member member) {
-        if (!isReceiver(member))
+    public void like(Long memberId) {
+        if (!isReceiver(memberId))
             throw new SecurityException("수신자만 피드백을 좋아요 할 수 있습니다.");
-        this.liked = true;
-
+        if (!this.liked) {
+            this.liked = true;
+            Events.raise(new FeedbackLikedEvent(id));
+        }
     }
 
-    public void unlike(Member member) {
-        if (!isReceiver(member))
+    public void unlike(Long memberId) {
+        if (!isReceiver(memberId))
             throw new SecurityException("수신자만 피드백 좋아요를 취소할 수 있습니다.");
-
         this.liked = false;
     }
 
-    private boolean isReceiver(Member member) {
-        return receiver.getId().equals(member.getId());
+    private boolean isReceiver(Long memberId) {
+        return receiver.getId().equals(memberId);
     }
 
     private void validateObjectiveFeedbacks() {

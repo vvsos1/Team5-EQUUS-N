@@ -7,7 +7,9 @@ import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendFrequentFeedbackRequest;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendRegularFeedbackRequest;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.response.RegularFeedbackRequestResponse;
+import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadReceivedFeedbackPort;
+import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
@@ -85,6 +87,10 @@ class FeedbackControllerTest {
     private LoadRegularFeedbackRequestPort loadRegularFeedbackRequestPort;
     @Autowired
     private LoadReceivedFeedbackPort loadReceivedFeedbackPort;
+    @Autowired
+    private SaveFeedbackPort saveFeedbackPort;
+    @Autowired
+    private LoadFeedbackPort loadFeedbackPort;
 
     private Member createMember(String name) {
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
@@ -444,7 +450,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             Feedback feedback = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
-            feedbackRepository.save(feedback);
+            saveFeedbackPort.saveFeedback(feedback);
 
             // when
             assertThat(mvc.post()
@@ -452,7 +458,7 @@ class FeedbackControllerTest {
                     .session(withLoginUser(receiver))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-            var likedFeedback = feedbackRepository.findById(feedback.getId()).orElseThrow();
+            var likedFeedback = loadFeedbackPort.loadFeedback(feedback.getId()).orElseThrow();
             assertThat(likedFeedback.isLiked()).isTrue();
         }
 
@@ -464,7 +470,7 @@ class FeedbackControllerTest {
             Member receiver = member2;
             Member notReceiver = member3;
             Feedback feedback = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
-            feedbackRepository.save(feedback);
+            saveFeedbackPort.saveFeedback(feedback);
 
             // when
             assertThat(mvc.post()
@@ -472,7 +478,7 @@ class FeedbackControllerTest {
                     .session(withLoginUser(notReceiver))
             ).hasStatus(HttpStatus.FORBIDDEN);
 
-            var likedFeedback = feedbackRepository.findById(feedback.getId()).orElseThrow();
+            var likedFeedback = loadFeedbackPort.loadFeedback(feedback.getId()).orElseThrow();
             assertThat(likedFeedback.isLiked()).isFalse();
         }
     }
@@ -488,7 +494,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             Feedback feedback = createFeedbackWithId(sender, receiver, team1, true, true);
-            feedbackRepository.save(feedback);
+            saveFeedbackPort.saveFeedback(feedback);
 
             // when
             assertThat(mvc.delete()
@@ -496,7 +502,7 @@ class FeedbackControllerTest {
                     .session(withLoginUser(receiver))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-            var likedFeedback = feedbackRepository.findById(feedback.getId()).orElseThrow();
+            var likedFeedback = loadFeedbackPort.loadFeedback(feedback.getId()).orElseThrow();
             assertThat(likedFeedback.isLiked()).isFalse();
         }
 
@@ -508,7 +514,7 @@ class FeedbackControllerTest {
             Member receiver = member2;
             Member notReceiver = member3;
             Feedback feedback = createFeedbackWithId(sender, receiver, team1, false, true);
-            feedbackRepository.save(feedback);
+            saveFeedbackPort.saveFeedback(feedback);
 
             // when
             assertThat(mvc.delete()
@@ -516,7 +522,7 @@ class FeedbackControllerTest {
                     .session(withLoginUser(notReceiver))
             ).hasStatus(HttpStatus.FORBIDDEN);
 
-            var likedFeedback = feedbackRepository.findById(feedback.getId()).orElseThrow();
+            var likedFeedback = loadFeedbackPort.loadFeedback(feedback.getId()).orElseThrow();
             assertThat(likedFeedback.isLiked()).isTrue();
         }
     }

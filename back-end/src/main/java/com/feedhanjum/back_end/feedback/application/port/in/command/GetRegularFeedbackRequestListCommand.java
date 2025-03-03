@@ -14,5 +14,6 @@ public class GetRegularFeedbackRequestListCommand extends SelfValidating<GetRegu
     public GetRegularFeedbackRequestListCommand(Long scheduleId, Long receiverId) {
         this.scheduleId = scheduleId;
         this.receiverId = receiverId;
+        validateSelf();
     }
 }

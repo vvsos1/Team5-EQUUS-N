@@ -9,7 +9,6 @@ import com.feedhanjum.back_end.feedback.controller.dto.request.ReceivedFeedbacks
 import com.feedhanjum.back_end.feedback.controller.dto.request.SentFeedbacksQueryRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FeedbackReportDto;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
-import com.feedhanjum.back_end.feedback.domain.FeedbackId;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
 import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
@@ -59,34 +58,6 @@ public class FeedbackController {
                                                                                                   @ParameterObject @Valid FrequentFeedbackRequestQueryRequest request) {
         List<FrequentFeedbackRequestForApiResponse> frequentFeedbackRequests = feedbackQueryService.getFrequentFeedbackRequests(receiverId, request.teamId());
         return ResponseEntity.ok(frequentFeedbackRequests);
-    }
-
-    @Operation(summary = "피드백 좋아요", description = "피드백에 좋아요를 누릅니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "피드백 좋아요 성공", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우")
-    })
-    @PostMapping("/member/{memberId}/feedbacks/{feedbackId}/liked")
-    public ResponseEntity<Void> likeFeedback(@Login Long loginId, @PathVariable Long memberId, @PathVariable Long feedbackId) {
-        if (!Objects.equals(loginId, memberId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        feedbackService.likeFeedback(new FeedbackId(feedbackId), memberId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @Operation(summary = "피드백 좋아요 취소", description = "피드백에 누른 좋아요를 취소합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "피드백 좋아요 취소 성공", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우")
-    })
-    @DeleteMapping("/member/{memberId}/feedbacks/{feedbackId}/liked")
-    public ResponseEntity<Void> unlikeFeedback(@Login Long loginId, @PathVariable Long memberId, @PathVariable Long feedbackId) {
-        if (!Objects.equals(loginId, memberId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        feedbackService.unlikeFeedback(new FeedbackId(feedbackId), memberId);
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "정기 피드백 건너뛰기", description = "해당 일정 정기 피드백을 건너뛰기합니다.")

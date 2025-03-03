@@ -29,8 +29,8 @@ public class SendFrequentFeedbackService implements SendFrequentFeedbackUseCase 
     private final Clock clock;
     private final SaveFeedbackPort saveFeedbackPort;
 
-    @Override
     @Transactional
+    @Override
     public void sendFrequentFeedback(SendFrequentFeedbackCommand command) {
         Long senderId = command.getSenderId();
         Long receiverId = command.getReceiverId();

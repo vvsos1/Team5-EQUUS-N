@@ -3,9 +3,7 @@ package com.feedhanjum.back_end.feedback.service;
 import com.feedhanjum.back_end.core.event.EventPublisher;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackId;
-import com.feedhanjum.back_end.feedback.domain.FeedbackIdGenerator;
 import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
-import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import com.feedhanjum.back_end.feedback.event.FeedbackReportCreatedEvent;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
@@ -16,7 +14,6 @@ import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
 import com.feedhanjum.back_end.schedule.event.RegularFeedbackRequestCreatedEvent;
-import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.event.FrequentFeedbackRequestedEvent;
@@ -27,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,14 +35,11 @@ public class FeedbackService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final ScheduleRepository scheduleRepository;
-    private final ScheduleMemberRepository scheduleMemberRepository;
     private final FeedbackRepository feedbackRepository;
     private final RegularFeedbackRequestRepository regularFeedbackRequestRepository;
     private final EventPublisher eventPublisher;
     private final FeedbackQueryRepository feedbackQueryRepository;
     private final FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
-    private final FeedbackIdGenerator feedbackIdGenerator;
-    private final Clock clock;
 
     /**
      * @throws EntityNotFoundException sender id, receiver id, team id에 해당하는 엔티티가 없을 경우, receiver나 sender가 team에 속해있지 않을 경우
@@ -60,31 +53,6 @@ public class FeedbackService {
         team.requestFeedback(sender, receiver, requestedContent);
 
         eventPublisher.publishEvent(new FrequentFeedbackRequestedEvent(senderId, teamId, receiverId));
-    }
-
-    /**
-     * @throws EntityNotFoundException feedback id에 해당하는 엔티티가 없을 경우
-     * @throws SecurityException       해당 피드백의 receiver가 아닌 경우
-     */
-    @Transactional
-    public void likeFeedback(FeedbackId feedbackId, Long memberId) {
-        Feedback feedback = feedbackRepository.findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("member id에 해당하는 member가 없습니다."));
-        boolean isLiked = feedback.isLiked();
-        feedback.like(member);
-        if (!isLiked)
-            eventPublisher.publishEvent(new FeedbackLikedEvent(feedbackId));
-    }
-
-    /**
-     * @throws EntityNotFoundException feedback id에 해당하는 엔티티가 없을 경우
-     * @throws SecurityException       해당 피드백의 receiver가 아닌 경우
-     */
-    @Transactional
-    public void unlikeFeedback(FeedbackId feedbackId, Long memberId) {
-        Feedback feedback = feedbackRepository.findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("member id에 해당하는 member가 없습니다."));
-        feedback.unlike(member);
     }
 
     /**
