@@ -17,6 +17,9 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    configureEach {
+        exclude group: 'javax.validation', module: 'validation-api'
+    }
 }
 
 repositories {
