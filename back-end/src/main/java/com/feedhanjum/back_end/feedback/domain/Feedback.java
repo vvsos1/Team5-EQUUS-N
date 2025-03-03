@@ -1,10 +1,8 @@
 package com.feedhanjum.back_end.feedback.domain;
 
 import com.feedhanjum.back_end.member.domain.Member;
-import com.feedhanjum.back_end.team.domain.Team;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -24,21 +22,25 @@ public class Feedback {
     public static final int MIN_SUBJECTIVE_FEEDBACK_BYTE = 0;
     public static final int MAX_SUBJECTIVE_FEEDBACK_BYTE = 400;
 
-    @Id
+    @EmbeddedId
     @Column(name = "feedback_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private FeedbackId id;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "feedback_type")
     private FeedbackType feedbackType;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "feedback_feeling")
     private FeedbackFeeling feedbackFeeling;
 
+    @Column(name = "subjective_feedback", columnDefinition = "text")
     private String subjectiveFeedback;
 
+    @Column(name = "liked")
     private boolean liked = false;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Embedded
@@ -70,16 +72,17 @@ public class Feedback {
     /**
      * @throws IllegalArgumentException 피드백 기분에 맞지 객관식 피드백이 있을 경우, 또는 객관식 피드백이 1개 이상 5개 이하가 아닐 경우
      */
-    @Builder
-    public Feedback(FeedbackType feedbackType, FeedbackFeeling feedbackFeeling, List<ObjectiveFeedback> objectiveFeedbacks, String subjectiveFeedback, Member sender, Member receiver, Team team) {
+    public Feedback(FeedbackId id, FeedbackType feedbackType, FeedbackFeeling feedbackFeeling, List<ObjectiveFeedback> objectiveFeedbacks, String subjectiveFeedback, boolean liked, Sender sender, Receiver receiver, AssociatedTeam team, LocalDateTime createdAt) {
+        this.id = id;
         this.feedbackType = feedbackType;
         this.subjectiveFeedback = subjectiveFeedback;
         this.feedbackFeeling = feedbackFeeling;
         this.objectiveFeedbacks.addAll(objectiveFeedbacks);
-        this.sender = Sender.of(sender);
-        this.receiver = Receiver.of(receiver);
-        this.team = AssociatedTeam.of(team);
-        this.createdAt = LocalDateTime.now();
+        this.liked = liked;
+        this.sender = sender;
+        this.receiver = receiver;
+        this.team = team;
+        this.createdAt = createdAt;
         validateObjectiveFeedbacks();
     }
 

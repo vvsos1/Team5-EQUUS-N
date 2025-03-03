@@ -1,4 +1,6 @@
 package com.feedhanjum.back_end.feedback.event;
 
-public record FeedbackLikedEvent(Long feedbackId) {
+import com.feedhanjum.back_end.feedback.domain.FeedbackId;
+
+public record FeedbackLikedEvent(FeedbackId feedbackId) {
 }

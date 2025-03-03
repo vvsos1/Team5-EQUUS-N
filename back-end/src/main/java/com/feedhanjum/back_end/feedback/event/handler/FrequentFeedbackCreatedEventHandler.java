@@ -16,7 +16,6 @@ public class FrequentFeedbackCreatedEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void deleteFrequentFeedbackRequest(FrequentFeedbackCreatedEvent event) {
-        Long feedbackId = event.feedbackId();
-        feedbackService.deleteRelatedFrequentFeedbackRequest(feedbackId);
+        feedbackService.deleteRelatedFrequentFeedbackRequest(event.feedbackId());
     }
 }

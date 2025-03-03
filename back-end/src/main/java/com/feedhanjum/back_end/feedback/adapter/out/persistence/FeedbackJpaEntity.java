@@ -1,0 +1,108 @@
+package com.feedhanjum.back_end.feedback.adapter.out.persistence;
+
+import com.feedhanjum.back_end.feedback.domain.*;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Table(name = "feedbacks")
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class FeedbackJpaEntity {
+
+    @Id
+    @Column(name = "feedback_id")
+    private Long id;
+
+    @Column(name = "feedback_type")
+    private String feedbackType;
+
+    @Column(name = "feedback_feeling")
+    private String feedbackFeeling;
+
+    @Column(name = "subjective_feedback")
+    private String subjectiveFeedback;
+
+    @Column(name = "liked")
+    private boolean liked = false;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "sender_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "sender_name")),
+    })
+    private Sender sender;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "receiver_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "receiver_name")),
+    })
+    private Receiver receiver;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "team_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "team_name")),
+    })
+    private AssociatedTeam team;
+
+    // 객관식 피드백
+    @Column(name = "objective_feedbacks", columnDefinition = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Set<String> objectiveFeedbacks;
+
+    FeedbackJpaEntity(Long id, String feedbackType, String feedbackFeeling, Set<String> objectiveFeedbacks, String subjectiveFeedback, boolean liked, Sender sender, Receiver receiver, AssociatedTeam team, LocalDateTime createdAt) {
+        this.id = id;
+        this.feedbackType = feedbackType;
+        this.feedbackFeeling = feedbackFeeling;
+        this.objectiveFeedbacks = objectiveFeedbacks;
+        this.subjectiveFeedback = subjectiveFeedback;
+        this.liked = liked;
+        this.sender = sender;
+        this.receiver = receiver;
+        this.team = team;
+        this.createdAt = createdAt;
+    }
+
+    static FeedbackJpaEntity fromDomain(Feedback feedback) {
+        return new FeedbackJpaEntity(
+                feedback.getId().getId(),
+                feedback.getFeedbackType().name(),
+                feedback.getFeedbackFeeling().name(),
+                feedback.getObjectiveFeedbacks().stream().map(ObjectiveFeedback::name).collect(Collectors.toSet()),
+                feedback.getSubjectiveFeedback(),
+                feedback.isLiked(),
+                feedback.getSender(),
+                feedback.getReceiver(),
+                feedback.getTeam(),
+                feedback.getCreatedAt()
+        );
+    }
+
+    Feedback toDomain() {
+        return new Feedback(
+                new FeedbackId(id),
+                FeedbackType.valueOf(feedbackType),
+                FeedbackFeeling.valueOf(feedbackFeeling),
+                objectiveFeedbacks.stream().map(ObjectiveFeedback::valueOf).toList(),
+                subjectiveFeedback,
+                liked,
+                sender,
+                receiver,
+                team,
+                createdAt
+        );
+    }
+}

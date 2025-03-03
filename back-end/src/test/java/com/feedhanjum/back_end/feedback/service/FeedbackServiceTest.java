@@ -3,12 +3,12 @@ package com.feedhanjum.back_end.feedback.service;
 import com.feedhanjum.back_end.core.event.EventPublisher;
 import com.feedhanjum.back_end.feedback.domain.*;
 import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
-import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
 import com.feedhanjum.back_end.feedback.repository.RegularFeedbackRequestRepository;
+import com.feedhanjum.back_end.feedback.test.SimpleFeedbackIdGenerator;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
@@ -30,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -45,6 +46,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
+    @Spy
+    private FeedbackIdGenerator feedbackIdGenerator = new SimpleFeedbackIdGenerator();
     @Mock
     private MemberRepository memberRepository;
     @Mock
@@ -64,6 +67,7 @@ class FeedbackServiceTest {
     @InjectMocks
     private FeedbackService feedbackService;
 
+    @Spy
     private final Clock clock = Clock.fixed(Instant.parse("2025-01-10T12:00:00Z"), ZoneId.systemDefault());
 
     private final AtomicLong nextId = new AtomicLong(1L);
@@ -95,179 +99,6 @@ class FeedbackServiceTest {
         return schedule;
     }
 
-    private Feedback createFeedback(Member sender, Member receiver, Team team) {
-        Feedback feedback = Feedback.builder()
-                .sender(sender)
-                .receiver(receiver)
-                .team(team)
-                .feedbackType(FeedbackType.IDENTIFIED)
-                .feedbackFeeling(FeedbackFeeling.POSITIVE)
-                .objectiveFeedbacks(FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 2))
-                .subjectiveFeedback("좋아요")
-                .build();
-        ReflectionTestUtils.setField(feedback, "id", nextId.getAndIncrement());
-        return feedback;
-    }
-
-    @Nested
-    @DisplayName("sendFrequentFeedback 메서드 테스트")
-    class SendFrequentFeedbackTest {
-        @Test
-        @DisplayName("수시 피드백 전송 성공")
-        void test1() {
-            // given
-            Member sender = createMember("sender");
-            Member receiver = createMember("receiver");
-            Team team = createTeam("team", sender);
-            team.join(receiver);
-
-            FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
-            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
-            String subjectiveFeedback = "좋아요";
-            when(memberRepository.findById(sender.getId())).thenReturn(Optional.of(sender));
-            when(memberRepository.findById(receiver.getId())).thenReturn(Optional.of(receiver));
-            when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
-            when(feedbackRepository.save(any(Feedback.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-            // when
-            Feedback feedback = feedbackService.sendFrequentFeedback(sender.getId(), receiver.getId(), team.getId(), feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback);
-            // then
-            assertEqualSender(sender, feedback.getSender());
-            assertEqualReceiver(receiver, feedback.getReceiver());
-            assertEqualTeam(team, feedback.getTeam());
-            assertThat(feedback.getFeedbackType()).isEqualTo(feedbackType);
-            assertThat(feedback.getFeedbackFeeling()).isEqualTo(feedbackFeeling);
-            assertThat(feedback.getObjectiveFeedbacks())
-                    .containsExactlyInAnyOrderElementsOf(objectiveFeedbacks);
-            assertThat(feedback.getSubjectiveFeedback()).isEqualTo(subjectiveFeedback);
-            assertThat(feedback.isLiked()).isFalse();
-
-            verify(eventPublisher).publishEvent(any(FrequentFeedbackCreatedEvent.class));
-        }
-
-        @Test
-        @DisplayName("수시 피드백 전송 실패 - sender가 없을 경우")
-        void test2() {
-            // given
-            Long senderId = 1L;
-            Long receiverId = 2L;
-            Long teamId = 3L;
-
-            FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
-            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
-            String subjectiveFeedback = "좋아요";
-            when(memberRepository.findById(senderId)).thenReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
-                    .isInstanceOf(EntityNotFoundException.class);
-
-            verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackCreatedEvent.class));
-        }
-
-        @Test
-        @DisplayName("수시 피드백 전송 실패 - receiver가 없을 경우")
-        void test3() {
-            // given
-            Long senderId = 1L;
-            Long receiverId = 2L;
-            Long teamId = 3L;
-            Member sender = mock();
-
-            FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
-            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
-            String subjectiveFeedback = "좋아요";
-            when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
-            when(memberRepository.findById(receiverId)).thenReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
-                    .isInstanceOf(EntityNotFoundException.class);
-
-            verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackCreatedEvent.class));
-        }
-
-        @Test
-        @DisplayName("수시 피드백 전송 실패 - team이 없을 경우")
-        void test4() {
-            // given
-            Long senderId = 1L;
-            Long receiverId = 2L;
-            Long teamId = 3L;
-            Member sender = mock();
-            Member receiver = mock();
-
-            FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
-            List<ObjectiveFeedback> objectiveFeedbacks = feedbackFeeling.getObjectiveFeedbacks().subList(0, 2);
-            String subjectiveFeedback = "좋아요";
-            when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
-            when(memberRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
-            when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
-                    .isInstanceOf(EntityNotFoundException.class);
-
-            verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackCreatedEvent.class));
-        }
-
-        @Test
-        @DisplayName("수시 피드백 전송 실패 - 기분에 맞지 않는 객관식 피드백이 있을 경우")
-        void test6() {
-            // given
-            Long senderId = 1L;
-            Long receiverId = 2L;
-            Long teamId = 3L;
-            Member sender = mock();
-            Member receiver = mock();
-            Team team = mock();
-
-            FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
-            List<ObjectiveFeedback> objectiveFeedbacks = FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(0, 1);
-            String subjectiveFeedback = "좋아요";
-            when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
-            when(memberRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-
-            // when & then
-            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
-                    .isInstanceOf(IllegalArgumentException.class);
-
-            verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackCreatedEvent.class));
-        }
-
-        @Test
-        @DisplayName("수시 피드백 전송 실패 - 객관식 피드백 개수가 1~5개가 아닌 경우")
-        void test7() {
-            // given
-            Long senderId = 1L;
-            Long receiverId = 2L;
-            Long teamId = 3L;
-            Member sender = mock();
-            Member receiver = mock();
-            Team team = mock();
-
-            FeedbackType feedbackType = FeedbackType.IDENTIFIED;
-            FeedbackFeeling feedbackFeeling = FeedbackFeeling.POSITIVE;
-            List<ObjectiveFeedback> objectiveFeedbacks = FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(0, 6);
-            String subjectiveFeedback = "좋아요";
-            when(memberRepository.findById(senderId)).thenReturn(Optional.of(sender));
-            when(memberRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
-
-            // when & then
-            assertThatThrownBy(() -> feedbackService.sendFrequentFeedback(senderId, receiverId, teamId, feedbackType, feedbackFeeling, objectiveFeedbacks, subjectiveFeedback))
-                    .isInstanceOf(IllegalArgumentException.class);
-
-            verify(eventPublisher, never()).publishEvent(any(FrequentFeedbackCreatedEvent.class));
-        }
-
-    }
 
     @Nested
     @DisplayName("requestFrequentFeedback 메서드 테스트")
@@ -627,7 +458,7 @@ class FeedbackServiceTest {
             // given
             Member receiver = createMember("receiver");
             Team team = createTeam("team", receiver);
-            Feedback feedback = createFeedback(createMember("sender"), receiver, team);
+            Feedback feedback = createFeedbackWithId(createMember("sender"), receiver, team, FeedbackType.ANONYMOUS);
 
             when(feedbackRepository.findById(feedback.getId())).thenReturn(Optional.of(feedback));
             when(memberRepository.findById(receiver.getId())).thenReturn(Optional.of(receiver));
@@ -644,7 +475,7 @@ class FeedbackServiceTest {
         @DisplayName("피드백 좋아요 실패 - feedback이 없을 경우")
         void test2() {
             // given
-            Long feedbackId = 1L;
+            FeedbackId feedbackId = new FeedbackId(1L);
             Long memberId = 2L;
 
             when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.empty());
@@ -659,7 +490,7 @@ class FeedbackServiceTest {
         @DisplayName("피드백 좋아요 실패 - receiver가 없을 경우")
         void test3() {
             // given
-            Long feedbackId = 1L;
+            FeedbackId feedbackId = new FeedbackId(1L);
             Long memberId = 2L;
             Feedback feedback = mock();
 
@@ -677,7 +508,7 @@ class FeedbackServiceTest {
         void test4() {
             // given
             Member member = createMember("not-receiver");
-            Feedback feedback = createFeedback(createMember("sender"), createMember("receiver"), createTeam("team", member));
+            Feedback feedback = createFeedbackWithId(createMember("sender"), createMember("receiver"), createTeam("team", member), FeedbackType.ANONYMOUS);
 
             when(feedbackRepository.findById(feedback.getId())).thenReturn(Optional.of(feedback));
             when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
@@ -698,7 +529,7 @@ class FeedbackServiceTest {
             // given
             Member receiver = createMember("receiver");
             Team team = createTeam("team", receiver);
-            Feedback feedback = createFeedback(createMember("sender"), receiver, team);
+            Feedback feedback = createFeedbackWithId(createMember("sender"), receiver, team, FeedbackType.ANONYMOUS);
             feedback.like(receiver);
 
             when(feedbackRepository.findById(feedback.getId())).thenReturn(Optional.of(feedback));
@@ -715,7 +546,7 @@ class FeedbackServiceTest {
         @DisplayName("피드백 좋아요 실패 - feedback이 없을 경우")
         void test2() {
             // given
-            Long feedbackId = 1L;
+            FeedbackId feedbackId = new FeedbackId(1L);
             Long memberId = 2L;
 
             when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.empty());
@@ -731,7 +562,7 @@ class FeedbackServiceTest {
         @DisplayName("피드백 좋아요 취소 실패 - receiver가 없을 경우")
         void test3() {
             // given
-            Long feedbackId = 1L;
+            FeedbackId feedbackId = new FeedbackId(1L);
             Long memberId = 2L;
             Feedback feedback = mock();
 
@@ -749,7 +580,7 @@ class FeedbackServiceTest {
         void test4() {
             // given
             Member member = createMember("not-receiver");
-            Feedback feedback = createFeedback(createMember("sender"), createMember("receiver"), createTeam("team", member));
+            Feedback feedback = createFeedbackWithId(createMember("sender"), createMember("receiver"), createTeam("team", member), FeedbackType.ANONYMOUS);
 
             when(feedbackRepository.findById(feedback.getId())).thenReturn(Optional.of(feedback));
             when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
@@ -918,7 +749,7 @@ class FeedbackServiceTest {
             team.requestFeedback(feedbackSender, feedbackReceiver, "좋아요");
             team.requestFeedback(feedbackReceiver, feedbackSender, "좋아요 2");
 
-            Feedback feedback = createFeedback(feedbackSender, feedbackReceiver, team);
+            Feedback feedback = createFeedbackWithId(feedbackSender, feedbackReceiver, team, FeedbackType.ANONYMOUS);
 
             when(feedbackRepository.findById(feedback.getId())).thenReturn(Optional.of(feedback));
             when(memberRepository.findById(feedbackSender.getId())).thenReturn(Optional.of(feedbackSender));
@@ -937,7 +768,7 @@ class FeedbackServiceTest {
         @DisplayName("연관 수시 피드백 요청 삭제 실패 - feedback이 없을 경우")
         void test2() {
             // given
-            Long feedbackId = 1L;
+            FeedbackId feedbackId = new FeedbackId(1L);
 
             when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.empty());
 
@@ -955,7 +786,7 @@ class FeedbackServiceTest {
             Member receiver = createMember("receiver");
             Team team = createTeam("team", receiver);
             Member sender = createMember("sender");
-            Feedback feedback = createFeedback(sender, receiver, team);
+            Feedback feedback = createFeedbackWithId(sender, receiver, team, FeedbackType.ANONYMOUS);
 
             when(feedbackRepository.findById(feedback.getId())).thenReturn(Optional.of(feedback));
             when(memberRepository.findById(receiver.getId())).thenReturn(Optional.of(receiver));

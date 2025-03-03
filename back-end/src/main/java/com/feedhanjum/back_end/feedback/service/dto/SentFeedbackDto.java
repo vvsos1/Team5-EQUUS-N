@@ -22,7 +22,7 @@ public record SentFeedbackDto(
 
     public static SentFeedbackDto from(Feedback feedback) {
         return new SentFeedbackDto(
-                feedback.getId(),
+                feedback.getId().getId(),
                 feedback.getFeedbackType() == FeedbackType.ANONYMOUS,
                 ReceiverDto.from(feedback.getReceiver()),
                 feedback.getObjectiveFeedbacks().stream().map(ObjectiveFeedback::getDescription).toList(),

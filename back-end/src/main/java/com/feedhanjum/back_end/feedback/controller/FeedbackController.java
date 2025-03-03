@@ -6,6 +6,7 @@ import com.feedhanjum.back_end.feedback.controller.dto.request.*;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FeedbackReportDto;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
+import com.feedhanjum.back_end.feedback.domain.FeedbackId;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
@@ -35,19 +36,6 @@ import java.util.*;
 public class FeedbackController {
     private final FeedbackService feedbackService;
     private final FeedbackQueryService feedbackQueryService;
-
-    @Operation(summary = "수시 피드백 전송", description = "팀별로 수시 피드백을 전송합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "수시 피드백 전송 성공. 연관된 수시 피드백 요청도 함께 삭제", useReturnTypeSchema = true)
-    })
-    @PostMapping("/feedbacks/frequent")
-    public ResponseEntity<Void> sendFrequentFeedback(@Login Long senderId,
-                                                     @Valid @RequestBody FrequentFeedbackSendRequest request) {
-        feedbackService.sendFrequentFeedback(senderId, request.receiverId(), request.teamId(),
-                request.isAnonymous() ? FeedbackType.ANONYMOUS : FeedbackType.IDENTIFIED
-                , request.feedbackFeeling(), request.objectiveFeedbacks(), request.subjectiveFeedback());
-        return ResponseEntity.noContent().build();
-    }
 
     @Operation(summary = "정기 피드백 전송", description = "일정별로 정기 피드백을 전송합니다. 정기 피드백 요청을 통해 피드백 작성을 요청받았어야 합니다.")
     @ApiResponses({
@@ -111,7 +99,7 @@ public class FeedbackController {
         if (!Objects.equals(loginId, memberId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        feedbackService.likeFeedback(feedbackId, memberId);
+        feedbackService.likeFeedback(new FeedbackId(feedbackId), memberId);
         return ResponseEntity.noContent().build();
     }
 
@@ -125,7 +113,7 @@ public class FeedbackController {
         if (!Objects.equals(loginId, memberId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        feedbackService.unlikeFeedback(feedbackId, memberId);
+        feedbackService.unlikeFeedback(new FeedbackId(feedbackId), memberId);
         return ResponseEntity.noContent().build();
     }
 

@@ -2,7 +2,9 @@ package com.feedhanjum.back_end.feedback.service;
 
 import com.feedhanjum.back_end.core.event.EventPublisher;
 import com.feedhanjum.back_end.feedback.domain.*;
-import com.feedhanjum.back_end.feedback.event.*;
+import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
+import com.feedhanjum.back_end.feedback.event.FeedbackReportCreatedEvent;
+import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,33 +44,8 @@ public class FeedbackService {
     private final EventPublisher eventPublisher;
     private final FeedbackQueryRepository feedbackQueryRepository;
     private final FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
-
-    /**
-     * @throws EntityNotFoundException  sender id, receiver id, team id에 해당하는 엔티티가 없을 경우
-     * @throws IllegalArgumentException 피드백 기분에 맞지 않는 객관식 피드백이 있을 경우, 또는 객관식 피드백이 1개 이상 5개 이하가 아닐 경우
-     */
-    @Transactional
-    public Feedback sendFrequentFeedback(Long senderId, Long receiverId, Long teamId, FeedbackType feedbackType, FeedbackFeeling feedbackFeeling, List<ObjectiveFeedback> objectiveFeedbacks, String subjectiveFeedback) {
-        Member sender = memberRepository.findById(senderId).orElseThrow(() -> new EntityNotFoundException("sender id에 해당하는 member가 없습니다."));
-        Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new EntityNotFoundException("receiver id에 해당하는 member가 없습니다."));
-        Team team = teamRepository.findById(teamId).orElseThrow(() -> new EntityNotFoundException("team id에 해당하는 team이 없습니다."));
-
-        Feedback feedback = Feedback.builder()
-                .sender(sender)
-                .receiver(receiver)
-                .team(team)
-                .feedbackType(feedbackType)
-                .feedbackFeeling(feedbackFeeling)
-                .objectiveFeedbacks(objectiveFeedbacks)
-                .subjectiveFeedback(subjectiveFeedback)
-                .build();
-        feedbackRepository.save(feedback);
-        eventPublisher.publishEvent(new FrequentFeedbackCreatedEvent(feedback.getId()));
-        eventPublisher.publishEvent(new FeedbackReceivedEvent(receiverId));
-        eventPublisher.publishEvent(new FeedbackSentEvent(senderId));
-        return feedback;
-
-    }
+    private final FeedbackIdGenerator feedbackIdGenerator;
+    private final Clock clock;
 
     /**
      * @throws EntityNotFoundException sender id, receiver id, team id에 해당하는 엔티티가 없을 경우, receiver나 sender가 team에 속해있지 않을 경우
@@ -107,20 +85,24 @@ public class FeedbackService {
 
         Team team = schedule.getTeam();
 
-        Feedback feedback = Feedback.builder()
-                .sender(sender)
-                .receiver(receiver)
-                .team(team)
-                .feedbackType(feedbackType)
-                .feedbackFeeling(feedbackFeeling)
-                .objectiveFeedbacks(objectiveFeedbacks)
-                .subjectiveFeedback(subjectiveFeedback)
-                .build();
+        FeedbackId feedbackId = feedbackIdGenerator.generateFeedbackId();
+
+        Feedback feedback = new Feedback(
+                feedbackId,
+                feedbackType,
+                feedbackFeeling,
+                objectiveFeedbacks,
+                subjectiveFeedback,
+                false,
+                Sender.of(sender),
+                Receiver.of(receiver),
+                AssociatedTeam.of(team),
+                LocalDateTime.now(clock)
+        );
+
         feedbackRepository.save(feedback);
         regularFeedbackRequestRepository.delete(regularFeedbackRequest);
-        eventPublisher.publishEvent(new RegularFeedbackCreatedEvent(feedback.getId()));
-        eventPublisher.publishEvent(new FeedbackReceivedEvent(receiverId));
-        eventPublisher.publishEvent(new FeedbackSentEvent(senderId));
+        eventPublisher.publishEvent(new RegularFeedbackCreatedEvent(feedback.getId(), senderId, receiverId));
         return feedback;
     }
 
@@ -129,7 +111,7 @@ public class FeedbackService {
      * @throws SecurityException       해당 피드백의 receiver가 아닌 경우
      */
     @Transactional
-    public void likeFeedback(Long feedbackId, Long memberId) {
+    public void likeFeedback(FeedbackId feedbackId, Long memberId) {
         Feedback feedback = feedbackRepository.findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("member id에 해당하는 member가 없습니다."));
         boolean isLiked = feedback.isLiked();
@@ -143,7 +125,7 @@ public class FeedbackService {
      * @throws SecurityException       해당 피드백의 receiver가 아닌 경우
      */
     @Transactional
-    public void unlikeFeedback(Long feedbackId, Long memberId) {
+    public void unlikeFeedback(FeedbackId feedbackId, Long memberId) {
         Feedback feedback = feedbackRepository.findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("member id에 해당하는 member가 없습니다."));
         feedback.unlike(member);
@@ -205,7 +187,7 @@ public class FeedbackService {
      * @throws TeamMembershipNotFoundException sender 가 team 에 속해있지 않을 경우
      */
     @Transactional
-    public void deleteRelatedFrequentFeedbackRequest(Long feedbackId) {
+    public void deleteRelatedFrequentFeedbackRequest(FeedbackId feedbackId) {
         Feedback feedback = feedbackRepository
                 .findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
 

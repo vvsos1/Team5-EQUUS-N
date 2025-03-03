@@ -36,7 +36,7 @@ public record ReceivedFeedbackDto(
 
     public static ReceivedFeedbackDto from(Feedback feedback) {
         return new ReceivedFeedbackDto(
-                feedback.getId(),
+                feedback.getId().getId(),
                 feedback.getFeedbackType() == FeedbackType.ANONYMOUS,
                 SenderDto.from(feedback.getSender()),
                 feedback.getObjectiveFeedbacks().stream().map(ObjectiveFeedback::getDescription).toList(),

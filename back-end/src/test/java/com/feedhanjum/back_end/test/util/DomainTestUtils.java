@@ -1,6 +1,7 @@
 package com.feedhanjum.back_end.test.util;
 
 import com.feedhanjum.back_end.feedback.domain.*;
+import com.feedhanjum.back_end.feedback.infra.FeedbackTSIDGenerator;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
@@ -18,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DomainTestUtils {
     private static final AtomicLong nextId = new AtomicLong(1);
+
+    private static FeedbackIdGenerator feedbackIdGenerator = new FeedbackTSIDGenerator();
 
     public static Member createMemberWithoutId(String name) {
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
@@ -63,9 +66,31 @@ public class DomainTestUtils {
     }
 
     public static Feedback createFeedbackWithId(Member sender, Member receiver, Team team, FeedbackType feedbackType) {
-        Feedback feedback = new Feedback(feedbackType, FeedbackFeeling.POSITIVE, FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 3), "좋아요", sender, receiver, team);
-        ReflectionTestUtils.setField(feedback, "id", nextId.getAndIncrement());
-        return feedback;
+        return new Feedback(
+                feedbackIdGenerator.generateFeedbackId(),
+                feedbackType,
+                FeedbackFeeling.POSITIVE,
+                FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 3),
+                "좋아요",
+                false,
+                Sender.of(sender),
+                Receiver.of(receiver),
+                AssociatedTeam.of(team),
+                LocalDateTime.of(2022, 1, 1, 0, 0));
+    }
+
+    public static Feedback createFeedbackWithId(Member sender, Member receiver, Team team, boolean isAnonymous, boolean isLiked) {
+        return new Feedback(
+                feedbackIdGenerator.generateFeedbackId(),
+                isAnonymous ? FeedbackType.ANONYMOUS : FeedbackType.IDENTIFIED,
+                FeedbackFeeling.POSITIVE,
+                FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 3),
+                "좋아요",
+                isLiked,
+                Sender.of(sender),
+                Receiver.of(receiver),
+                AssociatedTeam.of(team),
+                LocalDateTime.of(2022, 1, 1, 0, 0));
     }
 
 

@@ -4,6 +4,7 @@ import com.feedhanjum.back_end.core.domain.JobRecord;
 import com.feedhanjum.back_end.core.event.EventPublisher;
 import com.feedhanjum.back_end.core.repository.JobRecordRepository;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
+import com.feedhanjum.back_end.feedback.domain.FeedbackId;
 import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import com.feedhanjum.back_end.feedback.event.FeedbackReportCreatedEvent;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
@@ -112,7 +113,7 @@ public class InAppNotificationService {
 
     @Transactional
     public void createNotification(FeedbackLikedEvent event) {
-        Long feedbackId = event.feedbackId();
+        FeedbackId feedbackId = event.feedbackId();
 
         Feedback feedback = feedbackRepository.findById(feedbackId)
                 .orElseThrow(EntityNotFoundException::new);
@@ -124,7 +125,7 @@ public class InAppNotificationService {
 
     @Transactional
     public void createNotification(FrequentFeedbackCreatedEvent event) {
-        Long feedbackId = event.feedbackId();
+        FeedbackId feedbackId = event.feedbackId();
 
         Feedback feedback = feedbackRepository.findById(feedbackId)
                 .orElseThrow(EntityNotFoundException::new);
@@ -136,7 +137,7 @@ public class InAppNotificationService {
 
     @Transactional
     public void createNotification(RegularFeedbackCreatedEvent event) {
-        Long feedbackId = event.feedbackId();
+        FeedbackId feedbackId = event.feedbackId();
 
         Feedback feedback = feedbackRepository.findById(feedbackId)
                 .orElseThrow(EntityNotFoundException::new);

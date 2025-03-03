@@ -4,15 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.core.dto.Paged;
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.SendFrequentFeedbackRequest;
+import com.feedhanjum.back_end.feedback.adapter.out.persistence.FeedbackJpaEntityRepository;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackSendRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.RegularFeedbackSendRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
-import com.feedhanjum.back_end.feedback.domain.Feedback;
-import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
-import com.feedhanjum.back_end.feedback.domain.FeedbackType;
-import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
+import com.feedhanjum.back_end.feedback.domain.*;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
 import com.feedhanjum.back_end.feedback.repository.RegularFeedbackRequestRepository;
@@ -82,6 +80,8 @@ class FeedbackControllerTest {
     @Autowired
     private FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
     private final Clock clock = Clock.fixed(Instant.parse("2025-01-10T12:00:00Z"), ZoneId.systemDefault());
+    @Autowired
+    private FeedbackJpaEntityRepository feedbackJpaEntityRepository;
 
     private Member createMember(String name) {
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
@@ -102,25 +102,6 @@ class FeedbackControllerTest {
             end = LocalDateTime.now(clock).plusHours(1);
         }
         return new Schedule(name, start, end, team, leader);
-    }
-
-    private Feedback createFeedback(Member sender, Member receiver, Team team) {
-        return createFeedback(sender, receiver, team, false, false);
-    }
-
-    private Feedback createFeedback(Member sender, Member receiver, Team team, boolean isAnonymous, boolean isLiked) {
-        Feedback feedback = Feedback.builder()
-                .sender(sender)
-                .receiver(receiver)
-                .team(team)
-                .feedbackType(isAnonymous ? FeedbackType.ANONYMOUS : FeedbackType.IDENTIFIED)
-                .feedbackFeeling(FeedbackFeeling.POSITIVE)
-                .objectiveFeedbacks(FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 2))
-                .subjectiveFeedback("좋아요")
-                .build();
-        if (isLiked)
-            feedback.like(receiver);
-        return feedback;
     }
 
     private Member member1;
@@ -176,7 +157,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             Team team = team1;
-            FrequentFeedbackSendRequest request = new FrequentFeedbackSendRequest(
+            SendFrequentFeedbackRequest request = new SendFrequentFeedbackRequest(
                     receiver.getId(),
                     team.getId(),
                     FeedbackFeeling.CONSTRUCTIVE,
@@ -194,15 +175,15 @@ class FeedbackControllerTest {
             ).hasStatus(HttpStatus.NO_CONTENT);
 
 
-            List<Feedback> feedbacks = feedbackRepository.findAll();
+            var feedbacks = feedbackJpaEntityRepository.findAll();
             assertThat(feedbacks).hasSize(1);
-            Feedback feedback = feedbacks.get(0);
+            var feedback = feedbacks.get(0);
             assertEqualSender(sender, feedback.getSender());
             assertEqualReceiver(receiver, feedback.getReceiver());
             assertEqualTeam(team, feedback.getTeam());
-            assertThat(feedback.getFeedbackType()).isEqualTo(FeedbackType.ANONYMOUS);
-            assertThat(feedback.getFeedbackFeeling()).isEqualTo(FeedbackFeeling.CONSTRUCTIVE);
-            assertThat(feedback.getObjectiveFeedbacks()).containsExactlyInAnyOrderElementsOf(FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(1, 3));
+            assertThat(feedback.getFeedbackType()).isEqualTo(FeedbackType.ANONYMOUS.name());
+            assertThat(feedback.getFeedbackFeeling()).isEqualTo(FeedbackFeeling.CONSTRUCTIVE.name());
+            assertThat(feedback.getObjectiveFeedbacks()).containsExactlyInAnyOrderElementsOf(FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(1, 3).stream().map(ObjectiveFeedback::name).toList());
             assertThat(feedback.getSubjectiveFeedback()).isEqualTo("테스트 내용");
             assertThat(feedback.isLiked()).isFalse();
         }
@@ -214,7 +195,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             Team team = team1;
-            FrequentFeedbackSendRequest request = new FrequentFeedbackSendRequest(
+            SendFrequentFeedbackRequest request = new SendFrequentFeedbackRequest(
                     receiver.getId(),
                     team.getId(),
                     FeedbackFeeling.CONSTRUCTIVE,
@@ -231,7 +212,7 @@ class FeedbackControllerTest {
                     .content(mapper.writeValueAsString(request))
             ).hasStatus(HttpStatus.BAD_REQUEST);
 
-            List<Feedback> feedbacks = feedbackRepository.findAll();
+            var feedbacks = feedbackJpaEntityRepository.findAll();
             assertThat(feedbacks).isEmpty();
         }
     }
@@ -290,7 +271,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             Team team = team1;
-            FrequentFeedbackSendRequest request = new FrequentFeedbackSendRequest(
+            SendFrequentFeedbackRequest request = new SendFrequentFeedbackRequest(
                     receiver.getId(),
                     team.getId(),
                     FeedbackFeeling.CONSTRUCTIVE,
@@ -459,12 +440,12 @@ class FeedbackControllerTest {
             // given
             Member sender = member1;
             Member receiver = member2;
-            Feedback feedback = createFeedback(sender, receiver, team1);
+            Feedback feedback = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
             feedbackRepository.save(feedback);
 
             // when
             assertThat(mvc.post()
-                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId())
+                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId().getId())
                     .session(withLoginUser(receiver))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
@@ -479,12 +460,12 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             Member notReceiver = member3;
-            Feedback feedback = createFeedback(sender, receiver, team1);
+            Feedback feedback = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
             feedbackRepository.save(feedback);
 
             // when
             assertThat(mvc.post()
-                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId())
+                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId().getId())
                     .session(withLoginUser(notReceiver))
             ).hasStatus(HttpStatus.FORBIDDEN);
 
@@ -503,12 +484,12 @@ class FeedbackControllerTest {
             // given
             Member sender = member1;
             Member receiver = member2;
-            Feedback feedback = createFeedback(sender, receiver, team1, true, true);
+            Feedback feedback = createFeedbackWithId(sender, receiver, team1, true, true);
             feedbackRepository.save(feedback);
 
             // when
             assertThat(mvc.delete()
-                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId())
+                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId().getId())
                     .session(withLoginUser(receiver))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
@@ -523,12 +504,12 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             Member notReceiver = member3;
-            Feedback feedback = createFeedback(sender, receiver, team1, false, true);
+            Feedback feedback = createFeedbackWithId(sender, receiver, team1, false, true);
             feedbackRepository.save(feedback);
 
             // when
             assertThat(mvc.delete()
-                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId())
+                    .uri("/api/member/{memberId}/feedbacks/{feedbackId}/liked", receiver.getId(), feedback.getId().getId())
                     .session(withLoginUser(notReceiver))
             ).hasStatus(HttpStatus.FORBIDDEN);
 
@@ -573,8 +554,8 @@ class FeedbackControllerTest {
             // given
             Member sender = member1;
             Member receiver = member2;
-            Feedback feedback1 = createFeedback(sender, receiver, team1);
-            Feedback feedback2 = createFeedback(sender, receiver, team1);
+            Feedback feedback1 = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
+            Feedback feedback2 = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
             feedbackRepository.saveAll(List.of(feedback1, feedback2));
 
             // when
@@ -592,9 +573,9 @@ class FeedbackControllerTest {
             Member receiver = member2;
             Team team = team2;
             feedbackRepository.saveAll(List.of(
-                    createFeedback(sender, receiver, team1),
-                    createFeedback(sender, receiver, team2),
-                    createFeedback(sender, receiver, team2)));
+                    createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS),
+                    createFeedbackWithId(sender, receiver, team2, FeedbackType.ANONYMOUS),
+                    createFeedbackWithId(sender, receiver, team2, FeedbackType.ANONYMOUS)));
 
             // when & then
             assertThat(mvc.get()
@@ -620,9 +601,9 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             feedbackRepository.saveAll(List.of(
-                    createFeedback(sender, receiver, team1, false, true),
-                    createFeedback(sender, receiver, team2, false, false),
-                    createFeedback(sender, receiver, team2, false, true)));
+                    createFeedbackWithId(sender, receiver, team1, false, true),
+                    createFeedbackWithId(sender, receiver, team2, false, false),
+                    createFeedbackWithId(sender, receiver, team2, false, true)));
 
             // when & then
             assertThat(mvc.get()
@@ -647,7 +628,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             for (int i = 0; i < 20; i++) {
-                feedbackRepository.save(createFeedback(sender, receiver, team1));
+                feedbackRepository.save(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
             }
 
             // when & then
@@ -673,7 +654,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             for (int i = 0; i < 20; i++) {
-                feedbackRepository.save(createFeedback(sender, receiver, team1));
+                feedbackRepository.save(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
             }
             // when & then
             assertThat(mvc.get()
@@ -697,7 +678,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member notSender = member3;
             Member receiver = member2;
-            Feedback feedback = createFeedback(sender, receiver, team1);
+            Feedback feedback = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
             feedbackRepository.save(feedback);
 
             // when
@@ -718,8 +699,8 @@ class FeedbackControllerTest {
             // given
             Member sender = member1;
             Member receiver = member2;
-            Feedback feedback1 = createFeedback(sender, receiver, team1);
-            Feedback feedback2 = createFeedback(sender, receiver, team1);
+            Feedback feedback1 = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
+            Feedback feedback2 = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
             feedbackRepository.saveAll(List.of(feedback1, feedback2));
 
             // when
@@ -737,9 +718,9 @@ class FeedbackControllerTest {
             Member receiver = member2;
             Team team = team2;
             feedbackRepository.saveAll(List.of(
-                    createFeedback(sender, receiver, team1),
-                    createFeedback(sender, receiver, team2),
-                    createFeedback(sender, receiver, team2)));
+                    createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS),
+                    createFeedbackWithId(sender, receiver, team2, FeedbackType.ANONYMOUS),
+                    createFeedbackWithId(sender, receiver, team2, FeedbackType.ANONYMOUS)));
 
             // when & then
             assertThat(mvc.get()
@@ -765,9 +746,9 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             feedbackRepository.saveAll(List.of(
-                    createFeedback(sender, receiver, team1, false, true),
-                    createFeedback(sender, receiver, team2, false, false),
-                    createFeedback(sender, receiver, team2, false, true)));
+                    createFeedbackWithId(sender, receiver, team1, false, true),
+                    createFeedbackWithId(sender, receiver, team2, false, false),
+                    createFeedbackWithId(sender, receiver, team2, false, true)));
 
             // when & then
             assertThat(mvc.get()
@@ -792,7 +773,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             for (int i = 0; i < 20; i++) {
-                feedbackRepository.save(createFeedback(sender, receiver, team1));
+                feedbackRepository.save(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
             }
 
             // when & then
@@ -818,7 +799,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             for (int i = 0; i < 20; i++) {
-                feedbackRepository.save(createFeedback(sender, receiver, team1));
+                feedbackRepository.save(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
             }
             // when & then
             assertThat(mvc.get()
@@ -842,7 +823,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member notReceiver = member3;
             Member receiver = member2;
-            Feedback feedback = createFeedback(sender, receiver, team1);
+            Feedback feedback = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
             feedbackRepository.save(feedback);
 
             // when

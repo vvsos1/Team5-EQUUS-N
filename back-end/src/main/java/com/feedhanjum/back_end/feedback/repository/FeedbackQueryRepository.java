@@ -18,7 +18,7 @@ import java.util.Objects;
 @Repository
 public class FeedbackQueryRepository {
     private final QFeedback feedback = QFeedback.feedback;
-    private final ComparableExpressionBase<?> sortProperty = feedback.id;
+    private final ComparableExpressionBase<?> sortProperty = feedback.createdAt;
     private final JPAQueryFactory queryFactory;
 
     public FeedbackQueryRepository(JPAQueryFactory queryFactory) {
