@@ -113,7 +113,7 @@ public class Team {
     public void requestFeedback(Member requestSender, Member requestReceiver, String requestedContent) {
         validateTeamMember(requestSender);
         validateTeamMember(requestReceiver);
-        this.frequentFeedbackRequests.removeIf(request -> requestSender.equals(request.getSender()) && requestReceiver.equals(request.getReceiver()));
+        this.frequentFeedbackRequests.removeIf(request -> requestSender.equals(request.getRequester()) && requestReceiver.equals(request.getReceiver()));
         this.frequentFeedbackRequests.add(new FrequentFeedbackRequest(requestedContent, requestSender, this, requestReceiver));
     }
 
@@ -127,7 +127,7 @@ public class Team {
     public void removeFeedbackRequest(Member requestSender, Member requestReceiver) {
         validateTeamMember(requestSender);
         validateTeamMember(requestReceiver);
-        this.frequentFeedbackRequests.removeIf(request -> requestSender.equals(request.getSender()) && requestReceiver.equals(request.getReceiver()));
+        this.frequentFeedbackRequests.removeIf(request -> requestSender.equals(request.getRequester()) && requestReceiver.equals(request.getReceiver()));
     }
 
     public List<FrequentFeedbackRequest> getFeedbackRequests(Member receiver) {

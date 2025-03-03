@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.application.port.out;
+package com.feedhanjum.back_end.feedback.application.port.out.feedback;
 
 import com.feedhanjum.back_end.feedback.domain.Feedback;
 

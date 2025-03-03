@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.domain;
 
 import com.feedhanjum.back_end.member.domain.Member;
-import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
+import com.feedhanjum.back_end.schedule.domain.Schedule;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,22 +25,17 @@ public class RegularFeedbackRequest {
     private Member requester;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_member_id")
-    private ScheduleMember scheduleMember;
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;
 
-    public RegularFeedbackRequest(LocalDateTime createdAt, ScheduleMember scheduleMember, Member requester) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_member_id")
+    private Member receiver;
+
+    public RegularFeedbackRequest(LocalDateTime createdAt, Member requester, Schedule schedule, Member receiver) {
         this.createdAt = createdAt;
         this.requester = requester;
-        setScheduleMember(scheduleMember);
-    }
-
-    private void setScheduleMember(ScheduleMember scheduleMember) {
-        if (this.scheduleMember != null) {
-            this.scheduleMember.getRegularFeedbackRequests().remove(this);
-        }
-        this.scheduleMember = scheduleMember;
-        if (scheduleMember != null && !scheduleMember.getRegularFeedbackRequests().contains(this)) {
-            scheduleMember.getRegularFeedbackRequests().add(this);
-        }
+        this.schedule = schedule;
+        this.receiver = receiver;
     }
 }

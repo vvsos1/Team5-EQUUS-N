@@ -8,9 +8,7 @@ import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedback
 import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.domain.FeedbackId;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
-import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
-import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
 import com.feedhanjum.back_end.feedback.service.FeedbackService;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
@@ -36,24 +34,6 @@ import java.util.*;
 public class FeedbackController {
     private final FeedbackService feedbackService;
     private final FeedbackQueryService feedbackQueryService;
-
-    @Operation(summary = "정기 피드백 전송", description = "일정별로 정기 피드백을 전송합니다. 정기 피드백 요청을 통해 피드백 작성을 요청받았어야 합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "정기 피드백 전송 성공", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "선행되는 정기 피드백 요청이 없을 경우", useReturnTypeSchema = true)
-    })
-    @PostMapping("/feedbacks/regular")
-    public ResponseEntity<Void> sendRegularFeedback(@Login Long senderId,
-                                                    @Valid @RequestBody RegularFeedbackSendRequest request) {
-        try {
-            feedbackService.sendRegularFeedback(senderId, request.receiverId(), request.scheduleId(),
-                    request.isAnonymous() ? FeedbackType.ANONYMOUS : FeedbackType.IDENTIFIED
-                    , request.feedbackFeeling(), request.objectiveFeedbacks(), request.subjectiveFeedback());
-        } catch (NoRegularFeedbackRequestException e) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.noContent().build();
-    }
 
     @Operation(summary = "수시 피드백 요청", description = "수시 피드백을 요청합니다.")
     @ApiResponses({

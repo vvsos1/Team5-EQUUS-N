@@ -12,7 +12,7 @@ public record RegularFeedbackRequestForApiResponse(
 ) {
     public static RegularFeedbackRequestForApiResponse from(RegularFeedbackRequest request) {
         return new RegularFeedbackRequestForApiResponse(new MemberResponse(request.getRequester()),
-                request.getScheduleMember().getSchedule().getId(), request.getCreatedAt());
+                request.getSchedule().getId(), request.getCreatedAt());
     }
 }
 

@@ -12,7 +12,7 @@ public record FrequentFeedbackRequestForApiResponse(
         LocalDateTime createdAt
 ) {
     public static FrequentFeedbackRequestForApiResponse from(FrequentFeedbackRequest request) {
-        return new FrequentFeedbackRequestForApiResponse(new MemberResponse(request.getSender()),
+        return new FrequentFeedbackRequestForApiResponse(new MemberResponse(request.getRequester()),
                 request.getTeam().getId(), request.getRequestedContent(), request.getCreatedAt());
     }
 }

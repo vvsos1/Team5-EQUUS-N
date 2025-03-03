@@ -1,11 +1,12 @@
 package com.feedhanjum.back_end.feedback.service;
 
 import com.feedhanjum.back_end.core.event.EventPublisher;
-import com.feedhanjum.back_end.feedback.domain.*;
+import com.feedhanjum.back_end.feedback.domain.Feedback;
+import com.feedhanjum.back_end.feedback.domain.FeedbackId;
+import com.feedhanjum.back_end.feedback.domain.FeedbackIdGenerator;
+import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import com.feedhanjum.back_end.feedback.event.FeedbackReportCreatedEvent;
-import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
-import com.feedhanjum.back_end.feedback.exception.NoRegularFeedbackRequestException;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
@@ -62,51 +63,6 @@ public class FeedbackService {
     }
 
     /**
-     * @throws EntityNotFoundException           일정에 속한 sender, receiver가 없을 경우
-     * @throws IllegalArgumentException          피드백 기분에 맞지 않는 객관식 피드백이 있을 경우, 또는 객관식 피드백이 1개 이상 5개 이하가 아닐 경우
-     * @throws NoRegularFeedbackRequestException 정기 피드백 요청이 없을 경우
-     */
-    @Transactional
-    public Feedback sendRegularFeedback(Long senderId, Long receiverId, Long scheduleId, FeedbackType feedbackType, FeedbackFeeling feedbackFeeling, List<ObjectiveFeedback> objectiveFeedbacks, String subjectiveFeedback) {
-        ScheduleMember senderScheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(senderId, scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("sender 가 schedule 에 속해있지 않습니다"));
-        ScheduleMember receiverScheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(receiverId, scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("receiver 가 schedule 에 속해있지 않습니다"));
-
-        Member sender = senderScheduleMember.getMember();
-        Member receiver = receiverScheduleMember.getMember();
-
-        Schedule schedule = senderScheduleMember.getSchedule();
-
-
-        // 정기 피드백을 보내려면 정기 피드백 요청이 있어야 함
-        RegularFeedbackRequest regularFeedbackRequest = regularFeedbackRequestRepository.findByRequesterAndScheduleMember(receiver, senderScheduleMember)
-                .orElseThrow(NoRegularFeedbackRequestException::new);
-
-        Team team = schedule.getTeam();
-
-        FeedbackId feedbackId = feedbackIdGenerator.generateFeedbackId();
-
-        Feedback feedback = new Feedback(
-                feedbackId,
-                feedbackType,
-                feedbackFeeling,
-                objectiveFeedbacks,
-                subjectiveFeedback,
-                false,
-                Sender.of(sender),
-                Receiver.of(receiver),
-                AssociatedTeam.of(team),
-                LocalDateTime.now(clock)
-        );
-
-        feedbackRepository.save(feedback);
-        regularFeedbackRequestRepository.delete(regularFeedbackRequest);
-        eventPublisher.publishEvent(new RegularFeedbackCreatedEvent(feedback.getId(), senderId, receiverId));
-        return feedback;
-    }
-
-    /**
      * @throws EntityNotFoundException feedback id에 해당하는 엔티티가 없을 경우
      * @throws SecurityException       해당 피드백의 receiver가 아닌 경우
      */
@@ -146,7 +102,7 @@ public class FeedbackService {
                 if (senderMember == receiverMember) {
                     continue;
                 }
-                requests.add(new RegularFeedbackRequest(requestTime, receiverMember, senderMember.getMember()));
+                requests.add(new RegularFeedbackRequest(requestTime, senderMember.getMember(), schedule, receiverMember.getMember()));
             }
             // batch insert를 사용하도록 설정 필요
             eventPublisher.publishEvent(new RegularFeedbackRequestCreatedEvent(receiverMember.getMember().getId(), scheduleId));
@@ -154,15 +110,9 @@ public class FeedbackService {
         regularFeedbackRequestRepository.saveAll(requests);
     }
 
-    /**
-     * @throws EntityNotFoundException 일정에 속한 member가 없을 경우
-     */
     @Transactional
     public void skipRegularFeedback(Long scheduleId, Long memberId) {
-        ScheduleMember scheduleMember = scheduleMemberRepository.findByMemberIdAndScheduleId(memberId, scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("member가 schedule에 속해있지 않습니다."));
-
-        regularFeedbackRequestRepository.deleteAllByScheduleMember(scheduleMember);
+        regularFeedbackRequestRepository.deleteAllBySchedule_IdAndReceiver_Id(scheduleId, memberId);
     }
 
     /**

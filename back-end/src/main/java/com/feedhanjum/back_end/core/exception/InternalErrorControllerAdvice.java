@@ -1,7 +1,6 @@
 package com.feedhanjum.back_end.core.exception;
 
 import jakarta.persistence.LockTimeoutException;
-import jakarta.persistence.OptimisticLockException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.NonUniqueResultException;
 import org.springframework.core.annotation.Order;
@@ -9,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Order(10)
@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class InternalErrorControllerAdvice {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> handleException(Exception e) {
+        ResponseStatus annotation = e.getClass().getAnnotation(ResponseStatus.class);
+        if (annotation != null) {
+            return new ResponseEntity<>(annotation.value());
+        }
         log.error("예외 발생!", e);
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }

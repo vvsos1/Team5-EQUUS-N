@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.controller.dto.request;
+package com.feedhanjum.back_end.feedback.adapter.in.web.dto;
 
 import com.feedhanjum.back_end.core.constraints.ByteLength;
 import com.feedhanjum.back_end.feedback.domain.Feedback;
@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 
-public record RegularFeedbackSendRequest(
+public record SendRegularFeedbackRequest(
         @Schema(description = "정기 피드백을 받을 사람의 ID")
         @NotNull
         Long receiverId,

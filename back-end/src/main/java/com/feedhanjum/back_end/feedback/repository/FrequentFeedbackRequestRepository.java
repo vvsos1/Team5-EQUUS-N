@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface FrequentFeedbackRequestRepository extends JpaRepository<FrequentFeedbackRequest, Long> {
     @Modifying(clearAutomatically = true)
     @Query("delete from FrequentFeedbackRequest ffr " +
-            "where ffr.sender.id = :senderId " +
+            "where ffr.requester.id = :senderId " +
             "and ffr.team.id = :teamId")
     void deleteAllBySenderIdAndTeamId(Long senderId, Long teamId);
 

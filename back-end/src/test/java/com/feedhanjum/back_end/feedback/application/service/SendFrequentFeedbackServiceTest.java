@@ -3,12 +3,14 @@ package com.feedhanjum.back_end.feedback.application.service;
 import com.feedhanjum.back_end.core.event.EventPublisher;
 import com.feedhanjum.back_end.core.event.Events;
 import com.feedhanjum.back_end.feedback.application.port.in.SendFrequentFeedbackCommand;
-import com.feedhanjum.back_end.feedback.application.port.out.*;
+import com.feedhanjum.back_end.feedback.application.port.out.LoadReceiverPort;
+import com.feedhanjum.back_end.feedback.application.port.out.LoadSenderPort;
+import com.feedhanjum.back_end.feedback.application.port.out.LoadTeamPort;
+import com.feedhanjum.back_end.feedback.application.port.out.MembershipValidatePort;
+import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
 import com.feedhanjum.back_end.feedback.domain.*;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.exception.MembershipNotFound;
-import com.feedhanjum.back_end.feedback.test.SimpleFeedbackIdGenerator;
-import com.feedhanjum.back_end.member.domain.ProfileImage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,11 +21,9 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.List;
 
+import static com.feedhanjum.back_end.test.util.Fixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class SendFrequentFeedbackServiceTest {
     @Spy
-    FeedbackIdGenerator feedbackIdGenerator = new SimpleFeedbackIdGenerator();
+    FeedbackIdGenerator feedbackIdGenerator = defaultFeedbackIdGenerator();
     @Mock
     MembershipValidatePort membershipValidatePort;
     @Mock
@@ -159,36 +159,6 @@ public class SendFrequentFeedbackServiceTest {
         assertThatThrownBy(() -> sendFrequentFeedbackService.sendFrequentFeedback(command))
                 .isInstanceOf(IllegalArgumentException.class);
 
-    }
-
-
-    private Clock defaultClock() {
-        return Clock.fixed(
-                LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
-                , ZoneId.of("UTC"));
-    }
-
-    private Sender defaultSender() {
-        return new Sender(
-                1L,
-                "sender",
-                new ProfileImage("red", "cat")
-        );
-    }
-
-    private Receiver defaultReceiver() {
-        return new Receiver(
-                2L,
-                "receiver",
-                new ProfileImage("blue", "dog")
-        );
-    }
-
-    private AssociatedTeam defaultTeam() {
-        return new AssociatedTeam(
-                3L,
-                "team"
-        );
     }
 
 

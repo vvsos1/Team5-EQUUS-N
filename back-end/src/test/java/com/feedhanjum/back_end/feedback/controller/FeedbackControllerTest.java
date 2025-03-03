@@ -5,12 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.SendFrequentFeedbackRequest;
-import com.feedhanjum.back_end.feedback.adapter.out.persistence.FeedbackJpaEntityRepository;
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.SendRegularFeedbackRequest;
+import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadReceivedFeedbackPort;
+import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestPort;
+import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.request.RegularFeedbackSendRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.controller.dto.response.RegularFeedbackRequestForApiResponse;
-import com.feedhanjum.back_end.feedback.domain.*;
+import com.feedhanjum.back_end.feedback.domain.Feedback;
+import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
+import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
 import com.feedhanjum.back_end.feedback.repository.RegularFeedbackRequestRepository;
@@ -81,7 +86,11 @@ class FeedbackControllerTest {
     private FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
     private final Clock clock = Clock.fixed(Instant.parse("2025-01-10T12:00:00Z"), ZoneId.systemDefault());
     @Autowired
-    private FeedbackJpaEntityRepository feedbackJpaEntityRepository;
+    private SaveRegularFeedbackRequestPort saveRegularFeedbackRequestPort;
+    @Autowired
+    private LoadRegularFeedbackRequestPort loadRegularFeedbackRequestPort;
+    @Autowired
+    private LoadReceivedFeedbackPort loadReceivedFeedbackPort;
 
     private Member createMember(String name) {
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
@@ -175,15 +184,15 @@ class FeedbackControllerTest {
             ).hasStatus(HttpStatus.NO_CONTENT);
 
 
-            var feedbacks = feedbackJpaEntityRepository.findAll();
+            var feedbacks = loadReceivedFeedbackPort.loadReceivedFeedback(receiver.getId());
             assertThat(feedbacks).hasSize(1);
             var feedback = feedbacks.get(0);
             assertEqualSender(sender, feedback.getSender());
             assertEqualReceiver(receiver, feedback.getReceiver());
             assertEqualTeam(team, feedback.getTeam());
-            assertThat(feedback.getFeedbackType()).isEqualTo(FeedbackType.ANONYMOUS.name());
-            assertThat(feedback.getFeedbackFeeling()).isEqualTo(FeedbackFeeling.CONSTRUCTIVE.name());
-            assertThat(feedback.getObjectiveFeedbacks()).containsExactlyInAnyOrderElementsOf(FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(1, 3).stream().map(ObjectiveFeedback::name).toList());
+            assertThat(feedback.getFeedbackType()).isEqualTo(FeedbackType.ANONYMOUS);
+            assertThat(feedback.getFeedbackFeeling()).isEqualTo(FeedbackFeeling.CONSTRUCTIVE);
+            assertThat(feedback.getObjectiveFeedbacks()).containsExactlyInAnyOrderElementsOf(FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(1, 3));
             assertThat(feedback.getSubjectiveFeedback()).isEqualTo("테스트 내용");
             assertThat(feedback.isLiked()).isFalse();
         }
@@ -212,7 +221,7 @@ class FeedbackControllerTest {
                     .content(mapper.writeValueAsString(request))
             ).hasStatus(HttpStatus.BAD_REQUEST);
 
-            var feedbacks = feedbackJpaEntityRepository.findAll();
+            var feedbacks = loadReceivedFeedbackPort.loadReceivedFeedback(receiver.getId());
             assertThat(feedbacks).isEmpty();
         }
     }
@@ -231,10 +240,10 @@ class FeedbackControllerTest {
             Member receiver = member2;
             Team team = team1;
             Schedule schedule = schedule1;
-            regularFeedbackRequestRepository.save(
-                    new RegularFeedbackRequest(LocalDateTime.now(), scheduleMember1, receiver
+            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(
+                    new RegularFeedbackRequest(LocalDateTime.now(), receiver, schedule, scheduleMember1.getMember()
                     ));
-            RegularFeedbackSendRequest request = new RegularFeedbackSendRequest(
+            SendRegularFeedbackRequest request = new SendRegularFeedbackRequest(
                     receiver.getId(),
                     schedule.getId(),
                     FeedbackFeeling.CONSTRUCTIVE,
@@ -251,7 +260,7 @@ class FeedbackControllerTest {
                     .content(mapper.writeValueAsString(request))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-            List<Feedback> feedbacks = feedbackRepository.findAll();
+            List<Feedback> feedbacks = loadReceivedFeedbackPort.loadReceivedFeedback(receiver.getId());
             assertThat(feedbacks).hasSize(1);
             Feedback feedback = feedbacks.get(0);
             assertEqualSender(sender, feedback.getSender());
@@ -293,13 +302,13 @@ class FeedbackControllerTest {
         }
 
         @Test
-        @DisplayName("수시 피드백 요청이 없을 시 400")
+        @DisplayName("정기 피드백 요청이 없을 시 400")
         void test3() throws Exception {
             // given
             Member sender = member1;
             Member receiver = member2;
             Schedule schedule = schedule1;
-            RegularFeedbackSendRequest body = new RegularFeedbackSendRequest(
+            SendRegularFeedbackRequest body = new SendRegularFeedbackRequest(
                     receiver.getId(),
                     schedule.getId(),
                     FeedbackFeeling.CONSTRUCTIVE,
@@ -349,7 +358,7 @@ class FeedbackControllerTest {
 
             assertThat(requests).hasSize(1);
             var request = requests.get(0);
-            assertThat(request.getSender()).isEqualTo(sender);
+            assertThat(request.getRequester()).isEqualTo(sender);
             assertThat(request.getReceiver()).isEqualTo(receiver);
             assertThat(request.getTeam()).isEqualTo(team);
             assertThat(request.getRequestedContent()).isEqualTo(requestedContent);
@@ -408,8 +417,8 @@ class FeedbackControllerTest {
             Member sender2 = member3;
             ScheduleMember scheduleMember = scheduleMember2;
             Member receiver = scheduleMember.getMember();
-            regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), scheduleMember, sender1));
-            regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), scheduleMember, sender2));
+            regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), sender1, scheduleMember.getSchedule(), scheduleMember.getMember()));
+            regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), sender2, scheduleMember.getSchedule(), scheduleMember.getMember()));
 
             // when
             assertThat(mvc.get()
@@ -530,7 +539,7 @@ class FeedbackControllerTest {
             ScheduleMember scheduleMember = scheduleMember1;
             Member sender = member2;
             Schedule schedule = schedule1;
-            regularFeedbackRequestRepository.save(new RegularFeedbackRequest(LocalDateTime.now(), scheduleMember, sender));
+            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender, schedule, scheduleMember.getMember()));
 
             // when
             assertThat(mvc.delete()
@@ -539,7 +548,7 @@ class FeedbackControllerTest {
                     .session(withLoginUser(receiver))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-            var requests = regularFeedbackRequestRepository.findAll();
+            var requests = loadRegularFeedbackRequestPort.loadRegularFeedbackRequest(schedule.getId(), sender.getId());
             assertThat(requests).isEmpty();
         }
     }

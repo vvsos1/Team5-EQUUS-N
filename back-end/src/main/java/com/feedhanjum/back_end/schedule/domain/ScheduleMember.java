@@ -1,6 +1,5 @@
 package com.feedhanjum.back_end.schedule.domain;
 
-import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -27,15 +26,11 @@ public class ScheduleMember {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "scheduleMember")
-    private final List<RegularFeedbackRequest> regularFeedbackRequests = new ArrayList<>();
-
     @ElementCollection
     @CollectionTable(
             name = "todos",
             joinColumns = @JoinColumn(name = "schedule_member_id")
     )
-
     private final List<Todo> todos = new ArrayList<>();
 
     public ScheduleMember(Schedule schedule, Member member) {
@@ -43,9 +38,9 @@ public class ScheduleMember {
         setSchedule(schedule);
     }
 
-    public void setTodos(List<Todo> todos){
+    public void setTodos(List<Todo> todos) {
         this.todos.clear();
-        if(todos != null){
+        if (todos != null) {
             this.todos.addAll(todos);
         }
     }

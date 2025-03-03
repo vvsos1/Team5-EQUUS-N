@@ -5,8 +5,6 @@ import com.feedhanjum.back_end.feedback.infra.FeedbackTSIDGenerator;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
-import com.feedhanjum.back_end.schedule.domain.Schedule;
-import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
 import com.feedhanjum.back_end.team.domain.Team;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -51,18 +49,6 @@ public class DomainTestUtils {
 
     public static Team createTeamWithId(String name, Member leader) {
         return createTeamWithId(name, leader, LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), LocalDate.now());
-    }
-
-    public static ScheduleMember createScheduleMemberWithId(Schedule schedule, Member member) {
-        ScheduleMember scheduleMember = new ScheduleMember(schedule, member);
-        ReflectionTestUtils.setField(scheduleMember, "id", nextId.getAndIncrement());
-        return scheduleMember;
-    }
-
-    public static RegularFeedbackRequest createRegularFeedbackRequestWithId(Member sender, ScheduleMember receiver) {
-        RegularFeedbackRequest request = new RegularFeedbackRequest(LocalDateTime.of(2022, 1, 1, 0, 0), receiver, sender);
-        ReflectionTestUtils.setField(request, "id", nextId.getAndIncrement());
-        return request;
     }
 
     public static Feedback createFeedbackWithId(Member sender, Member receiver, Team team, FeedbackType feedbackType) {

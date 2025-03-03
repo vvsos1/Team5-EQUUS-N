@@ -25,8 +25,8 @@ public class FrequentFeedbackRequest {
     private String requestedContent;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id")
-    private Member sender;
+    @JoinColumn(name = "requester_id")
+    private Member requester;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
@@ -36,9 +36,9 @@ public class FrequentFeedbackRequest {
     @JoinColumn(name = "receiver_id")
     private Member receiver;
 
-    public FrequentFeedbackRequest(String requestedContent, Member sender, Team team, Member receiver) {
+    public FrequentFeedbackRequest(String requestedContent, Member requester, Team team, Member receiver) {
         this.requestedContent = requestedContent;
-        this.sender = sender;
+        this.requester = requester;
         this.team = team;
         this.receiver = receiver;
         this.createdAt = LocalDateTime.now();

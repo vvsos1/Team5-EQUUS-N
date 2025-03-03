@@ -17,7 +17,7 @@ public class FrequentFeedbackRequestQueryRepository {
 
     public List<FrequentFeedbackRequest> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
         return queryFactory.selectFrom(frequentFeedbackRequest)
-                .join(frequentFeedbackRequest.sender).fetchJoin()
+                .join(frequentFeedbackRequest.requester).fetchJoin()
                 .join(frequentFeedbackRequest.receiver).fetchJoin()
                 .join(frequentFeedbackRequest.team).fetchJoin()
                 .where(frequentFeedbackRequest.receiver.id.eq(receiverId)
