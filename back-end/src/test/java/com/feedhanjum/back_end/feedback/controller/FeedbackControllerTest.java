@@ -2,7 +2,6 @@ package com.feedhanjum.back_end.feedback.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendFrequentFeedbackRequest;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendRegularFeedbackRequest;
@@ -14,10 +13,12 @@ import com.feedhanjum.back_end.feedback.application.port.out.request.regular.Loa
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
-import com.feedhanjum.back_end.feedback.domain.Feedback;
-import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
-import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.feedback.domain.AssociatedSchedule;
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
 import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackFeeling;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
@@ -41,7 +42,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -53,6 +53,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static com.feedhanjum.back_end.test.util.DomainTestUtils.*;
+import static com.feedhanjum.back_end.test.util.SessionTestUtil.withLoginUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
@@ -149,12 +150,6 @@ class FeedbackControllerTest {
     }
 
 
-    MockHttpSession withLoginUser(Member member) {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute(SessionConst.MEMBER_ID, member.getId());
-        return session;
-    }
-
     @Nested
     @DisplayName("수시 피드백 전송 테스트")
     class SendFrequentFeedback {
@@ -241,8 +236,7 @@ class FeedbackControllerTest {
             Team team = team1;
             Schedule schedule = schedule1;
             saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(
-                    new RegularFeedbackRequest(LocalDateTime.now(), receiver, schedule, scheduleMember1.getMember()
-                    ));
+                    new RegularFeedbackRequest(LocalDateTime.now(), FeedbackMember.of(receiver), AssociatedSchedule.of(schedule), FeedbackMember.of(sender)));
             SendRegularFeedbackRequest request = new SendRegularFeedbackRequest(
                     receiver.getId(),
                     schedule.getId(),
@@ -413,17 +407,17 @@ class FeedbackControllerTest {
         @DisplayName("성공 시 200")
         void test1() {
             // given
-            Member sender1 = member1;
-            Member sender2 = member3;
-            ScheduleMember scheduleMember = scheduleMember2;
-            Member receiver = scheduleMember.getMember();
-            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender1, scheduleMember.getSchedule(), scheduleMember.getMember()));
-            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender2, scheduleMember.getSchedule(), scheduleMember.getMember()));
+            var sender1 = FeedbackMember.of(member1);
+            var sender2 = FeedbackMember.of(member3);
+            var receiver = FeedbackMember.of(member2);
+            var schedule = AssociatedSchedule.of(schedule1);
+            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender1, schedule, receiver));
+            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender2, schedule, receiver));
 
             // when
             assertThat(mvc.get()
                     .uri("/api/feedbacks/regular/request")
-                    .queryParam("scheduleId", scheduleMember.getSchedule().getId().toString())
+                    .queryParam("scheduleId", schedule.getId().toString())
                     .session(withLoginUser(receiver))
                     .contentType(MediaType.APPLICATION_JSON)
             ).hasStatus(HttpStatus.OK)
@@ -432,8 +426,8 @@ class FeedbackControllerTest {
                         List<RegularFeedbackRequestResponse> requests = mapper.readValue(result, new TypeReference<>() {
                         });
                         assertThat(requests).hasSize(2);
-                        assertThat(requests).extracting(req -> req.requester().email())
-                                .containsExactlyInAnyOrder(sender1.getEmail(), sender2.getEmail());
+                        assertThat(requests).extracting(req -> req.requester().id())
+                                .containsExactlyInAnyOrder(sender1.getId(), sender2.getId());
                     });
 
         }
@@ -535,11 +529,10 @@ class FeedbackControllerTest {
         @DisplayName("성공 시 204")
         void test1() {
             // given
-            Member receiver = member1;
-            ScheduleMember scheduleMember = scheduleMember1;
-            Member sender = member2;
-            Schedule schedule = schedule1;
-            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender, schedule, scheduleMember.getMember()));
+            var receiver = FeedbackMember.of(member1);
+            var sender = FeedbackMember.of(member2);
+            var schedule = AssociatedSchedule.of(schedule1);
+            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender, schedule, receiver));
 
             // when
             assertThat(mvc.delete()

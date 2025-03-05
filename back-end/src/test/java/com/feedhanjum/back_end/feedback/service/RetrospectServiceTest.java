@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.service;
 
-import com.feedhanjum.back_end.feedback.domain.FeedbackType;
 import com.feedhanjum.back_end.feedback.domain.Retrospect;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import com.feedhanjum.back_end.feedback.repository.RetrospectQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.RetrospectRepository;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;

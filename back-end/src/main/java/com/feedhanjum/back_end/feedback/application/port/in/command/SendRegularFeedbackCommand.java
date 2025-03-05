@@ -2,10 +2,10 @@ package com.feedhanjum.back_end.feedback.application.port.in.command;
 
 
 import com.feedhanjum.back_end.core.SelfValidating;
-import com.feedhanjum.back_end.feedback.domain.Feedback;
-import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
-import com.feedhanjum.back_end.feedback.domain.FeedbackType;
-import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackFeeling;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
+import com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;

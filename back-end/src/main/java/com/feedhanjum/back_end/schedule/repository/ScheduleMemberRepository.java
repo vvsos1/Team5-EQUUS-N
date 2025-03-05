@@ -6,11 +6,14 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface ScheduleMemberRepository extends JpaRepository<ScheduleMember, Long> {
 
     Optional<ScheduleMember> findByMemberIdAndScheduleId(Long memberId, Long scheduleId);
+
+    List<ScheduleMember> findAllByScheduleId(Long scheduleId);
 
     @Modifying(clearAutomatically = true)
     @Query("delete from ScheduleMember sm " +

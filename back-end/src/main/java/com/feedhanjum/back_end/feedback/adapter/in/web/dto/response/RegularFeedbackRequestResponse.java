@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.feedback.adapter.in.web.dto.response;
 
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
 import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 
 import java.time.LocalDateTime;
@@ -10,7 +11,8 @@ public record RegularFeedbackRequestResponse(
         LocalDateTime createdAt
 ) {
     public static RegularFeedbackRequestResponse from(RegularFeedbackRequest request) {
-        return new RegularFeedbackRequestResponse(new MemberResponse(request.getRequester()),
+        FeedbackMember requester = request.getRequester();
+        return new RegularFeedbackRequestResponse(new MemberResponse(requester.getId(), requester.getName(), requester.getProfileImage()),
                 request.getSchedule().getId(), request.getCreatedAt());
     }
 }

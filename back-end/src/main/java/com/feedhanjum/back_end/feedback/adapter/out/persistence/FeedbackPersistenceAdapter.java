@@ -3,8 +3,8 @@ package com.feedhanjum.back_end.feedback.adapter.out.persistence;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadReceivedFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
-import com.feedhanjum.back_end.feedback.domain.Feedback;
-import com.feedhanjum.back_end.feedback.domain.FeedbackId;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

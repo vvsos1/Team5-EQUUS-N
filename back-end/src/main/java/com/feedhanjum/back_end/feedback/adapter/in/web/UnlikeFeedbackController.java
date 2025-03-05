@@ -3,7 +3,7 @@ package com.feedhanjum.back_end.feedback.adapter.in.web;
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.feedback.application.port.in.UnlikeFeedbackUseCase;
 import com.feedhanjum.back_end.feedback.application.port.in.command.UnlikeFeedbackCommand;
-import com.feedhanjum.back_end.feedback.domain.FeedbackId;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

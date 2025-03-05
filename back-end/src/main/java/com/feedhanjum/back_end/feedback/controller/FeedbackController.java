@@ -10,7 +10,7 @@ import com.feedhanjum.back_end.feedback.controller.dto.request.SentFeedbacksQuer
 import com.feedhanjum.back_end.feedback.controller.dto.response.FeedbackReportDto;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
-import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback;
 import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
 import com.feedhanjum.back_end.feedback.service.FeedbackService;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;

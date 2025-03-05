@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.team.controller.dto;
 
-import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import com.feedhanjum.back_end.member.controller.dto.MemberResponse;
 import com.feedhanjum.back_end.team.domain.Team;
 import io.swagger.v3.oas.annotations.media.Schema;

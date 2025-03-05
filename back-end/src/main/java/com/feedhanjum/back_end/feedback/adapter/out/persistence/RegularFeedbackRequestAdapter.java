@@ -37,6 +37,12 @@ public class RegularFeedbackRequestAdapter implements LoadRegularFeedbackRequest
     }
 
     @Override
+    public void saveRegularFeedbackRequests(List<RegularFeedbackRequest> requests) {
+        List<RegularFeedbackRequestJpaEntity> entities = requests.stream().map(regularFeedbackRequestMapper::fromDomain).toList();
+        regularFeedbackRequestJpaEntityRepository.saveAll(entities);
+    }
+
+    @Override
     public List<RegularFeedbackRequest> loadRegularFeedbackRequestList(Long scheduleId, Long receiverId) {
         var entities = regularFeedbackRequestJpaEntityRepository.findAllByScheduleIdAndReceiverId(scheduleId, receiverId);
         return entities.stream().map(regularFeedbackRequestMapper::toDomain).toList();

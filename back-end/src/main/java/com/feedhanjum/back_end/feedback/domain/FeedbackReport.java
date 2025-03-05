@@ -1,5 +1,9 @@
 package com.feedhanjum.back_end.feedback.domain;
 
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackCategory;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackFeeling;
+import com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
 

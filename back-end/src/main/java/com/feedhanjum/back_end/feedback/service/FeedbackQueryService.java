@@ -1,15 +1,12 @@
 package com.feedhanjum.back_end.feedback.service;
 
 
-import com.feedhanjum.back_end.feedback.adapter.in.web.dto.response.RegularFeedbackRequestResponse;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
-import com.feedhanjum.back_end.feedback.domain.Feedback;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.domain.FrequentFeedbackRequest;
-import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestQueryRepository;
-import com.feedhanjum.back_end.feedback.repository.RegularFeedbackRequestQueryRepository;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -33,7 +30,6 @@ public class FeedbackQueryService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final FrequentFeedbackRequestQueryRepository frequentFeedbackRequestQueryRepository;
-    private final RegularFeedbackRequestQueryRepository regularFeedbackRequestQueryRepository;
 
     /**
      * @throws EntityNotFoundException  receiver나 team이 없을 때
@@ -83,12 +79,6 @@ public class FeedbackQueryService {
     public List<FrequentFeedbackRequestForApiResponse> getFrequentFeedbackRequests(Long receiverId, Long teamId) {
         List<FrequentFeedbackRequest> requests = frequentFeedbackRequestQueryRepository.getFrequentFeedbackRequests(receiverId, teamId);
         return requests.stream().map(FrequentFeedbackRequestForApiResponse::from).toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<RegularFeedbackRequestResponse> getRegularFeedbackRequests(Long receiverId, Long scheduleId) {
-        List<RegularFeedbackRequest> requests = regularFeedbackRequestQueryRepository.getRegularFeedbackRequests(receiverId, scheduleId);
-        return requests.stream().map(RegularFeedbackRequestResponse::from).toList();
     }
 
 

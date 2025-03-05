@@ -1,9 +1,8 @@
 package com.feedhanjum.back_end.test.util;
 
 import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
-import com.feedhanjum.back_end.feedback.domain.FeedbackIdGenerator;
-import com.feedhanjum.back_end.feedback.domain.Receiver;
-import com.feedhanjum.back_end.feedback.domain.Sender;
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackIdGenerator;
 import com.feedhanjum.back_end.feedback.test.SimpleFeedbackIdGenerator;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 
@@ -24,18 +23,20 @@ public class Fixture {
                 , ZoneId.of("UTC"));
     }
 
-    public static Sender defaultSender() {
-        return new Sender(
+    public static FeedbackMember defaultSender() {
+        return new FeedbackMember(
                 1L,
                 "sender",
+                "sender@email.com",
                 new ProfileImage("red", "cat")
         );
     }
 
-    public static Receiver defaultReceiver() {
-        return new Receiver(
+    public static FeedbackMember defaultReceiver() {
+        return new FeedbackMember(
                 2L,
                 "receiver",
+                "receiver@email.com",
                 new ProfileImage("blue", "dog")
         );
     }

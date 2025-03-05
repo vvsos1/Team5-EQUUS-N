@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.team.service.dto;
 
-import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import com.feedhanjum.back_end.team.controller.dto.TeamCreateRequest;
 
 import java.time.LocalDate;

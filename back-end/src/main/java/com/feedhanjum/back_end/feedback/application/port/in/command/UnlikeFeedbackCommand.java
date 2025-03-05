@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.application.port.in.command;
 
 import com.feedhanjum.back_end.core.SelfValidating;
-import com.feedhanjum.back_end.feedback.domain.FeedbackId;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 

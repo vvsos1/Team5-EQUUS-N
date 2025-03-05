@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.domain;
+package com.feedhanjum.back_end.feedback.domain.feedback;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;

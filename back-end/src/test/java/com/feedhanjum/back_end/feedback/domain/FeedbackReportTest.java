@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.feedback.domain;
 
-import com.feedhanjum.back_end.member.domain.Member;
+import com.feedhanjum.back_end.feedback.domain.feedback.*;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.test.util.DomainTestUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -9,15 +9,15 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback.*;
+import static com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FeedbackReportTest {
 
 
-    Member sender = DomainTestUtils.createMemberWithId("sender");
-    Member receiver = DomainTestUtils.createMemberWithId("receiver");
-    Team team = DomainTestUtils.createTeamWithId("team", sender);
+    com.feedhanjum.back_end.member.domain.Member member = DomainTestUtils.createMemberWithId("sender");
+    com.feedhanjum.back_end.member.domain.Member receiver = DomainTestUtils.createMemberWithId("receiver");
+    Team team = DomainTestUtils.createTeamWithId("team", member);
 
     private Feedback createFeedback(ObjectiveFeedback objectiveFeedback) {
         return new Feedback(
@@ -27,8 +27,8 @@ class FeedbackReportTest {
                 List.of(objectiveFeedback),
                 "안녕",
                 false,
-                Sender.of(sender),
-                Receiver.of(receiver),
+                FeedbackMember.of(member),
+                FeedbackMember.of(receiver),
                 AssociatedTeam.of(team),
                 LocalDateTime.now()
         );

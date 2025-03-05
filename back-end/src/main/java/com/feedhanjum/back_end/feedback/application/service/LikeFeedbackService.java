@@ -6,8 +6,8 @@ import com.feedhanjum.back_end.feedback.application.port.in.command.LikeFeedback
 import com.feedhanjum.back_end.feedback.application.port.in.command.UnlikeFeedbackCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
-import com.feedhanjum.back_end.feedback.domain.Feedback;
-import com.feedhanjum.back_end.feedback.domain.FeedbackId;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
 import com.feedhanjum.back_end.feedback.exception.FeedbackNotFound;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

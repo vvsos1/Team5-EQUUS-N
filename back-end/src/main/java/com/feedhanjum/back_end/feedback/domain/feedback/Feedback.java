@@ -1,6 +1,8 @@
-package com.feedhanjum.back_end.feedback.domain;
+package com.feedhanjum.back_end.feedback.domain.feedback;
 
 import com.feedhanjum.back_end.core.event.Events;
+import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
 import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -48,15 +50,21 @@ public class Feedback {
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "sender_id")),
             @AttributeOverride(name = "name", column = @Column(name = "sender_name")),
+            @AttributeOverride(name = "email", column = @Column(name = "sender_email")),
+            @AttributeOverride(name = "profileImage.backgroundColor", column = @Column(name = "sender_background_color")),
+            @AttributeOverride(name = "profileImage.image", column = @Column(name = "sender_image")),
     })
-    private Sender sender;
+    private FeedbackMember sender;
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "receiver_id")),
             @AttributeOverride(name = "name", column = @Column(name = "receiver_name")),
+            @AttributeOverride(name = "email", column = @Column(name = "receiver_email")),
+            @AttributeOverride(name = "profileImage.backgroundColor", column = @Column(name = "receiver_background_color")),
+            @AttributeOverride(name = "profileImage.image", column = @Column(name = "receiver_image")),
     })
-    private Receiver receiver;
+    private FeedbackMember receiver;
 
     @Embedded
     @AttributeOverrides({
@@ -73,7 +81,7 @@ public class Feedback {
     /**
      * @throws IllegalArgumentException 피드백 기분에 맞지 객관식 피드백이 있을 경우, 또는 객관식 피드백이 1개 이상 5개 이하가 아닐 경우
      */
-    public Feedback(FeedbackId id, FeedbackType feedbackType, FeedbackFeeling feedbackFeeling, List<ObjectiveFeedback> objectiveFeedbacks, String subjectiveFeedback, boolean liked, Sender sender, Receiver receiver, AssociatedTeam team, LocalDateTime createdAt) {
+    public Feedback(FeedbackId id, FeedbackType feedbackType, FeedbackFeeling feedbackFeeling, List<ObjectiveFeedback> objectiveFeedbacks, String subjectiveFeedback, boolean liked, FeedbackMember sender, FeedbackMember receiver, AssociatedTeam team, LocalDateTime createdAt) {
         this.id = id;
         this.feedbackType = feedbackType;
         this.subjectiveFeedback = subjectiveFeedback;

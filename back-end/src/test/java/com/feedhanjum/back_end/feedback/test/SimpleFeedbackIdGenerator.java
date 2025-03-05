@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.test;
 
-import com.feedhanjum.back_end.feedback.domain.FeedbackId;
-import com.feedhanjum.back_end.feedback.domain.FeedbackIdGenerator;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackIdGenerator;
 
 import java.util.concurrent.atomic.AtomicLong;
 

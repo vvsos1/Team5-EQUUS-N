@@ -1,9 +1,9 @@
 package com.feedhanjum.back_end.feedback.controller.dto.response;
 
-import com.feedhanjum.back_end.feedback.domain.FeedbackCategory;
-import com.feedhanjum.back_end.feedback.domain.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
-import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackCategory;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackFeeling;
+import com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NegativeOrZero;

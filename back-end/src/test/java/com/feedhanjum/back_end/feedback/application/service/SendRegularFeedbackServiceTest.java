@@ -1,14 +1,12 @@
 package com.feedhanjum.back_end.feedback.application.service;
 
-import com.feedhanjum.back_end.feedback.application.port.out.LoadReceiverPort;
-import com.feedhanjum.back_end.feedback.application.port.out.LoadSenderPort;
+import com.feedhanjum.back_end.feedback.application.port.out.LoadMemberPort;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadTeamFromSchedulePort;
 import com.feedhanjum.back_end.feedback.application.port.out.ParticipationValidatePort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
 import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
-import com.feedhanjum.back_end.feedback.domain.FeedbackIdGenerator;
-import com.feedhanjum.back_end.feedback.domain.Receiver;
-import com.feedhanjum.back_end.feedback.domain.Sender;
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackIdGenerator;
 import com.feedhanjum.back_end.feedback.test.SimpleFeedbackIdGenerator;
 import com.feedhanjum.back_end.test.util.Fixture;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +16,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 
@@ -30,9 +29,7 @@ class SendRegularFeedbackServiceTest {
     @Mock
     LoadTeamFromSchedulePort loadTeamFromSchedulePortPort;
     @Mock
-    LoadSenderPort loadSenderPort;
-    @Mock
-    LoadReceiverPort loadReceiverPort;
+    LoadMemberPort loadMemberPort;
     @Mock
     Clock clock = Fixture.defaultClock();
     @Mock
@@ -46,16 +43,13 @@ class SendRegularFeedbackServiceTest {
     }
 
     private void givenTeamFromScheduleWillLoad(Long scheduleId, AssociatedTeam team) {
-        when(loadTeamFromSchedulePortPort.loadTeamFromSchedule(scheduleId)).thenReturn(team);
+        when(loadTeamFromSchedulePortPort.loadTeamFromSchedule(scheduleId)).thenReturn(Optional.of(team));
     }
 
-    private void givenSenderWillLoad(Sender sender) {
-        when(loadSenderPort.loadSender(sender.getId())).thenReturn(sender);
+    private void givenMemberWillLoad(FeedbackMember member) {
+        when(loadMemberPort.loadMember(member.getId())).thenReturn(Optional.of(member));
     }
 
-    private void givenReceiverWillLoad(Receiver receiver) {
-        when(loadReceiverPort.loadReceiver(receiver.getId())).thenReturn(receiver);
-    }
 //
 //    @Test
 //    @DisplayName("정기 피드백 전송 성공")

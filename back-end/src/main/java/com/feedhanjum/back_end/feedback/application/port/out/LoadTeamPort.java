@@ -2,7 +2,9 @@ package com.feedhanjum.back_end.feedback.application.port.out;
 
 import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
 
+import java.util.Optional;
+
 public interface LoadTeamPort {
-    AssociatedTeam loadTeam(Long teamId);
+    Optional<AssociatedTeam> loadTeam(Long teamId);
 
 }

@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.repository;
 
-import com.feedhanjum.back_end.feedback.domain.Feedback;
-import com.feedhanjum.back_end.feedback.domain.QFeedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.QFeedback;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @Repository
 public class FeedbackQueryRepository {
-    private final QFeedback feedback = QFeedback.feedback;
+    private final com.feedhanjum.back_end.feedback.domain.feedback.QFeedback feedback = QFeedback.feedback;
     private final ComparableExpressionBase<?> sortProperty = feedback.createdAt;
     private final JPAQueryFactory queryFactory;
 

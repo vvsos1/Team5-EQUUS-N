@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.service.dto;
 
 import com.feedhanjum.back_end.core.constraints.ByteLength;
-import com.feedhanjum.back_end.feedback.domain.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 

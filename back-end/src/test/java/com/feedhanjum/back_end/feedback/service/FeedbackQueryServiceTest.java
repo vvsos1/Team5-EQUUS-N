@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.feedback.service;
 
-import com.feedhanjum.back_end.feedback.domain.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestQueryRepository;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;

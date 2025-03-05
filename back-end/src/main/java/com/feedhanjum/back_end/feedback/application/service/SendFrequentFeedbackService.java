@@ -3,12 +3,15 @@ package com.feedhanjum.back_end.feedback.application.service;
 import com.feedhanjum.back_end.core.event.Events;
 import com.feedhanjum.back_end.feedback.application.port.in.SendFrequentFeedbackUseCase;
 import com.feedhanjum.back_end.feedback.application.port.in.command.SendFrequentFeedbackCommand;
-import com.feedhanjum.back_end.feedback.application.port.out.LoadReceiverPort;
-import com.feedhanjum.back_end.feedback.application.port.out.LoadSenderPort;
+import com.feedhanjum.back_end.feedback.application.port.out.LoadMemberPort;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadTeamPort;
 import com.feedhanjum.back_end.feedback.application.port.out.MembershipValidatePort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
-import com.feedhanjum.back_end.feedback.domain.*;
+import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackIdGenerator;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.exception.MembershipNotFound;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +27,7 @@ public class SendFrequentFeedbackService implements SendFrequentFeedbackUseCase 
     private final FeedbackIdGenerator feedbackIdGenerator;
     private final MembershipValidatePort membershipValidatePort;
     private final LoadTeamPort loadTeamPort;
-    private final LoadSenderPort loadSenderPort;
-    private final LoadReceiverPort loadReceiverPort;
+    private final LoadMemberPort loadMemberPort;
     private final Clock clock;
     private final SaveFeedbackPort saveFeedbackPort;
 
@@ -39,9 +41,9 @@ public class SendFrequentFeedbackService implements SendFrequentFeedbackUseCase 
         validateMembership(teamId, senderId);
         validateMembership(teamId, receiverId);
 
-        AssociatedTeam team = loadTeamPort.loadTeam(teamId);
-        Sender sender = loadSenderPort.loadSender(senderId);
-        Receiver receiver = loadReceiverPort.loadReceiver(receiverId);
+        AssociatedTeam team = loadTeamPort.loadTeam(teamId).orElseThrow();
+        FeedbackMember member = loadMemberPort.loadMember(senderId).orElseThrow();
+        FeedbackMember receiver = loadMemberPort.loadMember(receiverId).orElseThrow();
 
         FeedbackId feedbackId = feedbackIdGenerator.generateFeedbackId();
 
@@ -52,7 +54,7 @@ public class SendFrequentFeedbackService implements SendFrequentFeedbackUseCase 
                 command.getObjectiveFeedbacks(),
                 command.getSubjectiveFeedback(),
                 false,
-                sender,
+                member,
                 receiver,
                 team,
                 LocalDateTime.now(clock)

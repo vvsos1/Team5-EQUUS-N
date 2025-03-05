@@ -1,9 +1,8 @@
 package com.feedhanjum.back_end.feedback.service;
 
 import com.feedhanjum.back_end.core.event.EventPublisher;
-import com.feedhanjum.back_end.feedback.domain.Feedback;
-import com.feedhanjum.back_end.feedback.domain.FeedbackId;
-import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
 import com.feedhanjum.back_end.feedback.event.FeedbackReportCreatedEvent;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
@@ -11,9 +10,6 @@ import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestReposi
 import com.feedhanjum.back_end.feedback.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
-import com.feedhanjum.back_end.schedule.domain.Schedule;
-import com.feedhanjum.back_end.schedule.domain.ScheduleMember;
-import com.feedhanjum.back_end.schedule.event.RegularFeedbackRequestCreatedEvent;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.event.FrequentFeedbackRequestedEvent;
@@ -24,9 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -55,32 +48,10 @@ public class FeedbackService {
         eventPublisher.publishEvent(new FrequentFeedbackRequestedEvent(senderId, teamId, receiverId));
     }
 
-    /**
-     * @throws IllegalStateException   schedule이 아직 끝나지 않았을 경우
-     * @throws EntityNotFoundException schedule id에 해당하는 엔티티가 없을 경우
-     */
-    @Transactional
-    public void createRegularFeedbackRequests(Long scheduleId) {
-        Schedule schedule = scheduleRepository.findByIdWithMembers(scheduleId).orElseThrow(() -> new EntityNotFoundException("schedule id에 해당하는 schedule이 없습니다."));
-
-        List<RegularFeedbackRequest> requests = new ArrayList<>();
-        LocalDateTime requestTime = schedule.getEndTime();
-        for (ScheduleMember receiverMember : schedule.getScheduleMembers()) {
-            for (ScheduleMember senderMember : schedule.getScheduleMembers()) {
-                if (senderMember == receiverMember) {
-                    continue;
-                }
-                requests.add(new RegularFeedbackRequest(requestTime, senderMember.getMember(), schedule, receiverMember.getMember()));
-            }
-            // batch insert를 사용하도록 설정 필요
-            eventPublisher.publishEvent(new RegularFeedbackRequestCreatedEvent(receiverMember.getMember().getId(), scheduleId));
-        }
-        regularFeedbackRequestRepository.saveAll(requests);
-    }
 
     @Transactional
     public void skipRegularFeedback(Long scheduleId, Long memberId) {
-        regularFeedbackRequestRepository.deleteAllBySchedule_IdAndReceiver_Id(scheduleId, memberId);
+        regularFeedbackRequestRepository.deleteAllByScheduleIdAndReceiverId(scheduleId, memberId);
     }
 
     /**

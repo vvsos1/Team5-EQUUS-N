@@ -1,9 +1,9 @@
 package com.feedhanjum.back_end.feedback.service.dto;
 
-import com.feedhanjum.back_end.feedback.domain.Feedback;
-import com.feedhanjum.back_end.feedback.domain.FeedbackType;
-import com.feedhanjum.back_end.feedback.domain.ObjectiveFeedback;
-import com.feedhanjum.back_end.feedback.domain.Receiver;
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
+import com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +35,7 @@ public record SentFeedbackDto(
 
 
     public record ReceiverDto(String name, String backgroundColor, String image) {
-        public static ReceiverDto from(Receiver receiver) {
+        public static ReceiverDto from(FeedbackMember receiver) {
             return new ReceiverDto(receiver.getName(), receiver.getProfileImage().getBackgroundColor(), receiver.getProfileImage().getImage());
         }
     }

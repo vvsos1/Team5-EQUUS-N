@@ -1,6 +1,8 @@
 package com.feedhanjum.back_end.feedback.adapter.out.persistence;
 
-import com.feedhanjum.back_end.feedback.domain.*;
+import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
+import com.feedhanjum.back_end.feedback.domain.feedback.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,15 +43,21 @@ public class FeedbackJpaEntity {
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "sender_id")),
             @AttributeOverride(name = "name", column = @Column(name = "sender_name")),
+            @AttributeOverride(name = "email", column = @Column(name = "sender_email")),
+            @AttributeOverride(name = "profileImage.backgroundColor", column = @Column(name = "sender_background_color")),
+            @AttributeOverride(name = "profileImage.image", column = @Column(name = "sender_image")),
     })
-    private Sender sender;
+    private FeedbackMember sender;
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "receiver_id")),
             @AttributeOverride(name = "name", column = @Column(name = "receiver_name")),
+            @AttributeOverride(name = "email", column = @Column(name = "receiver_email")),
+            @AttributeOverride(name = "profileImage.backgroundColor", column = @Column(name = "receiver_background_color")),
+            @AttributeOverride(name = "profileImage.image", column = @Column(name = "receiver_image")),
     })
-    private Receiver receiver;
+    private FeedbackMember receiver;
 
     @Embedded
     @AttributeOverrides({
@@ -63,7 +71,7 @@ public class FeedbackJpaEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     private Set<String> objectiveFeedbacks;
 
-    FeedbackJpaEntity(Long id, String feedbackType, String feedbackFeeling, Set<String> objectiveFeedbacks, String subjectiveFeedback, boolean liked, Sender sender, Receiver receiver, AssociatedTeam team, LocalDateTime createdAt) {
+    FeedbackJpaEntity(Long id, String feedbackType, String feedbackFeeling, Set<String> objectiveFeedbacks, String subjectiveFeedback, boolean liked, FeedbackMember sender, FeedbackMember receiver, AssociatedTeam team, LocalDateTime createdAt) {
         this.id = id;
         this.feedbackType = feedbackType;
         this.feedbackFeeling = feedbackFeeling;

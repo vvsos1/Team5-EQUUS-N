@@ -3,14 +3,18 @@ package com.feedhanjum.back_end.feedback.application.service;
 import com.feedhanjum.back_end.core.event.Events;
 import com.feedhanjum.back_end.feedback.application.port.in.SendRegularFeedbackUseCase;
 import com.feedhanjum.back_end.feedback.application.port.in.command.SendRegularFeedbackCommand;
-import com.feedhanjum.back_end.feedback.application.port.out.LoadReceiverPort;
-import com.feedhanjum.back_end.feedback.application.port.out.LoadSenderPort;
+import com.feedhanjum.back_end.feedback.application.port.out.LoadMemberPort;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadTeamFromSchedulePort;
 import com.feedhanjum.back_end.feedback.application.port.out.ParticipationValidatePort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.DeleteRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestPort;
-import com.feedhanjum.back_end.feedback.domain.*;
+import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
+import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackIdGenerator;
 import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.exception.ParticipationNotFound;
 import com.feedhanjum.back_end.feedback.exception.RegularFeedbackRequestNotFoundException;
@@ -29,8 +33,7 @@ public class SendRegularFeedbackService implements SendRegularFeedbackUseCase {
     private final FeedbackIdGenerator feedbackIdGenerator;
     private final ParticipationValidatePort participationValidatePort;
     private final LoadTeamFromSchedulePort loadTeamFromSchedulePortPort;
-    private final LoadSenderPort loadSenderPort;
-    private final LoadReceiverPort loadReceiverPort;
+    private final LoadMemberPort loadMemberPort;
     private final Clock clock;
     private final SaveFeedbackPort saveFeedbackPort;
     private final DeleteRegularFeedbackRequestPort deleteRegularFeedbackRequestPort;
@@ -49,9 +52,9 @@ public class SendRegularFeedbackService implements SendRegularFeedbackUseCase {
         validateParticipation(scheduleId, senderId);
         validateParticipation(scheduleId, receiverId);
 
-        AssociatedTeam team = loadTeamFromSchedulePortPort.loadTeamFromSchedule(scheduleId);
-        Sender sender = loadSenderPort.loadSender(senderId);
-        Receiver receiver = loadReceiverPort.loadReceiver(receiverId);
+        AssociatedTeam team = loadTeamFromSchedulePortPort.loadTeamFromSchedule(scheduleId).orElseThrow();
+        FeedbackMember member = loadMemberPort.loadMember(senderId).orElseThrow();
+        FeedbackMember receiver = loadMemberPort.loadMember(receiverId).orElseThrow();
 
         FeedbackId feedbackId = feedbackIdGenerator.generateFeedbackId();
 
@@ -62,7 +65,7 @@ public class SendRegularFeedbackService implements SendRegularFeedbackUseCase {
                 command.getObjectiveFeedbacks(),
                 command.getSubjectiveFeedback(),
                 false,
-                sender,
+                member,
                 receiver,
                 team,
                 LocalDateTime.now(clock)

@@ -1,10 +1,14 @@
 package com.feedhanjum.back_end.feedback.repository;
 
 import com.feedhanjum.back_end.core.config.QuerydslConfig;
-import com.feedhanjum.back_end.feedback.domain.*;
+import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackFeeling;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackIdGenerator;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import com.feedhanjum.back_end.feedback.test.SimpleFeedbackIdGenerator;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
-import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.domain.Team;
@@ -66,16 +70,16 @@ class FeedbackQueryRepositoryTest {
 
     private FeedbackIdGenerator feedbackIdGenerator = new SimpleFeedbackIdGenerator();
 
-    Feedback createFeedback(Member sender, Member receiver, Team team, boolean like) {
+    Feedback createFeedback(com.feedhanjum.back_end.member.domain.Member member, com.feedhanjum.back_end.member.domain.Member receiver, Team team, boolean like) {
         return new Feedback(
                 feedbackIdGenerator.generateFeedbackId(),
                 FeedbackType.ANONYMOUS,
                 FeedbackFeeling.POSITIVE,
                 FeedbackFeeling.POSITIVE.getObjectiveFeedbacks().subList(0, 2),
-                team.toString() + ", " + sender.toString() + "->" + receiver.toString(),
+                team.toString() + ", " + member.toString() + "->" + receiver.toString(),
                 like,
-                Sender.of(sender),
-                Receiver.of(receiver),
+                FeedbackMember.of(member),
+                FeedbackMember.of(receiver),
                 AssociatedTeam.of(team),
                 LocalDateTime.now()
         );
@@ -86,16 +90,16 @@ class FeedbackQueryRepositoryTest {
     @DisplayName("findReceivedFeedbacks 메소드 테스트")
     class FindReceivedFeedbacks {
 
-        private Member member1;
-        private Member member2;
+        private com.feedhanjum.back_end.member.domain.Member member1;
+        private com.feedhanjum.back_end.member.domain.Member member2;
         private Team team1;
         private Team team2;
 
         @BeforeEach
         void setUp() {
             List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
-            member1 = new Member("member1", "email1@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
-            member2 = new Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
+            member1 = new com.feedhanjum.back_end.member.domain.Member("member1", "email1@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
+            member2 = new com.feedhanjum.back_end.member.domain.Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
             memberRepository.saveAll(List.of(member1, member2));
 
             team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS, LocalDate.now());
@@ -107,19 +111,19 @@ class FeedbackQueryRepositoryTest {
         @DisplayName("모든 피드백 최신순 조회 성공")
         void test1() {
             // given
-            Member sender = member1;
-            Member receiver = member2;
+            com.feedhanjum.back_end.member.domain.Member member = member1;
+            com.feedhanjum.back_end.member.domain.Member receiver = member2;
             for (int i = 0; i < 5; i++) {
                 Feedback feedback;
                 boolean liked = i % 2 == 0;
-                feedback = createFeedback(sender, receiver, team1, liked);
+                feedback = createFeedback(member, receiver, team1, liked);
                 feedbackRepository.save(feedback);
-                feedback = createFeedback(sender, receiver, team2, liked);
+                feedback = createFeedback(member, receiver, team2, liked);
                 feedbackRepository.save(feedback);
             }
 
             for (int i = 0; i < 5; i++) {
-                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+                feedbackRepository.save(createFeedback(receiver, member, team1, false));
             }
 
             int page = 0;
@@ -147,19 +151,19 @@ class FeedbackQueryRepositoryTest {
         @DisplayName("팀 id로 필터링 조회 성공")
         void test2() {
             // given
-            Member sender = member1;
-            Member receiver = member2;
+            com.feedhanjum.back_end.member.domain.Member member = member1;
+            com.feedhanjum.back_end.member.domain.Member receiver = member2;
             for (int i = 0; i < 5; i++) {
                 Feedback feedback;
                 boolean liked = i % 2 == 0;
-                feedback = createFeedback(sender, receiver, team1, liked);
+                feedback = createFeedback(member, receiver, team1, liked);
                 feedbackRepository.save(feedback);
-                feedback = createFeedback(sender, receiver, team2, liked);
+                feedback = createFeedback(member, receiver, team2, liked);
                 feedbackRepository.save(feedback);
             }
 
             for (int i = 0; i < 5; i++) {
-                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+                feedbackRepository.save(createFeedback(receiver, member, team1, false));
             }
 
             int page = 0;
@@ -188,19 +192,19 @@ class FeedbackQueryRepositoryTest {
         @DisplayName("좋아요 여부로 필터링 조회 성공")
         void test3() {
             // given
-            Member sender = member1;
-            Member receiver = member2;
+            com.feedhanjum.back_end.member.domain.Member member = member1;
+            com.feedhanjum.back_end.member.domain.Member receiver = member2;
 
-            feedbackRepository.save(createFeedback(sender, receiver, team1, true));
-            feedbackRepository.save(createFeedback(sender, receiver, team2, true));
-            feedbackRepository.save(createFeedback(sender, receiver, team1, false));
-            feedbackRepository.save(createFeedback(sender, receiver, team1, false));
-            feedbackRepository.save(createFeedback(sender, receiver, team2, true));
-            feedbackRepository.save(createFeedback(sender, receiver, team2, true));
+            feedbackRepository.save(createFeedback(member, receiver, team1, true));
+            feedbackRepository.save(createFeedback(member, receiver, team2, true));
+            feedbackRepository.save(createFeedback(member, receiver, team1, false));
+            feedbackRepository.save(createFeedback(member, receiver, team1, false));
+            feedbackRepository.save(createFeedback(member, receiver, team2, true));
+            feedbackRepository.save(createFeedback(member, receiver, team2, true));
 
 
             for (int i = 0; i < 5; i++) {
-                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+                feedbackRepository.save(createFeedback(receiver, member, team1, false));
             }
 
             int page = 0;
@@ -228,19 +232,19 @@ class FeedbackQueryRepositoryTest {
         @DisplayName("과거순 정렬 조회 성공")
         void test4() {
             // given
-            Member sender = member1;
-            Member receiver = member2;
+            com.feedhanjum.back_end.member.domain.Member member = member1;
+            com.feedhanjum.back_end.member.domain.Member receiver = member2;
             for (int i = 0; i < 5; i++) {
                 Feedback feedback;
                 boolean liked = i % 2 == 0;
-                feedback = createFeedback(sender, receiver, team1, liked);
+                feedback = createFeedback(member, receiver, team1, liked);
                 feedbackRepository.save(feedback);
-                feedback = createFeedback(sender, receiver, team2, liked);
+                feedback = createFeedback(member, receiver, team2, liked);
                 feedbackRepository.save(feedback);
             }
 
             for (int i = 0; i < 5; i++) {
-                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+                feedbackRepository.save(createFeedback(receiver, member, team1, false));
             }
 
             int page = 0;
@@ -270,16 +274,16 @@ class FeedbackQueryRepositoryTest {
     @DisplayName("findSentFeedbacks 메소드 테스트")
     class FindSentFeedbacks {
 
-        private Member member1;
-        private Member member2;
+        private com.feedhanjum.back_end.member.domain.Member member1;
+        private com.feedhanjum.back_end.member.domain.Member member2;
         private Team team1;
         private Team team2;
 
         @BeforeEach
         void setUp() {
             List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
-            member1 = new Member("member1", "email1@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
-            member2 = new Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
+            member1 = new com.feedhanjum.back_end.member.domain.Member("member1", "email1@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
+            member2 = new com.feedhanjum.back_end.member.domain.Member("member2", "email2@email.com", new ProfileImage("bg1", "profile1"), feedbackPreferences);
             memberRepository.saveAll(List.of(member1, member2));
 
             team1 = new Team("team1", member1, LocalDateTime.now().minusDays(1).toLocalDate(), LocalDateTime.now().plusDays(1).toLocalDate(), FeedbackType.ANONYMOUS, LocalDate.now());
@@ -291,19 +295,19 @@ class FeedbackQueryRepositoryTest {
         @DisplayName("모든 피드백 최신순 조회 성공")
         void test1() {
             // given
-            Member sender = member1;
-            Member receiver = member2;
+            com.feedhanjum.back_end.member.domain.Member member = member1;
+            com.feedhanjum.back_end.member.domain.Member receiver = member2;
             for (int i = 0; i < 5; i++) {
                 Feedback feedback;
                 boolean liked = i % 2 == 0;
-                feedback = createFeedback(sender, receiver, team1, liked);
+                feedback = createFeedback(member, receiver, team1, liked);
                 feedbackRepository.save(feedback);
-                feedback = createFeedback(sender, receiver, team2, liked);
+                feedback = createFeedback(member, receiver, team2, liked);
                 feedbackRepository.save(feedback);
             }
 
             for (int i = 0; i < 5; i++) {
-                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+                feedbackRepository.save(createFeedback(receiver, member, team1, false));
             }
 
             int page = 0;
@@ -312,7 +316,7 @@ class FeedbackQueryRepositoryTest {
             Pageable pageable = PageRequest.of(page, pageSize);
 
             // when
-            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(sender.getId(), null, false, pageable, order);
+            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(member.getId(), null, false, pageable, order);
 
             // then
             assertThat(result.getContent()).hasSize(pageSize);
@@ -322,7 +326,7 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).extracting(Feedback::getCreatedAt).isSortedAccordingTo(Comparator.reverseOrder());
-            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(sender, s));
+            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(member, s));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team2", "team1", "team2", "team1");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, true, false, false);
         }
@@ -331,19 +335,19 @@ class FeedbackQueryRepositoryTest {
         @DisplayName("팀 id로 필터링 조회 성공")
         void test2() {
             // given
-            Member sender = member1;
-            Member receiver = member2;
+            com.feedhanjum.back_end.member.domain.Member member = member1;
+            com.feedhanjum.back_end.member.domain.Member receiver = member2;
             for (int i = 0; i < 5; i++) {
                 Feedback feedback;
                 boolean liked = i % 2 == 0;
-                feedback = createFeedback(sender, receiver, team1, liked);
+                feedback = createFeedback(member, receiver, team1, liked);
                 feedbackRepository.save(feedback);
-                feedback = createFeedback(sender, receiver, team2, liked);
+                feedback = createFeedback(member, receiver, team2, liked);
                 feedbackRepository.save(feedback);
             }
 
             for (int i = 0; i < 5; i++) {
-                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+                feedbackRepository.save(createFeedback(receiver, member, team1, false));
             }
 
             int page = 0;
@@ -352,7 +356,7 @@ class FeedbackQueryRepositoryTest {
             Pageable pageable = PageRequest.of(page, pageSize);
 
             // when
-            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(sender.getId(), team1.getId(), false, pageable, order);
+            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(member.getId(), team1.getId(), false, pageable, order);
 
             // then
             assertThat(result.getContent()).hasSize(pageSize);
@@ -363,7 +367,7 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).extracting(Feedback::getCreatedAt).isSortedAccordingTo(Comparator.reverseOrder());
-            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(sender, s));
+            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(member, s));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsOnly("team1");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, false, true, false);
         }
@@ -372,19 +376,19 @@ class FeedbackQueryRepositoryTest {
         @DisplayName("좋아요 여부로 필터링 조회 성공")
         void test3() {
             // given
-            Member sender = member1;
-            Member receiver = member2;
+            com.feedhanjum.back_end.member.domain.Member member = member1;
+            com.feedhanjum.back_end.member.domain.Member receiver = member2;
 
-            feedbackRepository.save(createFeedback(sender, receiver, team1, true));
-            feedbackRepository.save(createFeedback(sender, receiver, team2, true));
-            feedbackRepository.save(createFeedback(sender, receiver, team1, false));
-            feedbackRepository.save(createFeedback(sender, receiver, team1, false));
-            feedbackRepository.save(createFeedback(sender, receiver, team2, true));
-            feedbackRepository.save(createFeedback(sender, receiver, team2, true));
+            feedbackRepository.save(createFeedback(member, receiver, team1, true));
+            feedbackRepository.save(createFeedback(member, receiver, team2, true));
+            feedbackRepository.save(createFeedback(member, receiver, team1, false));
+            feedbackRepository.save(createFeedback(member, receiver, team1, false));
+            feedbackRepository.save(createFeedback(member, receiver, team2, true));
+            feedbackRepository.save(createFeedback(member, receiver, team2, true));
 
 
             for (int i = 0; i < 5; i++) {
-                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+                feedbackRepository.save(createFeedback(receiver, member, team1, false));
             }
 
             int page = 0;
@@ -393,7 +397,7 @@ class FeedbackQueryRepositoryTest {
             Pageable pageable = PageRequest.of(page, pageSize);
 
             // when
-            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(sender.getId(), null, true, pageable, order);
+            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(member.getId(), null, true, pageable, order);
 
             // then
             assertThat(result.getContent()).hasSize(pageSize);
@@ -403,7 +407,7 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).extracting(Feedback::getCreatedAt).isSortedAccordingTo(Comparator.naturalOrder());
-            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(sender, s));
+            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(member, s));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team2");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsOnly(true);
         }
@@ -412,19 +416,19 @@ class FeedbackQueryRepositoryTest {
         @DisplayName("과거순 정렬 조회 성공")
         void test4() {
             // given
-            Member sender = member1;
-            Member receiver = member2;
+            com.feedhanjum.back_end.member.domain.Member member = member1;
+            com.feedhanjum.back_end.member.domain.Member receiver = member2;
             for (int i = 0; i < 5; i++) {
                 Feedback feedback;
                 boolean liked = i % 2 == 0;
-                feedback = createFeedback(sender, receiver, team1, liked);
+                feedback = createFeedback(member, receiver, team1, liked);
                 feedbackRepository.save(feedback);
-                feedback = createFeedback(sender, receiver, team2, liked);
+                feedback = createFeedback(member, receiver, team2, liked);
                 feedbackRepository.save(feedback);
             }
 
             for (int i = 0; i < 5; i++) {
-                feedbackRepository.save(createFeedback(receiver, sender, team1, false));
+                feedbackRepository.save(createFeedback(receiver, member, team1, false));
             }
 
             int page = 0;
@@ -433,7 +437,7 @@ class FeedbackQueryRepositoryTest {
             Pageable pageable = PageRequest.of(page, pageSize);
 
             // when
-            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(sender.getId(), null, false, pageable, order);
+            Page<Feedback> result = feedbackQueryRepository.findSentFeedbacks(member.getId(), null, false, pageable, order);
 
             // then
             assertThat(result.getContent()).hasSize(pageSize);
@@ -443,7 +447,7 @@ class FeedbackQueryRepositoryTest {
             List<Feedback> feedbacks = result.getContent();
             assertThat(feedbacks).hasSize(pageSize);
             assertThat(feedbacks).extracting(Feedback::getCreatedAt).isSortedAccordingTo(Comparator.naturalOrder());
-            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(sender, s));
+            assertThat(feedbacks).extracting(Feedback::getSender).allSatisfy(s -> assertEqualSender(member, s));
             assertThat(feedbacks).extracting(f -> f.getTeam().getName()).containsExactly("team1", "team2", "team1", "team2");
             assertThat(feedbacks).extracting(Feedback::isLiked).containsExactly(true, true, false, false);
         }

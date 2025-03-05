@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.notification.domain;
 
-import com.feedhanjum.back_end.feedback.domain.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;

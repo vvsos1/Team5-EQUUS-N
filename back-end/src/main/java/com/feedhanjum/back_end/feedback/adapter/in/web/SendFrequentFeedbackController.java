@@ -4,7 +4,7 @@ import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendFrequentFeedbackRequest;
 import com.feedhanjum.back_end.feedback.application.port.in.SendFrequentFeedbackUseCase;
 import com.feedhanjum.back_end.feedback.application.port.in.command.SendFrequentFeedbackCommand;
-import com.feedhanjum.back_end.feedback.domain.FeedbackType;
+import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

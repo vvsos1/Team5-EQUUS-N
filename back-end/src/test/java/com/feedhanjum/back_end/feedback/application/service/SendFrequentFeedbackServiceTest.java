@@ -3,12 +3,13 @@ package com.feedhanjum.back_end.feedback.application.service;
 import com.feedhanjum.back_end.core.event.EventPublisher;
 import com.feedhanjum.back_end.core.event.Events;
 import com.feedhanjum.back_end.feedback.application.port.in.command.SendFrequentFeedbackCommand;
-import com.feedhanjum.back_end.feedback.application.port.out.LoadReceiverPort;
-import com.feedhanjum.back_end.feedback.application.port.out.LoadSenderPort;
+import com.feedhanjum.back_end.feedback.application.port.out.LoadMemberPort;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadTeamPort;
 import com.feedhanjum.back_end.feedback.application.port.out.MembershipValidatePort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
-import com.feedhanjum.back_end.feedback.domain.*;
+import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
+import com.feedhanjum.back_end.feedback.domain.feedback.*;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.exception.MembershipNotFound;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Optional;
 
 import static com.feedhanjum.back_end.test.util.Fixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -37,9 +39,7 @@ public class SendFrequentFeedbackServiceTest {
     @Mock
     LoadTeamPort loadTeamPort;
     @Mock
-    LoadSenderPort loadSenderPort;
-    @Mock
-    LoadReceiverPort loadReceiverPort;
+    LoadMemberPort loadMemberPort;
     @Mock
     SaveFeedbackPort saveFeedbackPort;
     @Spy
@@ -75,8 +75,8 @@ public class SendFrequentFeedbackServiceTest {
         givenMembershipWillExists(team.getId(), receiver.getId());
 
         givenTeamWillLoad(team);
-        givenSenderWillLoad(sender);
-        givenReceiverWillLoad(receiver);
+        givenMemberWillLoad(sender);
+        givenMemberWillLoad(receiver);
 
         // when
         sendFrequentFeedbackService.sendFrequentFeedback(command);
@@ -152,8 +152,8 @@ public class SendFrequentFeedbackServiceTest {
         givenMembershipWillExists(team.getId(), receiver.getId());
 
         givenTeamWillLoad(team);
-        givenSenderWillLoad(sender);
-        givenReceiverWillLoad(receiver);
+        givenMemberWillLoad(sender);
+        givenMemberWillLoad(receiver);
 
         // when & then
         assertThatThrownBy(() -> sendFrequentFeedbackService.sendFrequentFeedback(command))
@@ -167,14 +167,11 @@ public class SendFrequentFeedbackServiceTest {
     }
 
     private void givenTeamWillLoad(AssociatedTeam team) {
-        when(loadTeamPort.loadTeam(team.getId())).thenReturn(team);
+        when(loadTeamPort.loadTeam(team.getId())).thenReturn(Optional.of(team));
     }
 
-    private void givenSenderWillLoad(Sender sender) {
-        when(loadSenderPort.loadSender(sender.getId())).thenReturn(sender);
+    private void givenMemberWillLoad(FeedbackMember member) {
+        when(loadMemberPort.loadMember(member.getId())).thenReturn(Optional.of(member));
     }
 
-    private void givenReceiverWillLoad(Receiver receiver) {
-        when(loadReceiverPort.loadReceiver(receiver.getId())).thenReturn(receiver);
-    }
 }

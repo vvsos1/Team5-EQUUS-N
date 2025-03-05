@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.domain;
 
-import com.feedhanjum.back_end.member.domain.Member;
-import com.feedhanjum.back_end.schedule.domain.Schedule;
+import com.feedhanjum.back_end.core.event.Events;
+import com.feedhanjum.back_end.schedule.event.RegularFeedbackRequestCreatedEvent;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,22 +20,39 @@ public class RegularFeedbackRequest {
 
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "requester_id")
-    private Member requester;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "requester_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "requester_name")),
+            @AttributeOverride(name = "email", column = @Column(name = "requester_email")),
+            @AttributeOverride(name = "profileImage.backgroundColor", column = @Column(name = "requester_background_color")),
+            @AttributeOverride(name = "profileImage.image", column = @Column(name = "requester_image")),
+    })
+    private FeedbackMember requester;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id")
-    private Schedule schedule;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "schedule_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "schedule_name")),
+            @AttributeOverride(name = "endTime", column = @Column(name = "schedule_end_time")),
+    })
+    private AssociatedSchedule schedule;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_member_id")
-    private Member receiver;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "receiver_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "receiver_name")),
+            @AttributeOverride(name = "email", column = @Column(name = "receiver_email")),
+            @AttributeOverride(name = "profileImage.backgroundColor", column = @Column(name = "receiver_background_color")),
+            @AttributeOverride(name = "profileImage.image", column = @Column(name = "receiver_image")),
+    })
+    private FeedbackMember receiver;
 
-    public RegularFeedbackRequest(LocalDateTime createdAt, Member requester, Schedule schedule, Member receiver) {
+    public RegularFeedbackRequest(LocalDateTime createdAt, FeedbackMember requester, AssociatedSchedule schedule, FeedbackMember receiver) {
         this.createdAt = createdAt;
         this.requester = requester;
         this.schedule = schedule;
         this.receiver = receiver;
+        Events.raise(new RegularFeedbackRequestCreatedEvent(receiver.getId(), schedule.getId()));
     }
 }
