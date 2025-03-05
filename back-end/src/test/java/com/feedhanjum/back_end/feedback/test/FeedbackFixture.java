@@ -1,9 +1,10 @@
-package com.feedhanjum.back_end.test.util;
+package com.feedhanjum.back_end.feedback.test;
 
+import com.feedhanjum.back_end.feedback.domain.AssociatedSchedule;
 import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
 import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
+import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackIdGenerator;
-import com.feedhanjum.back_end.feedback.test.SimpleFeedbackIdGenerator;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 
 import java.time.Clock;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
-public class Fixture {
+public class FeedbackFixture {
 
     public static FeedbackIdGenerator defaultFeedbackIdGenerator() {
         return new SimpleFeedbackIdGenerator();
@@ -46,5 +47,20 @@ public class Fixture {
                 3L,
                 "team"
         );
+    }
+
+    public static AssociatedSchedule defaultSchedule(Long teamId) {
+        LocalDateTime endTime = LocalDateTime.now(defaultClock()).minusHours(1);
+        return new AssociatedSchedule(
+                4L,
+                "schedule",
+                endTime,
+                teamId
+        );
+    }
+
+    public static RegularFeedbackRequest createRegularFeedbackRequest(FeedbackMember requester, AssociatedSchedule schedule, FeedbackMember receiver) {
+        LocalDateTime fixed = LocalDateTime.now(defaultClock());
+        return new RegularFeedbackRequest(fixed, requester, schedule, receiver);
     }
 }

@@ -25,7 +25,7 @@ import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
 
-import static com.feedhanjum.back_end.test.util.Fixture.*;
+import static com.feedhanjum.back_end.feedback.test.FeedbackFixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
