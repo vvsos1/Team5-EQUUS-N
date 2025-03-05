@@ -1,7 +1,5 @@
 package com.feedhanjum.back_end.feedback.domain;
 
-import com.feedhanjum.back_end.core.event.Events;
-import com.feedhanjum.back_end.schedule.event.RegularFeedbackRequestCreatedEvent;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -53,6 +51,5 @@ public class RegularFeedbackRequest {
         this.requester = requester;
         this.schedule = schedule;
         this.receiver = receiver;
-        Events.raise(new RegularFeedbackRequestCreatedEvent(receiver.getId(), schedule.getId()));
     }
 }

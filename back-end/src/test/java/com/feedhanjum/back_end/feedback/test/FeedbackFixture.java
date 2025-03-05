@@ -11,6 +11,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class FeedbackFixture {
 
@@ -18,33 +19,34 @@ public class FeedbackFixture {
         return new SimpleFeedbackIdGenerator();
     }
 
+    private static final AtomicLong nextMemberId = new AtomicLong(1);
+
     public static Clock defaultClock() {
         return Clock.fixed(
                 LocalDateTime.of(2022, 1, 1, 0, 0, 0).toInstant(ZoneOffset.UTC)
                 , ZoneId.of("UTC"));
     }
 
-    public static FeedbackMember defaultSender() {
+    public static FeedbackMember createMember(String name) {
         return new FeedbackMember(
-                1L,
-                "sender",
-                "sender@email.com",
+                nextMemberId.getAndIncrement(),
+                name,
+                name + "@email.com",
                 new ProfileImage("red", "cat")
         );
     }
 
+    public static FeedbackMember defaultSender() {
+        return createMember("sender");
+    }
+
     public static FeedbackMember defaultReceiver() {
-        return new FeedbackMember(
-                2L,
-                "receiver",
-                "receiver@email.com",
-                new ProfileImage("blue", "dog")
-        );
+        return createMember("receiver");
     }
 
     public static AssociatedTeam defaultTeam() {
         return new AssociatedTeam(
-                3L,
+                100L,
                 "team"
         );
     }
@@ -52,7 +54,7 @@ public class FeedbackFixture {
     public static AssociatedSchedule defaultSchedule(Long teamId) {
         LocalDateTime endTime = LocalDateTime.now(defaultClock()).minusHours(1);
         return new AssociatedSchedule(
-                4L,
+                200L,
                 "schedule",
                 endTime,
                 teamId
