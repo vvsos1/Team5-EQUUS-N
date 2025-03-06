@@ -2,7 +2,6 @@ package com.feedhanjum.back_end.feedback.controller;
 
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.core.dto.Paged;
-import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.RegularFeedbackRequestQueryRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestQueryRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.ReceivedFeedbacksQueryRequest;
@@ -58,17 +57,6 @@ public class FeedbackController {
                                                                                                   @ParameterObject @Valid FrequentFeedbackRequestQueryRequest request) {
         List<FrequentFeedbackRequestForApiResponse> frequentFeedbackRequests = feedbackQueryService.getFrequentFeedbackRequests(receiverId, request.teamId());
         return ResponseEntity.ok(frequentFeedbackRequests);
-    }
-
-    @Operation(summary = "정기 피드백 건너뛰기", description = "해당 일정 정기 피드백을 건너뛰기합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "건너뛰기 성공", useReturnTypeSchema = true)
-    })
-    @DeleteMapping("/feedbacks/regular/request")
-    public ResponseEntity<Void> skipRegularFeedbackRequest(@Login Long receiverId,
-                                                           @ParameterObject @Valid RegularFeedbackRequestQueryRequest request) {
-        feedbackService.skipRegularFeedback(request.scheduleId(), receiverId);
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "보낸 피드백 조회하기", description = "받은 피드백을 조회힙니다.")

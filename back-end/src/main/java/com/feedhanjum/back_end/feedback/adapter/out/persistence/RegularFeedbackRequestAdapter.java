@@ -8,6 +8,7 @@ import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,8 +19,8 @@ public class RegularFeedbackRequestAdapter implements LoadRegularFeedbackRequest
     private final RegularFeedbackRequestMapper regularFeedbackRequestMapper;
 
     @Override
-    public void deleteRegularFeedbackRequest(Long regularFeedbackRequestId) {
-        regularFeedbackRequestJpaEntityRepository.deleteById(regularFeedbackRequestId);
+    public void deleteRegularFeedbackRequests(Collection<Long> regularFeedbackRequestIds) {
+        regularFeedbackRequestJpaEntityRepository.deleteAllById(regularFeedbackRequestIds);
     }
 
     @Override
