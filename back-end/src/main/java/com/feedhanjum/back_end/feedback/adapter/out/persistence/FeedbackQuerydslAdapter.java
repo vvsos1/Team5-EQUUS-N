@@ -1,8 +1,11 @@
 package com.feedhanjum.back_end.feedback.adapter.out.persistence;
 
+import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadReceivedFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadSentFeedbackPort;
-import com.feedhanjum.back_end.feedback.service.dto.QSentFeedbackDto;
-import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
+import com.feedhanjum.back_end.feedback.dto.QReceivedFeedbackDto;
+import com.feedhanjum.back_end.feedback.dto.QSentFeedbackDto;
+import com.feedhanjum.back_end.feedback.dto.ReceivedFeedbackDto;
+import com.feedhanjum.back_end.feedback.dto.SentFeedbackDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -16,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class FeedbackQuerydslAdapter implements LoadSentFeedbackPort {
+public class FeedbackQuerydslAdapter implements LoadSentFeedbackPort, LoadReceivedFeedbackPort {
     private final QFeedbackJpaEntity feedback = QFeedbackJpaEntity.feedbackJpaEntity;
     private final ComparableExpressionBase<?> sortProperty = feedback.id;
     private final JPAQueryFactory queryFactory;
@@ -51,4 +54,33 @@ public class FeedbackQuerydslAdapter implements LoadSentFeedbackPort {
         return new PageImpl<>(result, pageable, total);
     }
 
+    @Override
+    public Page<ReceivedFeedbackDto> loadReceivedFeedback(long receiverId, @Nullable Long teamId, boolean filterHelpful, int page, int pageSize, Sort.Direction sortOrder) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        var predicate = new BooleanBuilder();
+        predicate.and(feedback.receiver.id.eq(receiverId));
+        if (teamId != null) {
+            predicate.and(feedback.team.id.eq(teamId));
+        }
+        if (filterHelpful) {
+            predicate.and(feedback.liked.isTrue());
+        }
+        var result = queryFactory
+                .select(new QReceivedFeedbackDto(feedback))
+                .from(feedback)
+                .where(predicate)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(sortOrder == Sort.Direction.ASC ? sortProperty.asc() : sortProperty.desc())
+                .fetch();
+        var total = queryFactory.select(feedback.count())
+                .from(feedback)
+                .where(predicate)
+                .fetchOne();
+        if (total == null) {
+            total = (long) result.size();
+        }
+        return new PageImpl<>(result, pageable, total);
+    }
 }

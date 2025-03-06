@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.feedback.application.port.out.feedback;
 
-import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
+import com.feedhanjum.back_end.feedback.dto.SentFeedbackDto;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;

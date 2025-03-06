@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.service.dto;
+package com.feedhanjum.back_end.feedback.dto;
 
 import com.feedhanjum.back_end.feedback.adapter.out.persistence.FeedbackJpaEntity;
 import com.feedhanjum.back_end.feedback.domain.FeedbackMember;

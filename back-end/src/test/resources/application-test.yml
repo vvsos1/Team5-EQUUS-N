@@ -8,6 +8,10 @@ spring:
     hibernate:
       ddl-auto: create
     database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
@@ -19,6 +23,17 @@ spring:
         options:
           model: gpt-4o-mini
       base-url: https://api.openai.com
+
+logging:
+  level:
+    org:
+      hibernate:
+        type: trace
+        orm:
+          jdbc:
+            bind: trace
+            extract: trace
+
 
 server:
   http.port: 80

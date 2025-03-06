@@ -7,7 +7,6 @@ import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendFrequentF
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendRegularFeedbackRequest;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.response.RegularFeedbackRequestResponse;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadFeedbackPort;
-import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadReceivedFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestPort;
@@ -19,10 +18,10 @@ import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
+import com.feedhanjum.back_end.feedback.dto.ReceivedFeedbackDto;
+import com.feedhanjum.back_end.feedback.dto.SentFeedbackDto;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
-import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
-import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
@@ -87,8 +86,6 @@ class FeedbackControllerTest {
     @Autowired
     private LoadRegularFeedbackRequestPort loadRegularFeedbackRequestPort;
     @Autowired
-    private LoadReceivedFeedbackPort loadReceivedFeedbackPort;
-    @Autowired
     private SaveFeedbackPort saveFeedbackPort;
     @Autowired
     private LoadFeedbackPort loadFeedbackPort;
@@ -120,9 +117,6 @@ class FeedbackControllerTest {
     private Team team1;
     private Team team2;
     private Schedule schedule1;
-    private ScheduleMember scheduleMember1;
-    private ScheduleMember scheduleMember2;
-    private ScheduleMember scheduleMember3;
 
     @BeforeEach
     void setUp() {
@@ -142,10 +136,10 @@ class FeedbackControllerTest {
         schedule1 = createSchedule("schedule1", team1, member1, false);
         scheduleRepository.save(schedule1);
 
-        scheduleMember1 = new ScheduleMember(schedule1, member1);
-        scheduleMember2 = new ScheduleMember(schedule1, member2);
-        scheduleMember3 = new ScheduleMember(schedule1, member3);
-        scheduleMemberRepository.saveAll(List.of(scheduleMember1, scheduleMember2, scheduleMember3));
+        scheduleMemberRepository.saveAll(List.of(
+                new ScheduleMember(schedule1, member1),
+                new ScheduleMember(schedule1, member2),
+                new ScheduleMember(schedule1, member3)));
 
     }
 
@@ -179,7 +173,7 @@ class FeedbackControllerTest {
             ).hasStatus(HttpStatus.NO_CONTENT);
 
 
-            var feedbacks = loadReceivedFeedbackPort.loadReceivedFeedback(receiver.getId());
+            var feedbacks = loadFeedbackPort.loadFeedbacks();
             assertThat(feedbacks).hasSize(1);
             var feedback = feedbacks.get(0);
             assertEqualSender(sender, feedback.getSender());
@@ -216,7 +210,7 @@ class FeedbackControllerTest {
                     .content(mapper.writeValueAsString(request))
             ).hasStatus(HttpStatus.BAD_REQUEST);
 
-            var feedbacks = loadReceivedFeedbackPort.loadReceivedFeedback(receiver.getId());
+            var feedbacks = loadFeedbackPort.loadFeedbacks();
             assertThat(feedbacks).isEmpty();
         }
     }
@@ -254,7 +248,7 @@ class FeedbackControllerTest {
                     .content(mapper.writeValueAsString(request))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-            List<Feedback> feedbacks = loadReceivedFeedbackPort.loadReceivedFeedback(receiver.getId());
+            var feedbacks = loadFeedbackPort.loadFeedbacks();
             assertThat(feedbacks).hasSize(1);
             Feedback feedback = feedbacks.get(0);
             assertEqualSender(sender, feedback.getSender());
@@ -558,7 +552,7 @@ class FeedbackControllerTest {
             Member receiver = member2;
             Feedback feedback1 = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
             Feedback feedback2 = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
-            feedbackRepository.saveAll(List.of(feedback1, feedback2));
+            saveFeedbackPort.saveFeedbacks(List.of(feedback1, feedback2));
 
             // when
             assertThat(mvc.get()
@@ -703,7 +697,7 @@ class FeedbackControllerTest {
             Member receiver = member2;
             Feedback feedback1 = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
             Feedback feedback2 = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
-            feedbackRepository.saveAll(List.of(feedback1, feedback2));
+            saveFeedbackPort.saveFeedbacks(List.of(feedback1, feedback2));
 
             // when
             assertThat(mvc.get()
@@ -719,7 +713,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             Team team = team2;
-            feedbackRepository.saveAll(List.of(
+            saveFeedbackPort.saveFeedbacks(List.of(
                     createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS),
                     createFeedbackWithId(sender, receiver, team2, FeedbackType.ANONYMOUS),
                     createFeedbackWithId(sender, receiver, team2, FeedbackType.ANONYMOUS)));
@@ -747,7 +741,7 @@ class FeedbackControllerTest {
             // given
             Member sender = member1;
             Member receiver = member2;
-            feedbackRepository.saveAll(List.of(
+            saveFeedbackPort.saveFeedbacks(List.of(
                     createFeedbackWithId(sender, receiver, team1, false, true),
                     createFeedbackWithId(sender, receiver, team2, false, false),
                     createFeedbackWithId(sender, receiver, team2, false, true)));
@@ -775,7 +769,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             for (int i = 0; i < 20; i++) {
-                feedbackRepository.save(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
+                saveFeedbackPort.saveFeedback(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
             }
 
             // when & then
@@ -801,7 +795,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             for (int i = 0; i < 20; i++) {
-                feedbackRepository.save(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
+                saveFeedbackPort.saveFeedback(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
             }
             // when & then
             assertThat(mvc.get()
@@ -826,7 +820,7 @@ class FeedbackControllerTest {
             Member notReceiver = member3;
             Member receiver = member2;
             Feedback feedback = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
-            feedbackRepository.save(feedback);
+            saveFeedbackPort.saveFeedback(feedback);
 
             // when
             assertThat(mvc.get()

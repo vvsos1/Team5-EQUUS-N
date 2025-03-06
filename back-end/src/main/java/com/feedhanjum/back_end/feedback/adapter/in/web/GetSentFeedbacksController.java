@@ -2,10 +2,10 @@ package com.feedhanjum.back_end.feedback.adapter.in.web;
 
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.core.dto.Paged;
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SentFeedbacksQueryRequest;
 import com.feedhanjum.back_end.feedback.application.port.in.GetSentFeedbacksUseCase;
 import com.feedhanjum.back_end.feedback.application.port.in.command.GetSentFeedbacksCommand;
-import com.feedhanjum.back_end.feedback.controller.dto.request.SentFeedbacksQueryRequest;
-import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
+import com.feedhanjum.back_end.feedback.dto.SentFeedbackDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.controller.dto.request;
+package com.feedhanjum.back_end.feedback.adapter.in.web.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
@@ -7,10 +7,10 @@ import org.springframework.data.domain.Sort;
 
 import java.util.Objects;
 
-public record SentFeedbacksQueryRequest(
-        @Schema(description = "보낸 피드백을 조회할 사용자 ID")
+public record ReceivedFeedbacksQueryRequest(
+        @Schema(description = "받은 피드백을 조회할 사용자 ID")
         @NotNull
-        Long senderId,
+        Long receiverId,
 
         @Schema(description = "팀 ID")
         @Nullable
@@ -28,13 +28,13 @@ public record SentFeedbacksQueryRequest(
         @Nullable
         Sort.Direction sortOrder
 ) {
-    public SentFeedbacksQueryRequest(
-            Long senderId,
+    public ReceivedFeedbacksQueryRequest(
+            Long receiverId,
             Long teamId,
             Boolean filterHelpful,
             Integer page,
             Sort.Direction sortOrder) {
-        this.senderId = senderId;
+        this.receiverId = receiverId;
         this.teamId = teamId;
         this.filterHelpful = Objects.requireNonNullElse(filterHelpful, false);
         this.page = Objects.requireNonNullElse(page, 0);
