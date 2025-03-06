@@ -46,12 +46,6 @@ public class FeedbackService {
         eventPublisher.publishEvent(new FrequentFeedbackRequestedEvent(senderId, teamId, receiverId));
     }
 
-
-    @Transactional
-    public void skipRegularFeedback(Long scheduleId, Long memberId) {
-        regularFeedbackRequestRepository.deleteAllByScheduleIdAndReceiverId(scheduleId, memberId);
-    }
-
     /**
      * 해당 팀에서 receiver에게 온 모든 수시 피드백 요청을 거절한다.
      * 수시 피드백 요청 배너닫기 클릭 시 사용

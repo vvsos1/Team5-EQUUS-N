@@ -8,15 +8,11 @@ import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackIdGenerator;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
-import com.feedhanjum.back_end.feedback.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.feedback.test.SimpleFeedbackIdGenerator;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
-import com.feedhanjum.back_end.schedule.domain.Schedule;
-import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
-import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.event.FrequentFeedbackRequestedEvent;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
@@ -53,13 +49,7 @@ class FeedbackServiceTest {
     @Mock
     private FeedbackRepository feedbackRepository;
     @Mock
-    private ScheduleRepository scheduleRepository;
-    @Mock
-    private ScheduleMemberRepository scheduleMemberRepository;
-    @Mock
     private FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
-    @Mock
-    private RegularFeedbackRequestRepository regularFeedbackRequestRepository;
     @Mock
     private EventPublisher eventPublisher;
     @InjectMocks
@@ -81,20 +71,6 @@ class FeedbackServiceTest {
         Team team = new Team(name, leader, LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now(clock));
         ReflectionTestUtils.setField(team, "id", nextId.getAndIncrement());
         return team;
-    }
-
-    private Schedule createSchedule(String name, Team team, Member leader, boolean isEnd) {
-        LocalDateTime start, end;
-        if (isEnd) {
-            start = LocalDateTime.now(clock).minusHours(1);
-            end = LocalDateTime.now(clock).minusMinutes(10);
-        } else {
-            start = LocalDateTime.now(clock);
-            end = LocalDateTime.now(clock).plusHours(1);
-        }
-        Schedule schedule = new Schedule(name, start, end, team, leader);
-        ReflectionTestUtils.setField(schedule, "id", nextId.getAndIncrement());
-        return schedule;
     }
 
 
@@ -238,26 +214,6 @@ class FeedbackServiceTest {
 
         }
     }
-
-    @Nested
-    @DisplayName("skipRegularFeedback 메서드 테스트")
-    class SkipRegularFeedbackTest {
-        @Test
-        @DisplayName("정기 피드백 건너뛰기 성공")
-        void test1() {
-            // given
-            Long scheduleId = 1L;
-            Long memberId = 2L;
-
-            // when
-            feedbackService.skipRegularFeedback(scheduleId, memberId);
-
-            // then
-            verify(regularFeedbackRequestRepository).deleteAllByScheduleIdAndReceiverId(scheduleId, memberId);
-        }
-
-    }
-
 
     @Nested
     @DisplayName("rejectAllFrequentFeedbackRequests 메서드 테스트")
