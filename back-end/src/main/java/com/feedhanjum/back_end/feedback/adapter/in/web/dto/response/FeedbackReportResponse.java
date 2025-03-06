@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.controller.dto.response;
+package com.feedhanjum.back_end.feedback.adapter.in.web.dto.response;
 
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackCategory;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @Builder
 @Schema(description = "피드백 리포트")
-public record FeedbackReportDto(
+public record FeedbackReportResponse(
         @Schema(description = "받은 모든 피드백 개수")
         @PositiveOrZero
         int feedbackCount,
@@ -40,13 +40,23 @@ public record FeedbackReportDto(
         List<KeywordCountDto> allKeywords
 ) {
 
-    public static FeedbackReportDto from(FeedbackReport report) {
+    public static FeedbackReportResponse from(FeedbackReport report) {
+        List<CategoryCountDto> overviews = null;
+        List<KeywordCountDto> allKeywords = null;
+        List<KeywordCountDto> topKeywords = null;
+        if (report.isFeedbackCountEnough()) {
+            overviews = CategoryCountDto.from(report.getOverviews());
+            allKeywords = KeywordCountDto.from(report.getAllKeywords());
+            topKeywords = KeywordCountDto.from(report.getTopKeywords());
+
+        }
+
         return builder()
                 .feedbackCount(report.getFeedbackCount())
                 .requiredFeedbackCount(report.getRequiredFeedbackCount())
-                .topKeywords(KeywordCountDto.from(report.getTopKeywords()))
-                .overviews(CategoryCountDto.from(report.getOverviews()))
-                .allKeywords(KeywordCountDto.from(report.getAllKeywords()))
+                .topKeywords(topKeywords)
+                .overviews(overviews)
+                .allKeywords(allKeywords)
                 .build();
 
     }

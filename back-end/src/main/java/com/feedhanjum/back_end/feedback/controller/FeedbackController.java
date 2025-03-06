@@ -3,9 +3,7 @@ package com.feedhanjum.back_end.feedback.controller;
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestQueryRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.response.FeedbackReportDto;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
-import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
 import com.feedhanjum.back_end.feedback.service.FeedbackService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,14 +47,4 @@ public class FeedbackController {
         return ResponseEntity.ok(frequentFeedbackRequests);
     }
 
-
-    @Operation(summary = "피드백 리포트 조회", description = "로그인 유저의 피드백 리포트를 조회힙니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "피드백 리포트 조회 성공", useReturnTypeSchema = true)
-    })
-    @GetMapping("/feedbacks/report")
-    public ResponseEntity<FeedbackReportDto> getFeedbackReport(@Login Long receiverId) {
-        FeedbackReport feedbackReport = feedbackQueryService.getFeedbackReport(receiverId);
-        return ResponseEntity.ok(FeedbackReportDto.from(feedbackReport));
-    }
 }

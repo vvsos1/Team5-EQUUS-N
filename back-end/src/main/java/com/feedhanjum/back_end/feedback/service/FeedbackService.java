@@ -1,11 +1,11 @@
 package com.feedhanjum.back_end.feedback.service;
 
 import com.feedhanjum.back_end.core.event.EventPublisher;
+import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadFeedbackPort;
 import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
 import com.feedhanjum.back_end.feedback.event.FeedbackReportCreatedEvent;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
-import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.domain.Team;
@@ -24,9 +24,9 @@ import java.util.Map;
 public class FeedbackService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
-    private final FeedbackRepository feedbackRepository;
     private final EventPublisher eventPublisher;
     private final FeedbackQueryRepository feedbackQueryRepository;
+    private final LoadFeedbackPort loadFeedbackPort;
 
     /**
      * @throws EntityNotFoundException sender id, receiver id, team id에 해당하는 엔티티가 없을 경우, receiver나 sender가 team에 속해있지 않을 경우
@@ -65,8 +65,8 @@ public class FeedbackService {
      */
     @Transactional
     public void deleteRelatedFrequentFeedbackRequest(FeedbackId feedbackId) {
-        Feedback feedback = feedbackRepository
-                .findById(feedbackId).orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
+        Feedback feedback = loadFeedbackPort.loadFeedback(feedbackId)
+                .orElseThrow(() -> new EntityNotFoundException("feedback id에 해당하는 feedback이 없습니다."));
 
         Member feedbackReceiver = memberRepository.findById(feedback.getReceiver().getId())
                 .orElseThrow();

@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.adapter.out.persistence;
+package com.feedhanjum.back_end.feedback.adapter.out.persistence.feedback;
 
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadReceivedFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadSentFeedbackPort;

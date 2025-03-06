@@ -3,13 +3,13 @@ package com.feedhanjum.back_end.notification.service;
 import com.feedhanjum.back_end.core.domain.JobRecord;
 import com.feedhanjum.back_end.core.event.EventPublisher;
 import com.feedhanjum.back_end.core.repository.JobRecordRepository;
+import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadFeedbackPort;
 import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
 import com.feedhanjum.back_end.feedback.event.FeedbackLikedEvent;
 import com.feedhanjum.back_end.feedback.event.FeedbackReportCreatedEvent;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
-import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.notification.controller.dto.response.InAppNotificationDto;
@@ -44,11 +44,11 @@ public class InAppNotificationService {
     private final MemberRepository memberRepository;
     private final ScheduleRepository scheduleRepository;
     private final EventPublisher eventPublisher;
-    private final FeedbackRepository feedbackRepository;
     private final TeamRepository teamRepository;
     private final WebPushService webPushService;
     private final JobRecordRepository jobRecordRepository;
     private final Clock clock;
+    private final LoadFeedbackPort loadFeedbackPort;
 
 
     @Transactional(readOnly = true)
@@ -115,7 +115,7 @@ public class InAppNotificationService {
     public void createNotification(FeedbackLikedEvent event) {
         FeedbackId feedbackId = event.feedbackId();
 
-        Feedback feedback = feedbackRepository.findById(feedbackId)
+        Feedback feedback = loadFeedbackPort.loadFeedback(feedbackId)
                 .orElseThrow(EntityNotFoundException::new);
 
         InAppNotification notification = new HeartReactionNotification(feedback);
@@ -127,7 +127,7 @@ public class InAppNotificationService {
     public void createNotification(FrequentFeedbackCreatedEvent event) {
         FeedbackId feedbackId = event.feedbackId();
 
-        Feedback feedback = feedbackRepository.findById(feedbackId)
+        Feedback feedback = loadFeedbackPort.loadFeedback(feedbackId)
                 .orElseThrow(EntityNotFoundException::new);
 
         InAppNotification notification = new FeedbackReceiveNotification(feedback);
@@ -139,7 +139,7 @@ public class InAppNotificationService {
     public void createNotification(RegularFeedbackCreatedEvent event) {
         FeedbackId feedbackId = event.feedbackId();
 
-        Feedback feedback = feedbackRepository.findById(feedbackId)
+        Feedback feedback = loadFeedbackPort.loadFeedback(feedbackId)
                 .orElseThrow(EntityNotFoundException::new);
 
         InAppNotification notification = new FeedbackReceiveNotification(feedback);

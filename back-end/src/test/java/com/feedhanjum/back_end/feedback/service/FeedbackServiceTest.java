@@ -1,12 +1,12 @@
 package com.feedhanjum.back_end.feedback.service;
 
 import com.feedhanjum.back_end.core.event.EventPublisher;
+import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadFeedbackPort;
 import com.feedhanjum.back_end.feedback.domain.FrequentFeedbackRequest;
 import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackIdGenerator;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
-import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
 import com.feedhanjum.back_end.feedback.test.SimpleFeedbackIdGenerator;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
@@ -47,7 +47,7 @@ class FeedbackServiceTest {
     @Mock
     private TeamRepository teamRepository;
     @Mock
-    private FeedbackRepository feedbackRepository;
+    private LoadFeedbackPort loadFeedbackPort;
     @Mock
     private FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
     @Mock
@@ -271,7 +271,7 @@ class FeedbackServiceTest {
 
             Feedback feedback = createFeedbackWithId(feedbackSender, feedbackReceiver, team, FeedbackType.ANONYMOUS);
 
-            when(feedbackRepository.findById(feedback.getId())).thenReturn(Optional.of(feedback));
+            when(loadFeedbackPort.loadFeedback(feedback.getId())).thenReturn(Optional.of(feedback));
             when(memberRepository.findById(feedbackSender.getId())).thenReturn(Optional.of(feedbackSender));
             when(memberRepository.findById(feedbackReceiver.getId())).thenReturn(Optional.of(feedbackReceiver));
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
@@ -290,7 +290,7 @@ class FeedbackServiceTest {
             // given
             FeedbackId feedbackId = new FeedbackId(1L);
 
-            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.empty());
+            when(loadFeedbackPort.loadFeedback(feedbackId)).thenReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> feedbackService.deleteRelatedFrequentFeedbackRequest(feedbackId))
@@ -308,7 +308,7 @@ class FeedbackServiceTest {
             Member sender = createMember("sender");
             Feedback feedback = createFeedbackWithId(sender, receiver, team, FeedbackType.ANONYMOUS);
 
-            when(feedbackRepository.findById(feedback.getId())).thenReturn(Optional.of(feedback));
+            when(loadFeedbackPort.loadFeedback(feedback.getId())).thenReturn(Optional.of(feedback));
             when(memberRepository.findById(receiver.getId())).thenReturn(Optional.of(receiver));
             when(memberRepository.findById(sender.getId())).thenReturn(Optional.of(sender));
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));

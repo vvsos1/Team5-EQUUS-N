@@ -20,7 +20,6 @@ import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import com.feedhanjum.back_end.feedback.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.feedback.dto.SentFeedbackDto;
-import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
 import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
@@ -77,8 +76,6 @@ class FeedbackControllerTest {
     private ScheduleRepository scheduleRepository;
     @Autowired
     private ScheduleMemberRepository scheduleMemberRepository;
-    @Autowired
-    private FeedbackRepository feedbackRepository;
     @Autowired
     private FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
     private final Clock clock = Clock.fixed(Instant.parse("2025-01-10T12:00:00Z"), ZoneId.systemDefault());
@@ -285,7 +282,7 @@ class FeedbackControllerTest {
                     .content(mapper.writeValueAsString(request))
             ).hasStatus(HttpStatus.BAD_REQUEST);
 
-            List<Feedback> feedbacks = feedbackRepository.findAll();
+            List<Feedback> feedbacks = loadFeedbackPort.loadFeedbacks();
             assertThat(feedbacks).isEmpty();
         }
 
@@ -314,7 +311,7 @@ class FeedbackControllerTest {
             ).hasStatus(HttpStatus.BAD_REQUEST);
 
 
-            List<Feedback> feedbacks = feedbackRepository.findAll();
+            List<Feedback> feedbacks = loadFeedbackPort.loadFeedbacks();
             assertThat(feedbacks).isEmpty();
         }
     }

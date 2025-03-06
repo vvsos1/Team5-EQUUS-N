@@ -11,9 +11,11 @@ import com.feedhanjum.back_end.auth.exception.SignupTokenNotValidException;
 import com.feedhanjum.back_end.auth.passwordencoder.PasswordEncoder;
 import com.feedhanjum.back_end.auth.repository.MemberDetailsRepository;
 import com.feedhanjum.back_end.auth.service.dto.GoogleLoginResultDto;
+import com.feedhanjum.back_end.core.event.Events;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
+import com.feedhanjum.back_end.member.event.MemberRegisteredEvent;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +57,7 @@ public class AuthService {
         memberRepository.save(member);
         String hashedPassword = passwordEncoder.encode(memberDetails.getPassword());
         MemberDetails savedMemberDetails = MemberDetails.createEmailUser(member.getId(), memberDetails.getEmail(), hashedPassword);
-
+        Events.raise(new MemberRegisteredEvent(member.getId()));
         return memberDetailsRepository.save(savedMemberDetails);
     }
 
@@ -170,6 +172,7 @@ public class AuthService {
         MemberDetails savedMemberDetails = MemberDetails.createGoogleUser(savedMember.getId(), email);
 
         googleSignupTokenService.delete(googleSignupToken);
+        Events.raise(new MemberRegisteredEvent(member.getId()));
         return memberDetailsRepository.save(savedMemberDetails);
     }
 
