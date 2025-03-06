@@ -12,7 +12,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
-public class GetRegularFeedbackRequestListService implements GetRegularFeedbackRequestListUseCase {
+class GetRegularFeedbackRequestListService implements GetRegularFeedbackRequestListUseCase {
     private final LoadRegularFeedbackRequestListPort loadRegularFeedbackRequestListPort;
 
     @Transactional(readOnly = true)

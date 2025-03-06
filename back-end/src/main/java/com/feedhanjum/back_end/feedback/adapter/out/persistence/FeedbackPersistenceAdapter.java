@@ -14,10 +14,11 @@ import java.util.Optional;
 @Component
 class FeedbackPersistenceAdapter implements SaveFeedbackPort, LoadFeedbackPort {
     private final FeedbackJpaEntityRepository feedbackJpaEntityRepository;
+    private final FeedbackMapper feedbackMapper;
 
     @Override
     public void saveFeedback(Feedback feedback) {
-        var entity = FeedbackJpaEntity.fromDomain(feedback);
+        var entity = feedbackMapper.fromDomain(feedback);
         feedbackJpaEntityRepository.save(entity);
     }
 
@@ -25,7 +26,7 @@ class FeedbackPersistenceAdapter implements SaveFeedbackPort, LoadFeedbackPort {
     public Optional<Feedback> loadFeedback(FeedbackId feedbackId) {
         return feedbackJpaEntityRepository
                 .findById(feedbackId.getId())
-                .map(FeedbackJpaEntity::toDomain);
+                .map(feedbackMapper::toDomain);
     }
 
     @Override
@@ -33,7 +34,7 @@ class FeedbackPersistenceAdapter implements SaveFeedbackPort, LoadFeedbackPort {
         return feedbackJpaEntityRepository
                 .findAll()
                 .stream()
-                .map(FeedbackJpaEntity::toDomain)
+                .map(feedbackMapper::toDomain)
                 .toList();
     }
 }

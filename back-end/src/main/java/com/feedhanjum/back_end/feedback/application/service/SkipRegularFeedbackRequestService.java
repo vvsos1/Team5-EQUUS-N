@@ -13,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class SkipRegularFeedbackRequestService implements SkipRegularFeedbackRequestUseCase {
+class SkipRegularFeedbackRequestService implements SkipRegularFeedbackRequestUseCase {
     private final LoadRegularFeedbackRequestListPort loadRegularFeedbackRequestListPort;
     private final DeleteRegularFeedbackRequestPort deleteRegularFeedbackRequestPort;
 

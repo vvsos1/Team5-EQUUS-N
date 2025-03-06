@@ -1,13 +1,12 @@
 package com.feedhanjum.back_end.feedback.dto;
 
-import com.feedhanjum.back_end.feedback.adapter.out.persistence.FeedbackJpaEntity;
 import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
-import com.querydsl.core.annotations.QueryProjection;
+import com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 public record SentFeedbackDto(
         Long feedbackId,
@@ -19,13 +18,12 @@ public record SentFeedbackDto(
         boolean liked,
         LocalDateTime createdAt
 ) {
-    @QueryProjection
-    public SentFeedbackDto(FeedbackJpaEntity feedback) {
+    public SentFeedbackDto(Feedback feedback) {
         this(
-                feedback.getId(),
-                Objects.equals(feedback.getFeedbackType(), FeedbackType.ANONYMOUS.name()),
+                feedback.getId().getId(),
+                feedback.getFeedbackType() == FeedbackType.ANONYMOUS,
                 ReceiverDto.from(feedback.getReceiver()),
-                feedback.getObjectiveFeedbacks().stream().toList(),
+                feedback.getObjectiveFeedbacks().stream().map(ObjectiveFeedback::getDescription).toList(),
                 feedback.getSubjectiveFeedback(),
                 feedback.getTeam().getName(),
                 feedback.isLiked(),

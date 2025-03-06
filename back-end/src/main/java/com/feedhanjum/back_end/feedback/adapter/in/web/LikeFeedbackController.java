@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @RestController
-public class LikeFeedbackController {
+class LikeFeedbackController {
     private final LikeFeedbackUseCase likeFeedbackUseCase;
 
     @Operation(summary = "피드백 좋아요", description = "피드백에 좋아요를 누릅니다.")

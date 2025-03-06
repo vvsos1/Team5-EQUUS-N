@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
-public class LikeFeedbackService implements LikeFeedbackUseCase, UnlikeFeedbackUseCase {
+class LikeFeedbackService implements LikeFeedbackUseCase, UnlikeFeedbackUseCase {
     private final LoadFeedbackPort loadFeedbackPort;
     private final SaveFeedbackPort saveFeedbackPort;
 

@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
-public class RegularFeedbackRequestAdapter implements LoadRegularFeedbackRequestPort, DeleteRegularFeedbackRequestPort, SaveRegularFeedbackRequestPort, LoadRegularFeedbackRequestListPort {
+class RegularFeedbackRequestAdapter implements LoadRegularFeedbackRequestPort, DeleteRegularFeedbackRequestPort, SaveRegularFeedbackRequestPort, LoadRegularFeedbackRequestListPort {
     private final RegularFeedbackRequestJpaEntityRepository regularFeedbackRequestJpaEntityRepository;
     private final RegularFeedbackRequestMapper regularFeedbackRequestMapper;
 

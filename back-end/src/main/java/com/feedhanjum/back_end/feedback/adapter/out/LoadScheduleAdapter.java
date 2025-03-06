@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
-public class LoadScheduleAdapter implements LoadSchedulePort {
+class LoadScheduleAdapter implements LoadSchedulePort {
     private final ScheduleRepository scheduleRepository;
 
     @Override

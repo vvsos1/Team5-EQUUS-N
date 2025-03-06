@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
-public class GetSelectableFeedbackPreferencesService implements GetSelectableFeedbackPreferencesUseCase {
+class GetSelectableFeedbackPreferencesService implements GetSelectableFeedbackPreferencesUseCase {
     @Override
     public Map<String, List<String>> getSelectableFeedbackPreferences() {
         Map<String, List<String>> feedbackPreferenceMap = new HashMap<>();

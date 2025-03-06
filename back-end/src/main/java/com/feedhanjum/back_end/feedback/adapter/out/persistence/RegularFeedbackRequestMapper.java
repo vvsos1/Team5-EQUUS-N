@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 
 @RequiredArgsConstructor
 @Component
-public class RegularFeedbackRequestMapper {
+class RegularFeedbackRequestMapper {
 
     public RegularFeedbackRequestJpaEntity fromDomain(RegularFeedbackRequest domain) {
         return new RegularFeedbackRequestJpaEntity(

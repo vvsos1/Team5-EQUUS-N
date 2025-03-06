@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @RestController
-public class UnlikeFeedbackController {
+class UnlikeFeedbackController {
     private final UnlikeFeedbackUseCase unlikeFeedbackUseCase;
 
     @Operation(summary = "피드백 좋아요 취소", description = "피드백에 누른 좋아요를 취소합니다.")

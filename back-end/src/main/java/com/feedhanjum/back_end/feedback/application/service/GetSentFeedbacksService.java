@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class GetSentFeedbacksService implements GetSentFeedbacksUseCase {
+class GetSentFeedbacksService implements GetSentFeedbacksUseCase {
     private final LoadSentFeedbackPort loadSentFeedbackPort;
 
     @Override

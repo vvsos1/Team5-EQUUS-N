@@ -20,7 +20,7 @@ import static com.feedhanjum.back_end.feedback.test.FeedbackFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @PersistenceAdapterTest
-@Import(FeedbackQuerydslAdapter.class)
+@Import({FeedbackQuerydslAdapter.class, FeedbackMapper.class})
 class FeedbackQuerydslAdapterTest {
     @Autowired
     FeedbackQuerydslAdapter feedbackQuerydslAdapter;
@@ -28,8 +28,11 @@ class FeedbackQuerydslAdapterTest {
     @Autowired
     FeedbackJpaEntityRepository feedbackRepository;
 
+    @Autowired
+    FeedbackMapper mapper;
+
     private FeedbackJpaEntity createFeedback(FeedbackMember sender, FeedbackMember receiver, AssociatedTeam team, boolean liked) {
-        return FeedbackJpaEntity.fromDomain(FeedbackFixture.createFeedback(sender, receiver, team, liked));
+        return mapper.fromDomain(FeedbackFixture.createFeedback(sender, receiver, team, liked));
     }
 
     @Nested

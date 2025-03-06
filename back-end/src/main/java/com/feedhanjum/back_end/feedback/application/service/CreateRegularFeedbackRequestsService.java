@@ -22,7 +22,7 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
-public class CreateRegularFeedbackRequestsService implements CreateRegularFeedbackRequestsUseCase {
+class CreateRegularFeedbackRequestsService implements CreateRegularFeedbackRequestsUseCase {
     private final LoadParticipationPort loadParticipationPort;
     private final LoadMemberPort loadMemberPort;
     private final LoadSchedulePort loadSchedulePort;

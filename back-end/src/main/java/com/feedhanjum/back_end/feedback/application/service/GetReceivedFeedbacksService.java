@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class GetReceivedFeedbacksService implements GetReceivedFeedbacksUseCase {
+class GetReceivedFeedbacksService implements GetReceivedFeedbacksUseCase {
     private final LoadReceivedFeedbackPort loadReceivedFeedbackPort;
 
     @Override

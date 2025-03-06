@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Service
-public class SendFrequentFeedbackService implements SendFrequentFeedbackUseCase {
+class SendFrequentFeedbackService implements SendFrequentFeedbackUseCase {
     private final FeedbackIdGenerator feedbackIdGenerator;
     private final MembershipValidatePort membershipValidatePort;
     private final LoadTeamPort loadTeamPort;

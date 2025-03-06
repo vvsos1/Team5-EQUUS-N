@@ -2,8 +2,6 @@ package com.feedhanjum.back_end.feedback.adapter.out.persistence;
 
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadReceivedFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadSentFeedbackPort;
-import com.feedhanjum.back_end.feedback.dto.QReceivedFeedbackDto;
-import com.feedhanjum.back_end.feedback.dto.QSentFeedbackDto;
 import com.feedhanjum.back_end.feedback.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.feedback.dto.SentFeedbackDto;
 import com.querydsl.core.BooleanBuilder;
@@ -19,10 +17,11 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class FeedbackQuerydslAdapter implements LoadSentFeedbackPort, LoadReceivedFeedbackPort {
+class FeedbackQuerydslAdapter implements LoadSentFeedbackPort, LoadReceivedFeedbackPort {
     private final QFeedbackJpaEntity feedback = QFeedbackJpaEntity.feedbackJpaEntity;
     private final ComparableExpressionBase<?> sortProperty = feedback.id;
     private final JPAQueryFactory queryFactory;
+    private final FeedbackMapper feedbackMapper;
 
     @Override
     public Page<SentFeedbackDto> loadSentFeedback(long senderId, @Nullable Long teamId, boolean filterHelpful, int page, int pageSize, Sort.Direction sortOrder) {
@@ -36,9 +35,9 @@ public class FeedbackQuerydslAdapter implements LoadSentFeedbackPort, LoadReceiv
         if (filterHelpful) {
             predicate.and(feedback.liked.isTrue());
         }
+
         var result = queryFactory
-                .select(new QSentFeedbackDto(feedback))
-                .from(feedback)
+                .selectFrom(feedback)
                 .where(predicate)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -51,7 +50,9 @@ public class FeedbackQuerydslAdapter implements LoadSentFeedbackPort, LoadReceiv
         if (total == null) {
             total = (long) result.size();
         }
-        return new PageImpl<>(result, pageable, total);
+        return new PageImpl<>(result.stream().map(feedbackMapper::toSentFeedbackDto).toList(),
+                pageable,
+                total);
     }
 
     @Override
@@ -67,8 +68,7 @@ public class FeedbackQuerydslAdapter implements LoadSentFeedbackPort, LoadReceiv
             predicate.and(feedback.liked.isTrue());
         }
         var result = queryFactory
-                .select(new QReceivedFeedbackDto(feedback))
-                .from(feedback)
+                .selectFrom(feedback)
                 .where(predicate)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -81,6 +81,8 @@ public class FeedbackQuerydslAdapter implements LoadSentFeedbackPort, LoadReceiv
         if (total == null) {
             total = (long) result.size();
         }
-        return new PageImpl<>(result, pageable, total);
+        return new PageImpl<>(result.stream().map(feedbackMapper::toReceivedFeedbackDto).toList(),
+                pageable,
+                total);
     }
 }

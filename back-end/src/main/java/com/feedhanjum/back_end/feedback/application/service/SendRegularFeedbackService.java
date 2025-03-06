@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class SendRegularFeedbackService implements SendRegularFeedbackUseCase {
+class SendRegularFeedbackService implements SendRegularFeedbackUseCase {
     private final LoadRegularFeedbackRequestPort loadRegularFeedbackRequestPort;
     private final FeedbackIdGenerator feedbackIdGenerator;
     private final ParticipationValidatePort participationValidatePort;

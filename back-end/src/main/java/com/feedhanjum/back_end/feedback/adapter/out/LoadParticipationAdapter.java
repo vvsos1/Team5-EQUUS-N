@@ -10,7 +10,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
-public class LoadParticipationAdapter implements LoadParticipationPort {
+class LoadParticipationAdapter implements LoadParticipationPort {
     ScheduleMemberRepository scheduleMemberRepository;
 
     @Override

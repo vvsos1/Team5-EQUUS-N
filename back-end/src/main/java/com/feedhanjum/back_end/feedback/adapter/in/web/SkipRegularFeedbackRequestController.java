@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-public class SkipRegularFeedbackRequestController {
+class SkipRegularFeedbackRequestController {
 
     private final SkipRegularFeedbackRequestUseCase skipRegularFeedbackRequestUseCase;
 

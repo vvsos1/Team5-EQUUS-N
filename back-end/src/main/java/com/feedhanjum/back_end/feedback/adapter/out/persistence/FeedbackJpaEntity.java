@@ -2,7 +2,8 @@ package com.feedhanjum.back_end.feedback.adapter.out.persistence;
 
 import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
 import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
-import com.feedhanjum.back_end.feedback.domain.feedback.*;
+import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
+import com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class FeedbackJpaEntity {
+class FeedbackJpaEntity {
 
     @Id
     @Column(name = "feedback_id")
@@ -99,18 +100,4 @@ public class FeedbackJpaEntity {
         );
     }
 
-    Feedback toDomain() {
-        return new Feedback(
-                new FeedbackId(id),
-                FeedbackType.valueOf(feedbackType),
-                FeedbackFeeling.valueOf(feedbackFeeling),
-                objectiveFeedbacks.stream().map(ObjectiveFeedback::valueOf).toList(),
-                subjectiveFeedback,
-                liked,
-                sender,
-                receiver,
-                team,
-                createdAt
-        );
-    }
 }

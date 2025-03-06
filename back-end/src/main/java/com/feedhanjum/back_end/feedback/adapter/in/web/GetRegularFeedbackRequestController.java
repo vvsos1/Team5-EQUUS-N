@@ -20,7 +20,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-public class GetRegularFeedbackRequestController {
+class GetRegularFeedbackRequestController {
     private final GetRegularFeedbackRequestListUseCase getRegularFeedbackRequestListUseCase;
 
     @Operation(summary = "정기 피드백 요청 조회", description = "일정별 정기 피드백 요청을 조회합니다.")

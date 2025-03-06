@@ -10,7 +10,6 @@ import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestReposi
 import com.feedhanjum.back_end.feedback.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
-import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.event.FrequentFeedbackRequestedEvent;
 import com.feedhanjum.back_end.team.exception.TeamMembershipNotFoundException;
@@ -27,7 +26,6 @@ import java.util.Map;
 public class FeedbackService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
-    private final ScheduleRepository scheduleRepository;
     private final FeedbackRepository feedbackRepository;
     private final RegularFeedbackRequestRepository regularFeedbackRequestRepository;
     private final EventPublisher eventPublisher;

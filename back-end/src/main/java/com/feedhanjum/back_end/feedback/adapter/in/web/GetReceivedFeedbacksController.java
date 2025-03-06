@@ -24,7 +24,7 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @RestController
-public class GetReceivedFeedbacksController {
+class GetReceivedFeedbacksController {
     private final GetReceivedFeedbacksUseCase getReceivedFeedbacksUseCase;
 
     @Operation(summary = "받은 피드백 조회하기", description = "받은 피드백을 조회힙니다.")

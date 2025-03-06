@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-public class GetSelectableFeedbackPreferencesController {
+class GetSelectableFeedbackPreferencesController {
     private final GetSelectableFeedbackPreferencesUseCase getSelectableFeedbackPreferencesUseCase;
 
     @Operation(summary = "피드백 선호도 선택지 조회", description = "사용자에게 피드백 선호도 선택지를 제공하기 위한 API")

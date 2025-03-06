@@ -23,7 +23,7 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @RestController
-public class GetSentFeedbacksController {
+class GetSentFeedbacksController {
     private final GetSentFeedbacksUseCase getSentFeedbacksUseCase;
 
     @Operation(summary = "보낸 피드백 조회하기", description = "받은 피드백을 조회힙니다.")

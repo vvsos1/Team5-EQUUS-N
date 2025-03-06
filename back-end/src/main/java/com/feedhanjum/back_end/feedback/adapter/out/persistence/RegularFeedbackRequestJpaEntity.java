@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class RegularFeedbackRequestJpaEntity {
+class RegularFeedbackRequestJpaEntity {
     @Id
     @Column(name = "regular_feedback_request_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
