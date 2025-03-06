@@ -5,9 +5,13 @@ import java.util.List;
 
 public interface DeleteRegularFeedbackRequestPort {
 
-    default void deleteRegularFeedbackRequest(Long regularFeedbackRequestId) {
-        deleteRegularFeedbackRequests(List.of(regularFeedbackRequestId));
+    default void deleteById(Long regularFeedbackRequestId) {
+        deleteByIds(List.of(regularFeedbackRequestId));
     }
 
-    void deleteRegularFeedbackRequests(Collection<Long> regularFeedbackRequestIds);
+    void deleteByIds(Collection<Long> regularFeedbackRequestIds);
+
+    void deleteByTeamIdAndReceiverId(Long teamId, Long receiverId);
+
+    void deleteByTeamIdAndRequesterId(Long teamId, Long requesterId);
 }

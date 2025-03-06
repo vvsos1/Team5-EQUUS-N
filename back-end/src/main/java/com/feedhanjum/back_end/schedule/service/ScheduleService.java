@@ -3,7 +3,7 @@ package com.feedhanjum.back_end.schedule.service;
 import com.feedhanjum.back_end.core.domain.JobRecord;
 import com.feedhanjum.back_end.core.event.EventPublisher;
 import com.feedhanjum.back_end.core.repository.JobRecordRepository;
-import com.feedhanjum.back_end.feedback.repository.RegularFeedbackRequestQueryRepository;
+import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberQueryRepository;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
@@ -49,7 +49,7 @@ public class ScheduleService {
     private final MemberQueryRepository memberQueryRepository;
     private final JobRecordRepository jobRecordRepository;
     private final EventPublisher eventPublisher;
-    private final RegularFeedbackRequestQueryRepository regularFeedbackRequestQueryRepository;
+    private final LoadRegularFeedbackRequestPort loadRegularFeedbackRequestPort;
 
 
     @Transactional(readOnly = true)
@@ -101,7 +101,7 @@ public class ScheduleService {
 
         // 지난 일정이 1일 이내이고, 처리하지 않은 정기 피드백 요청이 존재한다면 이전 일정 반환
         if (previousSchedule != null && previousSchedule.getEndTime().isAfter(now.minusDays(1))
-                && regularFeedbackRequestQueryRepository.getRegularFeedbackRequestCount(memberId, previousSchedule.getScheduleId()) > 0) {
+                && loadRegularFeedbackRequestPort.countByScheduleIdAndReceiverId(previousSchedule.getScheduleId(), memberId) > 0) {
             return previousSchedule;
         }
 

@@ -4,7 +4,7 @@ import com.feedhanjum.back_end.core.event.Events;
 import com.feedhanjum.back_end.feedback.application.port.in.CreateRegularFeedbackRequestsUseCase;
 import com.feedhanjum.back_end.feedback.application.port.in.command.CreateRegularFeedbackRequestsCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadMemberPort;
-import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestPort;
+import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestListPort;
 import com.feedhanjum.back_end.feedback.application.port.out.schedule.LoadParticipationPort;
 import com.feedhanjum.back_end.feedback.application.port.out.schedule.LoadSchedulePort;
 import com.feedhanjum.back_end.feedback.domain.AssociatedSchedule;
@@ -26,10 +26,10 @@ class CreateRegularFeedbackRequestsService implements CreateRegularFeedbackReque
     private final LoadParticipationPort loadParticipationPort;
     private final LoadMemberPort loadMemberPort;
     private final LoadSchedulePort loadSchedulePort;
-    private final SaveRegularFeedbackRequestPort saveRegularFeedbackRequestPort;
+    private final SaveRegularFeedbackRequestListPort saveRegularFeedbackRequestListPort;
 
-    @Transactional
     @Override
+    @Transactional
     public void createRegularFeedbackRequests(CreateRegularFeedbackRequestsCommand command) {
         AssociatedSchedule schedule = loadSchedulePort.loadSchedule(command.getScheduleId()).orElseThrow();
         List<Long> memberIds = loadParticipationPort.loadParticipation(command.getScheduleId());
@@ -47,7 +47,6 @@ class CreateRegularFeedbackRequestsService implements CreateRegularFeedbackReque
             }
             Events.raise(new RegularFeedbackRequestCreatedEvent(receiver.getId(), schedule.getId()));
         }
-        // batch insert를 사용하도록 설정 필요
-        saveRegularFeedbackRequestPort.saveRegularFeedbackRequests(requests);
+        saveRegularFeedbackRequestListPort.saveAll(requests);
     }
 }

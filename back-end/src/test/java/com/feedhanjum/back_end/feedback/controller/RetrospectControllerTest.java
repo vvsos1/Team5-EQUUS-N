@@ -7,6 +7,7 @@ import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.controller.dto.request.RetrospectWriteRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.response.RetrospectResponse;
+import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
 import com.feedhanjum.back_end.feedback.domain.Retrospect;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import com.feedhanjum.back_end.feedback.repository.RetrospectRepository;
@@ -41,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.feedhanjum.back_end.test.util.DomainTestUtils.assertEqualTeam;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -248,8 +248,8 @@ class RetrospectControllerTest {
         @DisplayName("성공 시 201")
         void test1() throws JsonProcessingException {
             // given
-            Member writer = member2;
-            Team team = team1;
+            var writer = member2;
+            var team = AssociatedTeam.of(team1);
 
             // when
             assertThat(mvc.post()
@@ -266,7 +266,7 @@ class RetrospectControllerTest {
             assertThat(retrospect.getTitle()).isEqualTo("title");
             assertThat(retrospect.getContent()).isEqualTo("content");
             assertThat(retrospect.getWriter()).isEqualTo(writer);
-            assertEqualTeam(team, retrospect.getTeam());
+            assertThat(retrospect.getTeam()).isEqualTo(team);
         }
 
         @Test

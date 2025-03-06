@@ -2,8 +2,6 @@ package com.feedhanjum.back_end.feedback.adapter.out.persistence;
 
 import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
 import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
-import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
-import com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,7 +11,6 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Table(name = "feedbacks")
 @Entity
@@ -83,21 +80,6 @@ class FeedbackJpaEntity {
         this.receiver = receiver;
         this.team = team;
         this.createdAt = createdAt;
-    }
-
-    static FeedbackJpaEntity fromDomain(Feedback feedback) {
-        return new FeedbackJpaEntity(
-                feedback.getId().getId(),
-                feedback.getFeedbackType().name(),
-                feedback.getFeedbackFeeling().name(),
-                feedback.getObjectiveFeedbacks().stream().map(ObjectiveFeedback::name).collect(Collectors.toSet()),
-                feedback.getSubjectiveFeedback(),
-                feedback.isLiked(),
-                feedback.getSender(),
-                feedback.getReceiver(),
-                feedback.getTeam(),
-                feedback.getCreatedAt()
-        );
     }
 
 }

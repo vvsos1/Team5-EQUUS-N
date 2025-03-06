@@ -2,7 +2,7 @@ package com.feedhanjum.back_end.feedback.application.service;
 
 import com.feedhanjum.back_end.feedback.application.port.in.command.SkipRegularFeedbackRequestCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.DeleteRegularFeedbackRequestPort;
-import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestListPort;
+import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.feedback.test.FeedbackFixture;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class SkipRegularFeedbackRequestServiceTest {
     @Mock
-    LoadRegularFeedbackRequestListPort loadRegularFeedbackRequestListPort;
+    LoadRegularFeedbackRequestPort loadRegularFeedbackRequestPort;
     @Mock
     DeleteRegularFeedbackRequestPort deleteRegularFeedbackRequestPort;
 
@@ -53,12 +53,12 @@ class SkipRegularFeedbackRequestServiceTest {
 
         // then
         verify(deleteRegularFeedbackRequestPort)
-                .deleteRegularFeedbackRequests(requests.stream().map(RegularFeedbackRequest::getId).toList());
+                .deleteByIds(requests.stream().map(RegularFeedbackRequest::getId).toList());
     }
 
     private void givenRegularFeedbackRequestsWillLoad(List<RegularFeedbackRequest> requests) {
         RegularFeedbackRequest request = requests.get(0);
-        when(loadRegularFeedbackRequestListPort.loadRegularFeedbackRequestList(request.getSchedule().getId(), request.getReceiver().getId()))
+        when(loadRegularFeedbackRequestPort.load(request.getSchedule().getId(), request.getReceiver().getId()))
                 .thenReturn(requests);
     }
 }

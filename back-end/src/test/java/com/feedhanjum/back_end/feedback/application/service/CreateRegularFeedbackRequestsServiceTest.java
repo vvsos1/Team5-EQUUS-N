@@ -4,7 +4,7 @@ import com.feedhanjum.back_end.core.event.EventPublisher;
 import com.feedhanjum.back_end.core.event.Events;
 import com.feedhanjum.back_end.feedback.application.port.in.command.CreateRegularFeedbackRequestsCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadMemberPort;
-import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestPort;
+import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestListPort;
 import com.feedhanjum.back_end.feedback.application.port.out.schedule.LoadParticipationPort;
 import com.feedhanjum.back_end.feedback.application.port.out.schedule.LoadSchedulePort;
 import com.feedhanjum.back_end.feedback.domain.AssociatedSchedule;
@@ -37,7 +37,7 @@ class CreateRegularFeedbackRequestsServiceTest {
     @Mock
     LoadSchedulePort loadSchedulePort;
     @Mock
-    SaveRegularFeedbackRequestPort saveRegularFeedbackRequestPort;
+    SaveRegularFeedbackRequestListPort saveRegularFeedbackRequestListPort;
 
     @InjectMocks
     CreateRegularFeedbackRequestsService createRegularFeedbackRequestsService;
@@ -92,7 +92,7 @@ class CreateRegularFeedbackRequestsServiceTest {
 
         // then
         ArgumentCaptor<List<RegularFeedbackRequest>> requestsCaptor = ArgumentCaptor.captor();
-        verify(saveRegularFeedbackRequestPort).saveRegularFeedbackRequests(requestsCaptor.capture());
+        verify(saveRegularFeedbackRequestListPort).saveAll(requestsCaptor.capture());
         List<RegularFeedbackRequest> requests = requestsCaptor.getValue();
         assertThat(requests).hasSize(6);
         assertThat(requests)

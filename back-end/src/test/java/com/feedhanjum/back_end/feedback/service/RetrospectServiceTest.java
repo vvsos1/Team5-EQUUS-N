@@ -1,12 +1,9 @@
 package com.feedhanjum.back_end.feedback.service;
 
 import com.feedhanjum.back_end.feedback.domain.Retrospect;
-import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import com.feedhanjum.back_end.feedback.repository.RetrospectQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.RetrospectRepository;
-import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
-import com.feedhanjum.back_end.member.domain.ProfileImage;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.domain.Team;
 import com.feedhanjum.back_end.team.repository.TeamRepository;
@@ -21,12 +18,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.feedhanjum.back_end.test.util.DomainTestUtils.assertEqualTeam;
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.createMemberWithId;
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.createTeamWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -47,19 +44,6 @@ class RetrospectServiceTest {
 
     private final AtomicLong nextId = new AtomicLong(1L);
 
-    private Member createMember(String name) {
-        List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
-        Member member = new Member(name, name + "@email.com", new ProfileImage("bg " + name, "image " + name), feedbackPreferences);
-        ReflectionTestUtils.setField(member, "id", nextId.getAndIncrement());
-        return member;
-    }
-
-    private Team createTeam(String teamName, Member leader) {
-        Team team = new Team(teamName, leader, LocalDate.now(), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
-        ReflectionTestUtils.setField(team, "id", nextId.getAndIncrement());
-        return team;
-    }
-
     private Retrospect createRetrospect(String title, Member writer, Team team) {
         Retrospect retrospect = new Retrospect(title, title + "'s content", writer, team);
         ReflectionTestUtils.setField(retrospect, "id", nextId.getAndIncrement());
@@ -75,8 +59,8 @@ class RetrospectServiceTest {
         Long writerId = 1L;
         Long teamId = 1L;
 
-        Member writer = mock();
-        Team team = mock();
+        Member writer = createMemberWithId("writer");
+        Team team = createTeamWithId("team", writer);
 
         when(memberRepository.findById(writerId)).thenReturn(Optional.of(writer));
         when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
@@ -90,7 +74,7 @@ class RetrospectServiceTest {
         assertThat(result.getTitle()).isEqualTo(title);
         assertThat(result.getContent()).isEqualTo(content);
         assertThat(result.getWriter()).isEqualTo(writer);
-        assertEqualTeam(team, result.getTeam());
+        assertThat(result.getTeam().getId()).isEqualTo(team.getId());
     }
 
     @Test
@@ -134,8 +118,8 @@ class RetrospectServiceTest {
     void test4() {
         // given
         int page = 1;
-        Member writer = createMember("member1");
-        Team team = createTeam("team1", writer);
+        Member writer = createMemberWithId("member1");
+        Team team = createTeamWithId("team1", writer);
         Sort.Direction sortOrder = Sort.Direction.DESC;
         ArgumentCaptor<PageRequest> pageCaptor = ArgumentCaptor.captor();
         Page<Retrospect> result = new PageImpl<>(List.of(

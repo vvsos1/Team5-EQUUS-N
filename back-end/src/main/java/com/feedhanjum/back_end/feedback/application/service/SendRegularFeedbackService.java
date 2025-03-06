@@ -38,14 +38,14 @@ class SendRegularFeedbackService implements SendRegularFeedbackUseCase {
     private final SaveFeedbackPort saveFeedbackPort;
     private final DeleteRegularFeedbackRequestPort deleteRegularFeedbackRequestPort;
 
-    @Transactional
     @Override
+    @Transactional
     public void sendRegularFeedback(SendRegularFeedbackCommand command) {
         Long senderId = command.getSenderId();
         Long receiverId = command.getReceiverId();
         Long scheduleId = command.getScheduleId();
 
-        Optional<RegularFeedbackRequest> regularFeedbackRequest = loadRegularFeedbackRequestPort.loadRegularFeedbackRequest(receiverId, scheduleId, senderId);
+        Optional<RegularFeedbackRequest> regularFeedbackRequest = loadRegularFeedbackRequestPort.load(receiverId, scheduleId, senderId);
         if (regularFeedbackRequest.isEmpty())
             throw new RegularFeedbackRequestNotFoundException(scheduleId, senderId);
 
@@ -72,7 +72,7 @@ class SendRegularFeedbackService implements SendRegularFeedbackUseCase {
         );
 
         saveFeedbackPort.saveFeedback(feedback);
-        deleteRegularFeedbackRequestPort.deleteRegularFeedbackRequest(regularFeedbackRequest.get().getId());
+        deleteRegularFeedbackRequestPort.deleteById(regularFeedbackRequest.get().getId());
         Events.raise(new RegularFeedbackCreatedEvent(feedbackId, senderId, receiverId));
     }
 

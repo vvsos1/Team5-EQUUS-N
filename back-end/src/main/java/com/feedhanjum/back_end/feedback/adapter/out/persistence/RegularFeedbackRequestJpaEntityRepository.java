@@ -10,4 +10,10 @@ interface RegularFeedbackRequestJpaEntityRepository extends JpaRepository<Regula
     Optional<RegularFeedbackRequestJpaEntity> findByRequesterIdAndScheduleIdAndReceiverId(Long requesterId, Long scheduleId, Long receiverId);
 
     List<RegularFeedbackRequestJpaEntity> findAllByScheduleIdAndReceiverId(Long scheduleId, Long receiverId);
+
+    void deleteBySchedule_TeamIdAndReceiver_Id(Long teamId, Long receiverId);
+
+    void deleteBySchedule_TeamIdAndRequester_Id(Long teamId, Long requesterId);
+
+    Long countBySchedule_IdAndReceiver_Id(Long scheduleId, Long receiverId);
 }

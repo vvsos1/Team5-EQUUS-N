@@ -4,7 +4,6 @@ import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 
 import java.util.List;
 
-public interface LoadRegularFeedbackRequestListPort {
-
-    List<RegularFeedbackRequest> loadRegularFeedbackRequestList(Long scheduleId, Long receiverId);
+public interface SaveRegularFeedbackRequestListPort {
+    void saveAll(List<RegularFeedbackRequest> requests);
 }

@@ -6,8 +6,6 @@ import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
 import com.feedhanjum.back_end.feedback.event.FeedbackReportCreatedEvent;
 import com.feedhanjum.back_end.feedback.repository.FeedbackQueryRepository;
 import com.feedhanjum.back_end.feedback.repository.FeedbackRepository;
-import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
-import com.feedhanjum.back_end.feedback.repository.RegularFeedbackRequestRepository;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.repository.MemberRepository;
 import com.feedhanjum.back_end.team.domain.Team;
@@ -27,10 +25,8 @@ public class FeedbackService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final FeedbackRepository feedbackRepository;
-    private final RegularFeedbackRequestRepository regularFeedbackRequestRepository;
     private final EventPublisher eventPublisher;
     private final FeedbackQueryRepository feedbackQueryRepository;
-    private final FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
 
     /**
      * @throws EntityNotFoundException sender id, receiver id, team id에 해당하는 엔티티가 없을 경우, receiver나 sender가 team에 속해있지 않을 경우
@@ -104,13 +100,5 @@ public class FeedbackService {
                 eventPublisher.publishEvent(new FeedbackReportCreatedEvent(key));
             }
         }
-    }
-
-    @Transactional
-    public void removeFeedbackRequest(Long memberId, Long teamId) {
-        regularFeedbackRequestRepository.deleteAllByRequesterIdAndTeamId(memberId, teamId);
-        frequentFeedbackRequestRepository.deleteAllBySenderIdAndTeamId(memberId, teamId);
-        regularFeedbackRequestRepository.deleteAllByReceiverIdAndTeamId(memberId, teamId);
-        frequentFeedbackRequestRepository.deleteAllByReceiverIdAndTeamId(memberId, teamId);
     }
 }

@@ -13,8 +13,8 @@ import com.feedhanjum.back_end.feedback.application.port.out.request.regular.Sav
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.domain.AssociatedSchedule;
+import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
 import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
-import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
@@ -51,7 +51,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.feedhanjum.back_end.test.util.DomainTestUtils.*;
+import static com.feedhanjum.back_end.feedback.test.FeedbackFixture.createRegularFeedbackRequest;
+import static com.feedhanjum.back_end.test.util.DomainTestUtils.createFeedbackWithId;
 import static com.feedhanjum.back_end.test.util.SessionTestUtil.withLoginUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
@@ -152,9 +153,9 @@ class FeedbackControllerTest {
         @DisplayName("성공 시 204")
         void test1() throws Exception {
             // given
-            Member sender = member1;
-            Member receiver = member2;
-            Team team = team1;
+            var sender = FeedbackMember.of(member1);
+            var receiver = FeedbackMember.of(member2);
+            var team = AssociatedTeam.of(team1);
             SendFrequentFeedbackRequest request = new SendFrequentFeedbackRequest(
                     receiver.getId(),
                     team.getId(),
@@ -176,9 +177,9 @@ class FeedbackControllerTest {
             var feedbacks = loadFeedbackPort.loadFeedbacks();
             assertThat(feedbacks).hasSize(1);
             var feedback = feedbacks.get(0);
-            assertEqualSender(sender, feedback.getSender());
-            assertEqualReceiver(receiver, feedback.getReceiver());
-            assertEqualTeam(team, feedback.getTeam());
+            assertThat(feedback.getSender()).isEqualTo(sender);
+            assertThat(feedback.getReceiver()).isEqualTo(receiver);
+            assertThat(feedback.getTeam()).isEqualTo(team);
             assertThat(feedback.getFeedbackType()).isEqualTo(FeedbackType.ANONYMOUS);
             assertThat(feedback.getFeedbackFeeling()).isEqualTo(FeedbackFeeling.CONSTRUCTIVE);
             assertThat(feedback.getObjectiveFeedbacks()).containsExactlyInAnyOrderElementsOf(FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(1, 3));
@@ -225,12 +226,11 @@ class FeedbackControllerTest {
         @DisplayName("성공 시 204")
         void test1() throws Exception {
             // given
-            Member sender = member1;
-            Member receiver = member2;
-            Team team = team1;
-            Schedule schedule = schedule1;
-            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(
-                    new RegularFeedbackRequest(LocalDateTime.now(), FeedbackMember.of(receiver), AssociatedSchedule.of(schedule), FeedbackMember.of(sender)));
+            FeedbackMember sender = FeedbackMember.of(member1);
+            FeedbackMember receiver = FeedbackMember.of(member2);
+            AssociatedTeam team = AssociatedTeam.of(team1);
+            AssociatedSchedule schedule = AssociatedSchedule.of(schedule1);
+            saveRegularFeedbackRequestPort.save(createRegularFeedbackRequest(receiver, schedule, sender));
             SendRegularFeedbackRequest request = new SendRegularFeedbackRequest(
                     receiver.getId(),
                     schedule.getId(),
@@ -251,9 +251,9 @@ class FeedbackControllerTest {
             var feedbacks = loadFeedbackPort.loadFeedbacks();
             assertThat(feedbacks).hasSize(1);
             Feedback feedback = feedbacks.get(0);
-            assertEqualSender(sender, feedback.getSender());
-            assertEqualReceiver(receiver, feedback.getReceiver());
-            assertEqualTeam(team, feedback.getTeam());
+            assertThat(feedback.getSender()).isEqualTo(sender);
+            assertThat(feedback.getReceiver()).isEqualTo(receiver);
+            assertThat(feedback.getTeam()).isEqualTo(team);
             assertThat(feedback.getFeedbackType()).isEqualTo(FeedbackType.ANONYMOUS);
             assertThat(feedback.getFeedbackFeeling()).isEqualTo(FeedbackFeeling.CONSTRUCTIVE);
             assertThat(feedback.getObjectiveFeedbacks()).containsExactlyInAnyOrderElementsOf(FeedbackFeeling.CONSTRUCTIVE.getObjectiveFeedbacks().subList(1, 3));
@@ -405,8 +405,8 @@ class FeedbackControllerTest {
             var sender2 = FeedbackMember.of(member3);
             var receiver = FeedbackMember.of(member2);
             var schedule = AssociatedSchedule.of(schedule1);
-            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender1, schedule, receiver));
-            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender2, schedule, receiver));
+            saveRegularFeedbackRequestPort.save(createRegularFeedbackRequest(sender1, schedule, receiver));
+            saveRegularFeedbackRequestPort.save(createRegularFeedbackRequest(sender2, schedule, receiver));
 
             // when
             assertThat(mvc.get()
@@ -526,7 +526,7 @@ class FeedbackControllerTest {
             var receiver = FeedbackMember.of(member1);
             var sender = FeedbackMember.of(member2);
             var schedule = AssociatedSchedule.of(schedule1);
-            saveRegularFeedbackRequestPort.saveRegularFeedbackRequest(new RegularFeedbackRequest(LocalDateTime.now(), sender, schedule, receiver));
+            saveRegularFeedbackRequestPort.save(createRegularFeedbackRequest(sender, schedule, receiver));
 
             // when
             assertThat(mvc.delete()
@@ -535,7 +535,7 @@ class FeedbackControllerTest {
                     .session(withLoginUser(receiver))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-            var requests = loadRegularFeedbackRequestPort.loadRegularFeedbackRequest(receiver.getId(), schedule.getId(), sender.getId());
+            var requests = loadRegularFeedbackRequestPort.load(receiver.getId(), schedule.getId(), sender.getId());
             assertThat(requests).isEmpty();
         }
     }

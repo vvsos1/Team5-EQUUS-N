@@ -18,8 +18,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class DomainTestUtils {
     private static final AtomicLong nextId = new AtomicLong(1);
 
@@ -84,21 +82,4 @@ public class DomainTestUtils {
                 LocalDateTime.of(2022, 1, 1, 0, 0));
     }
 
-
-    public static void assertEqualSender(Member member, FeedbackMember sender) {
-        assertThat(member.getId()).isEqualTo(sender.getId());
-        assertThat(member.getName()).isEqualTo(sender.getName());
-        assertThat(member.getProfileImage()).isEqualTo(sender.getProfileImage());
-    }
-
-    public static void assertEqualReceiver(Member member, FeedbackMember receiver) {
-        assertThat(member.getId()).isEqualTo(receiver.getId());
-        assertThat(member.getName()).isEqualTo(receiver.getName());
-        assertThat(member.getProfileImage()).isEqualTo(receiver.getProfileImage());
-    }
-
-    public static void assertEqualTeam(Team team, AssociatedTeam associatedTeam) {
-        assertThat(team.getId()).isEqualTo(associatedTeam.getId());
-        assertThat(team.getName()).isEqualTo(associatedTeam.getName());
-    }
 }

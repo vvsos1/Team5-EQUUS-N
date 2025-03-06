@@ -189,7 +189,7 @@ class SendRegularFeedbackServiceTest {
     }
 
     private void givenRequestWillLoad(RegularFeedbackRequest request) {
-        when(loadRegularFeedbackRequestPort.loadRegularFeedbackRequest(
+        when(loadRegularFeedbackRequestPort.load(
                 request.getRequester().getId(),
                 request.getSchedule().getId(),
                 request.getReceiver().getId()))
@@ -197,12 +197,12 @@ class SendRegularFeedbackServiceTest {
     }
 
     private void givenRequestWillNotLoad() {
-        when(loadRegularFeedbackRequestPort.loadRegularFeedbackRequest(any(), any(), any()))
+        when(loadRegularFeedbackRequestPort.load(any(), any(), any()))
                 .thenReturn(Optional.empty());
     }
 
 
     private void verifyRequestWasDeleted(RegularFeedbackRequest request) {
-        verify(deleteRegularFeedbackRequestPort).deleteRegularFeedbackRequest(request.getId());
+        verify(deleteRegularFeedbackRequestPort).deleteById(request.getId());
     }
 }
