@@ -5,7 +5,6 @@ import com.feedhanjum.back_end.core.dto.Paged;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestQueryRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.request.ReceivedFeedbacksQueryRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.request.SentFeedbacksQueryRequest;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FeedbackReportDto;
 import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
@@ -13,7 +12,6 @@ import com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback;
 import com.feedhanjum.back_end.feedback.service.FeedbackQueryService;
 import com.feedhanjum.back_end.feedback.service.FeedbackService;
 import com.feedhanjum.back_end.feedback.service.dto.ReceivedFeedbackDto;
-import com.feedhanjum.back_end.feedback.service.dto.SentFeedbackDto;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -59,21 +57,6 @@ public class FeedbackController {
         return ResponseEntity.ok(frequentFeedbackRequests);
     }
 
-    @Operation(summary = "보낸 피드백 조회하기", description = "받은 피드백을 조회힙니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "보낸 피드백 조회 성공", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "403", description = "본인이 아닌 경우", content = @Content)
-    })
-    @GetMapping("/feedbacks/sender/{senderId}")
-    public ResponseEntity<Paged<SentFeedbackDto>> getSentFeedbacks(@Login Long loginId,
-                                                                   @PathVariable Long senderId,
-                                                                   @ParameterObject @Valid SentFeedbacksQueryRequest request) {
-        if (!Objects.equals(loginId, senderId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        Page<SentFeedbackDto> sentFeedbacks = feedbackQueryService.getSentFeedbacks(senderId, request.teamId(), request.filterHelpful(), request.page(), request.sortOrder());
-        return ResponseEntity.ok(Paged.from(sentFeedbacks));
-    }
 
     @Operation(summary = "받은 피드백 조회하기", description = "받은 피드백을 조회힙니다.")
     @ApiResponses({

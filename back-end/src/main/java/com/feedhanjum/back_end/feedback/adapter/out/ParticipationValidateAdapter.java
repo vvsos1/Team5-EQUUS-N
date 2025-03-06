@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.feedback.adapter.out;
 
-import com.feedhanjum.back_end.feedback.application.port.out.ParticipationValidatePort;
+import com.feedhanjum.back_end.feedback.application.port.out.schedule.ParticipationValidatePort;
 import com.feedhanjum.back_end.schedule.repository.ScheduleMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

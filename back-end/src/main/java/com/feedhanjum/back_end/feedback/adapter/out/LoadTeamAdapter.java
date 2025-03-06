@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.adapter.out;
 
-import com.feedhanjum.back_end.feedback.application.port.out.LoadTeamFromSchedulePort;
-import com.feedhanjum.back_end.feedback.application.port.out.LoadTeamPort;
+import com.feedhanjum.back_end.feedback.application.port.out.team.LoadTeamFromSchedulePort;
+import com.feedhanjum.back_end.feedback.application.port.out.team.LoadTeamPort;
 import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
 import com.feedhanjum.back_end.schedule.domain.Schedule;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;

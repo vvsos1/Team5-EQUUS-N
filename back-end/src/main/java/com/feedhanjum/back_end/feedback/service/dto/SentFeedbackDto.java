@@ -1,12 +1,13 @@
 package com.feedhanjum.back_end.feedback.service.dto;
 
+import com.feedhanjum.back_end.feedback.adapter.out.persistence.FeedbackJpaEntity;
 import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
-import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
-import com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback;
+import com.querydsl.core.annotations.QueryProjection;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public record SentFeedbackDto(
         Long feedbackId,
@@ -18,21 +19,19 @@ public record SentFeedbackDto(
         boolean liked,
         LocalDateTime createdAt
 ) {
-
-
-    public static SentFeedbackDto from(Feedback feedback) {
-        return new SentFeedbackDto(
-                feedback.getId().getId(),
-                feedback.getFeedbackType() == FeedbackType.ANONYMOUS,
+    @QueryProjection
+    public SentFeedbackDto(FeedbackJpaEntity feedback) {
+        this(
+                feedback.getId(),
+                Objects.equals(feedback.getFeedbackType(), FeedbackType.ANONYMOUS.name()),
                 ReceiverDto.from(feedback.getReceiver()),
-                feedback.getObjectiveFeedbacks().stream().map(ObjectiveFeedback::getDescription).toList(),
+                feedback.getObjectiveFeedbacks().stream().toList(),
                 feedback.getSubjectiveFeedback(),
                 feedback.getTeam().getName(),
                 feedback.isLiked(),
                 feedback.getCreatedAt()
         );
     }
-
 
     public record ReceiverDto(String name, String backgroundColor, String image) {
         public static ReceiverDto from(FeedbackMember receiver) {

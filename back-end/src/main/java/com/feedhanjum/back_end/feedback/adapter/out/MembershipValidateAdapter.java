@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.feedback.adapter.out;
 
-import com.feedhanjum.back_end.feedback.application.port.out.MembershipValidatePort;
+import com.feedhanjum.back_end.feedback.application.port.out.team.MembershipValidatePort;
 import com.feedhanjum.back_end.team.repository.TeamMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

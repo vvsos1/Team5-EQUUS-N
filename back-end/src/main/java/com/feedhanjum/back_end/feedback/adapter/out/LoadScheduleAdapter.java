@@ -1,6 +1,6 @@
 package com.feedhanjum.back_end.feedback.adapter.out;
 
-import com.feedhanjum.back_end.feedback.application.port.out.LoadSchedulePort;
+import com.feedhanjum.back_end.feedback.application.port.out.schedule.LoadSchedulePort;
 import com.feedhanjum.back_end.feedback.domain.AssociatedSchedule;
 import com.feedhanjum.back_end.schedule.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;

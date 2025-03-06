@@ -574,7 +574,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             Team team = team2;
-            feedbackRepository.saveAll(List.of(
+            saveFeedbackPort.saveFeedbacks(List.of(
                     createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS),
                     createFeedbackWithId(sender, receiver, team2, FeedbackType.ANONYMOUS),
                     createFeedbackWithId(sender, receiver, team2, FeedbackType.ANONYMOUS)));
@@ -602,7 +602,7 @@ class FeedbackControllerTest {
             // given
             Member sender = member1;
             Member receiver = member2;
-            feedbackRepository.saveAll(List.of(
+            saveFeedbackPort.saveFeedbacks(List.of(
                     createFeedbackWithId(sender, receiver, team1, false, true),
                     createFeedbackWithId(sender, receiver, team2, false, false),
                     createFeedbackWithId(sender, receiver, team2, false, true)));
@@ -630,7 +630,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             for (int i = 0; i < 20; i++) {
-                feedbackRepository.save(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
+                saveFeedbackPort.saveFeedback(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
             }
 
             // when & then
@@ -656,7 +656,7 @@ class FeedbackControllerTest {
             Member sender = member1;
             Member receiver = member2;
             for (int i = 0; i < 20; i++) {
-                feedbackRepository.save(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
+                saveFeedbackPort.saveFeedback(createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS));
             }
             // when & then
             assertThat(mvc.get()
@@ -681,7 +681,7 @@ class FeedbackControllerTest {
             Member notSender = member3;
             Member receiver = member2;
             Feedback feedback = createFeedbackWithId(sender, receiver, team1, FeedbackType.ANONYMOUS);
-            feedbackRepository.save(feedback);
+            saveFeedbackPort.saveFeedback(feedback);
 
             // when
             assertThat(mvc.get()
