@@ -2,8 +2,8 @@ package com.feedhanjum.back_end.feedback.adapter.in.web;
 
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.response.FeedbackReportResponse;
-import com.feedhanjum.back_end.feedback.application.port.in.GetFeedbackReportUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.GetFeedbackReportCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.report.GetFeedbackReportUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.report.command.GetFeedbackReportCommand;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

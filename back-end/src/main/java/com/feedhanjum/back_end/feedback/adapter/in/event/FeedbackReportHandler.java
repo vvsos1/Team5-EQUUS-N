@@ -1,9 +1,9 @@
 package com.feedhanjum.back_end.feedback.adapter.in.event;
 
-import com.feedhanjum.back_end.feedback.application.port.in.ApplyFeedbackReportUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.CreateFeedbackReportUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.ApplyFeedbackReportCommand;
-import com.feedhanjum.back_end.feedback.application.port.in.command.CreateFeedbackReportCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.report.ApplyFeedbackReportUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.report.CreateFeedbackReportUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.report.command.ApplyFeedbackReportCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.report.command.CreateFeedbackReportCommand;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import com.feedhanjum.back_end.feedback.event.RegularFeedbackCreatedEvent;
 import com.feedhanjum.back_end.member.event.MemberRegisteredEvent;

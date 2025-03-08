@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.adapter.in.event;
 
-import com.feedhanjum.back_end.feedback.application.port.in.RemoveRelatedFrequentFeedbackRequestUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.RemoveRelatedFrequentFeedbackRequestCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.request.frequent.RemoveRelatedFrequentFeedbackRequestUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.request.frequent.command.RemoveRelatedFrequentFeedbackRequestCommand;
 import com.feedhanjum.back_end.feedback.event.FrequentFeedbackCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;

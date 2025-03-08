@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.application.service;
 
-import com.feedhanjum.back_end.feedback.application.port.in.GetFrequentFeedbackRequestsUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.GetFrequentFeedbackRequestsCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.request.frequent.GetFrequentFeedbackRequestsUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.request.frequent.command.GetFrequentFeedbackRequestsCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.request.frequent.LoadFrequentFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.domain.FrequentFeedbackRequest;
 import lombok.RequiredArgsConstructor;

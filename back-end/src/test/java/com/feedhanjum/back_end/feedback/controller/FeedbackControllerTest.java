@@ -8,8 +8,8 @@ import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendFrequentF
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendRegularFeedbackRequest;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.response.FrequentFeedbackRequestResponse;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.response.RegularFeedbackRequestResponse;
-import com.feedhanjum.back_end.feedback.application.port.in.RequestFrequentFeedbackUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.RequestFrequentFeedbackCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.request.frequent.RequestFrequentFeedbackUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.request.frequent.command.RequestFrequentFeedbackCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.frequent.LoadFrequentFeedbackRequestPort;

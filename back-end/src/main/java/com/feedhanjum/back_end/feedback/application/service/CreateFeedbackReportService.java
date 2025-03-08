@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.application.service;
 
-import com.feedhanjum.back_end.feedback.application.port.in.CreateFeedbackReportUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.CreateFeedbackReportCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.report.CreateFeedbackReportUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.report.command.CreateFeedbackReportCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackReportPort;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import lombok.RequiredArgsConstructor;

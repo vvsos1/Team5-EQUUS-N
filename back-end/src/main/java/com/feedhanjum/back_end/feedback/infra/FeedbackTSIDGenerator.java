@@ -6,7 +6,7 @@ import com.github.f4b6a3.tsid.TsidFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FeedbackTSIDGenerator implements FeedbackIdGenerator {
+class FeedbackTSIDGenerator implements FeedbackIdGenerator {
     private final TsidFactory factory = TsidFactory.newInstance256();
 
     @Override

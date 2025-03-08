@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.application.service;
 
-import com.feedhanjum.back_end.feedback.application.port.in.GetReceivedFeedbacksUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.GetReceivedFeedbacksCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.feedback.GetReceivedFeedbacksUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.feedback.command.GetReceivedFeedbacksCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadReceivedFeedbackPort;
 import com.feedhanjum.back_end.feedback.dto.ReceivedFeedbackDto;
 import lombok.RequiredArgsConstructor;

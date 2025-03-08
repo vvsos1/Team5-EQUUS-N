@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.adapter.in.event;
 
-import com.feedhanjum.back_end.feedback.application.port.in.CreateRegularFeedbackRequestsUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.CreateRegularFeedbackRequestsCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.request.regular.CreateRegularFeedbackRequestsUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.request.regular.command.CreateRegularFeedbackRequestsCommand;
 import com.feedhanjum.back_end.schedule.event.ScheduleEndedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.retry.annotation.Retryable;

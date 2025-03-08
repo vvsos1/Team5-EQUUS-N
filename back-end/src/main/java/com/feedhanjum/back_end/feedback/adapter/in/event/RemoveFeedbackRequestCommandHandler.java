@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.adapter.in.event;
 
-import com.feedhanjum.back_end.feedback.application.port.in.RemoveFeedbackRequestUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.RemoveFeedbackRequestCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.request.RemoveFeedbackRequestUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.request.command.RemoveFeedbackRequestCommand;
 import com.feedhanjum.back_end.team.event.TeamMemberLeftEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;

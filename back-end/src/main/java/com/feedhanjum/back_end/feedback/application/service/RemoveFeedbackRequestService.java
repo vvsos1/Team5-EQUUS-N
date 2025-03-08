@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.application.service;
 
-import com.feedhanjum.back_end.feedback.application.port.in.RemoveFeedbackRequestUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.RemoveFeedbackRequestCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.request.RemoveFeedbackRequestUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.request.command.RemoveFeedbackRequestCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.request.frequent.DeleteFrequentFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.DeleteRegularFeedbackRequestPort;
 import lombok.RequiredArgsConstructor;

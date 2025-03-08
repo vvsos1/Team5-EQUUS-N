@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.application.service;
 
-import com.feedhanjum.back_end.feedback.application.port.in.RemoveRelatedFrequentFeedbackRequestUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.RemoveRelatedFrequentFeedbackRequestCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.request.frequent.RemoveRelatedFrequentFeedbackRequestUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.request.frequent.command.RemoveRelatedFrequentFeedbackRequestCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.request.frequent.DeleteFrequentFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.frequent.LoadFrequentFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.domain.FrequentFeedbackRequest;

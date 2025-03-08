@@ -5,12 +5,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.auth.infra.SessionConst;
 import com.feedhanjum.back_end.core.dto.Paged;
-import com.feedhanjum.back_end.feedback.controller.dto.request.RetrospectWriteRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.response.RetrospectResponse;
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.RetrospectWriteRequest;
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.response.RetrospectResponse;
+import com.feedhanjum.back_end.feedback.application.port.out.retrospect.LoadWrittenRetrospectPort;
+import com.feedhanjum.back_end.feedback.application.port.out.retrospect.SaveRetrospectPort;
 import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
-import com.feedhanjum.back_end.feedback.domain.Retrospect;
+import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
-import com.feedhanjum.back_end.feedback.repository.RetrospectRepository;
+import com.feedhanjum.back_end.feedback.domain.retrospect.Retrospect;
+import com.feedhanjum.back_end.feedback.domain.retrospect.RetrospectIdGenerator;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
@@ -26,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
@@ -34,11 +38,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
+import java.time.*;
 import java.util.Comparator;
 import java.util.List;
 
@@ -56,13 +56,17 @@ class RetrospectControllerTest {
     private ObjectMapper mapper;
 
     @Autowired
-    private RetrospectRepository retrospectRepository;
-    @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private TeamRepository teamRepository;
     @Autowired
     private TeamMemberRepository teamMemberRepository;
+    @Autowired
+    private SaveRetrospectPort saveRetrospectPort;
+    @Autowired
+    private LoadWrittenRetrospectPort loadWrittenRetrospectPort;
+    @Autowired
+    private RetrospectIdGenerator idGenerator;
     private final Clock clock = Clock.fixed(Instant.parse("2025-01-10T12:00:00Z"), ZoneId.systemDefault());
 
 
@@ -76,7 +80,7 @@ class RetrospectControllerTest {
     }
 
     private Retrospect createRetrospect(String title, Member writer, Team team) {
-        return new Retrospect(title, title + "'s content", writer, team);
+        return new Retrospect(idGenerator.generateRetrospectId(), title, title + "'s content", FeedbackMember.of(writer), AssociatedTeam.of(team), LocalDateTime.now(clock));
     }
 
     private Member member1;
@@ -123,8 +127,8 @@ class RetrospectControllerTest {
             Team team = team2;
             Retrospect retrospect1 = createRetrospect("retrospect1", writer, team);
             Retrospect retrospect2 = createRetrospect("retrospect2", writer, team);
-            retrospectRepository.saveAll(List.of(
-                    retrospect1, retrospect2));
+            saveRetrospectPort.save(retrospect1);
+            saveRetrospectPort.save(retrospect2);
 
             // when
             assertThat(mvc.get()
@@ -143,8 +147,9 @@ class RetrospectControllerTest {
             Retrospect retrospect1 = createRetrospect("retrospect1", writer, team);
             Retrospect retrospect2 = createRetrospect("retrospect2", writer, otherTeam);
             Retrospect retrospect3 = createRetrospect("retrospect3", writer, team);
-            retrospectRepository.saveAll(List.of(
-                    retrospect1, retrospect2, retrospect3));
+            saveRetrospectPort.save(retrospect1);
+            saveRetrospectPort.save(retrospect2);
+            saveRetrospectPort.save(retrospect3);
 
             // when
             assertThat(mvc.get()
@@ -168,11 +173,9 @@ class RetrospectControllerTest {
             // given
             Member writer = member2;
             Team team = team1;
-            List<Retrospect> retrospects = new ArrayList<>();
             for (int i = 0; i < 20; i++) {
-                retrospects.add(createRetrospect("title" + i, writer, team));
+                saveRetrospectPort.save(createRetrospect("title" + i, writer, team));
             }
-            retrospectRepository.saveAll(retrospects);
 
             // when
             assertThat(mvc.get()
@@ -199,11 +202,9 @@ class RetrospectControllerTest {
             // given
             Member writer = member2;
             Team team = team1;
-            List<Retrospect> retrospects = new ArrayList<>();
             for (int i = 0; i < 20; i++) {
-                retrospects.add(createRetrospect("title" + i, writer, team));
+                saveRetrospectPort.save(createRetrospect("title" + i, writer, team));
             }
-            retrospectRepository.saveAll(retrospects);
 
             // when
             assertThat(mvc.get()
@@ -230,8 +231,8 @@ class RetrospectControllerTest {
             Team team = team1;
             Retrospect retrospect1 = createRetrospect("retrospect1", writer, team);
             Retrospect retrospect2 = createRetrospect("retrospect2", writer, team);
-            retrospectRepository.saveAll(List.of(
-                    retrospect1, retrospect2));
+            saveRetrospectPort.save(retrospect1);
+            saveRetrospectPort.save(retrospect2);
 
             // when
             assertThat(mvc.get()
@@ -260,12 +261,12 @@ class RetrospectControllerTest {
             ).hasStatus(HttpStatus.CREATED);
 
             // then
-            List<Retrospect> retrospects = retrospectRepository.findAll();
+            var retrospects = getRetrospects(writer.getId());
             assertThat(retrospects).hasSize(1);
             Retrospect retrospect = retrospects.get(0);
             assertThat(retrospect.getTitle()).isEqualTo("title");
             assertThat(retrospect.getContent()).isEqualTo("content");
-            assertThat(retrospect.getWriter()).isEqualTo(writer);
+            assertThat(retrospect.getWriter().getId()).isEqualTo(writer.getId());
             assertThat(retrospect.getTeam()).isEqualTo(team);
         }
 
@@ -286,8 +287,12 @@ class RetrospectControllerTest {
             ).hasStatus(HttpStatus.FORBIDDEN);
 
             // then
-            assertThat(retrospectRepository.findAll()).isEmpty();
+            assertThat(getRetrospects(writer.getId())).isEmpty();
         }
+    }
+
+    private List<Retrospect> getRetrospects(Long writerId) {
+        return loadWrittenRetrospectPort.loadWrittenRetrospects(writerId, null, 0, 100, Sort.Direction.DESC).get().toList();
     }
 
 }

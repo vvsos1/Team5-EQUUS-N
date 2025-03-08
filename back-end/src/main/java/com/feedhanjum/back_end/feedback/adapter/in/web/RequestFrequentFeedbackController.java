@@ -2,8 +2,8 @@ package com.feedhanjum.back_end.feedback.adapter.in.web;
 
 import com.feedhanjum.back_end.auth.infra.Login;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.RequestFrequentFeedbackRequest;
-import com.feedhanjum.back_end.feedback.application.port.in.RequestFrequentFeedbackUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.RequestFrequentFeedbackCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.request.frequent.RequestFrequentFeedbackUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.request.frequent.command.RequestFrequentFeedbackCommand;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

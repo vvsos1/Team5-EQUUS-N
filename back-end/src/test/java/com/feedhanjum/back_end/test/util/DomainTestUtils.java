@@ -6,7 +6,7 @@ import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackIdGenerator;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
-import com.feedhanjum.back_end.feedback.infra.FeedbackTSIDGenerator;
+import com.feedhanjum.back_end.feedback.test.SimpleFeedbackIdGenerator;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class DomainTestUtils {
     private static final AtomicLong nextId = new AtomicLong(1);
 
-    private static FeedbackIdGenerator feedbackIdGenerator = new FeedbackTSIDGenerator();
+    private static FeedbackIdGenerator feedbackIdGenerator = new SimpleFeedbackIdGenerator();
 
     public static Member createMemberWithoutId(String name) {
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);

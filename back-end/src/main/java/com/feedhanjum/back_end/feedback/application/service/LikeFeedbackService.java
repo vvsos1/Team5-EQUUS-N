@@ -1,9 +1,9 @@
 package com.feedhanjum.back_end.feedback.application.service;
 
-import com.feedhanjum.back_end.feedback.application.port.in.LikeFeedbackUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.UnlikeFeedbackUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.LikeFeedbackCommand;
-import com.feedhanjum.back_end.feedback.application.port.in.command.UnlikeFeedbackCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.feedback.LikeFeedbackUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.feedback.UnlikeFeedbackUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.feedback.command.LikeFeedbackCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.feedback.command.UnlikeFeedbackCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
 import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;

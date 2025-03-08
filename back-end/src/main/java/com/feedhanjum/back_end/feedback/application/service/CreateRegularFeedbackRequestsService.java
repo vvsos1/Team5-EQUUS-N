@@ -1,8 +1,8 @@
 package com.feedhanjum.back_end.feedback.application.service;
 
 import com.feedhanjum.back_end.core.event.Events;
-import com.feedhanjum.back_end.feedback.application.port.in.CreateRegularFeedbackRequestsUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.CreateRegularFeedbackRequestsCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.request.regular.CreateRegularFeedbackRequestsUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.request.regular.command.CreateRegularFeedbackRequestsCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.LoadMemberPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestListPort;
 import com.feedhanjum.back_end.feedback.application.port.out.schedule.LoadParticipationPort;

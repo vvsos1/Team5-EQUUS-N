@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.application.service;
 
-import com.feedhanjum.back_end.feedback.application.port.in.SkipRegularFeedbackRequestUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.SkipRegularFeedbackRequestCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.request.regular.SkipRegularFeedbackRequestUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.request.regular.command.SkipRegularFeedbackRequestCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.DeleteRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;

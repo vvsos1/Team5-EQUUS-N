@@ -1,7 +1,7 @@
 package com.feedhanjum.back_end.feedback.application.service;
 
-import com.feedhanjum.back_end.feedback.application.port.in.ApplyFeedbackReportUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.ApplyFeedbackReportCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.report.ApplyFeedbackReportUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.report.command.ApplyFeedbackReportCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.*;
 import com.feedhanjum.back_end.feedback.domain.FeedbackReport;
 import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;

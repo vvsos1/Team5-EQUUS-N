@@ -1,8 +1,8 @@
 package com.feedhanjum.back_end.feedback.adapter.in.web;
 
 import com.feedhanjum.back_end.auth.infra.Login;
-import com.feedhanjum.back_end.feedback.application.port.in.LikeFeedbackUseCase;
-import com.feedhanjum.back_end.feedback.application.port.in.command.LikeFeedbackCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.feedback.LikeFeedbackUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.feedback.command.LikeFeedbackCommand;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
