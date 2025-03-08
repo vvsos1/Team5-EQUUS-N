@@ -1,5 +1,6 @@
 package com.feedhanjum.back_end.feedback.adapter.out.persistence.feedback;
 
+import com.feedhanjum.back_end.feedback.application.port.out.feedback.CountFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
 import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
-class FeedbackPersistenceAdapter implements SaveFeedbackPort, LoadFeedbackPort {
+class FeedbackPersistenceAdapter implements SaveFeedbackPort, LoadFeedbackPort, CountFeedbackPort {
     private final FeedbackJpaEntityRepository feedbackJpaEntityRepository;
     private final FeedbackMapper feedbackMapper;
 
@@ -36,5 +37,15 @@ class FeedbackPersistenceAdapter implements SaveFeedbackPort, LoadFeedbackPort {
                 .stream()
                 .map(feedbackMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Long countReceivedFeedback(Long receiverId) {
+        return feedbackJpaEntityRepository.countByReceiver_Id(receiverId);
+    }
+
+    @Override
+    public Long countSentFeedback(Long senderId) {
+        return feedbackJpaEntityRepository.countBySender_Id(senderId);
     }
 }

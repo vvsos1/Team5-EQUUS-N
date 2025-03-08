@@ -1,11 +1,11 @@
-package com.feedhanjum.back_end.feedback.controller.dto.request;
+package com.feedhanjum.back_end.feedback.adapter.in.web.dto.request;
 
 import com.feedhanjum.back_end.core.constraints.ByteLength;
 import com.feedhanjum.back_end.feedback.domain.FrequentFeedbackRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
-public record FrequentFeedbackRequestForApiRequest(
+public record RequestFrequentFeedbackRequest(
         @Schema(description = "수시 피드백 요청의 수신자 ID")
         @NotNull
         Long receiverId,

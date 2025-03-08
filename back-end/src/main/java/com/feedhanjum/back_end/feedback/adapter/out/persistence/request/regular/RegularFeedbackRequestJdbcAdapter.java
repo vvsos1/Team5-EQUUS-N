@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.adapter.out.persistence;
+package com.feedhanjum.back_end.feedback.adapter.out.persistence.request.regular;
 
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestListPort;
 import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
@@ -12,8 +12,8 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
-public class RegularFeedbackRequestJdbcAdapter implements SaveRegularFeedbackRequestListPort {
-    private static final String INSERT_SQL = "INSERT INTO regular_feedback_requests " +
+class RegularFeedbackRequestJdbcAdapter implements SaveRegularFeedbackRequestListPort {
+    private static final String INSERT_SQL = "INSERT INTO regular_feedback_request " +
             "(requester_id, requester_name, requester_email,requester_background_color," +
             "requester_image,schedule_id,schedule_name,schedule_end_time,team_id," +
             "receiver_id,receiver_name,receiver_email,receiver_background_color,receiver_image," +

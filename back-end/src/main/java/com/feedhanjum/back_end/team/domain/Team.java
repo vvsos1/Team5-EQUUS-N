@@ -1,6 +1,5 @@
 package com.feedhanjum.back_end.team.domain;
 
-import com.feedhanjum.back_end.feedback.domain.FrequentFeedbackRequest;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.team.exception.TeamEndedException;
@@ -52,9 +51,6 @@ public class Team {
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<TeamMember> teamMembers = new ArrayList<>();
-
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<FrequentFeedbackRequest> frequentFeedbackRequests = new ArrayList<>();
 
     public Team(String name, Member leader, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType, LocalDate now) {
         validateDuration(startDate, endDate, now);
@@ -109,42 +105,9 @@ public class Team {
         return teamMembers.size();
     }
 
-    // 수시 피드백 요청
-    public void requestFeedback(Member requestSender, Member requestReceiver, String requestedContent) {
-        validateTeamMember(requestSender);
-        validateTeamMember(requestReceiver);
-        this.frequentFeedbackRequests.removeIf(request -> requestSender.equals(request.getRequester()) && requestReceiver.equals(request.getReceiver()));
-        this.frequentFeedbackRequests.add(new FrequentFeedbackRequest(requestedContent, requestSender, this, requestReceiver));
-    }
-
-    // 모든 수시 피드백 요청 거절
-    public void rejectFeedbackRequests(Member requestReceiver) {
-        validateTeamMember(requestReceiver);
-        this.frequentFeedbackRequests.removeIf(request -> requestReceiver.equals(request.getReceiver()));
-    }
-
-    // 특정 수시 피드백 요청 거절
-    public void removeFeedbackRequest(Member requestSender, Member requestReceiver) {
-        validateTeamMember(requestSender);
-        validateTeamMember(requestReceiver);
-        this.frequentFeedbackRequests.removeIf(request -> requestSender.equals(request.getRequester()) && requestReceiver.equals(request.getReceiver()));
-    }
-
-    public List<FrequentFeedbackRequest> getFeedbackRequests(Member receiver) {
-        validateTeamMember(receiver);
-        return this.frequentFeedbackRequests.stream()
-                .filter(request -> receiver.equals(request.getReceiver()))
-                .toList();
-    }
-
     public List<TeamMember> getTeamMembers() {
         return Collections.unmodifiableList(teamMembers);
     }
-
-    public List<FrequentFeedbackRequest> getFrequentFeedbackRequests() {
-        return Collections.unmodifiableList(frequentFeedbackRequests);
-    }
-
 
     public boolean isTeamMember(Member member) {
         return teamMembers.stream().anyMatch(teamMember -> member.equals(teamMember.getMember()));

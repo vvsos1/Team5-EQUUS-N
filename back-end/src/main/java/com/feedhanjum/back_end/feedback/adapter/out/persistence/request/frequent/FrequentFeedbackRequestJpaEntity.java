@@ -1,6 +1,6 @@
-package com.feedhanjum.back_end.feedback.adapter.out.persistence;
+package com.feedhanjum.back_end.feedback.adapter.out.persistence.request.frequent;
 
-import com.feedhanjum.back_end.feedback.domain.AssociatedSchedule;
+import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
 import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,16 +9,19 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Table(name = "regular_feedback_requests")
+@Table(name = "regular_feedback_requests",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"requester_id", "team_id", "receiver_id"}))
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-class RegularFeedbackRequestJpaEntity {
+class FrequentFeedbackRequestJpaEntity {
     @Id
     @Column(name = "regular_feedback_request_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "requested_content", length = 500)
+    private String requestedContent;
 
     @Embedded
     @AttributeOverrides({
@@ -32,12 +35,10 @@ class RegularFeedbackRequestJpaEntity {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "id", column = @Column(name = "schedule_id")),
-            @AttributeOverride(name = "name", column = @Column(name = "schedule_name")),
-            @AttributeOverride(name = "endTime", column = @Column(name = "schedule_end_time")),
-            @AttributeOverride(name = "teamId", column = @Column(name = "team_id")),
+            @AttributeOverride(name = "id", column = @Column(name = "team_id")),
+            @AttributeOverride(name = "name", column = @Column(name = "team_name")),
     })
-    private AssociatedSchedule schedule;
+    private AssociatedTeam team;
 
     @Embedded
     @AttributeOverrides({
@@ -51,9 +52,10 @@ class RegularFeedbackRequestJpaEntity {
 
     private LocalDateTime createdAt;
 
-    public RegularFeedbackRequestJpaEntity(FeedbackMember requester, AssociatedSchedule schedule, FeedbackMember receiver, LocalDateTime createdAt) {
+    public FrequentFeedbackRequestJpaEntity(String requestedContent, FeedbackMember requester, AssociatedTeam team, FeedbackMember receiver, LocalDateTime createdAt) {
+        this.requestedContent = requestedContent;
         this.requester = requester;
-        this.schedule = schedule;
+        this.team = team;
         this.receiver = receiver;
         this.createdAt = createdAt;
     }

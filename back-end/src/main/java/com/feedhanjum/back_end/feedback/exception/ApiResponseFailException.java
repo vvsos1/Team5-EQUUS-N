@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class ApiResponseFailException extends RuntimeException {
-    private Long callerId;
+    private final Long callerId;
 
     public ApiResponseFailException(String message, Long callerId, Throwable cause) {
         super(message, cause);

@@ -1,47 +1,35 @@
 package com.feedhanjum.back_end.feedback.domain;
 
-import com.feedhanjum.back_end.member.domain.Member;
-import com.feedhanjum.back_end.team.domain.Team;
-import jakarta.persistence.*;
-import lombok.AccessLevel;
+import com.feedhanjum.back_end.core.event.Events;
+import com.feedhanjum.back_end.team.event.FrequentFeedbackRequestedEvent;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class FrequentFeedbackRequest {
     public static final int MIN_REQUESTED_CONTENT_BYTE = 0;
     public static final int MAX_REQUESTED_CONTENT_BYTE = 400;
-    @Id
-    @Column(name = "frequent_feedback_request_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
-    private String requestedContent;
+    private final String requestedContent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "requester_id")
-    private Member requester;
+    private final FeedbackMember requester;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id")
-    private Team team;
+    private final AssociatedTeam team;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id")
-    private Member receiver;
+    private final FeedbackMember receiver;
 
-    public FrequentFeedbackRequest(String requestedContent, Member requester, Team team, Member receiver) {
+    public FrequentFeedbackRequest(String requestedContent, FeedbackMember requester, AssociatedTeam team, FeedbackMember receiver, LocalDateTime createdAt) {
         this.requestedContent = requestedContent;
         this.requester = requester;
         this.team = team;
         this.receiver = receiver;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
+        Events.raise(new FrequentFeedbackRequestedEvent(requester.getId(), team.getId(), receiver.getId()));
     }
 
 }

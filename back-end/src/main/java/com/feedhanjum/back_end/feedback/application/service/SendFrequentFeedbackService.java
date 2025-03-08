@@ -61,7 +61,7 @@ class SendFrequentFeedbackService implements SendFrequentFeedbackUseCase {
         );
 
         saveFeedbackPort.saveFeedback(feedback);
-        Events.raise(new FrequentFeedbackCreatedEvent(feedbackId, senderId, receiverId));
+        Events.raise(new FrequentFeedbackCreatedEvent(feedbackId, senderId, teamId, receiverId));
     }
 
     private void validateMembership(Long teamId, Long memberId) {

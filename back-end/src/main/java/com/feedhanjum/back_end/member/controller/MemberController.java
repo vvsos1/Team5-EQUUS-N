@@ -1,7 +1,10 @@
 package com.feedhanjum.back_end.member.controller;
 
 import com.feedhanjum.back_end.auth.infra.Login;
-import com.feedhanjum.back_end.feedback.service.FeedbackService;
+import com.feedhanjum.back_end.feedback.application.port.in.GetReceivedFeedbackCountUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.GetSentFeedbackCountUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.command.GetReceivedFeedbackCountCommand;
+import com.feedhanjum.back_end.feedback.application.port.in.command.GetSentFeedbackCountCommand;
 import com.feedhanjum.back_end.member.controller.dto.LoginMemberResponse;
 import com.feedhanjum.back_end.member.controller.dto.MemberFeedbackPreferenceResponse;
 import com.feedhanjum.back_end.member.controller.dto.MemberResponse;
@@ -26,7 +29,8 @@ import java.util.List;
 @RequestMapping("/api")
 public class MemberController {
     private final MemberService memberService;
-    private final FeedbackService feedbackService;
+    private final GetReceivedFeedbackCountUseCase getReceivedFeedbackCountUseCase;
+    private final GetSentFeedbackCountUseCase getSentFeedbackCountUseCase;
 
     @Operation(summary = "특정 회원 정보 조회", description = "특정 회원의 정보를 조회합니다.")
     @ApiResponses({
@@ -48,8 +52,8 @@ public class MemberController {
     public ResponseEntity<LoginMemberResponse> getLoginMember(@Login Long id) {
         LoginMemberResponse loginMemberResponse = new LoginMemberResponse(
                 memberService.getMemberById(id),
-                feedbackService.getReceivedFeedbackCount(id),
-                feedbackService.getSentFeedbackCount(id)
+                getReceivedFeedbackCountUseCase.getReceivedFeedbackCount(new GetReceivedFeedbackCountCommand(id)),
+                getSentFeedbackCountUseCase.getSentFeedbackCount(new GetSentFeedbackCountCommand(id))
         );
         return new ResponseEntity<>(loginMemberResponse, HttpStatus.OK);
     }

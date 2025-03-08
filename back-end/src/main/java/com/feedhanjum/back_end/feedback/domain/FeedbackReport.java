@@ -1,9 +1,11 @@
 package com.feedhanjum.back_end.feedback.domain;
 
+import com.feedhanjum.back_end.core.event.Events;
 import com.feedhanjum.back_end.feedback.domain.feedback.Feedback;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackCategory;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.feedback.ObjectiveFeedback;
+import com.feedhanjum.back_end.feedback.event.FeedbackReportCreatedEvent;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -44,6 +46,8 @@ public class FeedbackReport {
         for (ObjectiveFeedback objectiveFeedback : feedback.getObjectiveFeedbacks()) {
             applyObjectiveFeedback(objectiveFeedback);
         }
+        if (feedbackCount == REQUIRED_FEEDBACK_COUNT)
+            Events.raise(new FeedbackReportCreatedEvent(memberId));
     }
 
     public List<KeywordCount> getTopKeywords() {

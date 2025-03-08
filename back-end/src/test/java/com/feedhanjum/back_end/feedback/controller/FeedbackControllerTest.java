@@ -3,15 +3,18 @@ package com.feedhanjum.back_end.feedback.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feedhanjum.back_end.core.dto.Paged;
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.RequestFrequentFeedbackRequest;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendFrequentFeedbackRequest;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.request.SendRegularFeedbackRequest;
+import com.feedhanjum.back_end.feedback.adapter.in.web.dto.response.FrequentFeedbackRequestResponse;
 import com.feedhanjum.back_end.feedback.adapter.in.web.dto.response.RegularFeedbackRequestResponse;
+import com.feedhanjum.back_end.feedback.application.port.in.RequestFrequentFeedbackUseCase;
+import com.feedhanjum.back_end.feedback.application.port.in.command.RequestFrequentFeedbackCommand;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.LoadFeedbackPort;
 import com.feedhanjum.back_end.feedback.application.port.out.feedback.SaveFeedbackPort;
+import com.feedhanjum.back_end.feedback.application.port.out.request.frequent.LoadFrequentFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.LoadRegularFeedbackRequestPort;
 import com.feedhanjum.back_end.feedback.application.port.out.request.regular.SaveRegularFeedbackRequestPort;
-import com.feedhanjum.back_end.feedback.controller.dto.request.FrequentFeedbackRequestForApiRequest;
-import com.feedhanjum.back_end.feedback.controller.dto.response.FrequentFeedbackRequestForApiResponse;
 import com.feedhanjum.back_end.feedback.domain.AssociatedSchedule;
 import com.feedhanjum.back_end.feedback.domain.AssociatedTeam;
 import com.feedhanjum.back_end.feedback.domain.FeedbackMember;
@@ -20,7 +23,6 @@ import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackFeeling;
 import com.feedhanjum.back_end.feedback.domain.feedback.FeedbackType;
 import com.feedhanjum.back_end.feedback.dto.ReceivedFeedbackDto;
 import com.feedhanjum.back_end.feedback.dto.SentFeedbackDto;
-import com.feedhanjum.back_end.feedback.repository.FrequentFeedbackRequestRepository;
 import com.feedhanjum.back_end.member.domain.FeedbackPreference;
 import com.feedhanjum.back_end.member.domain.Member;
 import com.feedhanjum.back_end.member.domain.ProfileImage;
@@ -76,8 +78,6 @@ class FeedbackControllerTest {
     private ScheduleRepository scheduleRepository;
     @Autowired
     private ScheduleMemberRepository scheduleMemberRepository;
-    @Autowired
-    private FrequentFeedbackRequestRepository frequentFeedbackRequestRepository;
     private final Clock clock = Clock.fixed(Instant.parse("2025-01-10T12:00:00Z"), ZoneId.systemDefault());
     @Autowired
     private SaveRegularFeedbackRequestPort saveRegularFeedbackRequestPort;
@@ -87,6 +87,10 @@ class FeedbackControllerTest {
     private SaveFeedbackPort saveFeedbackPort;
     @Autowired
     private LoadFeedbackPort loadFeedbackPort;
+    @Autowired
+    private RequestFrequentFeedbackUseCase requestFrequentFeedbackUseCase;
+    @Autowired
+    private LoadFrequentFeedbackRequestPort loadFrequentFeedbackRequestPort;
 
     private Member createMember(String name) {
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
@@ -324,12 +328,12 @@ class FeedbackControllerTest {
         @DisplayName("성공 시 202")
         void test1() throws Exception {
             // given
-            Member sender = member1;
-            Member receiver = member2;
-            Team team = team1;
+            var sender = FeedbackMember.of(member1);
+            var receiver = FeedbackMember.of(member2);
+            var team = AssociatedTeam.of(team1);
             String requestedContent = "내용";
 
-            var body = new FrequentFeedbackRequestForApiRequest(receiver.getId(), team.getId(), requestedContent);
+            var body = new RequestFrequentFeedbackRequest(receiver.getId(), team.getId(), requestedContent);
 
             // when
             assertThat(mvc.post()
@@ -339,10 +343,7 @@ class FeedbackControllerTest {
                     .content(mapper.writeValueAsString(body))
             ).hasStatus(HttpStatus.ACCEPTED);
 
-            var requests = frequentFeedbackRequestRepository.findAll();
-
-            assertThat(requests).hasSize(1);
-            var request = requests.get(0);
+            var request = loadFrequentFeedbackRequestPort.load(sender.getId(), team.getId(), receiver.getId()).orElseThrow();
             assertThat(request.getRequester()).isEqualTo(sender);
             assertThat(request.getReceiver()).isEqualTo(receiver);
             assertThat(request.getTeam()).isEqualTo(team);
@@ -364,9 +365,10 @@ class FeedbackControllerTest {
             Member sender2 = member3;
             Team team = team1;
             Member receiver = member2;
-            team.requestFeedback(sender1, receiver, "내용 1");
-            team.requestFeedback(sender2, receiver, "내용 2");
-            teamRepository.save(team);
+            requestFrequentFeedbackUseCase
+                    .requestFrequentFeedback(new RequestFrequentFeedbackCommand(sender1.getId(), team.getId(), receiver.getId(), "내용 1"));
+            requestFrequentFeedbackUseCase
+                    .requestFrequentFeedback(new RequestFrequentFeedbackCommand(sender2.getId(), team.getId(), receiver.getId(), "내용 2"));
 
 
             // when
@@ -378,10 +380,10 @@ class FeedbackControllerTest {
             ).hasStatus(HttpStatus.OK)
                     .body()
                     .satisfies(result -> {
-                        List<FrequentFeedbackRequestForApiResponse> requests = mapper.readValue(result, new TypeReference<>() {
+                        List<FrequentFeedbackRequestResponse> requests = mapper.readValue(result, new TypeReference<>() {
                         });
                         assertThat(requests).hasSize(2);
-                        assertThat(requests).extracting(FrequentFeedbackRequestForApiResponse::requestedContent)
+                        assertThat(requests).extracting(FrequentFeedbackRequestResponse::requestedContent)
                                 .containsExactlyInAnyOrder("내용 1", "내용 2");
                         assertThat(requests).extracting(req -> req.requester().email())
                                 .containsExactlyInAnyOrder(sender1.getEmail(), sender2.getEmail());

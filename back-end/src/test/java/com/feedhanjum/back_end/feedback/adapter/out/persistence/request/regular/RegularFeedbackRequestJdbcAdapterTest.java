@@ -1,4 +1,4 @@
-package com.feedhanjum.back_end.feedback.adapter.out.persistence;
+package com.feedhanjum.back_end.feedback.adapter.out.persistence.request.regular;
 
 import com.feedhanjum.back_end.feedback.domain.RegularFeedbackRequest;
 import com.feedhanjum.back_end.test.annotation.PersistenceAdapterTest;
