@@ -1,0 +1,19 @@
+package com.feedhanjum.feedback.application.port.in.request.frequent.command;
+
+import com.feedhanjum.core.SelfValidating;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+
+@Getter
+public class GetFrequentFeedbackRequestsCommand extends SelfValidating<GetFrequentFeedbackRequestsCommand> {
+    @NotNull
+    private final Long teamId;
+    @NotNull
+    private final Long receiverId;
+
+    public GetFrequentFeedbackRequestsCommand(Long teamId, Long receiverId) {
+        this.teamId = teamId;
+        this.receiverId = receiverId;
+        validateSelf();
+    }
+}

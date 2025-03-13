@@ -1,0 +1,16 @@
+package com.feedhanjum.feedback.application.port.in.feedback.command;
+
+import com.feedhanjum.core.SelfValidating;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+
+@Getter
+public class GetSentFeedbackCountCommand extends SelfValidating<GetSentFeedbackCountCommand> {
+    @NotNull
+    private final Long senderId;
+
+    public GetSentFeedbackCountCommand(Long senderId) {
+        this.senderId = senderId;
+        validateSelf();
+    }
+}
