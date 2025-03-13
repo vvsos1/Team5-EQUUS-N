@@ -4,20 +4,13 @@ import com.feedhanjum.core.event.Events;
 import com.feedhanjum.feedback.domain.AssociatedTeam;
 import com.feedhanjum.feedback.domain.FeedbackMember;
 import com.feedhanjum.feedback.event.FeedbackLikedEvent;
-import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Feedback {
     public static final int MIN_OBJECTIVE_FEEDBACK_SIZE = 1;
@@ -25,58 +18,25 @@ public class Feedback {
     public static final int MIN_SUBJECTIVE_FEEDBACK_BYTE = 0;
     public static final int MAX_SUBJECTIVE_FEEDBACK_BYTE = 400;
 
-    @EmbeddedId
-    @Column(name = "feedback_id")
-    private FeedbackId id;
+    private final FeedbackId id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "feedback_type")
-    private FeedbackType feedbackType;
+    private final FeedbackType feedbackType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "feedback_feeling")
-    private FeedbackFeeling feedbackFeeling;
+    private final FeedbackFeeling feedbackFeeling;
 
-    @Column(name = "subjective_feedback", columnDefinition = "text")
-    private String subjectiveFeedback;
+    private final String subjectiveFeedback;
 
-    @Column(name = "liked")
-    private boolean liked = false;
+    private boolean liked;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "id", column = @Column(name = "sender_id")),
-            @AttributeOverride(name = "name", column = @Column(name = "sender_name")),
-            @AttributeOverride(name = "email", column = @Column(name = "sender_email")),
-            @AttributeOverride(name = "profileImage.backgroundColor", column = @Column(name = "sender_background_color")),
-            @AttributeOverride(name = "profileImage.image", column = @Column(name = "sender_image")),
-    })
-    private FeedbackMember sender;
+    private final FeedbackMember sender;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "id", column = @Column(name = "receiver_id")),
-            @AttributeOverride(name = "name", column = @Column(name = "receiver_name")),
-            @AttributeOverride(name = "email", column = @Column(name = "receiver_email")),
-            @AttributeOverride(name = "profileImage.backgroundColor", column = @Column(name = "receiver_background_color")),
-            @AttributeOverride(name = "profileImage.image", column = @Column(name = "receiver_image")),
-    })
-    private FeedbackMember receiver;
+    private final FeedbackMember receiver;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "id", column = @Column(name = "team_id")),
-            @AttributeOverride(name = "name", column = @Column(name = "team_name")),
-    })
-    private AssociatedTeam team;
+    private final AssociatedTeam team;
 
-    // 객관식 피드백
-    @Column(name = "objective_feedbacks", columnDefinition = "json")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private final Set<ObjectiveFeedback> objectiveFeedbacks = new HashSet<>();
+    private final Set<ObjectiveFeedback> objectiveFeedbacks;
 
     /**
      * @throws IllegalArgumentException 피드백 기분에 맞지 객관식 피드백이 있을 경우, 또는 객관식 피드백이 1개 이상 5개 이하가 아닐 경우
@@ -86,7 +46,7 @@ public class Feedback {
         this.feedbackType = feedbackType;
         this.subjectiveFeedback = subjectiveFeedback;
         this.feedbackFeeling = feedbackFeeling;
-        this.objectiveFeedbacks.addAll(objectiveFeedbacks);
+        this.objectiveFeedbacks = new HashSet<>(objectiveFeedbacks);
         this.liked = liked;
         this.sender = sender;
         this.receiver = receiver;

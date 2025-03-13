@@ -74,7 +74,7 @@ class ScheduleServiceIntegrationTest {
         @Bean
         @Primary
         public Clock fixedClock() {
-            return Clock.fixed(Instant.parse("2020-01-01T00:00:00Z"), ZoneId.systemDefault());
+            return Clock.fixed(Instant.parse("2020-01-01T00:00:00Z"), ZoneId.of("UTC"));
 
         }
 
