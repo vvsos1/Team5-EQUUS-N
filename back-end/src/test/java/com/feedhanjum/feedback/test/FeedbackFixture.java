@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class FeedbackFixture {
 
     public static FeedbackIdGenerator defaultFeedbackIdGenerator() {
-        return new SimpleFeedbackIdGenerator();
+        return new FeedbackIdGenerator();
     }
 
     private static final FeedbackIdGenerator feedbackIdGenerator = defaultFeedbackIdGenerator();

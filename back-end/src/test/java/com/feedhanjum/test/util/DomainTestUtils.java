@@ -6,7 +6,6 @@ import com.feedhanjum.feedback.domain.feedback.Feedback;
 import com.feedhanjum.feedback.domain.feedback.FeedbackFeeling;
 import com.feedhanjum.feedback.domain.feedback.FeedbackIdGenerator;
 import com.feedhanjum.feedback.domain.feedback.FeedbackType;
-import com.feedhanjum.feedback.test.SimpleFeedbackIdGenerator;
 import com.feedhanjum.member.domain.FeedbackPreference;
 import com.feedhanjum.member.domain.Member;
 import com.feedhanjum.member.domain.ProfileImage;
@@ -18,10 +17,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static com.feedhanjum.feedback.test.FeedbackFixture.defaultFeedbackIdGenerator;
+
 public class DomainTestUtils {
     private static final AtomicLong nextId = new AtomicLong(1);
 
-    private static FeedbackIdGenerator feedbackIdGenerator = new SimpleFeedbackIdGenerator();
+    private static FeedbackIdGenerator feedbackIdGenerator = defaultFeedbackIdGenerator();
 
     public static Member createMemberWithoutId(String name) {
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);

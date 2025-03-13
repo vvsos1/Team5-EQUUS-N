@@ -17,7 +17,6 @@ import com.feedhanjum.feedback.event.RegularFeedbackCreatedEvent;
 import com.feedhanjum.feedback.exception.ParticipationNotFound;
 import com.feedhanjum.feedback.exception.RegularFeedbackRequestNotFoundException;
 import com.feedhanjum.feedback.test.FeedbackFixture;
-import com.feedhanjum.feedback.test.SimpleFeedbackIdGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +39,7 @@ class SendRegularFeedbackServiceTest {
     @Mock
     LoadRegularFeedbackRequestPort loadRegularFeedbackRequestPort;
     @Spy
-    FeedbackIdGenerator feedbackIdGenerator = new SimpleFeedbackIdGenerator();
+    FeedbackIdGenerator feedbackIdGenerator = defaultFeedbackIdGenerator();
     @Mock
     ParticipationValidatePort participationValidatePort;
     @Mock
