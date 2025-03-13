@@ -1,6 +1,7 @@
 package com.feedhanjum.schedule.repository;
 
 import com.feedhanjum.schedule.repository.dto.ScheduleProjectionDto;
+import com.feedhanjum.team.domain.QMembership;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -19,12 +20,13 @@ import static com.feedhanjum.schedule.domain.QSchedule.schedule;
 import static com.feedhanjum.schedule.domain.QScheduleMember.scheduleMember;
 import static com.feedhanjum.schedule.domain.QTodo.todo;
 import static com.feedhanjum.team.domain.QTeam.team;
-import static com.feedhanjum.team.domain.QTeamMember.teamMember;
+
 
 @Repository
 @RequiredArgsConstructor
 public class ScheduleQueryRepository {
     private final JPAQueryFactory queryFactory;
+    private final QMembership membership = QMembership.membership;
 
     public List<ScheduleProjectionDto> findScheduleTodoList(Long scheduleId, Long memberId) {
         return queryScheduleProjectionDto()
@@ -64,9 +66,9 @@ public class ScheduleQueryRepository {
     public List<ScheduleProjectionDto> findSchedulesByTeamIdAndDuration(Long memberId, Long teamId, LocalDateTime startTime, LocalDateTime endTime) {
         JPQLQuery<Long> subQuery = JPAExpressions
                 .select(team.id)
-                .from(teamMember)
-                .join(teamMember.team, team)
-                .join(teamMember.member, member)
+                .from(membership)
+                .join(membership.team, team)
+                .join(membership.member, member)
                 .where(teamIdEq(teamId), memberIdEq(memberId));
         return queryScheduleProjectionDto()
                 .where(schedule.team.id.in(subQuery), schedule.endTime.between(startTime, endTime))

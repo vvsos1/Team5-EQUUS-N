@@ -50,7 +50,7 @@ public class Team {
     private Member leader;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<TeamMember> teamMembers = new ArrayList<>();
+    private final List<Membership> memberships = new ArrayList<>();
 
     public Team(String name, Member leader, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType, LocalDate now) {
         validateDuration(startDate, endDate, now);
@@ -82,7 +82,7 @@ public class Team {
     public void join(Member member) {
         if (isTeamMember(member))
             return;
-        teamMembers.add(new TeamMember(this, member));
+        memberships.add(new Membership(this, member));
     }
 
     // 팀 탈퇴
@@ -91,7 +91,7 @@ public class Team {
         if (isTeamLeader(member) && !onlyLeaderLeft())
             throw new TeamLeaderMustExistException("팀 리더는 팀을 나갈 수 없습니다");
         else if (!isTeamLeader(member) || onlyLeaderLeft())
-            this.teamMembers.removeIf(teamMember -> member.equals(teamMember.getMember()));
+            this.memberships.removeIf(teamMember -> member.equals(teamMember.getMember()));
     }
 
     // 팀원 강제 추방
@@ -102,15 +102,15 @@ public class Team {
     }
 
     public int memberCount() {
-        return teamMembers.size();
+        return memberships.size();
     }
 
-    public List<TeamMember> getTeamMembers() {
-        return Collections.unmodifiableList(teamMembers);
+    public List<Membership> getMemberships() {
+        return Collections.unmodifiableList(memberships);
     }
 
     public boolean isTeamMember(Member member) {
-        return teamMembers.stream().anyMatch(teamMember -> member.equals(teamMember.getMember()));
+        return memberships.stream().anyMatch(teamMember -> member.equals(teamMember.getMember()));
     }
 
     public TeamJoinToken createJoinToken(Member member, LocalDateTime now) {
@@ -144,6 +144,6 @@ public class Team {
     }
 
     private boolean onlyLeaderLeft() {
-        return teamMembers.size() == 1;
+        return memberships.size() == 1;
     }
 }

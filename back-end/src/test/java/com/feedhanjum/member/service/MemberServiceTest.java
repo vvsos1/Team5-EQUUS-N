@@ -5,8 +5,8 @@ import com.feedhanjum.member.domain.Member;
 import com.feedhanjum.member.domain.ProfileImage;
 import com.feedhanjum.member.repository.MemberQueryRepository;
 import com.feedhanjum.member.repository.MemberRepository;
+import com.feedhanjum.team.domain.Membership;
 import com.feedhanjum.team.domain.Team;
-import com.feedhanjum.team.domain.TeamMember;
 import com.feedhanjum.team.exception.TeamMembershipNotFoundException;
 import com.feedhanjum.team.repository.TeamMemberRepository;
 import com.feedhanjum.team.repository.TeamRepository;
@@ -102,9 +102,9 @@ class MemberServiceTest {
         //given
         Long memberId = 1L;
         Long teamId = 1L;
-        TeamMember teamMember = mock(TeamMember.class);
+        Membership membership = mock(Membership.class);
         when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId))
-                .thenReturn(Optional.of(teamMember));
+                .thenReturn(Optional.of(membership));
         Member member = mock(Member.class);
         List<Member> expectedMembers = List.of(member);
         Team team = mock(Team.class);

@@ -10,9 +10,9 @@ import com.feedhanjum.member.controller.dto.MemberResponse;
 import com.feedhanjum.member.domain.Member;
 import com.feedhanjum.member.repository.MemberRepository;
 import com.feedhanjum.team.controller.dto.*;
+import com.feedhanjum.team.domain.Membership;
 import com.feedhanjum.team.domain.Team;
 import com.feedhanjum.team.domain.TeamJoinToken;
-import com.feedhanjum.team.domain.TeamMember;
 import com.feedhanjum.team.event.TeamMemberLeftEvent;
 import com.feedhanjum.team.repository.TeamJoinTokenRepository;
 import com.feedhanjum.team.repository.TeamRepository;
@@ -314,7 +314,7 @@ public class TeamControllerIntegrationTest {
             ).hasStatus(HttpStatus.BAD_REQUEST);
 
             boolean stillInTeam = teamRepository.findById(team.getId()).orElseThrow()
-                    .getTeamMembers().stream()
+                    .getMemberships().stream()
                     .anyMatch(tm -> tm.getMember().equals(leader));
             assertThat(stillInTeam).isTrue();
         }
@@ -509,7 +509,7 @@ public class TeamControllerIntegrationTest {
 
     @Nested
     @DisplayName("팀원 추방 api 테스트")
-    class DeleteTeamMember {
+    class DeleteMembership {
         @Test
         @DisplayName("성공 시 204")
         void test1() {
@@ -528,7 +528,7 @@ public class TeamControllerIntegrationTest {
             ).hasStatus(HttpStatus.NO_CONTENT);
 
             List<Member> membersInTeam = teamRepository.findById(team.getId()).orElseThrow()
-                    .getTeamMembers().stream().map(TeamMember::getMember).toList();
+                    .getMemberships().stream().map(Membership::getMember).toList();
             assertThat(membersInTeam).hasSize(1);
             assertThat(membersInTeam.get(0).getId()).isEqualTo(leader.getId());
             verify(eventPublisher).publishEvent(any(TeamMemberLeftEvent.class));

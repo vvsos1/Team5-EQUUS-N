@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class TeamMember {
+public class Membership {
 
     @Id
     @Column(name = "team_member_id")
@@ -24,7 +24,7 @@ public class TeamMember {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public TeamMember(Team team, Member member) {
+    public Membership(Team team, Member member) {
         this.team = team;
         this.member = member;
     }

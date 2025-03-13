@@ -14,8 +14,8 @@ import com.feedhanjum.notification.controller.dto.response.InAppNotificationDto;
 import com.feedhanjum.notification.domain.FeedbackReportCreateNotification;
 import com.feedhanjum.notification.domain.InAppNotification;
 import com.feedhanjum.notification.repository.InAppNotificationRepository;
+import com.feedhanjum.team.domain.Membership;
 import com.feedhanjum.team.domain.Team;
-import com.feedhanjum.team.domain.TeamMember;
 import com.feedhanjum.team.repository.TeamMemberRepository;
 import com.feedhanjum.team.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,8 +94,8 @@ class InAppNotificationControllerTest {
         teamRepository.saveAll(List.of(team1));
 
         teamMemberRepository.saveAll(List.of(
-                new TeamMember(team1, member1),
-                new TeamMember(team1, member2)
+                new Membership(team1, member1),
+                new Membership(team1, member2)
         ));
     }
 

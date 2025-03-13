@@ -21,8 +21,8 @@ import com.feedhanjum.schedule.domain.Schedule;
 import com.feedhanjum.schedule.event.RegularFeedbackRequestCreatedEvent;
 import com.feedhanjum.schedule.event.ScheduleCreatedEvent;
 import com.feedhanjum.schedule.repository.ScheduleRepository;
+import com.feedhanjum.team.domain.Membership;
 import com.feedhanjum.team.domain.Team;
-import com.feedhanjum.team.domain.TeamMember;
 import com.feedhanjum.team.event.FrequentFeedbackRequestedEvent;
 import com.feedhanjum.team.event.TeamLeaderChangedEvent;
 import com.feedhanjum.team.repository.TeamRepository;
@@ -179,9 +179,9 @@ public class InAppNotificationService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        List<TeamMember> teamMembers = schedule.getTeam().getTeamMembers();
-        for (TeamMember teamMember : teamMembers) {
-            Member receiver = teamMember.getMember();
+        List<Membership> memberships = schedule.getTeam().getMemberships();
+        for (Membership membership : memberships) {
+            Member receiver = membership.getMember();
             InAppNotification notification = new ScheduleCreateNotification(receiver, schedule);
             inAppNotificationRepository.save(notification);
             eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));

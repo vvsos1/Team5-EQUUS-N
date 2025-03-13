@@ -15,8 +15,8 @@ import com.feedhanjum.schedule.repository.ScheduleMemberRepository;
 import com.feedhanjum.schedule.repository.ScheduleQueryRepository;
 import com.feedhanjum.schedule.repository.ScheduleRepository;
 import com.feedhanjum.schedule.service.dto.ScheduleRequestDto;
+import com.feedhanjum.team.domain.Membership;
 import com.feedhanjum.team.domain.Team;
-import com.feedhanjum.team.domain.TeamMember;
 import com.feedhanjum.team.exception.TeamMembershipNotFoundException;
 import com.feedhanjum.team.repository.TeamMemberRepository;
 import com.feedhanjum.team.repository.TeamRepository;
@@ -250,7 +250,7 @@ class TeamPlanOrchestrationServiceTest {
 
             // 존재하는 팀 멤버 체크 (dummy object 사용)
             when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId))
-                    .thenReturn(Optional.of(new TeamMember(team, member)));
+                    .thenReturn(Optional.of(new Membership(team, member)));
 
             // 중복 일정 없음
             when(scheduleRepository.findByTeamIdAndStartTime(teamId, startTime))
@@ -348,7 +348,7 @@ class TeamPlanOrchestrationServiceTest {
             Member member = mock(Member.class);
             when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
             when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId))
-                    .thenReturn(Optional.of(new TeamMember(team, member)));
+                    .thenReturn(Optional.of(new Membership(team, member)));
 
             when(scheduleRepository.findByTeamIdAndStartTime(teamId, LocalDateTime.of(2025, 3, 1, 10, 0)))
                     .thenReturn(Optional.of(mock(Schedule.class)));
