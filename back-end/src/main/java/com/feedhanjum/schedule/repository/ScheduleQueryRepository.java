@@ -65,10 +65,8 @@ public class ScheduleQueryRepository {
 
     public List<ScheduleProjectionDto> findSchedulesByTeamIdAndDuration(Long memberId, Long teamId, LocalDateTime startTime, LocalDateTime endTime) {
         JPQLQuery<Long> subQuery = JPAExpressions
-                .select(team.id)
+                .select(membership.teamId)
                 .from(membership)
-                .join(membership.team, team)
-                .join(membership.member, member)
                 .where(teamIdEq(teamId), memberIdEq(memberId));
         return queryScheduleProjectionDto()
                 .where(schedule.team.id.in(subQuery), schedule.endTime.between(startTime, endTime))
@@ -78,7 +76,7 @@ public class ScheduleQueryRepository {
     public Optional<LocalDateTime> findEarliestStartTimeByTeamId(Long teamId) {
         return Optional.ofNullable(queryFactory.select(schedule.startTime)
                 .from(schedule)
-                .where(teamIdEq(teamId))
+                .where(schedule.team.id.eq(teamId))
                 .orderBy(schedule.startTime.asc())
                 .fetchFirst());
     }
@@ -86,18 +84,18 @@ public class ScheduleQueryRepository {
     public Optional<LocalDateTime> findLatestEndTimeByTeamId(Long teamId) {
         return Optional.ofNullable(queryFactory.select(schedule.endTime)
                 .from(schedule)
-                .where(teamIdEq(teamId))
+                .where(schedule.team.id.eq(teamId))
                 .orderBy(schedule.endTime.desc())
                 .fetchFirst());
     }
 
 
     private BooleanExpression memberIdEq(Long memberId) {
-        return memberId == null ? null : member.id.eq(memberId);
+        return memberId == null ? null : membership.memberId.eq(memberId);
     }
 
     private BooleanExpression teamIdEq(Long teamId) {
-        return teamId == null ? null : team.id.eq(teamId);
+        return teamId == null ? null : membership.teamId.eq(teamId);
     }
 
     private JPAQuery<ScheduleProjectionDto> queryScheduleProjectionDto() {

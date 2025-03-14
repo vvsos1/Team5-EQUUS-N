@@ -1,6 +1,5 @@
 package com.feedhanjum.team.domain;
 
-import com.feedhanjum.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,17 +15,15 @@ public class Membership {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @Column(name = "team_id")
+    private Long teamId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @Column(name = "member_id")
+    private Long memberId;
 
-    public Membership(Team team, Member member) {
-        this.team = team;
-        this.member = member;
+    public Membership(Long teamId, Long memberId) {
+        this.teamId = teamId;
+        this.memberId = memberId;
     }
 
 }

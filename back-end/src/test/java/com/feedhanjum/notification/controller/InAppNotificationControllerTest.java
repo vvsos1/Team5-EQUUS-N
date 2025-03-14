@@ -94,8 +94,8 @@ class InAppNotificationControllerTest {
         teamRepository.saveAll(List.of(team1));
 
         teamMemberRepository.saveAll(List.of(
-                new Membership(team1, member1),
-                new Membership(team1, member2)
+                new Membership(team1.getId(), member1.getId()),
+                new Membership(team1.getId(), member2.getId())
         ));
     }
 

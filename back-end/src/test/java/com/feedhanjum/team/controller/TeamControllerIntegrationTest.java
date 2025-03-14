@@ -315,7 +315,7 @@ public class TeamControllerIntegrationTest {
 
             boolean stillInTeam = teamRepository.findById(team.getId()).orElseThrow()
                     .getMemberships().stream()
-                    .anyMatch(tm -> tm.getMember().equals(leader));
+                    .anyMatch(tm -> tm.getMemberId().equals(leader.getId()));
             assertThat(stillInTeam).isTrue();
         }
     }
@@ -527,10 +527,10 @@ public class TeamControllerIntegrationTest {
                             .session(withLoginUser(leader))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-            List<Member> membersInTeam = teamRepository.findById(team.getId()).orElseThrow()
-                    .getMemberships().stream().map(Membership::getMember).toList();
-            assertThat(membersInTeam).hasSize(1);
-            assertThat(membersInTeam.get(0).getId()).isEqualTo(leader.getId());
+            List<Long> memberIdsInTeam = teamRepository.findById(team.getId()).orElseThrow()
+                    .getMemberships().stream().map(Membership::getMemberId).toList();
+            assertThat(memberIdsInTeam).hasSize(1);
+            assertThat(memberIdsInTeam.get(0)).isEqualTo(leader.getId());
             verify(eventPublisher).publishEvent(any(TeamMemberLeftEvent.class));
         }
 

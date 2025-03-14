@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Table(name = "retrospect")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

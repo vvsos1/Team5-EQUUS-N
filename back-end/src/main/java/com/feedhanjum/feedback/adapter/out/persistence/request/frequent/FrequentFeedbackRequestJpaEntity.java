@@ -9,14 +9,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Table(name = "regular_feedback_requests",
+@Table(name = "frequent_feedback_request",
         uniqueConstraints = @UniqueConstraint(columnNames = {"requester_id", "team_id", "receiver_id"}))
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 class FrequentFeedbackRequestJpaEntity {
     @Id
-    @Column(name = "regular_feedback_request_id")
+    @Column(name = "frequent_feedback_request_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

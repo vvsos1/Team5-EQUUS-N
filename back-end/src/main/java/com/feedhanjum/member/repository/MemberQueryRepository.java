@@ -19,15 +19,9 @@ public class MemberQueryRepository {
     public List<Member> findMembersByTeamId(Long teamId) {
         return jpaQueryFactory.select(member)
                 .from(member)
-                .join(membership).on(membership.member.id.eq(member.id)).fetchJoin()
-                .where(membership.team.id.eq(teamId))
+                .join(membership).on(membership.memberId.eq(member.id)).fetchJoin()
+                .where(membership.teamId.eq(teamId))
                 .fetch();
     }
 
-    public Long countMembersByTeamId(Long teamId) {
-        return jpaQueryFactory.select(membership.count())
-                .from(membership)
-                .where(membership.team.id.eq(teamId))
-                .fetchOne();
-    }
 }

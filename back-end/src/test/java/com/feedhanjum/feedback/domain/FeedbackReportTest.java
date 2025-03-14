@@ -1,9 +1,11 @@
 package com.feedhanjum.feedback.domain;
 
+import com.feedhanjum.core.event.Events;
 import com.feedhanjum.feedback.domain.feedback.*;
 import com.feedhanjum.member.domain.Member;
 import com.feedhanjum.team.domain.Team;
 import com.feedhanjum.test.util.DomainTestUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,9 +14,9 @@ import java.util.List;
 
 import static com.feedhanjum.feedback.domain.feedback.ObjectiveFeedback.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 class FeedbackReportTest {
-
 
     Member member = DomainTestUtils.createMemberWithId("sender");
     Member receiver = DomainTestUtils.createMemberWithId("receiver");
@@ -41,6 +43,11 @@ class FeedbackReportTest {
             report.applyFeedback(feedback);
         }
         return report;
+    }
+
+    @BeforeEach
+    void setup() {
+        Events.setPublisher(mock());
     }
 
     @Test

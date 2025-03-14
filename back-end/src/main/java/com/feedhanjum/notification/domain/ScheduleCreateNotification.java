@@ -1,6 +1,5 @@
 package com.feedhanjum.notification.domain;
 
-import com.feedhanjum.member.domain.Member;
 import com.feedhanjum.schedule.domain.Schedule;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -19,8 +18,8 @@ public class ScheduleCreateNotification extends InAppNotification {
     private LocalDateTime scheduleDate;
     private Long teamId;
 
-    public ScheduleCreateNotification(Member receiver, Schedule schedule) {
-        super(receiver.getId());
+    public ScheduleCreateNotification(Long receiverId, Schedule schedule) {
+        super(receiverId);
         this.teamName = schedule.getTeam().getName();
         this.scheduleDate = schedule.getStartTime().toLocalDate().atStartOfDay();
         this.teamId = schedule.getTeam().getId();

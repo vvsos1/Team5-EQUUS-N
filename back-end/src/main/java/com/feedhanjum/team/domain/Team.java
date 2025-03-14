@@ -49,7 +49,8 @@ public class Team {
     @JoinColumn(name = "leader_id", nullable = false)
     private Member leader;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "team_id")
     private final List<Membership> memberships = new ArrayList<>();
 
     public Team(String name, Member leader, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType, LocalDate now) {
@@ -82,7 +83,7 @@ public class Team {
     public void join(Member member) {
         if (isTeamMember(member))
             return;
-        memberships.add(new Membership(this, member));
+        memberships.add(new Membership(getId(), member.getId()));
     }
 
     // 팀 탈퇴
@@ -91,7 +92,7 @@ public class Team {
         if (isTeamLeader(member) && !onlyLeaderLeft())
             throw new TeamLeaderMustExistException("팀 리더는 팀을 나갈 수 없습니다");
         else if (!isTeamLeader(member) || onlyLeaderLeft())
-            this.memberships.removeIf(teamMember -> member.equals(teamMember.getMember()));
+            this.memberships.removeIf(membership -> member.getId().equals(membership.getMemberId()));
     }
 
     // 팀원 강제 추방
@@ -110,7 +111,7 @@ public class Team {
     }
 
     public boolean isTeamMember(Member member) {
-        return memberships.stream().anyMatch(teamMember -> member.equals(teamMember.getMember()));
+        return memberships.stream().anyMatch(teamMember -> member.getId().equals(teamMember.getMemberId()));
     }
 
     public TeamJoinToken createJoinToken(Member member, LocalDateTime now) {

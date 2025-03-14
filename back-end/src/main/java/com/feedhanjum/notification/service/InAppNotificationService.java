@@ -181,8 +181,7 @@ public class InAppNotificationService {
 
         List<Membership> memberships = schedule.getTeam().getMemberships();
         for (Membership membership : memberships) {
-            Member receiver = membership.getMember();
-            InAppNotification notification = new ScheduleCreateNotification(receiver, schedule);
+            InAppNotification notification = new ScheduleCreateNotification(membership.getMemberId(), schedule);
             inAppNotificationRepository.save(notification);
             eventPublisher.publishEvent(new InAppNotificationCreatedEvent(notification.getId()));
         }

@@ -229,31 +229,29 @@ class TeamPlanOrchestrationServiceTest {
         @DisplayName("일정 생성 성공")
         void createSchedule_성공() {
             // given
-            Long memberId = 1L;
-            Long teamId = 1L;
-            ScheduleRequestDto requestDto = mock(ScheduleRequestDto.class);
-            when(requestDto.name()).thenReturn("haha");
-            LocalDateTime startTime = LocalDateTime.of(2025, 3, 1, 10, 0);
-            LocalDateTime endTime = LocalDateTime.of(2025, 3, 1, 12, 0);
-            when(requestDto.startTime()).thenReturn(startTime);
-            when(requestDto.endTime()).thenReturn(endTime);
-            Todo hehe = new Todo("hoho");
-            when(requestDto.todos()).thenReturn(List.of(hehe));
 
-            Team team = mock(Team.class);
+            ScheduleRequestDto requestDto = new ScheduleRequestDto(
+                    "haha",
+                    LocalDateTime.of(2025, 3, 1, 10, 0),
+                    LocalDateTime.of(2025, 3, 1, 12, 0),
+                    List.of(new Todo("hoho"))
+            );
+            Member member = createMemberWithId("member");
+            Team team = createTeamWithId("team", member, LocalDate.of(2025, 2, 28), LocalDate.of(2025, 3, 2), LocalDate.of(2025, 2, 28));
+            Long memberId = member.getId();
+            Long teamId = team.getId();
+
+
             when(teamRepository.findByIdForUpdateSharedLock(teamId)).thenReturn(Optional.of(team));
-            when(team.getStartDate()).thenReturn(LocalDate.of(2025, 2, 28));
-            when(team.getEndDate()).thenReturn(LocalDate.of(2025, 3, 2));
 
-            Member member = mock(Member.class);
             when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
 
             // 존재하는 팀 멤버 체크 (dummy object 사용)
             when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId))
-                    .thenReturn(Optional.of(new Membership(team, member)));
+                    .thenReturn(Optional.of(new Membership(team.getId(), member.getId())));
 
             // 중복 일정 없음
-            when(scheduleRepository.findByTeamIdAndStartTime(teamId, startTime))
+            when(scheduleRepository.findByTeamIdAndStartTime(teamId, requestDto.startTime()))
                     .thenReturn(Optional.empty());
 
             // clock 고정
@@ -276,7 +274,7 @@ class TeamPlanOrchestrationServiceTest {
             teamPlanOrchestrationService.createSchedule(memberId, teamId, requestDto);
 
             // then
-            verify(scheduleMember, times(1)).setTodos(List.of(hehe));
+            verify(scheduleMember, times(1)).setTodos(requestDto.todos());
             verify(eventPublisher).publishEvent(new ScheduleCreatedEvent(schedule.getId()));
         }
 
@@ -339,16 +337,16 @@ class TeamPlanOrchestrationServiceTest {
         @DisplayName("일정 생성 실패 - 중복 일정 존재")
         void createSchedule_중복일정존재() {
             // given
-            Long memberId = 1L;
-            Long teamId = 1L;
             ScheduleRequestDto requestDto = mock(ScheduleRequestDto.class);
             when(requestDto.startTime()).thenReturn(LocalDateTime.of(2025, 3, 1, 10, 0));
-            Team team = mock(Team.class);
+            Member member = createMemberWithId("member");
+            Team team = createTeamWithId("team", member);
+            Long memberId = member.getId();
+            Long teamId = team.getId();
             when(teamRepository.findByIdForUpdateSharedLock(teamId)).thenReturn(Optional.of(team));
-            Member member = mock(Member.class);
             when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
             when(teamMemberRepository.findByMemberIdAndTeamId(memberId, teamId))
-                    .thenReturn(Optional.of(new Membership(team, member)));
+                    .thenReturn(Optional.of(new Membership(team.getId(), member.getId())));
 
             when(scheduleRepository.findByTeamIdAndStartTime(teamId, LocalDateTime.of(2025, 3, 1, 10, 0)))
                     .thenReturn(Optional.of(mock(Schedule.class)));
@@ -372,14 +370,13 @@ class TeamPlanOrchestrationServiceTest {
             Long memberId = 1L;
             Long teamId = 1L;
             Long scheduleId = 100L;
-            ScheduleRequestDto requestDto = mock(ScheduleRequestDto.class);
-            when(requestDto.name()).thenReturn("haha");
-            LocalDateTime newStartTime = LocalDateTime.of(2025, 4, 1, 10, 0);
-            LocalDateTime newEndTime = LocalDateTime.of(2025, 4, 1, 12, 0);
-            when(requestDto.startTime()).thenReturn(newStartTime);
-            when(requestDto.endTime()).thenReturn(newEndTime);
-            Todo hehe = new Todo("hehe");
-            when(requestDto.todos()).thenReturn(List.of(hehe));
+            ScheduleRequestDto requestDto = new ScheduleRequestDto(
+                    "haha",
+                    LocalDateTime.of(2025, 4, 1, 10, 0),
+                    LocalDateTime.of(2025, 4, 1, 12, 0),
+                    List.of(new Todo("hehe"))
+            );
+
 
             Team team = mock(Team.class);
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
@@ -404,7 +401,7 @@ class TeamPlanOrchestrationServiceTest {
             teamPlanOrchestrationService.updateSchedule(memberId, teamId, scheduleId, requestDto);
 
             // then
-            verify(scheduleMember, times(1)).setTodos(List.of(hehe));
+            verify(scheduleMember, times(1)).setTodos(requestDto.todos());
         }
 
         @Test
