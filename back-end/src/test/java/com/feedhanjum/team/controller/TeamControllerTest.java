@@ -28,7 +28,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TeamControllerTest {
@@ -61,9 +62,9 @@ class TeamControllerTest {
                 endDate, FeedbackType.ANONYMOUS);
         TeamCreateDto teamCreateDto = new TeamCreateDto(request);
         TeamResponse teamResponse = new TeamResponse(null, "haha", startDate,
-                endDate, FeedbackType.ANONYMOUS, new MemberResponse(new Member("haha", "haha@hoho", null, feedbackPreferences)));
+                endDate, FeedbackType.ANONYMOUS, new TeamResponse.LeaderResponse(memberId));
         when(teamService.createTeam(memberId, teamCreateDto))
-                .thenReturn(new Team("haha", new Member("haha", "haha@hoho", null, feedbackPreferences),
+                .thenReturn(new Team("haha", memberId,
                         request.startDate(), request.endDate(), request.feedbackType(), LocalDate.now()));
 
         //when
@@ -81,7 +82,7 @@ class TeamControllerTest {
         //given
         Long memberId = 1L;
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
-        Team team = new Team("haha", new Member("haha", "haha@hoho", null, feedbackPreferences), LocalDate.now().plusDays(1),
+        Team team = new Team("haha", memberId, LocalDate.now().plusDays(1),
                 LocalDate.now().plusDays(10), FeedbackType.ANONYMOUS, LocalDate.now());
         TeamResponse teamResponse = new TeamResponse(team);
         when(teamService.getMyTeams(memberId)).thenReturn(List.of(team));
@@ -105,7 +106,7 @@ class TeamControllerTest {
 
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
         Member leader = new Member("haha", "haha", null, feedbackPreferences);
-        Team dummyTeam = new Team("haha", leader, now, now.plusDays(1), FeedbackType.IDENTIFIED, LocalDate.now());
+        Team dummyTeam = new Team("haha", leader.getId(), now, now.plusDays(1), FeedbackType.IDENTIFIED, LocalDate.now());
 
         Member dummyMember = new Member("hoho", "huhu", null, feedbackPreferences);
         List<Member> memberList = List.of(dummyMember);
@@ -128,8 +129,7 @@ class TeamControllerTest {
         assertThat(teamResponse.endDate()).isEqualTo(dummyTeam.getEndDate());
         assertThat(teamResponse.feedbackType()).isEqualTo(dummyTeam.getFeedbackType());
 
-        assertThat(teamResponse.leader().name()).isEqualTo(dummyTeam.getLeader().getName());
-        assertThat(teamResponse.leader().email()).isEqualTo(dummyTeam.getLeader().getEmail());
+        assertThat(teamResponse.leader().id()).isEqualTo(dummyTeam.getLeaderId());
 
         List<MemberResponse> members = teamDetailResponse.getMembers();
         assertThat(members).hasSize(memberList.size());
@@ -216,7 +216,7 @@ class TeamControllerTest {
         Long memberId = 100L;
         TeamUpdateRequest teamUpdateRequest = new TeamUpdateRequest("hehe", LocalDate.now().plusDays(1), LocalDate.now().plusDays(10), FeedbackType.IDENTIFIED);
 
-        Team team = new Team("haha", mock(Member.class), LocalDate.now().plusDays(1), LocalDate.now().plusDays(10), FeedbackType.ANONYMOUS, LocalDate.now());
+        Team team = new Team("haha", memberId, LocalDate.now().plusDays(1), LocalDate.now().plusDays(10), FeedbackType.ANONYMOUS, LocalDate.now());
         when(teamPlanOrchestrationService.updateTeamInfo(memberId, teamId, new TeamUpdateDto(teamUpdateRequest))).thenReturn(team);
 
         // when

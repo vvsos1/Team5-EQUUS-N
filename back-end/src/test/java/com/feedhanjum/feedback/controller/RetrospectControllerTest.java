@@ -76,7 +76,7 @@ class RetrospectControllerTest {
     }
 
     private Team createTeam(String name, Member leader) {
-        return new Team(name, leader, LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now(clock));
+        return new Team(name, leader.getId(), LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now(clock));
     }
 
     private Retrospect createRetrospect(String title, Member writer, Team team) {

@@ -16,7 +16,7 @@ public class TeamLeaderChangeNotification extends InAppNotification {
     private Long teamId;
 
     public TeamLeaderChangeNotification(Team team) {
-        super(team.getLeader().getId());
+        super(team.getLeaderId());
         this.teamName = team.getName();
         this.teamId = team.getId();
     }

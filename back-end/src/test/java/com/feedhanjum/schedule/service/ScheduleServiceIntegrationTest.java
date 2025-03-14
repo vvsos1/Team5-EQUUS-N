@@ -89,11 +89,11 @@ class ScheduleServiceIntegrationTest {
         memberRepository.saveAll(List.of(member1, member2, member3));
 
         team1 = DomainTestUtils.createTeamWithoutId("team1", member1);
-        team1.join(member2);
-        team1.join(member3);
+        team1.join(member2.getId());
+        team1.join(member3.getId());
         team2 = DomainTestUtils.createTeamWithoutId("team2", member2);
-        team2.join(member1);
-        team2.join(member3);
+        team2.join(member1.getId());
+        team2.join(member3.getId());
         teamRepository.saveAll(List.of(team1, team2));
 
     }

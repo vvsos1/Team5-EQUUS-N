@@ -1,6 +1,5 @@
 package com.feedhanjum.team.domain;
 
-import com.feedhanjum.member.domain.Member;
 import com.feedhanjum.team.exception.TeamEndedException;
 import com.feedhanjum.team.exception.TeamJoinTokenNotValidException;
 import jakarta.persistence.*;
@@ -43,10 +42,10 @@ public class TeamJoinToken {
     }
 
     // 연관 팀에 가입
-    public Team joinTeam(Member member) {
+    public Team joinTeam(Long memberId) {
         validate();
         Team team = getTeam();
-        team.join(member);
+        team.join(memberId);
         return team;
     }
 

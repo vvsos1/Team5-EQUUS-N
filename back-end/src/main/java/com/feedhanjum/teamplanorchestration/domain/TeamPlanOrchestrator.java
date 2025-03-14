@@ -32,7 +32,7 @@ public class TeamPlanOrchestrator {
             throw new IllegalArgumentException("팀 종료 날짜는 팀 내 존재하는 일정의 가장 늦은 종료 시점보다 느릴 수 없습니다.");
         }
 
-        team.updateInfo(leader, teamUpdateDto.teamName(), teamUpdateDto.startDate(), teamUpdateDto.endDate(), teamUpdateDto.feedbackType(), LocalDate.now(clock));
+        team.updateInfo(leader.getId(), teamUpdateDto.teamName(), teamUpdateDto.startDate(), teamUpdateDto.endDate(), teamUpdateDto.feedbackType(), LocalDate.now(clock));
     }
 
 
@@ -89,7 +89,7 @@ public class TeamPlanOrchestrator {
     }
 
     private void validateOwnerOrLeader(Schedule schedule, Member member, Team team) {
-        if (!(schedule.getOwner().equals(member) || team.getLeader().equals(member))) {
+        if (!(schedule.getOwner().equals(member) || team.isTeamLeader(member.getId()))) {
             throw new SecurityException("일정을 생성한 사람, 혹은 팀장만 일정을 수정할 수 있습니다.");
         }
     }

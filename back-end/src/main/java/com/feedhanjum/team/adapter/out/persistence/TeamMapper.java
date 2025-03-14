@@ -14,7 +14,7 @@ class TeamMapper {
                 team.getStartDate(),
                 team.getEndDate(),
                 team.getFeedbackType(),
-                team.getLeader().getId(),
+                team.getLeaderId(),
                 team.getMemberships().stream().map(this::fromDomain).toList()
         );
     }

@@ -103,7 +103,7 @@ public class ScheduleQueryRepository {
                         ScheduleProjectionDto.class,
                         team.id,
                         team.name,
-                        team.leader.id,
+                        team.leaderId,
                         schedule.id,
                         schedule.name,
                         schedule.owner.id,

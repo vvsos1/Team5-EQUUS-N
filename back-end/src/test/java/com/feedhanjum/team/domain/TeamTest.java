@@ -35,10 +35,10 @@ class TeamTest {
 
 
         // when
-        Team team = new Team("team1", leader, LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
+        Team team = new Team("team1", leader.getId(), LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
 
         // then
-        assertThat(team.isTeamMember(leader)).isTrue();
+        assertThat(team.isTeamMember(leader.getId())).isTrue();
     }
 
     @Test
@@ -46,15 +46,15 @@ class TeamTest {
     void changeLeader_성공() {
         // given
         Member currentLeader = createMember("currentLeader");
-        Team team = new Team("team1", currentLeader, LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
+        Team team = new Team("team1", currentLeader.getId(), LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
         Member newLeader = createMember("newLeader");
-        team.join(newLeader);
+        team.join(newLeader.getId());
 
         // when
-        team.changeLeader(currentLeader, newLeader);
+        team.changeLeader(currentLeader.getId(), newLeader.getId());
 
         // then
-        assertThat(team.getLeader()).isEqualTo(newLeader);
+        assertThat(team.getLeaderId()).isEqualTo(newLeader.getId());
     }
 
     @Test
@@ -62,18 +62,18 @@ class TeamTest {
     void changeLeader_실패() {
         // given
         Member currentLeader = createMember("currentLeader");
-        Team team = new Team("team1", currentLeader, LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
+        Team team = new Team("team1", currentLeader.getId(), LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
         Member notLeader = createMember("notLeader");
         Member newLeader = createMember("newLeader");
-        team.join(notLeader);
-        team.join(newLeader);
+        team.join(notLeader.getId());
+        team.join(newLeader.getId());
 
         // when
-        assertThatThrownBy(() -> team.changeLeader(notLeader, newLeader))
+        assertThatThrownBy(() -> team.changeLeader(notLeader.getId(), newLeader.getId()))
                 .isInstanceOf(SecurityException.class);
 
         // then
-        assertThat(team.getLeader()).isNotEqualTo(newLeader);
+        assertThat(team.getLeaderId()).isNotEqualTo(newLeader);
     }
 
     @Test
@@ -81,15 +81,15 @@ class TeamTest {
     void changeLeader_실패2() {
         // given
         Member currentLeader = createMember("currentLeader");
-        Team team = new Team("team1", currentLeader, LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
+        Team team = new Team("team1", currentLeader.getId(), LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
         Member newLeader = createMember("newLeader");
 
         // when
-        assertThatThrownBy(() -> team.changeLeader(currentLeader, newLeader))
+        assertThatThrownBy(() -> team.changeLeader(currentLeader.getId(), newLeader.getId()))
                 .isInstanceOf(TeamMembershipNotFoundException.class);
 
         // then
-        assertThat(team.getLeader()).isNotEqualTo(newLeader);
+        assertThat(team.getLeaderId()).isNotEqualTo(newLeader.getId());
     }
 
 }

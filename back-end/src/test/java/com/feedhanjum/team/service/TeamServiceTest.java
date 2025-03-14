@@ -73,7 +73,7 @@ class TeamServiceTest {
         when(clock.getZone()).thenReturn(Clock.systemDefaultZone().getZone());
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
         Member leader = new Member("haha", "haha@hoho", new ProfileImage("blue", "image1"), feedbackPreferences);
-        Team team = new Team("haha", leader, LocalDate.now(clock).plusDays(1), LocalDate.now(clock).plusDays(10), FeedbackType.ANONYMOUS, LocalDate.now(clock));
+        Team team = new Team("haha", leader.getId(), LocalDate.now(clock).plusDays(1), LocalDate.now(clock).plusDays(10), FeedbackType.ANONYMOUS, LocalDate.now(clock));
         when(teamQueryRepository.findTeamByMemberId(userId)).thenReturn(List.of(team));
 
         //when
@@ -106,7 +106,7 @@ class TeamServiceTest {
 
             //then
             assertThat(team.getName()).isEqualTo(teamName);
-            assertThat(team.getLeader()).isEqualTo(leader);
+            assertThat(team.getLeaderId()).isEqualTo(leader.getId());
             assertThat(team.getStartDate()).isEqualTo(startDate);
             assertThat(team.getEndDate()).isEqualTo(endDate);
             assertThat(team.getFeedbackType()).isEqualTo(feedbackType);
@@ -144,7 +144,7 @@ class TeamServiceTest {
             Member leader = createMemberWithId("leader");
             Team team = createTeamWithId("team", leader);
             Member member = createMemberWithId("member");
-            team.join(member);
+            team.join(member.getId());
 
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
             when(memberRepository.findById(leader.getId())).thenReturn(Optional.of(leader));
@@ -154,7 +154,7 @@ class TeamServiceTest {
             teamService.removeTeamMember(leader.getId(), team.getId(), member.getId());
 
             //then
-            assertThat(team.isTeamMember(member)).isFalse();
+            assertThat(team.isTeamMember(member.getId())).isFalse();
         }
 
         @Test
@@ -178,7 +178,7 @@ class TeamServiceTest {
             //given
             Member leader = createMemberWithId("leader");
             Team team = createTeamWithId("team", leader);
-            team.join(createMemberWithId("member"));
+            team.join(createMemberWithId("member").getId());
 
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
             when(memberRepository.findById(leader.getId())).thenReturn(Optional.of(leader));
@@ -194,9 +194,9 @@ class TeamServiceTest {
             //given
             Team team = createTeamWithId("team", createMemberWithId("leader"));
             Member notLeader = createMemberWithId("notLeader");
-            team.join(notLeader);
+            team.join(notLeader.getId());
             Member member = createMemberWithId("member");
-            team.join(member);
+            team.join(member.getId());
 
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
             when(memberRepository.findById(notLeader.getId())).thenReturn(Optional.of(notLeader));
@@ -237,7 +237,7 @@ class TeamServiceTest {
             Member currentLeader = createMemberWithId("currentLeader");
             Team team = createTeamWithId("team", currentLeader);
             Member newLeader = createMemberWithId("newLeader");
-            team.join(newLeader);
+            team.join(newLeader.getId());
 
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
             when(memberRepository.findById(currentLeader.getId())).thenReturn(Optional.of(currentLeader));
@@ -248,7 +248,7 @@ class TeamServiceTest {
             teamService.delegateTeamLeader(currentLeader.getId(), team.getId(), newLeader.getId());
 
             // then
-            assertThat(team.getLeader()).isEqualTo(newLeader);
+            assertThat(team.getLeaderId()).isEqualTo(newLeader.getId());
         }
 
         @Test
@@ -273,9 +273,9 @@ class TeamServiceTest {
             Member leader = createMemberWithId("leader");
             Team team = createTeamWithId("team", leader);
             Member notLeader = createMemberWithId("notLeader");
-            team.join(notLeader);
+            team.join(notLeader.getId());
             Member newLeader = createMemberWithId("newLeader");
-            team.join(newLeader);
+            team.join(newLeader.getId());
 
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
             when(memberRepository.findById(notLeader.getId())).thenReturn(Optional.of(notLeader));
@@ -298,7 +298,7 @@ class TeamServiceTest {
             Member leader = createMemberWithId("leader");
             Team team = createTeamWithId("team", leader);
             Member notLeader = createMemberWithId("notLeader");
-            team.join(notLeader);
+            team.join(notLeader.getId());
 
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
             when(memberRepository.findById(notLeader.getId())).thenReturn(Optional.of(notLeader));
@@ -306,7 +306,7 @@ class TeamServiceTest {
             // when
             teamService.leaveTeam(notLeader.getId(), team.getId());
             // then
-            assertThat(team.isTeamMember(notLeader)).isFalse();
+            assertThat(team.isTeamMember(notLeader.getId())).isFalse();
             verify(eventPublisher).publishEvent(new TeamMemberLeftEvent(team.getId(), notLeader.getId()));
         }
 
@@ -345,7 +345,7 @@ class TeamServiceTest {
             // given
             Member leader = createMemberWithId("leader");
             Team team = createTeamWithId("team", leader);
-            team.join(createMemberWithId("member"));
+            team.join(createMemberWithId("member").getId());
             when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
             when(memberRepository.findById(leader.getId())).thenReturn(Optional.of(leader));
 

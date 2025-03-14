@@ -44,7 +44,7 @@ public class TeamService {
     public Team createTeam(Long leaderId, TeamCreateDto teamCreateDto) {
         Member leader = memberRepository.findById(leaderId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-        Team team = new Team(teamCreateDto.teamName(), leader, teamCreateDto.startDate(), teamCreateDto.endDate(), teamCreateDto.feedbackType(), LocalDate.now(clock));
+        Team team = new Team(teamCreateDto.teamName(), leader.getId(), teamCreateDto.startDate(), teamCreateDto.endDate(), teamCreateDto.feedbackType(), LocalDate.now(clock));
         teamRepository.save(team);
         return team;
     }
@@ -76,7 +76,7 @@ public class TeamService {
         Member removeTarget = memberRepository.findById(memberIdToRemove)
                 .orElseThrow(() -> new EntityNotFoundException("팀원을 찾을 수 없습니다"));
 
-        team.expel(leader, removeTarget);
+        team.expel(leader.getId(), removeTarget.getId());
 
         eventPublisher.publishEvent(new TeamMemberLeftEvent(teamId, memberIdToRemove));
     }
@@ -93,7 +93,7 @@ public class TeamService {
         Member currentLeader = memberRepository.findById(currentLeaderId).orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다"));
         Member newLeader = memberRepository.findById(newLeaderId).orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다"));
 
-        team.changeLeader(currentLeader, newLeader);
+        team.changeLeader(currentLeader.getId(), newLeader.getId());
         eventPublisher.publishEvent(new TeamLeaderChangedEvent(teamId, newLeaderId));
     }
 
@@ -109,7 +109,7 @@ public class TeamService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다"));
 
-        team.leave(member);
+        team.leave(member.getId());
         if (team.memberCount() == 0) {
             deleteTeam(team);
         }
@@ -122,7 +122,7 @@ public class TeamService {
                 .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다."));
         Member member = memberRepository
                 .findById(memberId).orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다"));
-        TeamJoinToken joinToken = team.createJoinToken(member, LocalDateTime.now(clock));
+        TeamJoinToken joinToken = team.createJoinToken(member.getId(), LocalDateTime.now(clock));
         teamJoinTokenRepository.save(joinToken);
         return joinToken;
     }
@@ -140,7 +140,7 @@ public class TeamService {
                 .orElseThrow(() -> new EntityNotFoundException("토큰이 유효하지 않습니다."));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다"));
-        Team team = teamJoinToken.joinTeam(member);
+        Team team = teamJoinToken.joinTeam(memberId);
         eventPublisher.publishEvent(new TeamMemberJoinEvent(memberId, teamJoinToken.getTeamInfo().getId()));
         return team;
     }

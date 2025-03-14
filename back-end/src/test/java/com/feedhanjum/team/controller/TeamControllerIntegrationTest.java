@@ -268,7 +268,7 @@ public class TeamControllerIntegrationTest {
             Member leader = member1;
             Member member = member2;
             Team team = createTeamWithoutId("team1", leader);
-            team.join(member);
+            team.join(member.getId());
             teamRepository.save(team);
 
             // when & then
@@ -278,7 +278,7 @@ public class TeamControllerIntegrationTest {
                             .session(withLoginUser(member))
             ).hasStatus(HttpStatus.NO_CONTENT);
 
-            assertThat(team.isTeamMember(member)).isFalse();
+            assertThat(team.isTeamMember(member.getId())).isFalse();
             verify(eventPublisher).publishEvent(any(TeamMemberLeftEvent.class));
         }
 
@@ -303,7 +303,7 @@ public class TeamControllerIntegrationTest {
             Member leader = member1;
             Member otherMember = member2;
             Team team = createTeamWithoutId("team1", leader);
-            team.join(otherMember);
+            team.join(otherMember.getId());
             teamRepository.save(team);
 
             // when & then
@@ -362,7 +362,7 @@ public class TeamControllerIntegrationTest {
             Member me = member1;
             Member leader = member2;
             Team team = createTeamWithoutId("team1", leader);
-            team.join(me);
+            team.join(me.getId());
             teamRepository.saveAll(List.of(team));
 
             // when & then
@@ -409,7 +409,7 @@ public class TeamControllerIntegrationTest {
             Team team = createTeamWithoutId("teamByJoinToken", leader);
             teamRepository.save(team);
 
-            TeamJoinToken token = team.createJoinToken(leader, LocalDateTime.now(clock));
+            TeamJoinToken token = team.createJoinToken(leader.getId(), LocalDateTime.now(clock));
             teamJoinTokenRepository.save(token);
 
             // when & then
@@ -434,7 +434,7 @@ public class TeamControllerIntegrationTest {
             Team team = createTeamWithoutId("teamByJoinToken", leader);
             teamRepository.save(team);
 
-            TeamJoinToken expiredToken = team.createJoinToken(leader, LocalDateTime.now(clock));
+            TeamJoinToken expiredToken = team.createJoinToken(leader.getId(), LocalDateTime.now(clock));
             ReflectionTestUtils.setField(expiredToken, "expireDate", LocalDateTime.now().minusHours(1));
             teamJoinTokenRepository.save(expiredToken);
 
@@ -470,7 +470,7 @@ public class TeamControllerIntegrationTest {
             Member me = member1;
             Member otherMember = member2;
             Team team = createTeamWithoutId("team1", me);
-            team.join(otherMember);
+            team.join(otherMember.getId());
             teamRepository.save(team);
 
             // when & then
@@ -517,7 +517,7 @@ public class TeamControllerIntegrationTest {
             Member leader = member1;
             Member otherMember = member2;
             Team team = createTeamWithoutId("team1", leader);
-            team.join(otherMember);
+            team.join(otherMember.getId());
             teamRepository.save(team);
 
             // when & then
@@ -541,7 +541,7 @@ public class TeamControllerIntegrationTest {
             Member leader = member1;
             Member otherMember = member2;
             Team team = createTeamWithoutId("team1", leader);
-            team.join(otherMember);
+            team.join(otherMember.getId());
             teamRepository.save(team);
 
             // when & then
@@ -578,7 +578,7 @@ public class TeamControllerIntegrationTest {
             Member leader = member1;
             Member newLeader = member2;
             Team team = createTeamWithoutId("team1", leader);
-            team.join(newLeader);
+            team.join(newLeader.getId());
             teamRepository.save(team);
 
             // when & then
@@ -591,7 +591,7 @@ public class TeamControllerIntegrationTest {
             ).hasStatus(HttpStatus.OK);
 
             Team updatedTeam = teamRepository.findById(team.getId()).orElseThrow();
-            assertThat(updatedTeam.getLeader().getId()).isEqualTo(newLeader.getId());
+            assertThat(updatedTeam.getLeaderId()).isEqualTo(newLeader.getId());
         }
 
         @Test
@@ -602,8 +602,8 @@ public class TeamControllerIntegrationTest {
             Member nonLeader = member2;
             Member newLeader = member3;
             Team team = createTeamWithoutId("team1", leader);
-            team.join(nonLeader);
-            team.join(newLeader);
+            team.join(nonLeader.getId());
+            team.join(newLeader.getId());
             teamRepository.save(team);
 
             // when & then
@@ -616,7 +616,7 @@ public class TeamControllerIntegrationTest {
             ).hasStatus(HttpStatus.FORBIDDEN);
 
             Team unchangedTeam = teamRepository.findById(team.getId()).orElseThrow();
-            assertThat(unchangedTeam.getLeader().getId()).isEqualTo(leader.getId());
+            assertThat(unchangedTeam.getLeaderId()).isEqualTo(leader.getId());
         }
 
         @Test
@@ -649,7 +649,7 @@ public class TeamControllerIntegrationTest {
             Team team = createTeamWithoutId("team1", leader);
             teamRepository.save(team);
 
-            TeamJoinToken token = team.createJoinToken(leader, LocalDateTime.now(clock));
+            TeamJoinToken token = team.createJoinToken(leader.getId(), LocalDateTime.now(clock));
             teamJoinTokenRepository.save(token);
 
             Member notMember = member2;
@@ -668,7 +668,7 @@ public class TeamControllerIntegrationTest {
                     });
 
             Team updatedTeam = teamRepository.findById(team.getId()).orElseThrow();
-            assertThat(updatedTeam.isTeamMember(notMember)).isTrue();
+            assertThat(updatedTeam.isTeamMember(notMember.getId())).isTrue();
         }
 
         @Test
@@ -679,7 +679,7 @@ public class TeamControllerIntegrationTest {
             Team team = createTeamWithoutId("team1", leader);
             teamRepository.save(team);
 
-            TeamJoinToken token = team.createJoinToken(leader, LocalDateTime.now(clock));
+            TeamJoinToken token = team.createJoinToken(leader.getId(), LocalDateTime.now(clock));
             teamJoinTokenRepository.save(token);
 
             Member notMember = member2;
@@ -701,7 +701,7 @@ public class TeamControllerIntegrationTest {
             Team team = createTeamWithoutId("team1", leader);
             teamRepository.save(team);
 
-            TeamJoinToken expiredToken = team.createJoinToken(leader, LocalDateTime.now(clock));
+            TeamJoinToken expiredToken = team.createJoinToken(leader.getId(), LocalDateTime.now(clock));
             ReflectionTestUtils.setField(expiredToken, "expireDate", LocalDateTime.now().minusHours(1));
             teamJoinTokenRepository.save(expiredToken);
 

@@ -22,7 +22,7 @@ import static com.feedhanjum.feedback.test.FeedbackFixture.defaultFeedbackIdGene
 public class DomainTestUtils {
     private static final AtomicLong nextId = new AtomicLong(1);
 
-    private static FeedbackIdGenerator feedbackIdGenerator = defaultFeedbackIdGenerator();
+    private static final FeedbackIdGenerator feedbackIdGenerator = defaultFeedbackIdGenerator();
 
     public static Member createMemberWithoutId(String name) {
         List<FeedbackPreference> feedbackPreferences = List.of(FeedbackPreference.PROGRESSIVE, FeedbackPreference.COMPLEMENTING);
@@ -41,7 +41,7 @@ public class DomainTestUtils {
     }
 
     public static Team createTeamWithoutId(String name, Member leader, LocalDate startDate, LocalDate endDate, LocalDate now) {
-        return new Team(name, leader, startDate, endDate, FeedbackType.ANONYMOUS, now);
+        return new Team(name, leader.getId(), startDate, endDate, FeedbackType.ANONYMOUS, now);
     }
 
     public static Team createTeamWithId(String name, Member leader, LocalDate startDate, LocalDate endDate, LocalDate now) {

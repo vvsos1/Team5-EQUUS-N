@@ -98,7 +98,7 @@ class FeedbackControllerTest {
     }
 
     private Team createTeam(String name, Member leader) {
-        return new Team(name, leader, LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now(clock));
+        return new Team(name, leader.getId(), LocalDate.now(clock).minusDays(1), LocalDate.now(clock).plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now(clock));
     }
 
     private Schedule createSchedule(String name, Team team, Member leader, boolean isEnd) {
@@ -128,11 +128,11 @@ class FeedbackControllerTest {
         memberRepository.saveAll(List.of(member1, member2, member3));
 
         team1 = createTeam("team1", member1);
-        team1.join(member2);
-        team1.join(member3);
+        team1.join(member2.getId());
+        team1.join(member3.getId());
         team2 = createTeam("team2", member2);
-        team2.join(member1);
-        team2.join(member3);
+        team2.join(member1.getId());
+        team2.join(member3.getId());
         teamRepository.saveAll(List.of(team1, team2));
 
         schedule1 = createSchedule("schedule1", team1, member1, false);

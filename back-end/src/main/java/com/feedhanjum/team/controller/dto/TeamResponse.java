@@ -1,7 +1,6 @@
 package com.feedhanjum.team.controller.dto;
 
 import com.feedhanjum.feedback.domain.feedback.FeedbackType;
-import com.feedhanjum.member.controller.dto.MemberResponse;
 import com.feedhanjum.team.domain.Team;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -24,7 +23,7 @@ public record TeamResponse(
         FeedbackType feedbackType,
 
         @Schema(description = "팀장 정보")
-        MemberResponse leader
+        LeaderResponse leader
 ) {
     public TeamResponse(Team team) {
         this(
@@ -33,6 +32,11 @@ public record TeamResponse(
                 team.getStartDate(),
                 team.getEndDate(),
                 team.getFeedbackType(),
-                new MemberResponse(team.getLeader()));
+                new LeaderResponse(team.getLeaderId()));
+    }
+
+    public record LeaderResponse(
+            Long id
+    ) {
     }
 }

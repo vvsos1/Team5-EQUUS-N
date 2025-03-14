@@ -1,7 +1,6 @@
 package com.feedhanjum.team.domain;
 
 import com.feedhanjum.feedback.domain.feedback.FeedbackType;
-import com.feedhanjum.member.domain.Member;
 import com.feedhanjum.team.exception.TeamEndedException;
 import com.feedhanjum.team.exception.TeamLeaderMustExistException;
 import com.feedhanjum.team.exception.TeamMembershipNotFoundException;
@@ -45,33 +44,32 @@ public class Team {
     @Enumerated(EnumType.STRING)
     private FeedbackType feedbackType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "leader_id", nullable = false)
-    private Member leader;
+    @Column(name = "leader_id", nullable = false)
+    private Long leaderId;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "team_id")
     private final List<Membership> memberships = new ArrayList<>();
 
-    public Team(String name, Member leader, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType, LocalDate now) {
+    public Team(String name, Long leaderId, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType, LocalDate now) {
         validateDuration(startDate, endDate, now);
         this.feedbackType = feedbackType;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.leader = leader;
-        join(leader);
+        this.leaderId = leaderId;
+        join(leaderId);
     }
 
-    public void changeLeader(Member currentLeader, Member newLeader) {
-        validateTeamLeader(currentLeader);
-        if (!isTeamMember(newLeader))
+    public void changeLeader(Long currentLeaderId, Long newLeaderId) {
+        validateTeamLeader(currentLeaderId);
+        if (!isTeamMember(newLeaderId))
             throw new TeamMembershipNotFoundException("팀 리더는 반드시 팀원이어야 합니다");
-        this.leader = newLeader;
+        this.leaderId = newLeaderId;
     }
 
-    public void updateInfo(Member leader, String name, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType, LocalDate now) {
-        validateTeamLeader(leader);
+    public void updateInfo(Long leaderId, String name, LocalDate startDate, LocalDate endDate, FeedbackType feedbackType, LocalDate now) {
+        validateTeamLeader(leaderId);
         validateDuration(startDate, endDate, now);
         this.name = name;
         this.startDate = startDate;
@@ -80,26 +78,26 @@ public class Team {
     }
 
     // 팀 참가
-    public void join(Member member) {
-        if (isTeamMember(member))
+    public void join(Long memberId) {
+        if (isTeamMember(memberId))
             return;
-        memberships.add(new Membership(getId(), member.getId()));
+        memberships.add(new Membership(getId(), memberId));
     }
 
     // 팀 탈퇴
-    public void leave(Member member) {
-        validateTeamMember(member);
-        if (isTeamLeader(member) && !onlyLeaderLeft())
+    public void leave(Long memberId) {
+        validateTeamMember(memberId);
+        if (isTeamLeader(memberId) && !onlyLeaderLeft())
             throw new TeamLeaderMustExistException("팀 리더는 팀을 나갈 수 없습니다");
-        else if (!isTeamLeader(member) || onlyLeaderLeft())
-            this.memberships.removeIf(membership -> member.getId().equals(membership.getMemberId()));
+        else if (!isTeamLeader(memberId) || onlyLeaderLeft())
+            this.memberships.removeIf(membership -> memberId.equals(membership.getMemberId()));
     }
 
     // 팀원 강제 추방
-    public void expel(Member leader, Member removeTarget) {
-        validateTeamMember(removeTarget);
-        validateTeamLeader(leader);
-        this.leave(removeTarget);
+    public void expel(Long leaderId, Long removeTargetMemberId) {
+        validateTeamMember(removeTargetMemberId);
+        validateTeamLeader(leaderId);
+        this.leave(removeTargetMemberId);
     }
 
     public int memberCount() {
@@ -110,28 +108,28 @@ public class Team {
         return Collections.unmodifiableList(memberships);
     }
 
-    public boolean isTeamMember(Member member) {
-        return memberships.stream().anyMatch(teamMember -> member.getId().equals(teamMember.getMemberId()));
+    public boolean isTeamMember(Long memberId) {
+        return memberships.stream().anyMatch(teamMember -> memberId.equals(teamMember.getMemberId()));
     }
 
-    public TeamJoinToken createJoinToken(Member member, LocalDateTime now) {
+    public TeamJoinToken createJoinToken(Long memberId, LocalDateTime now) {
         if (now.isAfter(endDate.plusDays(1).atStartOfDay()))
             throw new TeamEndedException("팀이 이미 종료되었습니다");
-        validateTeamMember(member);
+        validateTeamMember(memberId);
         return TeamJoinToken.createToken(this);
     }
 
-    private boolean isTeamLeader(Member leader) {
-        return this.leader.equals(leader);
+    public boolean isTeamLeader(Long leaderId) {
+        return this.leaderId.equals(leaderId);
     }
 
-    private void validateTeamLeader(Member leader) {
-        if (!isTeamLeader(leader))
+    private void validateTeamLeader(Long leaderId) {
+        if (!isTeamLeader(leaderId))
             throw new SecurityException("팀장이 아닙니다");
     }
 
-    private void validateTeamMember(Member member) {
-        if (!isTeamMember(member))
+    private void validateTeamMember(Long memberId) {
+        if (!isTeamMember(memberId))
             throw new TeamMembershipNotFoundException("팀원이 아닙니다");
     }
 

@@ -91,9 +91,9 @@ class InAppNotificationServiceIntegrationTest {
         sender3 = memberRepository.save(createMemberWithoutId("sender3"));
         receiver = memberRepository.save(createMemberWithoutId("receiver"));
         team = teamRepository.save(createTeamWithoutId("team", receiver));
-        team.join(sender1);
-        team.join(sender2);
-        team.join(sender3);
+        team.join(sender1.getId());
+        team.join(sender2.getId());
+        team.join(sender3.getId());
     }
 
     private FeedbackReceiveNotification createFeedbackReceiveNotification(LocalDateTime createdAt, Member sender) {

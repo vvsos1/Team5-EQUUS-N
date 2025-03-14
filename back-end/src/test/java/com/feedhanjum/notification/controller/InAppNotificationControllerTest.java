@@ -71,7 +71,7 @@ class InAppNotificationControllerTest {
     }
 
     private Team createTeam(String name, Member leader) {
-        return new Team(name, leader, LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
+        return new Team(name, leader.getId(), LocalDate.now().minusDays(1), LocalDate.now().plusDays(1), FeedbackType.ANONYMOUS, LocalDate.now());
     }
 
     private InAppNotification createInAppNotification(Member receiver) {
